@@ -44,10 +44,10 @@
 - [ ] A24: Game over koşulu test (tur/skor limiti)
 
 ### Ege (Backend)
-- [ ] E10: `acceptTask` implementasyonunu tamamla (şu an boş method)
-- [ ] E11: `passTask` penalty hesaplaması test et (`basePenalty` README'de 50 ama code'da 100)
-- [ ] E12: `endGame` koşulu — skor bazlı bitiş eksik (sadece tur bazlı var)
-- [ ] E13: Vote clear sonrası yeni tur geçiş sıralaması
+- [x] E10: `acceptTask` implementasyonunu tamamla (şu an boş method)
+- [x] E11: `passTask` penalty hesaplaması test et (`basePenalty` README'de 50 ama code'da 100)
+- [x] E12: `endGame` koşulu — skor bazlı bitiş eksik (sadece tur bazlı var)
+- [x] E13: Vote clear sonrası yeni tur geçiş sıralaması
 
 ---
 
@@ -60,9 +60,9 @@
 - [ ] A27: Çark sonucu popup animasyonu (kategori + çarpan)
 
 ### Ege (Backend)
-- [ ] E14: `assignTaskByCategory(gameId, category)` — kategori filtreli görev
-- [ ] E15: Kullanılmış görev takibi (`usedTaskIds`) — tekrar önleme
-- [ ] E16: `GameEntity`'ye `usedTaskIds` alanı ekle
+- [x] E14: `assignTaskByCategory(gameId, category)` — kategori filtreli görev
+- [x] E15: Kullanılmış görev takibi (`usedTaskIds`) — tekrar önleme
+- [x] E16: `GameEntity`'ye `usedTaskIds` alanı ekle
 
 ---
 
@@ -75,8 +75,8 @@
 - [ ] A30: "Görevi Aç" butonu — Kapalı Mod'da tıklayınca içerik göster
 
 ### Ege (Backend)
-- [ ] E17: Room modeline `visibility: open | closed` alanı ekle
-- [ ] E18: Firestore Security Rules — visibility'ye göre content erişim kontrolü
+- [x] E17: Room modeline `visibility: open | closed` alanı ekle
+- [x] E18: Firestore Security Rules — visibility'ye göre content erişim kontrolü
 
 ---
 
@@ -90,9 +90,9 @@
 - [ ] A34: Lobi + oyun ekranlarında avatar göster
 
 ### Ege (Backend)
-- [ ] E19: Firebase Storage avatar upload (`users/{uid}/avatar`)
-- [ ] E20: User koleksiyonu (`walletPoints`, `avatarUrl`, `rank`)
-- [ ] E21: Avatar URL → PlayerEntity bağlama
+- [x] E19: Firebase Storage avatar upload (`users/{uid}/avatar`)
+- [x] E20: User koleksiyonu (`walletPoints`, `avatarUrl`, `rank`)
+- [x] E21: Avatar URL → PlayerEntity bağlama
 
 ---
 

@@ -8,6 +8,7 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
 
 /// Odaya katılma ekranı — 6 haneli oda kodu girişi.
@@ -74,6 +75,9 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
       final user = ref.read(currentUserProvider);
       if (user == null) return;
 
+      // E20: Get user profile to attach avatarUrl
+      final userProfile = await ref.read(userRepositoryProvider).getUserProfile(user.uid);
+
       // Repository'yi async gap öncesi yakala — provider dispose olsa bile
       // repo referansı hâlâ geçerli kalır.
       final repo = ref.read(roomRepositoryProvider);
@@ -81,6 +85,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
         roomCode: _roomCode,
         playerId: user.uid,
         playerName: user.displayName ?? 'Oyuncu',
+        playerAvatarUrl: userProfile?.avatarUrl,
       );
 
       if (mounted) context.push('/lobby', extra: _roomCode);

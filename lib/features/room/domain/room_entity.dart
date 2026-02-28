@@ -7,7 +7,9 @@ class RoomEntity {
   final GameStatus status;
   final EndConditionType endConditionType;
   final int endConditionValue;
+  final RoomVisibility visibility;
   final List<PlayerEntity> players;
+  final String? gameId;
   final DateTime createdAt;
 
   const RoomEntity({
@@ -17,7 +19,9 @@ class RoomEntity {
     this.status = GameStatus.waiting,
     this.endConditionType = EndConditionType.score,
     this.endConditionValue = 5000,
+    this.visibility = RoomVisibility.open,
     this.players = const [],
+    this.gameId,
     required this.createdAt,
   });
 }
@@ -25,6 +29,7 @@ class RoomEntity {
 class PlayerEntity {
   final String id;
   final String displayName;
+  final String? avatarUrl;
   final int score;
   final int passStreak;
   final bool isReady;
@@ -32,6 +37,7 @@ class PlayerEntity {
   const PlayerEntity({
     required this.id,
     required this.displayName,
+    this.avatarUrl,
     this.score = 0,
     this.passStreak = 0,
     this.isReady = false,

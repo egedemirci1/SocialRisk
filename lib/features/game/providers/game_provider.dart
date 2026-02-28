@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../data/firebase_game_source.dart';
 import '../domain/game_entity.dart';
 import '../domain/game_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/constants/game_constants.dart';
 import '../../../shared/models/enums.dart';
 
@@ -41,6 +42,16 @@ class GameController extends _$GameController {
     await ref.read(gameRepositoryProvider).acceptTask(gameId);
   }
 
+  Future<void> assignTaskByCategory({
+    required String gameId,
+    required String category,
+  }) async {
+    await ref.read(gameRepositoryProvider).assignTaskByCategory(
+      gameId: gameId,
+      category: category,
+    );
+  }
+
   Future<void> passTask({
     required String gameId,
     required String roomId,
@@ -75,10 +86,25 @@ class GameController extends _$GameController {
     // Bitiş koşulunu kontrol et
     bool shouldEnd = false;
     if (endConditionType == EndConditionType.rounds) {
-      // Tur bazlı bitiş — currentRound >= hedef
+      // Tur bazlı bitiş
       shouldEnd = currentRound >= endConditionValue;
+    } else if (endConditionType == EndConditionType.score) {
+      // Skor bazlı bitiş: E12. Fetch the player list to check their scores
+      final playersSnap = await FirebaseFirestore.instance
+          .collection('rooms')
+          .doc(roomId)
+          .collection('players')
+          .get();
+      
+      for (final doc in playersSnap.docs) {
+        final score = doc.data()['score'] as int? ?? 0;
+        // Check condition: Any player's score >= required score
+        if (score >= endConditionValue) {
+          shouldEnd = true;
+          break;
+        }
+      }
     }
-    // Puan bazlı bitiş — Skor kontrolü UI tarafında yapılabilir
 
     if (shouldEnd) {
       await repo.endGame(gameId);

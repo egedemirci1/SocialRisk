@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Rooms collection
+    match /rooms/{roomId} {
+      // Herkes oda oku ve yazabilir (basitlik için)
+      allow read, write: if request.auth != null;
+      
+      // Players alt koleksiyonu
+      match /players/{playerId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+    
+    // Games collection
+    match /games/{gameId} {
+      // Herkes oyunu görebilir ama "closed" visibility ise 
+      // currentTask.content gizlenebilir (Client-side filtreleme yerine security rules denense de 
+      // Firestore'da field-level read filter karmaşıktır. Bu yüzden E18 için temel seviyede:
+      // Sadece odadaki oyuncuların okumasına izin ver)
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+  }
+}

@@ -10,6 +10,7 @@ class GameModel {
   final Map<String, dynamic>? currentTask;
   final List<String> turnOrder;
   final String status;
+  final List<String> usedTaskIds;
 
   const GameModel({
     required this.gameId,
@@ -19,6 +20,7 @@ class GameModel {
     this.currentTask,
     required this.turnOrder,
     this.status = 'playing',
+    this.usedTaskIds = const [],
   });
 
   factory GameModel.fromJson(Map<String, dynamic> json, String docId) {
@@ -30,6 +32,7 @@ class GameModel {
       currentTask: json['currentTask'] as Map<String, dynamic>?,
       turnOrder: List<String>.from(json['turnOrder'] ?? []),
       status: json['status'] as String? ?? 'playing',
+      usedTaskIds: List<String>.from(json['usedTaskIds'] ?? []),
     );
   }
 
@@ -41,6 +44,7 @@ class GameModel {
       'currentTask': currentTask,
       'turnOrder': turnOrder,
       'status': status,
+      'usedTaskIds': usedTaskIds,
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
@@ -62,6 +66,7 @@ class GameModel {
         (e) => e.name == status,
         orElse: () => GameStatus.playing,
       ),
+      usedTaskIds: usedTaskIds,
     );
   }
 }

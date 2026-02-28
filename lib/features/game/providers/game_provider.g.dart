@@ -149,7 +149,7 @@ final class GameControllerProvider
   GameController create() => GameController();
 }
 
-String _$gameControllerHash() => r'151a3b496bd9e1c4aeacbd0f6ce7480fd78dd9eb';
+String _$gameControllerHash() => r'7bdc15383ea55e52c7464c0d0792dec891add221';
 
 abstract class _$GameController extends $AsyncNotifier<String?> {
   FutureOr<String?> build();

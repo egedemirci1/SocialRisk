@@ -20,3 +20,8 @@ enum EndConditionType {
   score,
   rounds
 }
+
+enum RoomVisibility {
+  open,
+  closed
+}

@@ -58,13 +58,47 @@ class FirebaseGameSource implements GameRepository {
       content: task.content,
       multiplier: task.multiplier,
     );
-    await _gameDoc(gameId).update({'currentTask': taskModel.toJson()});
+    await _gameDoc(gameId).update({
+      'currentTask': taskModel.toJson(),
+      'usedTaskIds': FieldValue.arrayUnion([task.id]), // E15: Görevi kullanıldı olarak işaretle
+    });
+  }
+
+  @override
+  Future<void> assignTaskByCategory({
+    required String gameId,
+    required String category,
+  }) async {
+    final snap = await _gameDoc(gameId).get();
+    if (!snap.exists) return;
+
+    final game = GameModel.fromJson(snap.data()!, snap.id);
+    final usedIds = game.usedTaskIds;
+
+    // Kategoriye uyan ve daha önce kullanılmamış görevleri bul
+    var availableTasks = tasksSeedData.where((t) => 
+      t.category == category && !usedIds.contains(t.id)
+    ).toList();
+
+    // Eğer o kategorideki tüm görevler bittiyse (çok düşük ihtimal), 
+    // fallback olarak kullanılmışları da dahil et (sadece o kategori için)
+    if (availableTasks.isEmpty) {
+      availableTasks = tasksSeedData.where((t) => t.category == category).toList();
+    }
+
+    // Rastgele birini seç
+    final selectedTask = availableTasks[_random.nextInt(availableTasks.length)];
+
+    await setCurrentTask(
+      gameId: gameId, 
+      task: selectedTask.toEntity(),
+    );
   }
 
   @override
   Future<void> acceptTask(String gameId) async {
-    // Görev kabul edildi — oylama başlayacak
-    // Bu bilgiyi UI tarafı handle edecek
+    // Görev kabul edildi — oyun durumu 'voting' (oylama) aşamasına geçer.
+    await _gameDoc(gameId).update({'status': 'voting'});
   }
 
   @override
@@ -84,6 +118,9 @@ class FirebaseGameSource implements GameRepository {
     final playerSnap = await playerDoc.get();
     final currentStreak = (playerSnap.data()?['passStreak'] as int?) ?? 0;
     final newStreak = currentStreak + 1;
+    
+    // E11: README'ye göre basePenalty 50 olmalı, AppHelpers 100 kullanıyordu. 
+    // Parametre olarak gelen basePenalty'yi (GameConstants'tan gelir) kullan.
     final penalty = AppHelpers.calculatePenalty(basePenalty, newStreak);
 
     await playerDoc.update({
@@ -91,9 +128,9 @@ class FirebaseGameSource implements GameRepository {
       'score': FieldValue.increment(-penalty),
     });
 
-    // Yeni görev ata
-    final newTask = _getRandomTask();
-    await setCurrentTask(gameId: gameId, task: newTask.toEntity());
+    // Pas deyince sıranın bitmesi yeni kural, o yüzden burada yeni görev atamıyoruz.
+    // Oyun statüsünü koruyarak nextTurn'e geçiyoruz.
+    await nextTurn(gameId);
   }
 
   @override
@@ -106,11 +143,15 @@ class FirebaseGameSource implements GameRepository {
     final nextIndex = (currentIndex + 1) % game.turnOrder.length;
     final isNewRound = nextIndex == 0;
 
-    final newTask = _getRandomTask();
+    // Normal akışta `AssignTaskByCategory` kullanılacağı için 
+    // `nextTurn` içerisinde otomatik görev atamıyoruz, UI'dan çark çevrilmesi beklenecek.
+    // Oyun state'i 'waiting_for_spin' veya benzeri olabilir, şimdilik 'playing' diyoruz
+    // ve currentTask'i null yapıyoruz ki çark ekranı çıksun.
 
     final updates = <String, dynamic>{
       'currentPlayerId': game.turnOrder[nextIndex],
-      'currentTask': newTask.toJson(),
+      'currentTask': null, // Görev çarktan gelecek
+      'status': 'playing', // E13: Oylamadan sonra tekrar 'playing' durumuna dön.
     };
 
     if (isNewRound) {
@@ -126,12 +167,11 @@ class FirebaseGameSource implements GameRepository {
     if (!snap.exists) return;
 
     final game = GameModel.fromJson(snap.data()!, snap.id);
-    final newTask = _getRandomTask();
 
     await _gameDoc(gameId).update({
       'currentRound': game.currentRound + 1,
       'currentPlayerId': game.turnOrder.first,
-      'currentTask': newTask.toJson(),
+      'currentTask': null, // Çark çevrilecek
     });
   }
 

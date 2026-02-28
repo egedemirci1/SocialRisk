@@ -13,6 +13,11 @@ abstract class GameRepository {
     required TaskEntity task,
   });
 
+  Future<void> assignTaskByCategory({
+    required String gameId,
+    required String category,
+  });
+
   Future<void> acceptTask(String gameId);
 
   Future<void> passTask({

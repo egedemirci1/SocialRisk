@@ -9,6 +9,7 @@ class GameEntity {
   final List<String> turnOrder;
   final GameStatus status;
   final int passStreak;
+  final List<String> usedTaskIds;
 
   const GameEntity({
     required this.gameId,
@@ -19,6 +20,7 @@ class GameEntity {
     required this.turnOrder,
     this.status = GameStatus.playing,
     this.passStreak = 0,
+    this.usedTaskIds = const [],
   });
 }
 

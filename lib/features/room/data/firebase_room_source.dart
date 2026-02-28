@@ -22,8 +22,10 @@ class FirebaseRoomSource implements RoomRepository {
   Future<String> createRoom({
     required String hostId,
     required String hostName,
+    String? hostAvatarUrl,
     required EndConditionType endConditionType,
     required int endConditionValue,
+    required RoomVisibility visibility,
   }) async {
     String roomCode = AppHelpers.generateRoomCode();
 
@@ -39,6 +41,7 @@ class FirebaseRoomSource implements RoomRepository {
       status: GameStatus.waiting.name,
       endConditionType: endConditionType.name,
       endConditionValue: endConditionValue,
+      visibility: visibility.name,
       createdAt: DateTime.now(),
     );
 
@@ -48,6 +51,7 @@ class FirebaseRoomSource implements RoomRepository {
     final hostPlayer = PlayerModel(
       id: hostId,
       displayName: hostName,
+      avatarUrl: hostAvatarUrl,
       isReady: true,
     );
     await _playersRef(roomCode).doc(hostId).set(hostPlayer.toJson());
@@ -60,6 +64,7 @@ class FirebaseRoomSource implements RoomRepository {
     required String roomCode,
     required String playerId,
     required String playerName,
+    String? playerAvatarUrl,
   }) async {
     final roomDoc = await _roomDoc(roomCode).get();
     if (!roomDoc.exists) {
@@ -74,6 +79,7 @@ class FirebaseRoomSource implements RoomRepository {
     final player = PlayerModel(
       id: playerId,
       displayName: playerName,
+      avatarUrl: playerAvatarUrl,
     );
     await _playersRef(roomCode).doc(playerId).set(player.toJson());
   }
@@ -117,6 +123,14 @@ class FirebaseRoomSource implements RoomRepository {
     required bool isReady,
   }) async {
     await _playersRef(roomCode).doc(playerId).update({'isReady': isReady});
+  }
+
+  @override
+  Future<void> toggleVisibility({
+    required String roomCode,
+    required RoomVisibility visibility,
+  }) async {
+    await _roomDoc(roomCode).update({'visibility': visibility.name});
   }
 
   @override

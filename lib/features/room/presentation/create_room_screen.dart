@@ -46,6 +46,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         hostName: user.displayName ?? 'Host',
         endConditionType: endType,
         endConditionValue: endValue,
+        visibility: RoomVisibility.open, // Default as open (Faz 7 frontend part will make it selectable)
       );
 
       if (mounted && roomCode.isNotEmpty) {

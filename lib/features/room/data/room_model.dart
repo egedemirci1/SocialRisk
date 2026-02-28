@@ -9,6 +9,8 @@ class RoomModel {
   final String status;
   final String endConditionType;
   final int endConditionValue;
+  final String visibility;
+  final String? gameId;
   final DateTime createdAt;
 
   const RoomModel({
@@ -18,6 +20,8 @@ class RoomModel {
     required this.status,
     required this.endConditionType,
     required this.endConditionValue,
+    this.visibility = 'open',
+    this.gameId,
     required this.createdAt,
   });
 
@@ -29,6 +33,8 @@ class RoomModel {
       status: json['status'] as String? ?? 'waiting',
       endConditionType: json['endConditionType'] as String? ?? 'score',
       endConditionValue: json['endConditionValue'] as int? ?? 5000,
+      visibility: json['visibility'] as String? ?? 'open',
+      gameId: json['gameId'] as String?,
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -41,6 +47,8 @@ class RoomModel {
       'status': status,
       'endConditionType': endConditionType,
       'endConditionValue': endConditionValue,
+      'visibility': visibility,
+      'gameId': gameId,
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
@@ -62,6 +70,11 @@ class RoomModel {
         orElse: () => EndConditionType.score,
       ),
       endConditionValue: endConditionValue,
+      visibility: RoomVisibility.values.firstWhere(
+        (e) => e.name == visibility,
+        orElse: () => RoomVisibility.open,
+      ),
+      gameId: gameId,
       players: players,
       createdAt: createdAt,
     );
@@ -71,6 +84,7 @@ class RoomModel {
 class PlayerModel {
   final String id;
   final String displayName;
+  final String? avatarUrl;
   final int score;
   final int passStreak;
   final bool isReady;
@@ -78,6 +92,7 @@ class PlayerModel {
   const PlayerModel({
     required this.id,
     required this.displayName,
+    this.avatarUrl,
     this.score = 0,
     this.passStreak = 0,
     this.isReady = false,
@@ -87,6 +102,7 @@ class PlayerModel {
     return PlayerModel(
       id: docId,
       displayName: json['displayName'] as String? ?? 'Oyuncu',
+      avatarUrl: json['avatarUrl'] as String?,
       score: json['score'] as int? ?? 0,
       passStreak: json['passStreak'] as int? ?? 0,
       isReady: json['isReady'] as bool? ?? false,
@@ -96,6 +112,7 @@ class PlayerModel {
   Map<String, dynamic> toJson() {
     return {
       'displayName': displayName,
+      'avatarUrl': avatarUrl,
       'score': score,
       'passStreak': passStreak,
       'isReady': isReady,
@@ -106,6 +123,7 @@ class PlayerModel {
     return PlayerEntity(
       id: id,
       displayName: displayName,
+      avatarUrl: avatarUrl,
       score: score,
       passStreak: passStreak,
       isReady: isReady,

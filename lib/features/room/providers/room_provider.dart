@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../auth/providers/user_provider.dart';
 import '../data/firebase_room_source.dart';
 import '../domain/room_entity.dart';
 import '../domain/room_repository.dart';
@@ -31,14 +32,21 @@ class RoomController extends _$RoomController {
     required String hostName,
     required EndConditionType endConditionType,
     required int endConditionValue,
+    required RoomVisibility visibility,
   }) async {
     state = const AsyncLoading();
+    
+    // E20: Get user profile to attach avatarUrl
+    final userProfile = await ref.read(userRepositoryProvider).getUserProfile(hostId);
+    
     final result = await AsyncValue.guard(() =>
       ref.read(roomRepositoryProvider).createRoom(
         hostId: hostId,
         hostName: hostName,
+        hostAvatarUrl: userProfile?.avatarUrl,
         endConditionType: endConditionType,
         endConditionValue: endConditionValue,
+        visibility: visibility,
       ),
     );
     state = result;
@@ -81,6 +89,16 @@ class RoomController extends _$RoomController {
       roomCode: roomCode,
       playerId: playerId,
       isReady: isReady,
+    );
+  }
+
+  Future<void> toggleVisibility({
+    required String roomCode,
+    required RoomVisibility visibility,
+  }) async {
+    await ref.read(roomRepositoryProvider).toggleVisibility(
+      roomCode: roomCode,
+      visibility: visibility,
     );
   }
 

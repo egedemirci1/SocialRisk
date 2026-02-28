@@ -5,14 +5,17 @@ abstract class RoomRepository {
   Future<String> createRoom({
     required String hostId,
     required String hostName,
+    String? hostAvatarUrl,
     required EndConditionType endConditionType,
     required int endConditionValue,
+    required RoomVisibility visibility,
   });
 
   Future<void> joinRoom({
     required String roomCode,
     required String playerId,
     required String playerName,
+    String? playerAvatarUrl,
   });
 
   Future<void> leaveRoom({
@@ -28,6 +31,11 @@ abstract class RoomRepository {
     required String roomCode,
     required String playerId,
     required bool isReady,
+  });
+
+  Future<void> toggleVisibility({
+    required String roomCode,
+    required RoomVisibility visibility,
   });
 
   Future<void> updateRoomStatus({
