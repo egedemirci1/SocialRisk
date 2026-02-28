@@ -6,7 +6,7 @@ import '../../../shared/models/enums.dart';
 
 part 'vote_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 VoteRepository voteRepository(Ref ref) {
   return FirebaseVoteSource();
 }
@@ -19,7 +19,7 @@ final watchVotesProvider = StreamProvider.family<Map<String, VoteValue>, String>
   },
 );
 
-@riverpod
+@Riverpod(keepAlive: true)
 class VoteController extends _$VoteController {
   @override
   FutureOr<void> build() {}

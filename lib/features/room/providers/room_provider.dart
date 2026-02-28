@@ -6,22 +6,22 @@ import '../../../shared/models/enums.dart';
 
 part 'room_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 RoomRepository roomRepository(Ref ref) {
   return FirebaseRoomSource();
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Stream<RoomEntity?> watchRoom(Ref ref, String roomCode) {
   return ref.watch(roomRepositoryProvider).watchRoom(roomCode);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Stream<List<PlayerEntity>> watchPlayers(Ref ref, String roomCode) {
   return ref.watch(roomRepositoryProvider).watchPlayers(roomCode);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class RoomController extends _$RoomController {
   @override
   FutureOr<String?> build() => null;

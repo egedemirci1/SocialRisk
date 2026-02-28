@@ -21,7 +21,7 @@ final class GameRepositoryProvider
         argument: null,
         retry: null,
         name: r'gameRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,7 +48,7 @@ final class GameRepositoryProvider
   }
 }
 
-String _$gameRepositoryHash() => r'42a81bc825b91c57878fa8f6046ac70ad082678f';
+String _$gameRepositoryHash() => r'47977e8e0277badfa964bc08ef64fccc29d5fa55';
 
 @ProviderFor(watchGame)
 final watchGameProvider = WatchGameFamily._();
@@ -67,7 +67,7 @@ final class WatchGameProvider
   }) : super(
          retry: null,
          name: r'watchGameProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -105,7 +105,7 @@ final class WatchGameProvider
   }
 }
 
-String _$watchGameHash() => r'150035e49c5711b1fd547df760a11cebe32ec9fa';
+String _$watchGameHash() => r'4c1fb882a71e9347dd9b2313eb45a3c4aef1e731';
 
 final class WatchGameFamily extends $Family
     with $FunctionalFamilyOverride<Stream<GameEntity?>, String> {
@@ -115,7 +115,7 @@ final class WatchGameFamily extends $Family
         name: r'watchGameProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   WatchGameProvider call(String gameId) =>
@@ -136,7 +136,7 @@ final class GameControllerProvider
         argument: null,
         retry: null,
         name: r'gameControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -149,7 +149,7 @@ final class GameControllerProvider
   GameController create() => GameController();
 }
 
-String _$gameControllerHash() => r'1776324be01fce3f1c0517899daa238d8597fc08';
+String _$gameControllerHash() => r'151a3b496bd9e1c4aeacbd0f6ce7480fd78dd9eb';
 
 abstract class _$GameController extends $AsyncNotifier<String?> {
   FutureOr<String?> build();

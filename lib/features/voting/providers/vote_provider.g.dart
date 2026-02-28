@@ -21,7 +21,7 @@ final class VoteRepositoryProvider
         argument: null,
         retry: null,
         name: r'voteRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,7 +48,7 @@ final class VoteRepositoryProvider
   }
 }
 
-String _$voteRepositoryHash() => r'a5b702e1ffcb6abce9f3e49de2ee7321410385b3';
+String _$voteRepositoryHash() => r'1f51f176bb95075bd9f8a5f845c8a03f1b5502e2';
 
 @ProviderFor(VoteController)
 final voteControllerProvider = VoteControllerProvider._();
@@ -61,7 +61,7 @@ final class VoteControllerProvider
         argument: null,
         retry: null,
         name: r'voteControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -74,7 +74,7 @@ final class VoteControllerProvider
   VoteController create() => VoteController();
 }
 
-String _$voteControllerHash() => r'afa6597dee7f7cb4d767084fbe3d25c54304b610';
+String _$voteControllerHash() => r'f64e17ea0d50986d6394dc8e714b184567232dee';
 
 abstract class _$VoteController extends $AsyncNotifier<void> {
   FutureOr<void> build();

@@ -7,17 +7,17 @@ import '../../../shared/models/enums.dart';
 
 part 'game_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 GameRepository gameRepository(Ref ref) {
   return FirebaseGameSource();
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Stream<GameEntity?> watchGame(Ref ref, String gameId) {
   return ref.watch(gameRepositoryProvider).watchGame(gameId);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class GameController extends _$GameController {
   @override
   FutureOr<String?> build() => null;

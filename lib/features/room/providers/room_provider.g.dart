@@ -21,7 +21,7 @@ final class RoomRepositoryProvider
         argument: null,
         retry: null,
         name: r'roomRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,7 +48,7 @@ final class RoomRepositoryProvider
   }
 }
 
-String _$roomRepositoryHash() => r'd6c3e1bbbeffe41de5f346ada0db884d69e48de5';
+String _$roomRepositoryHash() => r'accb57bd0a312cebbef237fe0912153ff287eb18';
 
 @ProviderFor(watchRoom)
 final watchRoomProvider = WatchRoomFamily._();
@@ -67,7 +67,7 @@ final class WatchRoomProvider
   }) : super(
          retry: null,
          name: r'watchRoomProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -105,7 +105,7 @@ final class WatchRoomProvider
   }
 }
 
-String _$watchRoomHash() => r'f91e9642d5e21113030ff86b8f406eb059ba30b9';
+String _$watchRoomHash() => r'f5270c220fb186ad597b8698439da133a7c20d10';
 
 final class WatchRoomFamily extends $Family
     with $FunctionalFamilyOverride<Stream<RoomEntity?>, String> {
@@ -115,7 +115,7 @@ final class WatchRoomFamily extends $Family
         name: r'watchRoomProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   WatchRoomProvider call(String roomCode) =>
@@ -144,7 +144,7 @@ final class WatchPlayersProvider
   }) : super(
          retry: null,
          name: r'watchPlayersProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -182,7 +182,7 @@ final class WatchPlayersProvider
   }
 }
 
-String _$watchPlayersHash() => r'c7f84aa9432776769485f7f3642bd93a8e5d436e';
+String _$watchPlayersHash() => r'8147f08a2ec4bc23d602016d794d05cb527d8e33';
 
 final class WatchPlayersFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<PlayerEntity>>, String> {
@@ -192,7 +192,7 @@ final class WatchPlayersFamily extends $Family
         name: r'watchPlayersProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   WatchPlayersProvider call(String roomCode) =>
@@ -213,7 +213,7 @@ final class RoomControllerProvider
         argument: null,
         retry: null,
         name: r'roomControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -226,7 +226,7 @@ final class RoomControllerProvider
   RoomController create() => RoomController();
 }
 
-String _$roomControllerHash() => r'a5bc36ca3581fb03e1e6c6b87bf62842e8c79f3e';
+String _$roomControllerHash() => r'5830cd193c3d6473fb4f6e4c3e5f2f3e959721f3';
 
 abstract class _$RoomController extends $AsyncNotifier<String?> {
   FutureOr<String?> build();
