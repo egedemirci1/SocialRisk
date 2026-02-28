@@ -74,7 +74,10 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
       final user = ref.read(currentUserProvider);
       if (user == null) return;
 
-      await ref.read(roomControllerProvider.notifier).joinRoom(
+      // Repository'yi async gap öncesi yakala — provider dispose olsa bile
+      // repo referansı hâlâ geçerli kalır.
+      final repo = ref.read(roomRepositoryProvider);
+      await repo.joinRoom(
         roomCode: _roomCode,
         playerId: user.uid,
         playerName: user.displayName ?? 'Oyuncu',
