@@ -152,7 +152,7 @@ class RoundResultScreen extends ConsumerWidget {
                 return Consumer(
                   builder: (context, ref, child) {
                     final roomAsync = ref.watch(watchRoomProvider(roomCode));
-                    final user = ref.read(authControllerProvider).value;
+                    final user = ref.watch(currentUserProvider);
                     final isHost = roomAsync.value?.hostId == user?.uid;
 
                     if (isHost) {
