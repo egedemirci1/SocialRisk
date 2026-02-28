@@ -38,14 +38,15 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           ? _scoreTarget.toInt()
           : _roundTarget.toInt();
 
-      final roomCode = await ref
-          .read(roomControllerProvider.notifier)
-          .createRoom(
-            hostId: user.uid,
-            hostName: user.displayName ?? 'Host',
-            endConditionType: endType,
-            endConditionValue: endValue,
-          );
+      // Repository'yi async gap öncesi yakala — provider dispose olsa bile
+      // repo referansı hâlâ geçerli kalır.
+      final repo = ref.read(roomRepositoryProvider);
+      final roomCode = await repo.createRoom(
+        hostId: user.uid,
+        hostName: user.displayName ?? 'Host',
+        endConditionType: endType,
+        endConditionValue: endValue,
+      );
 
       if (mounted && roomCode.isNotEmpty) {
         context.push('/lobby', extra: roomCode);

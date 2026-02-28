@@ -6,7 +6,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
-import '../providers/auth_provider.dart';
 
 /// Login ekranı — Google, Apple ve Anonim giriş seçenekleri.
 class LoginScreen extends ConsumerStatefulWidget {

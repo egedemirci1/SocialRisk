@@ -53,7 +53,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
       data: (players) {
         // Puana göre sırala
         final sorted = List.of(players)
-          ..sort((a, b) => (b.score ?? 0).compareTo(a.score ?? 0));
+          ..sort((a, b) => b.score.compareTo(a.score));
 
         final winner = sorted.isNotEmpty ? sorted.first : null;
 
@@ -124,7 +124,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                       return LeaderboardTile(
                         rank: index + 1,
                         playerName: player.name,
-                        score: player.score ?? 0,
+                        score: player.score,
                         isCurrentPlayer: player.id == user?.uid,
                       );
                     },

@@ -58,7 +58,7 @@ class LobbyScreen extends ConsumerWidget {
                     final isMe = player.id == user?.uid;
                     return _PlayerTile(
                       name: player.name,
-                      isReady: player.isReady ?? false,
+                      isReady: player.isReady,
                       isCurrentPlayer: isMe,
                     );
                   },
@@ -78,7 +78,7 @@ class LobbyScreen extends ConsumerWidget {
                   final isHost = room?.hostId == user?.uid;
                   final players = playersAsync.value ?? [];
                   final allReady = players.isNotEmpty &&
-                      players.every((p) => p.id == room?.hostId || (p.isReady ?? false));
+                      players.every((p) => p.id == room?.hostId || p.isReady);
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
