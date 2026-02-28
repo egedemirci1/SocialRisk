@@ -15,16 +15,46 @@ import '../../../shared/models/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Lobi ekranı — Oyuncu listesi, hazır/değil durumu, ve Başla butonu.
-class LobbyScreen extends ConsumerWidget {
+class LobbyScreen extends ConsumerStatefulWidget {
   const LobbyScreen({super.key, required this.roomCode});
 
   final String roomCode;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LobbyScreen> createState() => _LobbyScreenState();
+}
+
+class _LobbyScreenState extends ConsumerState<LobbyScreen> {
+  @override
+  Widget build(BuildContext context) {
+    // Navigate non-hosts automatically when game starts using listen
+    ref.listen(watchRoomProvider(widget.roomCode), (previous, next) {
+      if (!mounted) return;
+      
+      final room = next.value;
+      if (room == null) return;
+      
+      final user = ref.read(currentUserProvider);
+      final isHost = room.hostId == user?.uid;
+
+      if (!isHost && room.status == GameStatus.playing) {
+        final gameId = room.gameId;
+        if (gameId != null && gameId.isNotEmpty) {
+           WidgetsBinding.instance.addPostFrameCallback((_) {
+             if (mounted) {
+               context.go('/task', extra: {
+                 'gameId': gameId,
+                 'roomCode': widget.roomCode,
+               });
+             }
+           });
+        }
+      }
+    });
+
     final user = ref.watch(currentUserProvider);
-    final playersAsync = ref.watch(watchPlayersProvider(roomCode));
-    final roomAsync = ref.watch(watchRoomProvider(roomCode));
+    final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
+    final roomAsync = ref.watch(watchRoomProvider(widget.roomCode));
 
     return Scaffold(
       appBar: AppBar(
@@ -34,7 +64,7 @@ class LobbyScreen extends ConsumerWidget {
           onPressed: () async {
             if (user != null) {
               await ref.read(roomControllerProvider.notifier).leaveRoom(
-                roomCode: roomCode,
+                roomCode: widget.roomCode,
                 playerId: user.uid,
               );
             }
@@ -84,28 +114,13 @@ class LobbyScreen extends ConsumerWidget {
                   final allReady = players.isNotEmpty &&
                       players.every((p) => p.id == room?.hostId || p.isReady);
 
-                  // Non-host: oyun başladığında otomatik yönlendir
-                  if (!isHost && room?.status == GameStatus.playing) {
-                    final gameId = room?.gameId;
-                    if (gameId != null && gameId.isNotEmpty) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (context.mounted) {
-                          context.go('/task', extra: {
-                            'gameId': gameId,
-                            'roomCode': roomCode,
-                          });
-                        }
-                      });
-                    }
-                  }
-
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       if (!isHost) ...[
                         // Hazır butonu — host değil
                         _ReadyToggleButton(
-                          roomCode: roomCode,
+                          roomCode: widget.roomCode,
                           playerId: user?.uid ?? '',
                         ),
                         const SizedBox(height: 12),
@@ -128,24 +143,24 @@ class LobbyScreen extends ConsumerWidget {
                                         ref.read(gameRepositoryProvider);
 
                                     await roomRepo.updateRoomStatus(
-                                      roomCode: roomCode,
+                                      roomCode: widget.roomCode,
                                       status: GameStatus.playing,
                                     );
                                     final gameId = await gameRepo.startGame(
-                                      roomId: roomCode,
+                                      roomId: widget.roomCode,
                                       playerIds: playerIds,
                                     );
 
                                     // gameId'yi room belgesine yaz
                                     await FirebaseFirestore.instance
                                         .collection('rooms')
-                                        .doc(roomCode)
+                                        .doc(widget.roomCode)
                                         .update({'currentGameId': gameId});
 
                                     if (context.mounted) {
                                       context.go('/task', extra: {
                                         'gameId': gameId,
-                                        'roomCode': roomCode,
+                                        'roomCode': widget.roomCode,
                                       });
                                     }
                                   } catch (e) {
@@ -216,7 +231,7 @@ class LobbyScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    roomCode,
+                    widget.roomCode,
                     style: AppTextStyles.displayMedium.copyWith(
                       color: AppColors.primary,
                       letterSpacing: 4,
@@ -227,7 +242,7 @@ class LobbyScreen extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.copy_rounded, color: Colors.white54),
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(text: roomCode));
+                  Clipboard.setData(ClipboardData(text: widget.roomCode));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Kod kopyalandı!')),
                   );
