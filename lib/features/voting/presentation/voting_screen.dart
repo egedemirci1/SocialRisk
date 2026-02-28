@@ -7,11 +7,12 @@ import '../../../shared/widgets/voting/voting_panel.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
 import '../../../shared/models/enums.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../room/providers/room_provider.dart';
 import '../../game/providers/game_provider.dart';
 import '../providers/vote_provider.dart';
 
 /// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor.
-class VotingScreen extends ConsumerWidget {
+class VotingScreen extends ConsumerStatefulWidget {
   const VotingScreen({
     super.key,
     required this.gameId,
@@ -22,10 +23,81 @@ class VotingScreen extends ConsumerWidget {
   final String roomCode;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final gameAsync = ref.watch(watchGameProvider(gameId));
+  ConsumerState<VotingScreen> createState() => _VotingScreenState();
+}
+
+class _VotingScreenState extends ConsumerState<VotingScreen> {
+  bool _isProcessing = false;
+
+  Future<void> _processResults({
+    required String currentPlayerId,
+    required int taskMultiplier,
+    required int currentRound,
+  }) async {
+    if (_isProcessing) return;
+    setState(() => _isProcessing = true);
+
+    try {
+      // Oy sonucunu hesapla
+      final earned = await ref
+          .read(voteControllerProvider.notifier)
+          .calculateAndApplyScore(
+            gameId: widget.gameId,
+            taskMultiplier: taskMultiplier,
+          );
+
+      // Oda ayarlarından bitiş koşulunu al
+      final roomAsync = ref.read(watchRoomProvider(widget.roomCode));
+      final room = roomAsync.value;
+      final endConditionType =
+          room?.endConditionType ?? EndConditionType.rounds;
+      final endConditionValue = room?.endConditionValue ?? 10;
+
+      // Puanı uygula ve sonraki tura geç
+      await ref.read(gameControllerProvider.notifier).applyScoreAndNextTurn(
+            gameId: widget.gameId,
+            roomId: widget.roomCode,
+            playerId: currentPlayerId,
+            scoreToAdd: earned,
+            endConditionValue: endConditionValue,
+            endConditionType: endConditionType,
+            currentRound: currentRound,
+          );
+
+      if (!mounted) return;
+
+      // Oyun durumunu kontrol et — Firestore'dan güncel veriyi oku
+      final updatedGame =
+          await ref.read(gameRepositoryProvider).watchGame(widget.gameId).first;
+
+      if (!mounted) return;
+
+      if (updatedGame?.status == GameStatus.finished) {
+        context.go('/game-over', extra: widget.roomCode);
+      } else {
+        context.go('/round-result', extra: {
+          'gameId': widget.gameId,
+          'roomCode': widget.roomCode,
+          'earnedScore': earned,
+          'multiplier': taskMultiplier,
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isProcessing = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final user = ref.watch(currentUserProvider);
-    final votesAsync = ref.watch(watchVotesProvider(gameId));
+    final votesAsync = ref.watch(watchVotesProvider(widget.gameId));
+    final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
 
     return gameAsync.when(
       data: (game) {
@@ -34,45 +106,34 @@ class VotingScreen extends ConsumerWidget {
               body: Center(child: CircularProgressIndicator()));
         }
 
-        final performerName = game.currentPlayerId; // Adı player listesinden almak gerekiyor — şimdilik ID
+        // Oyuncu isimlerini map olarak hazırla
+        final playerNames = <String, String>{};
+        if (playersAsync.value != null) {
+          for (final p in playersAsync.value!) {
+            playerNames[p.id] = p.name;
+          }
+        }
+
+        final performerName =
+            playerNames[game.currentPlayerId] ?? game.currentPlayerId;
         final task = game.currentTask;
         final myVote = votesAsync.value?[user?.uid];
         final allVoted = votesAsync.value != null &&
             game.turnOrder.every(
-              (id) => id == game.currentPlayerId || votesAsync.value!.containsKey(id),
+              (id) =>
+                  id == game.currentPlayerId ||
+                  votesAsync.value!.containsKey(id),
             );
 
-        // Herkes oy verince otomatik sonuç ekranına geç
-        if (allVoted) {
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            final earned = await ref
-                .read(voteControllerProvider.notifier)
-                .calculateAndApplyScore(
-                  gameId: gameId,
-                  taskMultiplier: task?.multiplier ?? 1,
-                );
-
-            await ref.read(gameControllerProvider.notifier).applyScoreAndNextTurn(
-              gameId: gameId,
-              roomId: roomCode,
-              playerId: game.currentPlayerId,
-              scoreToAdd: earned,
-              endConditionValue: 10,
-              endConditionType: EndConditionType.rounds,
-              currentRound: game.currentRound,
-            );
-
-            if (context.mounted) {
-              if (game.status == GameStatus.finished) {
-                context.go('/game-over', extra: roomCode);
-              } else {
-                context.go('/round-result', extra: {
-                  'gameId': gameId,
-                  'roomCode': roomCode,
-                  'earnedScore': earned,
-                  'multiplier': task?.multiplier ?? 1,
-                });
-              }
+        // Herkes oy verdiyse sonuçları hesapla (tek seferlik)
+        if (allVoted && !_isProcessing) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && !_isProcessing) {
+              _processResults(
+                currentPlayerId: game.currentPlayerId,
+                taskMultiplier: task?.multiplier ?? 1,
+                currentRound: game.currentRound,
+              );
             }
           });
         }
@@ -138,7 +199,20 @@ class VotingScreen extends ConsumerWidget {
 
                 const Spacer(),
 
-                if (user?.uid == game.currentPlayerId)
+                if (_isProcessing)
+                  Column(
+                    children: [
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Sonuçlar hesaplanıyor...',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: Colors.white38,
+                        ),
+                      ),
+                    ],
+                  )
+                else if (user?.uid == game.currentPlayerId)
                   Text(
                     'Diğer oyuncuların oyu bekleniyor...',
                     style: AppTextStyles.bodyMedium.copyWith(
@@ -158,7 +232,7 @@ class VotingScreen extends ConsumerWidget {
                       if (user == null) return;
                       final voteValue = VoteValue.values.byName(value);
                       ref.read(voteControllerProvider.notifier).castVote(
-                            gameId: gameId,
+                            gameId: widget.gameId,
                             voterId: user.uid,
                             value: voteValue,
                           );

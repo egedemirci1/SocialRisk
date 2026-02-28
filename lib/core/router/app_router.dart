@@ -11,6 +11,7 @@ import '../../features/game/presentation/waiting_screen.dart';
 import '../../features/game/presentation/round_result_screen.dart';
 import '../../features/game/presentation/game_over_screen.dart';
 import '../../features/voting/presentation/voting_screen.dart';
+import '../../features/auth/presentation/profile_screen.dart';
 
 /// Listens to Firebase auth state so GoRouter re-evaluates redirect
 /// automatically when the user signs in or out.
@@ -57,6 +58,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/home',
       builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfileScreen(),
     ),
     GoRoute(
       path: '/create-room',

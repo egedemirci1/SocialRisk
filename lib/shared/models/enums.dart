@@ -22,6 +22,6 @@ enum EndConditionType {
 }
 
 enum RoomVisibility {
-  open,
-  closed
+  open,   // İçerik önceden görünür
+  closed  // Sadece kategori + çarpan görünür
 }

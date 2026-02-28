@@ -6,6 +6,8 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/score/score_counter.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../../shared/models/enums.dart';
+import '../providers/game_provider.dart';
 
 /// Tur sonu ekranı — Oylama sonucu ve kazanılan/kaybedilen puan.
 class RoundResultScreen extends ConsumerWidget {
@@ -24,6 +26,8 @@ class RoundResultScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final gameAsync = ref.watch(watchGameProvider(gameId));
+
     return Scaffold(
       body: GradientContainer(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -34,13 +38,18 @@ class RoundResultScreen extends ConsumerWidget {
             DecoratedBox(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.votePositive.withValues(alpha: 0.15),
+                color: earnedScore >= 0
+                    ? AppColors.votePositive.withValues(alpha: 0.15)
+                    : AppColors.voteNegative.withValues(alpha: 0.15),
               ),
-              child: const SizedBox(
+              child: SizedBox(
                 width: 100,
                 height: 100,
                 child: Center(
-                  child: Text('🎉', style: TextStyle(fontSize: 48)),
+                  child: Text(
+                    earnedScore >= 0 ? '🎉' : '😬',
+                    style: const TextStyle(fontSize: 48),
+                  ),
                 ),
               ),
             ),
@@ -63,8 +72,12 @@ class RoundResultScreen extends ConsumerWidget {
                   children: [
                     _ScoreRow(
                       label: 'Oylama Skoru',
-                      value: '+${earnedScore ~/ multiplier}',
-                      color: AppColors.votePositive,
+                      value: multiplier != 0
+                          ? '${earnedScore ~/ multiplier}'
+                          : '$earnedScore',
+                      color: earnedScore >= 0
+                          ? AppColors.votePositive
+                          : AppColors.voteNegative,
                     ),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 12),
@@ -80,8 +93,12 @@ class RoundResultScreen extends ConsumerWidget {
                       child: Divider(color: Colors.white12),
                     ),
                     _ScoreRow(
-                      label: 'Kazanılan Puan',
-                      value: '+$earnedScore',
+                      label: earnedScore >= 0
+                          ? 'Kazanılan Puan'
+                          : 'Kaybedilen Puan',
+                      value: earnedScore >= 0
+                          ? '+$earnedScore'
+                          : '$earnedScore',
                       color: AppColors.accent,
                       isBold: true,
                     ),
@@ -96,7 +113,8 @@ class RoundResultScreen extends ConsumerWidget {
               children: [
                 Text(
                   'Bu tur: ',
-                  style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
+                  style: AppTextStyles.bodyMedium
+                      .copyWith(color: Colors.white54),
                 ),
                 ScoreCounter(score: earnedScore, delta: earnedScore),
               ],
@@ -104,15 +122,46 @@ class RoundResultScreen extends ConsumerWidget {
 
             const Spacer(flex: 2),
 
-            PrimaryButton(
-              label: 'Sıradaki Tura Geç',
-              icon: Icons.arrow_forward_rounded,
-              onPressed: () {
-                context.go('/waiting', extra: {
-                  'gameId': gameId,
-                  'roomCode': roomCode,
-                });
+            gameAsync.when(
+              data: (game) {
+                final isGameOver = game?.status == GameStatus.finished;
+                return PrimaryButton(
+                  label: isGameOver ? 'Sonuçları Gör' : 'Sıradaki Tura Geç',
+                  icon: isGameOver
+                      ? Icons.emoji_events_rounded
+                      : Icons.arrow_forward_rounded,
+                  onPressed: () {
+                    if (isGameOver) {
+                      context.go('/game-over', extra: roomCode);
+                    } else {
+                      context.go('/waiting', extra: {
+                        'gameId': gameId,
+                        'roomCode': roomCode,
+                      });
+                    }
+                  },
+                );
               },
+              loading: () => PrimaryButton(
+                label: 'Sıradaki Tura Geç',
+                icon: Icons.arrow_forward_rounded,
+                onPressed: () {
+                  context.go('/waiting', extra: {
+                    'gameId': gameId,
+                    'roomCode': roomCode,
+                  });
+                },
+              ),
+              error: (e, st) => PrimaryButton(
+                label: 'Sıradaki Tura Geç',
+                icon: Icons.arrow_forward_rounded,
+                onPressed: () {
+                  context.go('/waiting', extra: {
+                    'gameId': gameId,
+                    'roomCode': roomCode,
+                  });
+                },
+              ),
             ),
             const SizedBox(height: 32),
           ],

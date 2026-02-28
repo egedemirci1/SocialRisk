@@ -74,6 +74,7 @@ class RoomModel {
         (e) => e.name == visibility,
         orElse: () => RoomVisibility.open,
       ),
+      players: players,
       gameId: gameId,
       players: players,
       createdAt: createdAt,

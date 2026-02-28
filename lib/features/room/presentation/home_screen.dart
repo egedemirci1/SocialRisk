@@ -22,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           children: [
             const Spacer(flex: 2),
-            _buildWelcome(displayName),
+            _buildWelcome(context, displayName),
             const Spacer(),
             _buildActions(context),
             const Spacer(flex: 2),
@@ -34,28 +34,46 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWelcome(String playerName) {
+  Widget _buildWelcome(BuildContext context, String playerName) {
     return Column(
       children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.surfaceElevated,
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.5),
-              width: 2,
-            ),
-          ),
-          child: const SizedBox(
-            width: 80,
-            height: 80,
-            child: Center(
-              child: Icon(
-                Icons.person_rounded,
-                color: Colors.white54,
-                size: 40,
+        GestureDetector(
+          onTap: () => context.push('/profile'),
+          child: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.surfaceElevated,
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.5),
+                    width: 2,
+                  ),
+                ),
+                child: const SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: Center(
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: Colors.white54,
+                      size: 40,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(Icons.edit_rounded, color: Colors.white, size: 14),
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 16),

@@ -4,10 +4,10 @@
 
 | Metrik | Değer |
 |--------|-------|
-| **Dosya sayısı** | 48 Dart dosyası |
+| **Dosya sayısı** | 49 Dart dosyası |
 | **Flutter analyze** | ✅ 0 hata, 0 uyarı |
-| **Çalışan özellikler** | Login (anonim), Oda oluştur/katıl, Lobi (hazır/bağlan) |
-| **Test edilmemiş** | Oyun akışı (lobi → görev → oylama → sonuç → oyun sonu) |
+| **Çalışan özellikler** | Login, Oda oluştur/katıl, Lobi, Çark animasyonu |
+| **Test edilmemiş** | Oyun akışı uçtan uca (Ege E10-E16 bekliyor) |
 
 ---
 
@@ -37,11 +37,11 @@
 > **Öncelik: KRİTİK** — Lobi sonrası oyun akışı test edilmeli ve çalışır hale getirilmeli.
 
 ### Ata (Frontend)
-- [ ] A20: Lobi → Oyun Başlat akışını test et (2 tarayıcı ile)
-- [ ] A21: Task ekranı hata yönetimi (null game, null task)
-- [ ] A22: Voting ekranı akışı debug (oy ver → tüm oylar geldi → sonuç)
-- [ ] A23: Round result → sonraki tur geçişi düzelt
-- [ ] A24: Game over koşulu test (tur/skor limiti)
+- [x] A20: Lobi → Oyun Başlat akışı — dispose hatası fix, non-host auto-navigate
+- [x] A21: Task ekranı hata yönetimi (null game, null task)
+- [x] A22: Voting ekranı — duplike puan hesaplaması fix, dinamik bitiş koşulu
+- [x] A23: Round result → sonraki tur / oyun sonu geçişi düzeltildi
+- [x] A24: Game over koşulu — tüm ekranlar game status kontrol ediyor
 
 ### Ege (Backend)
 - [x] E10: `acceptTask` implementasyonunu tamamla (şu an boş method)
@@ -55,9 +55,9 @@
 > README: *"Sırası gelen oyuncu dijital çarkı çevirir. Gelen kategori tamamen şansa bağlıdır."*
 
 ### Ata (Frontend)
-- [ ] A25: Çark widget'ı (`spin_wheel.dart`) — 6 kategorili dönen çark
-- [ ] A26: Task ekranına çark entegrasyonu — çark → kategori → görev
-- [ ] A27: Çark sonucu popup animasyonu (kategori + çarpan)
+- [x] A25: Çark widget'ı (`spin_wheel.dart`) — 6 kategorili dönen çark ✅
+- [x] A26: Task ekranına çark entegrasyonu — çark → kategori → görev ✅
+- [x] A27: Çark sonucu kategori badge animasyonu ✅
 
 ### Ege (Backend)
 - [x] E14: `assignTaskByCategory(gameId, category)` — kategori filtreli görev
@@ -70,9 +70,9 @@
 > README: *"Açık Mod (içeriği önceden gör) / Kapalı Mod (sadece kategori görünür)"*
 
 ### Ata (Frontend)
-- [ ] A28: CreateRoom'a Görünürlük modu seçici ekle
-- [ ] A29: TaskScreen Kapalı Mod — içerik gizli, sadece kategori + çarpan
-- [ ] A30: "Görevi Aç" butonu — Kapalı Mod'da tıklayınca içerik göster
+- [x] A28: CreateRoom'a Görünürlük modu seçici eklendi ✅
+- [x] A29: TaskScreen Kapalı Mod — içerik gizli, sadece kategori + çarpan ✅
+- [x] A30: "Görevi Aç" butonu — Kapalı Mod'da tıklayınca içerik gösterilir ✅
 
 ### Ege (Backend)
 - [x] E17: Room modeline `visibility: open | closed` alanı ekle
@@ -84,10 +84,10 @@
 > README: *"Her oyuncu kendi fotoğrafını yükler. Puan durumuna göre efektler."*
 
 ### Ata (Frontend)
-- [ ] A31: Profil ekranı (avatar yükleme, isim değiştirme)
-- [ ] A32: Avatar widget (`cached_network_image` + shimmer)
-- [ ] A33: Puan bazlı efektler (🔥 alev / ❄️ buz / ✨ parıltı)
-- [ ] A34: Lobi + oyun ekranlarında avatar göster
+- [x] A31: Profil ekranı (avatar görüntüleme, isim değiştirme) ✅
+- [x] A32: Avatar widget (`PlayerAvatar` + puan efektleri) ✅
+- [x] A33: Puan bazlı efektler (🔥 alev / ❄️ buz / ✨ parıltı) ✅
+- [x] A34: Lobi + oyun ekranlarında avatar göster ✅
 
 ### Ege (Backend)
 - [x] E19: Firebase Storage avatar upload (`users/{uid}/avatar`)

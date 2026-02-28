@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../../shared/models/enums.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../room/providers/room_provider.dart';
 import '../providers/game_provider.dart';
 
 /// Bekleme ekranı — Diğer oyuncuların görevi tamamlamasını bekle.
@@ -26,6 +28,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulseController;
   late final Animation<double> _pulseAnimation;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -49,6 +52,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
   Widget build(BuildContext context) {
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final user = ref.watch(currentUserProvider);
+    final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
 
     return gameAsync.when(
       data: (game) {
@@ -57,8 +61,19 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
               body: Center(child: CircularProgressIndicator()));
         }
 
+        // Oyun bittiyse sonuç ekranına git
+        if (game.status == GameStatus.finished && !_isNavigating) {
+          _isNavigating = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.go('/game-over', extra: widget.roomCode);
+            }
+          });
+        }
+
         // Sıra bana geldiyse görev ekranına geri dön
-        if (game.currentPlayerId == user?.uid) {
+        if (game.currentPlayerId == user?.uid && !_isNavigating) {
+          _isNavigating = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               context.go('/task', extra: {
@@ -68,6 +83,16 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
             }
           });
         }
+
+        // Aktif oyuncunun ismini bul
+        final playerNames = <String, String>{};
+        if (playersAsync.value != null) {
+          for (final p in playersAsync.value!) {
+            playerNames[p.id] = p.name;
+          }
+        }
+        final currentPlayerName =
+            playerNames[game.currentPlayerId] ?? game.currentPlayerId;
 
         return Scaffold(
           body: GradientContainer(
@@ -107,7 +132,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '${game.currentPlayerId} görevini yapıyor',
+                  '$currentPlayerName görevini yapıyor',
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: Colors.white54,
                   ),

@@ -7,9 +7,12 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/buttons/danger_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../../shared/widgets/common/player_avatar.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/room_provider.dart';
 import '../../game/providers/game_provider.dart';
+import '../../../shared/models/enums.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Lobi ekranı — Oyuncu listesi, hazır/değil durumu, ve Başla butonu.
 class LobbyScreen extends ConsumerWidget {
@@ -60,6 +63,7 @@ class LobbyScreen extends ConsumerWidget {
                       name: player.name,
                       isReady: player.isReady,
                       isCurrentPlayer: isMe,
+                      score: player.score,
                     );
                   },
                 ),
@@ -80,6 +84,21 @@ class LobbyScreen extends ConsumerWidget {
                   final allReady = players.isNotEmpty &&
                       players.every((p) => p.id == room?.hostId || p.isReady);
 
+                  // Non-host: oyun başladığında otomatik yönlendir
+                  if (!isHost && room?.status == GameStatus.playing) {
+                    final gameId = room?.currentGameId;
+                    if (gameId != null && gameId.isNotEmpty) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (context.mounted) {
+                          context.go('/task', extra: {
+                            'gameId': gameId,
+                            'roomCode': roomCode,
+                          });
+                        }
+                      });
+                    }
+                  }
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -98,22 +117,46 @@ class LobbyScreen extends ConsumerWidget {
                           icon: Icons.play_arrow_rounded,
                           onPressed: (allReady && players.length >= 2)
                               ? () async {
-                                  final playerIds =
-                                      players.map((p) => p.id).toList();
-                                  await ref
-                                      .read(roomControllerProvider.notifier)
-                                      .startGame(roomCode);
-                                  final gameId = await ref
-                                      .read(gameControllerProvider.notifier)
-                                      .startGame(
-                                        roomId: roomCode,
-                                        playerIds: playerIds,
+                                  try {
+                                    final playerIds =
+                                        players.map((p) => p.id).toList();
+
+                                    // Repository'leri async gap öncesi yakala
+                                    final roomRepo =
+                                        ref.read(roomRepositoryProvider);
+                                    final gameRepo =
+                                        ref.read(gameRepositoryProvider);
+
+                                    await roomRepo.updateRoomStatus(
+                                      roomCode: roomCode,
+                                      status: GameStatus.playing,
+                                    );
+                                    final gameId = await gameRepo.startGame(
+                                      roomId: roomCode,
+                                      playerIds: playerIds,
+                                    );
+
+                                    // gameId'yi room belgesine yaz
+                                    await FirebaseFirestore.instance
+                                        .collection('rooms')
+                                        .doc(roomCode)
+                                        .update({'currentGameId': gameId});
+
+                                    if (context.mounted) {
+                                      context.go('/task', extra: {
+                                        'gameId': gameId,
+                                        'roomCode': roomCode,
+                                      });
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content:
+                                                Text('Hata: ${e.toString()}')),
                                       );
-                                  if (context.mounted) {
-                                    context.go('/task', extra: {
-                                      'gameId': gameId,
-                                      'roomCode': roomCode,
-                                    });
+                                    }
                                   }
                                 }
                               : null,
@@ -203,11 +246,13 @@ class _PlayerTile extends StatelessWidget {
     required this.name,
     required this.isReady,
     required this.isCurrentPlayer,
+    this.score = 0,
   });
 
   final String name;
   final bool isReady;
   final bool isCurrentPlayer;
+  final int score;
 
   @override
   Widget build(BuildContext context) {
@@ -229,14 +274,10 @@ class _PlayerTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              CircleAvatar(
-                backgroundColor: AppColors.surfaceElevated,
-                child: Text(
-                  name.isNotEmpty ? name[0].toUpperCase() : '?',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: AppColors.accent,
-                  ),
-                ),
+              PlayerAvatar(
+                displayName: name,
+                score: score,
+                radius: 20,
               ),
               const SizedBox(width: 12),
               Text(

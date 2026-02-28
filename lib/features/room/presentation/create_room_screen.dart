@@ -24,6 +24,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   double _scoreTarget = 5000;
   double _roundTarget = 10;
   bool _isCreating = false;
+  bool _isOpenMode = true; // true = Açık Mod, false = Kapalı Mod
 
   Future<void> _createRoom() async {
     setState(() => _isCreating = true);
@@ -46,7 +47,8 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         hostName: user.displayName ?? 'Host',
         endConditionType: endType,
         endConditionValue: endValue,
-        visibility: RoomVisibility.open, // Default as open (Faz 7 frontend part will make it selectable)
+        visibility: _isOpenMode ? RoomVisibility.open : RoomVisibility.closed,
+        hostAvatarUrl: user.photoURL,
       );
 
       if (mounted && roomCode.isNotEmpty) {
@@ -104,6 +106,15 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 title: 'Oyun Modu',
                 icon: Icons.casino_outlined,
                 child: _buildGameMode(),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Görünürlük Modu
+              _buildSection(
+                title: 'Görünürlük Modu',
+                icon: Icons.visibility_outlined,
+                child: _buildVisibilityMode(),
               ),
 
               const SizedBox(height: 40),
@@ -337,6 +348,43 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildVisibilityMode() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _ToggleChip(
+                label: '👁️ Açık Mod',
+                isSelected: _isOpenMode,
+                onTap: () => setState(() => _isOpenMode = true),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _ToggleChip(
+                label: '🔒 Kapalı Mod',
+                isSelected: !_isOpenMode,
+                onTap: () => setState(() => _isOpenMode = false),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          _isOpenMode
+              ? 'Herkes görev içeriğini önceden görebilir.'
+              : 'Sadece kategori ve çarpan görünür. İçerik gizli!',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: Colors.white38,
+            fontSize: 12,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }
