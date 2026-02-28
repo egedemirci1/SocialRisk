@@ -100,9 +100,9 @@
 > README: *"Oyun sonunda toplanan puanlar kalıcı cüzdana eklenir."*
 
 ### Ata (Frontend)
-- [ ] A35: Cüzdan ekranı (toplam puan, harcama alanları)
-- [ ] A36: Kozmetik mağazası UI (çerçeveler, taçlar)
-- [ ] A37: GameOver → cüzdan puan aktarım animasyonu
+- [x] A35: Cüzdan ekranı (toplam puan, harcama alanları) ✅
+- [x] A36: Kozmetik mağazası UI (çerçeveler, taçlar) ✅
+- [x] A37: GameOver → cüzdan puan aktarım animasyonu ✅
 
 ### Ege (Backend)
 - [ ] E22: Economy module (economy_repository, economy_provider)

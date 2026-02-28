@@ -132,11 +132,52 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                 ),
 
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                  child: PrimaryButton(
-                    label: 'Ana Menüye Dön',
-                    icon: Icons.home_rounded,
-                    onPressed: () => context.go('/home'),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: Column(
+                    children: [
+                      // Kazanılan puanları cüzdana aktarma UI'ı (A37)
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceElevated,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.account_balance_wallet_rounded, color: AppColors.accent),
+                              const SizedBox(width: 12),
+                              Text(
+                                '+${user != null ? players.firstWhere((p) => p.id == user.uid, orElse: () => players.first).score : 0} Puan Cüzdana Eklendi',
+                                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.accent),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: PrimaryButton(
+                              label: 'Mağazaya Git',
+                              icon: Icons.storefront_rounded,
+                              onPressed: () => context.push('/store'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: PrimaryButton(
+                              label: 'Odalara Dön',
+                              icon: Icons.home_rounded,
+                              onPressed: () => context.go('/home'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
