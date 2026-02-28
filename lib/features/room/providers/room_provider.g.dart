@@ -48,7 +48,7 @@ final class RoomRepositoryProvider
   }
 }
 
-String _$roomRepositoryHash() => r'5d407aed3263b2678fed178a6589b77bd2061263';
+String _$roomRepositoryHash() => r'd6c3e1bbbeffe41de5f346ada0db884d69e48de5';
 
 @ProviderFor(watchRoom)
 final watchRoomProvider = WatchRoomFamily._();
@@ -105,7 +105,7 @@ final class WatchRoomProvider
   }
 }
 
-String _$watchRoomHash() => r'11f65c45821be1c2a16ecdd6ab92db5633c5077f';
+String _$watchRoomHash() => r'f91e9642d5e21113030ff86b8f406eb059ba30b9';
 
 final class WatchRoomFamily extends $Family
     with $FunctionalFamilyOverride<Stream<RoomEntity?>, String> {
@@ -182,7 +182,7 @@ final class WatchPlayersProvider
   }
 }
 
-String _$watchPlayersHash() => r'012e9819e11bdaee7d7338bad41e87b9e917fdb8';
+String _$watchPlayersHash() => r'c7f84aa9432776769485f7f3642bd93a8e5d436e';
 
 final class WatchPlayersFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<PlayerEntity>>, String> {

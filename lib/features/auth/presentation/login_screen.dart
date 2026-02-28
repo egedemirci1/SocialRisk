@@ -1,6 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
@@ -47,6 +47,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     super.dispose();
   }
 
+  /// Firebase'e doğrudan bağlanır. GoRouter refreshListenable auth stream'i
+  /// dinlediği için başarılı girişten sonra otomatik /home'a yönlendiriyor.
   Future<void> _signInAnonymously() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
@@ -55,10 +57,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     }
     setState(() => _isAnonymousLoading = true);
     try {
-      await ref.read(authControllerProvider.notifier).signIn(name);
-      if (mounted) context.go('/home');
+      final cred = await FirebaseAuth.instance.signInAnonymously();
+      await cred.user?.updateDisplayName(name);
+      // GoRouter refreshListenable otomatik /home'a yönlendiriyor.
+      // Burada context.go'ya gerek yok.
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        _showError(
+          e.message ?? 'Firebase hatası: ${e.code}',
+        );
+      }
     } catch (e) {
-      if (mounted) _showError('Giriş başarısız: ${e.toString()}');
+      if (mounted) _showError('Giriş başarısız: $e');
     } finally {
       if (mounted) setState(() => _isAnonymousLoading = false);
     }

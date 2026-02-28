@@ -21,7 +21,7 @@ final class AuthRepositoryProvider
         argument: null,
         retry: null,
         name: r'authRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,7 +48,7 @@ final class AuthRepositoryProvider
   }
 }
 
-String _$authRepositoryHash() => r'35406eeeaf79c9e110b9fd3b9d09d20085aa94c3';
+String _$authRepositoryHash() => r'dbfdc48df524ebd4d105da0b72bad835c85fc1ec';
 
 @ProviderFor(authStateChanges)
 final authStateChangesProvider = AuthStateChangesProvider._();
@@ -62,7 +62,7 @@ final class AuthStateChangesProvider
         argument: null,
         retry: null,
         name: r'authStateChangesProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -81,7 +81,7 @@ final class AuthStateChangesProvider
   }
 }
 
-String _$authStateChangesHash() => r'2b7cdea91185426216b913040c54b42cca155f4c';
+String _$authStateChangesHash() => r'6ba32c3e1d6153681f96e544b51a9e393ed4edef';
 
 @ProviderFor(currentUser)
 final currentUserProvider = CurrentUserProvider._();
@@ -94,7 +94,7 @@ final class CurrentUserProvider extends $FunctionalProvider<User?, User?, User?>
         argument: null,
         retry: null,
         name: r'currentUserProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -121,7 +121,7 @@ final class CurrentUserProvider extends $FunctionalProvider<User?, User?, User?>
   }
 }
 
-String _$currentUserHash() => r'f812fc12dce991ed694aeb3a8286dabdbeafb366';
+String _$currentUserHash() => r'4b8f1075934ab00a1447d597b8d024dd8cfed68a';
 
 @ProviderFor(AuthController)
 final authControllerProvider = AuthControllerProvider._();
@@ -134,7 +134,7 @@ final class AuthControllerProvider
         argument: null,
         retry: null,
         name: r'authControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -147,7 +147,7 @@ final class AuthControllerProvider
   AuthController create() => AuthController();
 }
 
-String _$authControllerHash() => r'f1b9290c21cb61e6acbaac24cb9e689016e91aff';
+String _$authControllerHash() => r'82ba502eacf3659d2905c3f9ee5d612e501274bd';
 
 abstract class _$AuthController extends $AsyncNotifier<void> {
   FutureOr<void> build();

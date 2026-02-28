@@ -5,36 +5,36 @@ import '../domain/auth_repository.dart';
 
 part 'auth_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 AuthRepository authRepository(Ref ref) {
   return FirebaseAuthSource();
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Stream<User?> authStateChanges(Ref ref) {
   return ref.watch(authRepositoryProvider).authStateChanges;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 User? currentUser(Ref ref) {
   return ref.watch(authRepositoryProvider).currentUser;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class AuthController extends _$AuthController {
   @override
   FutureOr<void> build() {}
 
   Future<void> signIn(String name) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() => 
+    state = await AsyncValue.guard(() =>
       ref.read(authRepositoryProvider).signInAnonymously(name)
     );
   }
 
   Future<void> logout() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() => 
+    state = await AsyncValue.guard(() =>
       ref.read(authRepositoryProvider).signOut()
     );
   }

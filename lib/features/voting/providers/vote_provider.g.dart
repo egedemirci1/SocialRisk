@@ -48,7 +48,7 @@ final class VoteRepositoryProvider
   }
 }
 
-String _$voteRepositoryHash() => r'2585596e9cf3e1c7c31582d6b00d6d1a6f99904b';
+String _$voteRepositoryHash() => r'a5b702e1ffcb6abce9f3e49de2ee7321410385b3';
 
 @ProviderFor(VoteController)
 final voteControllerProvider = VoteControllerProvider._();

@@ -1,7 +1,7 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
-import '../../features/auth/providers/auth_provider.dart';
 import '../../features/room/presentation/home_screen.dart';
 import '../../features/room/presentation/create_room_screen.dart';
 import '../../features/room/presentation/join_room_screen.dart';
@@ -12,20 +12,40 @@ import '../../features/game/presentation/round_result_screen.dart';
 import '../../features/game/presentation/game_over_screen.dart';
 import '../../features/voting/presentation/voting_screen.dart';
 
+/// Listens to Firebase auth state so GoRouter re-evaluates redirect
+/// automatically when the user signs in or out.
+class _AuthRefreshNotifier extends ChangeNotifier {
+  _AuthRefreshNotifier() {
+    _sub = FirebaseAuth.instance.authStateChanges().listen((_) {
+      notifyListeners();
+    });
+  }
+
+  late final dynamic _sub;
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+}
+
+final _authRefreshNotifier = _AuthRefreshNotifier();
+
 final appRouter = GoRouter(
   initialLocation: '/',
+  refreshListenable: _authRefreshNotifier,
   redirect: (context, state) {
-    final container = ProviderScope.containerOf(context);
-    final user = container.read(currentUserProvider);
-    final loggingIn = state.matchedLocation == '/';
+    final user = FirebaseAuth.instance.currentUser;
+    final isOnLoginPage = state.matchedLocation == '/';
 
     if (user == null) {
-      return loggingIn ? null : '/';
+      // Not signed in — send to login if not already there
+      return isOnLoginPage ? null : '/';
     }
 
-    if (loggingIn) {
-      return '/home';
-    }
+    // Signed in — don't let them stay on login page
+    if (isOnLoginPage) return '/home';
 
     return null;
   },

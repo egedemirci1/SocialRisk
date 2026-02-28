@@ -48,7 +48,7 @@ final class GameRepositoryProvider
   }
 }
 
-String _$gameRepositoryHash() => r'164f31e9691e694fb6867c6b96bc8dffbf7b2539';
+String _$gameRepositoryHash() => r'42a81bc825b91c57878fa8f6046ac70ad082678f';
 
 @ProviderFor(watchGame)
 final watchGameProvider = WatchGameFamily._();
@@ -105,7 +105,7 @@ final class WatchGameProvider
   }
 }
 
-String _$watchGameHash() => r'2e618f7d95b8c4a6afd067e9218b9161550496ff';
+String _$watchGameHash() => r'150035e49c5711b1fd547df760a11cebe32ec9fa';
 
 final class WatchGameFamily extends $Family
     with $FunctionalFamilyOverride<Stream<GameEntity?>, String> {
