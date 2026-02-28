@@ -7,6 +7,8 @@ class UserModel {
   final String? avatarUrl;
   final int walletPoints;
   final String rank;
+  final List<String> ownedCosmetics;
+  final String? activeFrame;
   final DateTime updatedAt;
 
   const UserModel({
@@ -15,6 +17,8 @@ class UserModel {
     this.avatarUrl,
     this.walletPoints = 0,
     this.rank = 'Newbie',
+    this.ownedCosmetics = const [],
+    this.activeFrame,
     required this.updatedAt,
   });
 
@@ -25,6 +29,11 @@ class UserModel {
       avatarUrl: json['avatarUrl'] as String?,
       walletPoints: json['walletPoints'] as int? ?? 0,
       rank: json['rank'] as String? ?? 'Newbie',
+      ownedCosmetics: (json['ownedCosmetics'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      activeFrame: json['activeFrame'] as String?,
       updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -35,6 +44,8 @@ class UserModel {
       'avatarUrl': avatarUrl,
       'walletPoints': walletPoints,
       'rank': rank,
+      'ownedCosmetics': ownedCosmetics,
+      'activeFrame': activeFrame,
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }
@@ -46,6 +57,8 @@ class UserModel {
       avatarUrl: avatarUrl,
       walletPoints: walletPoints,
       rank: rank,
+      ownedCosmetics: ownedCosmetics,
+      activeFrame: activeFrame,
     );
   }
 }

@@ -105,9 +105,9 @@
 - [ ] A37: GameOver → cüzdan puan aktarım animasyonu
 
 ### Ege (Backend)
-- [ ] E22: Economy module (economy_repository, economy_provider)
-- [ ] E23: Cloud Function — oyun sonu puan doğrulama + cüzdana ekleme
-- [ ] E24: Kozmetik envanter CRUD (ownedFrames, ownedPacks)
+- [x] E22: Economy module (economy_repository, economy_provider)
+- [x] E23: Client-Side Transaction — oyun sonu puan doğrulama + cüzdana ekleme
+- [x] E24: Kozmetik envanter CRUD (ownedFrames, ownedPacks)
 
 ---
 

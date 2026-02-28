@@ -5,6 +5,7 @@ import '../domain/game_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/constants/game_constants.dart';
 import '../../../shared/models/enums.dart';
+import '../../economy/providers/economy_provider.dart';
 
 part 'game_provider.g.dart';
 
@@ -108,6 +109,21 @@ class GameController extends _$GameController {
 
     if (shouldEnd) {
       await repo.endGame(gameId);
+      
+      // Oyun sonu - E23: İlgili tüm oyuncuların kazançlarını hesaplarına yatır.
+      final updatedPlayersSnap = await FirebaseFirestore.instance
+          .collection('rooms')
+          .doc(roomId)
+          .collection('players')
+          .get();
+      
+      for (final doc in updatedPlayersSnap.docs) {
+        final score = doc.data()['score'] as int? ?? 0;
+        if (score > 0) {
+          await ref.read(economyControllerProvider.notifier)
+            .addPointsToWallet(uid: doc.id, points: score);
+        }
+      }
     } else {
       await repo.nextTurn(gameId);
     }

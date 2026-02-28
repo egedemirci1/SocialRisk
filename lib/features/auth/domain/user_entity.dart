@@ -4,6 +4,8 @@ class UserEntity {
   final String? avatarUrl;
   final int walletPoints;
   final String rank;
+  final List<String> ownedCosmetics;
+  final String? activeFrame;
 
   const UserEntity({
     required this.uid,
@@ -11,5 +13,7 @@ class UserEntity {
     this.avatarUrl,
     this.walletPoints = 0,
     this.rank = 'Newbie',
+    this.ownedCosmetics = const [],
+    this.activeFrame,
   });
 }
