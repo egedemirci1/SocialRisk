@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "327029132308",
+    "project_id": "socialrisk-9840e",
+    "storage_bucket": "socialrisk-9840e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:327029132308:android:3762a0ae65b03e797f2b01",
+        "android_client_info": {
+          "package_name": "com.socialrisk.social_risk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBufAXKt7COwexk1VqvPURJVvst8rI-0YU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

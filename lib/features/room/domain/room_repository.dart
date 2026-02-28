@@ -1,0 +1,39 @@
+import '../domain/room_entity.dart';
+import '../../shared/models/enums.dart';
+
+abstract class RoomRepository {
+  Future<String> createRoom({
+    required String hostId,
+    required String hostName,
+    required EndConditionType endConditionType,
+    required int endConditionValue,
+  });
+
+  Future<void> joinRoom({
+    required String roomCode,
+    required String playerId,
+    required String playerName,
+  });
+
+  Future<void> leaveRoom({
+    required String roomCode,
+    required String playerId,
+  });
+
+  Stream<RoomEntity?> watchRoom(String roomCode);
+
+  Stream<List<PlayerEntity>> watchPlayers(String roomCode);
+
+  Future<void> toggleReady({
+    required String roomCode,
+    required String playerId,
+    required bool isReady,
+  });
+
+  Future<void> updateRoomStatus({
+    required String roomCode,
+    required GameStatus status,
+  });
+
+  Future<bool> doesRoomExist(String roomCode);
+}
