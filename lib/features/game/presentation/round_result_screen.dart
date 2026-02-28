@@ -8,6 +8,9 @@ import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
 import '../../../shared/models/enums.dart';
 import '../providers/game_provider.dart';
+import '../domain/game_entity.dart';
+import '../../room/providers/room_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 
 /// Tur sonu ekranı — Oylama sonucu ve kazanılan/kaybedilen puan.
 class RoundResultScreen extends ConsumerWidget {
