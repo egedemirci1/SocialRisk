@@ -155,7 +155,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                                     await FirebaseFirestore.instance
                                         .collection('rooms')
                                         .doc(widget.roomCode)
-                                        .update({'currentGameId': gameId});
+                                        .update({'gameId': gameId});
 
                                     if (context.mounted) {
                                       context.go('/task', extra: {
