@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/score/score_counter.dart';
@@ -8,17 +9,21 @@ import '../../../shared/widgets/common/gradient_container.dart';
 
 /// Tur sonu ekranı — Oylama sonucu ve kazanılan/kaybedilen puan.
 class RoundResultScreen extends ConsumerWidget {
-  const RoundResultScreen({super.key});
+  const RoundResultScreen({
+    super.key,
+    required this.gameId,
+    required this.roomCode,
+    required this.earnedScore,
+    required this.multiplier,
+  });
+
+  final String gameId;
+  final String roomCode;
+  final int earnedScore;
+  final int multiplier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Mock veri
-    const playerName = 'Oyuncu 1';
-    const earnedScore = 400;
-    const totalScore = 1200;
-    const voteResult = 'Beğenildi! 👍';
-    const multiplier = 2;
-
     return Scaffold(
       body: GradientContainer(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -26,7 +31,6 @@ class RoundResultScreen extends ConsumerWidget {
           children: [
             const Spacer(flex: 2),
 
-            // Sonuç ikonu
             DecoratedBox(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -42,23 +46,12 @@ class RoundResultScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
 
-            // Oyuncu adı
             Text(
-              playerName,
-              style: AppTextStyles.displayMedium.copyWith(
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              voteResult,
-              style: AppTextStyles.titleLarge.copyWith(
-                color: AppColors.votePositive,
-              ),
+              'Tur Tamamlandı!',
+              style: AppTextStyles.displayMedium.copyWith(color: Colors.white),
             ),
             const SizedBox(height: 32),
 
-            // Puan detayları
             DecoratedBox(
               decoration: BoxDecoration(
                 color: AppColors.surface,
@@ -69,8 +62,8 @@ class RoundResultScreen extends ConsumerWidget {
                 child: Column(
                   children: [
                     _ScoreRow(
-                      label: 'Oylama Sonucu',
-                      value: '+200',
+                      label: 'Oylama Skoru',
+                      value: '+${earnedScore ~/ multiplier}',
                       color: AppColors.votePositive,
                     ),
                     const Padding(
@@ -98,32 +91,27 @@ class RoundResultScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
 
-            // Toplam skor
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Toplam: ',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: Colors.white54,
-                  ),
+                  'Bu tur: ',
+                  style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
                 ),
-                ScoreCounter(
-                  score: totalScore,
-                  delta: earnedScore,
-                ),
+                ScoreCounter(score: earnedScore, delta: earnedScore),
               ],
             ),
 
             const Spacer(flex: 2),
 
-            // Devam butonu
             PrimaryButton(
               label: 'Sıradaki Tura Geç',
               icon: Icons.arrow_forward_rounded,
               onPressed: () {
-                // TODO: ref.read(gameControllerProvider.notifier).nextTurn(...)
-                debugPrint('Sıradaki tura geç');
+                context.go('/waiting', extra: {
+                  'gameId': gameId,
+                  'roomCode': roomCode,
+                });
               },
             ),
             const SizedBox(height: 32),
@@ -154,9 +142,7 @@ class _ScoreRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white54,
-          ),
+          style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
         ),
         Text(
           value,

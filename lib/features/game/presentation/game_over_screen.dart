@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/score/leaderboard_tile.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../room/providers/room_provider.dart';
 
 /// Oyun sonu ekranı — Kazanan ve sıralama tablosu.
 class GameOverScreen extends ConsumerStatefulWidget {
-  const GameOverScreen({super.key});
+  const GameOverScreen({super.key, required this.roomCode});
+
+  final String roomCode;
 
   @override
   ConsumerState<GameOverScreen> createState() => _GameOverScreenState();
@@ -18,13 +23,6 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _confettiController;
   late final Animation<double> _scaleAnimation;
-
-  // Mock veri
-  final List<_MockPlayerScore> _players = [
-    const _MockPlayerScore(name: 'Oyuncu 1', score: 3200, isCurrentPlayer: true),
-    const _MockPlayerScore(name: 'Oyuncu 2', score: 2800, isCurrentPlayer: false),
-    const _MockPlayerScore(name: 'Oyuncu 3', score: 1500, isCurrentPlayer: false),
-  ];
 
   @override
   void initState() {
@@ -48,114 +46,107 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
 
   @override
   Widget build(BuildContext context) {
-    final winner = _players.first;
+    final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
+    final user = ref.watch(currentUserProvider);
 
-    return Scaffold(
-      body: GradientContainer(
-        child: Column(
-          children: [
-            const Spacer(),
+    return playersAsync.when(
+      data: (players) {
+        // Puana göre sırala
+        final sorted = List.of(players)
+          ..sort((a, b) => (b.score ?? 0).compareTo(a.score ?? 0));
 
-            // Kazanan bölümü
-            ScaleTransition(
-              scale: _scaleAnimation,
-              child: Column(
-                children: [
-                  const Text(
-                    '🏆',
-                    style: TextStyle(fontSize: 72),
+        final winner = sorted.isNotEmpty ? sorted.first : null;
+
+        return Scaffold(
+          body: GradientContainer(
+            child: Column(
+              children: [
+                const Spacer(),
+
+                ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Column(
+                    children: [
+                      const Text('🏆', style: TextStyle(fontSize: 72)),
+                      const SizedBox(height: 16),
+                      Text(
+                        'KAZANAN!',
+                        style: AppTextStyles.displayLarge.copyWith(
+                          color: AppColors.accent,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        winner?.name ?? '',
+                        style: AppTextStyles.displayMedium.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${winner?.score ?? 0} puan',
+                        style: AppTextStyles.titleLarge.copyWith(
+                          color: AppColors.accent,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'KAZANAN!',
-                    style: AppTextStyles.displayLarge.copyWith(
-                      color: AppColors.accent,
-                      letterSpacing: 2,
-                    ),
+                ),
+
+                const SizedBox(height: 40),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.leaderboard_rounded,
+                          color: Colors.white38, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Final Sıralaması',
+                        style: AppTextStyles.titleLarge.copyWith(
+                          color: Colors.white54,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    winner.name,
-                    style: AppTextStyles.displayMedium.copyWith(
-                      color: Colors.white,
-                    ),
+                ),
+                const SizedBox(height: 12),
+
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    itemCount: sorted.length,
+                    itemBuilder: (context, index) {
+                      final player = sorted[index];
+                      return LeaderboardTile(
+                        rank: index + 1,
+                        playerName: player.name,
+                        score: player.score ?? 0,
+                        isCurrentPlayer: player.id == user?.uid,
+                      );
+                    },
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${winner.score} puan',
-                    style: AppTextStyles.titleLarge.copyWith(
-                      color: AppColors.accent,
-                    ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                  child: PrimaryButton(
+                    label: 'Ana Menüye Dön',
+                    icon: Icons.home_rounded,
+                    onPressed: () => context.go('/home'),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-
-            const SizedBox(height: 40),
-
-            // Sıralama
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: [
-                  const Icon(Icons.leaderboard_rounded,
-                      color: Colors.white38, size: 18),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Final Sıralaması',
-                    style: AppTextStyles.titleLarge.copyWith(
-                      color: Colors.white54,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Oyuncu listesi
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                itemCount: _players.length,
-                itemBuilder: (context, index) {
-                  final player = _players[index];
-                  return LeaderboardTile(
-                    rank: index + 1,
-                    playerName: player.name,
-                    score: player.score,
-                    isCurrentPlayer: player.isCurrentPlayer,
-                  );
-                },
-              ),
-            ),
-
-            // Ana menüye dön
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-              child: PrimaryButton(
-                label: 'Ana Menüye Dön',
-                icon: Icons.home_rounded,
-                onPressed: () {
-                  // TODO: GoRouter ile /home'a git
-                  debugPrint('Ana menüye dön');
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) => Scaffold(body: Center(child: Text('Hata: $e'))),
     );
   }
-}
-
-class _MockPlayerScore {
-  const _MockPlayerScore({
-    required this.name,
-    required this.score,
-    required this.isCurrentPlayer,
-  });
-  final String name;
-  final int score;
-  final bool isCurrentPlayer;
 }

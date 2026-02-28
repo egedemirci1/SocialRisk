@@ -1,4 +1,4 @@
-import '../../shared/models/enums.dart';
+import '../../../shared/models/enums.dart';
 
 abstract class VoteRepository {
   Future<void> castVote({

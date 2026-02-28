@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../providers/room_provider.dart';
 
 /// Odaya katılma ekranı — 6 haneli oda kodu girişi.
 class JoinRoomScreen extends ConsumerStatefulWidget {
@@ -68,9 +71,22 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
 
     setState(() => _isJoining = true);
     try {
-      // TODO: ref.read(roomProvider.notifier).joinRoom(_roomCode)
-      debugPrint('Odaya katılma: $_roomCode');
-      await Future<void>.delayed(const Duration(milliseconds: 500));
+      final user = ref.read(currentUserProvider);
+      if (user == null) return;
+
+      await ref.read(roomControllerProvider.notifier).joinRoom(
+        roomCode: _roomCode,
+        playerId: user.uid,
+        playerName: user.displayName ?? 'Oyuncu',
+      );
+
+      if (mounted) context.push('/lobby', extra: _roomCode);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Oda bulunamadı: ${e.toString()}')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isJoining = false);
     }

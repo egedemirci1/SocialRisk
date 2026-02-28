@@ -1,4 +1,4 @@
-import '../../shared/models/enums.dart';
+import '../../../shared/models/enums.dart';
 
 class GameEntity {
   final String gameId;
@@ -8,6 +8,7 @@ class GameEntity {
   final TaskEntity? currentTask;
   final List<String> turnOrder;
   final GameStatus status;
+  final int passStreak;
 
   const GameEntity({
     required this.gameId,
@@ -17,6 +18,7 @@ class GameEntity {
     this.currentTask,
     required this.turnOrder,
     this.status = GameStatus.playing,
+    this.passStreak = 0,
   });
 }
 

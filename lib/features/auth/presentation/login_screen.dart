@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../providers/auth_provider.dart';
 
 /// Login ekranı — Google, Apple ve Anonim giriş seçenekleri.
 class LoginScreen extends ConsumerStatefulWidget {
@@ -45,7 +47,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     super.dispose();
   }
 
-  // TODO: Ege'nin provider'ları bağlandığında gerçek auth çağrıları eklenecek
   Future<void> _signInAnonymously() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
@@ -54,9 +55,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     }
     setState(() => _isAnonymousLoading = true);
     try {
-      // ref.read(authControllerProvider.notifier).signIn(name);
-      debugPrint('Anonim giriş: $name');
-      await Future<void>.delayed(const Duration(milliseconds: 500));
+      await ref.read(authControllerProvider.notifier).signIn(name);
+      if (mounted) context.go('/home');
+    } catch (e) {
+      if (mounted) _showError('Giriş başarısız: ${e.toString()}');
     } finally {
       if (mounted) setState(() => _isAnonymousLoading = false);
     }
@@ -65,9 +67,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Future<void> _signInWithGoogle() async {
     setState(() => _isGoogleLoading = true);
     try {
-      // TODO: Google Sign-In entegrasyonu
-      debugPrint('Google ile giriş');
-      await Future<void>.delayed(const Duration(milliseconds: 500));
+      // Google Sign-In — MVP kapsamı dışında, yakında eklenecek
+      _showError('Google girişi yakında!');
     } finally {
       if (mounted) setState(() => _isGoogleLoading = false);
     }
@@ -76,9 +77,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Future<void> _signInWithApple() async {
     setState(() => _isAppleLoading = true);
     try {
-      // TODO: Apple Sign-In entegrasyonu
-      debugPrint('Apple ile giriş');
-      await Future<void>.delayed(const Duration(milliseconds: 500));
+      // Apple Sign-In — MVP kapsamı dışında, yakında eklenecek
+      _showError('Apple girişi yakında!');
     } finally {
       if (mounted) setState(() => _isAppleLoading = false);
     }

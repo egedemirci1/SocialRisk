@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/vote_repository.dart';
 import 'vote_model.dart';
-import '../../shared/models/enums.dart';
-import '../../core/constants/game_constants.dart';
+import '../../../shared/models/enums.dart';
+import '../../../core/constants/game_constants.dart';
 
 class FirebaseVoteSource implements VoteRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

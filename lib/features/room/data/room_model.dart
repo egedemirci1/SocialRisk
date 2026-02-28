@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../shared/models/enums.dart';
+import '../../../shared/models/enums.dart';
 import '../domain/room_entity.dart';
 
 class RoomModel {

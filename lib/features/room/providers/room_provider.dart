@@ -2,22 +2,22 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../data/firebase_room_source.dart';
 import '../domain/room_entity.dart';
 import '../domain/room_repository.dart';
-import '../../shared/models/enums.dart';
+import '../../../shared/models/enums.dart';
 
 part 'room_provider.g.dart';
 
 @riverpod
-RoomRepository roomRepository(RoomRepositoryRef ref) {
+RoomRepository roomRepository(Ref ref) {
   return FirebaseRoomSource();
 }
 
 @riverpod
-Stream<RoomEntity?> watchRoom(WatchRoomRef ref, String roomCode) {
+Stream<RoomEntity?> watchRoom(Ref ref, String roomCode) {
   return ref.watch(roomRepositoryProvider).watchRoom(roomCode);
 }
 
 @riverpod
-Stream<List<PlayerEntity>> watchPlayers(WatchPlayersRef ref, String roomCode) {
+Stream<List<PlayerEntity>> watchPlayers(Ref ref, String roomCode) {
   return ref.watch(roomRepositoryProvider).watchPlayers(roomCode);
 }
 

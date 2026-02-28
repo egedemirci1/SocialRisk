@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../auth/providers/auth_provider.dart';
 
 /// Ana menü ekranı — Oda Oluştur veya Odaya Katıl.
 class HomeScreen extends ConsumerWidget {
@@ -11,26 +13,20 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
+    final displayName = user?.displayName ?? 'Oyuncu';
+
     return Scaffold(
       body: GradientContainer(
         padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
           children: [
             const Spacer(flex: 2),
-
-            // Hoş geldin başlığı
-            _buildWelcome(),
-
+            _buildWelcome(displayName),
             const Spacer(),
-
-            // Aksiyon butonları
             _buildActions(context),
-
             const Spacer(flex: 2),
-
-            // Alt bilgi
-            _buildFooter(context),
-
+            _buildFooter(context, ref),
             const SizedBox(height: 16),
           ],
         ),
@@ -38,13 +34,9 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWelcome() {
-    // TODO: Gerçek kullanıcı adını provider'dan al
-    const playerName = 'Oyuncu';
-
+  Widget _buildWelcome(String playerName) {
     return Column(
       children: [
-        // Avatar placeholder
         DecoratedBox(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
@@ -69,16 +61,12 @@ class HomeScreen extends ConsumerWidget {
         const SizedBox(height: 16),
         Text(
           'Hoş geldin,',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white54,
-          ),
+          style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
         ),
         const SizedBox(height: 4),
         Text(
           playerName,
-          style: AppTextStyles.displayMedium.copyWith(
-            color: Colors.white,
-          ),
+          style: AppTextStyles.displayMedium.copyWith(color: Colors.white),
         ),
       ],
     );
@@ -88,32 +76,24 @@ class HomeScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Oda Oluştur
         PrimaryButton(
           label: 'Oda Oluştur',
           icon: Icons.add_circle_outline_rounded,
-          onPressed: () {
-            // TODO: GoRouter ile create_room_screen'e git
-            debugPrint('Oda oluştur tıklandı');
-          },
+          onPressed: () => context.push('/create-room'),
         ),
         const SizedBox(height: 16),
-        // Odaya Katıl
         _JoinRoomButton(
-          onPressed: () {
-            // TODO: GoRouter ile join_room_screen'e git
-            debugPrint('Odaya katıl tıklandı');
-          },
+          onPressed: () => context.push('/join-room'),
         ),
       ],
     );
   }
 
-  Widget _buildFooter(BuildContext context) {
+  Widget _buildFooter(BuildContext context, WidgetRef ref) {
     return TextButton.icon(
-      onPressed: () {
-        // TODO: Çıkış yapma provider'a bağlanacak
-        debugPrint('Çıkış yap tıklandı');
+      onPressed: () async {
+        await ref.read(authControllerProvider.notifier).logout();
+        if (context.mounted) context.go('/');
       },
       icon: const Icon(Icons.logout_rounded, size: 18),
       label: const Text('Çıkış Yap'),

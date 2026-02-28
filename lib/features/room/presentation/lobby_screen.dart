@@ -1,174 +1,142 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/buttons/danger_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../providers/room_provider.dart';
+import '../../game/providers/game_provider.dart';
 
 /// Lobi ekranı — Oyuncu listesi, hazır/değil durumu, ve Başla butonu.
-class LobbyScreen extends ConsumerStatefulWidget {
-  const LobbyScreen({super.key});
+class LobbyScreen extends ConsumerWidget {
+  const LobbyScreen({super.key, required this.roomCode});
+
+  final String roomCode;
 
   @override
-  ConsumerState<LobbyScreen> createState() => _LobbyScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
+    final playersAsync = ref.watch(watchPlayersProvider(roomCode));
+    final roomAsync = ref.watch(watchRoomProvider(roomCode));
 
-class _LobbyScreenState extends ConsumerState<LobbyScreen> {
-  // Mock veriler — Faz 4'te gerçek provider'larla değiştirilecek
-  final String _roomCode = 'ABC123';
-  final bool _isHost = true;
-  bool _isReady = false;
-
-  final List<_MockPlayer> _players = [
-    _MockPlayer(name: 'Sen (Host)', isReady: true, isHost: true),
-    _MockPlayer(name: 'Oyuncu 2', isReady: true, isHost: false),
-    _MockPlayer(name: 'Oyuncu 3', isReady: false, isHost: false),
-  ];
-
-  bool get _allReady => _players.every((p) => p.isReady);
-
-  void _toggleReady() {
-    setState(() {
-      _isReady = !_isReady;
-      _players[0] = _MockPlayer(
-        name: _players[0].name,
-        isReady: _isReady,
-        isHost: _players[0].isHost,
-      );
-    });
-  }
-
-  void _startGame() {
-    // TODO: ref.read(gameProvider.notifier).startGame()
-    debugPrint('Oyun başlatılıyor!');
-  }
-
-  void _leaveRoom() {
-    // TODO: ref.read(roomProvider.notifier).leaveRoom()
-    debugPrint('Odadan ayrılınıyor');
-    Navigator.of(context).pop();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lobi'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
-          onPressed: _leaveRoom,
-        ),
-        actions: [
-          // Oda kodu paylaşma
-          IconButton(
-            icon: const Icon(Icons.share_rounded),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Oda kodu kopyalandı: $_roomCode'),
-                ),
+          onPressed: () async {
+            if (user != null) {
+              await ref.read(roomControllerProvider.notifier).leaveRoom(
+                roomCode: roomCode,
+                playerId: user.uid,
               );
-            },
-          ),
-        ],
+            }
+            if (context.mounted) context.pop();
+          },
+        ),
       ),
       body: GradientContainer(
         child: Column(
           children: [
-            // Oda kodu başlığı
-            _buildRoomCodeBanner(),
-
-            const SizedBox(height: 8),
-
-            // Oyuncu sayısı
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: [
-                  const Icon(Icons.people_rounded,
-                      color: Colors.white38, size: 18),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${_players.length} / 8 oyuncu',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: Colors.white38,
-                    ),
-                  ),
-                  const Spacer(),
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: _allReady
-                          ? AppColors.votePositive.withValues(alpha: 0.15)
-                          : AppColors.passWarning.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      child: Text(
-                        _allReady ? 'Herkes hazır!' : 'Bekleniyor...',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: _allReady
-                              ? AppColors.votePositive
-                              : AppColors.passWarning,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Oda kodu banner
+            _buildRoomCodeBanner(context),
 
             const SizedBox(height: 16),
 
             // Oyuncu listesi
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                itemCount: _players.length,
-                itemBuilder: (context, index) {
-                  return _PlayerTile(player: _players[index]);
-                },
+              child: playersAsync.when(
+                data: (players) => ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  itemCount: players.length,
+                  itemBuilder: (context, index) {
+                    final player = players[index];
+                    final isMe = player.id == user?.uid;
+                    return _PlayerTile(
+                      name: player.name,
+                      isReady: player.isReady ?? false,
+                      isCurrentPlayer: isMe,
+                    );
+                  },
+                ),
+                loading: () =>
+                    const Center(child: CircularProgressIndicator()),
+                error: (e, _) =>
+                    Center(child: Text('Hata: $e')),
               ),
             ),
 
             // Alt butonlar
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (_isHost) ...[
-                    PrimaryButton(
-                      label: 'Oyunu Başlat',
-                      icon: Icons.play_arrow_rounded,
-                      onPressed: _allReady ? _startGame : null,
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-                  if (!_isHost) ...[
-                    PrimaryButton(
-                      label: _isReady ? 'Hazır ✓' : 'Hazırım!',
-                      icon: _isReady
-                          ? Icons.check_circle_rounded
-                          : Icons.sports_esports_rounded,
-                      onPressed: _toggleReady,
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-                  DangerButton(
-                    label: 'Odadan Ayrıl',
-                    icon: Icons.exit_to_app_rounded,
-                    outlined: true,
-                    onPressed: _leaveRoom,
-                  ),
-                ],
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+              child: roomAsync.when(
+                data: (room) {
+                  final isHost = room?.hostId == user?.uid;
+                  final players = playersAsync.value ?? [];
+                  final allReady = players.isNotEmpty &&
+                      players.every((p) => p.id == room?.hostId || (p.isReady ?? false));
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (!isHost) ...[
+                        // Hazır butonu — host değil
+                        _ReadyToggleButton(
+                          roomCode: roomCode,
+                          playerId: user?.uid ?? '',
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      if (isHost) ...[
+                        // Başla butonu — sadece host
+                        PrimaryButton(
+                          label: 'Oyunu Başlat',
+                          icon: Icons.play_arrow_rounded,
+                          onPressed: (allReady && players.length >= 2)
+                              ? () async {
+                                  final playerIds =
+                                      players.map((p) => p.id).toList();
+                                  await ref
+                                      .read(roomControllerProvider.notifier)
+                                      .startGame(roomCode);
+                                  final gameId = await ref
+                                      .read(gameControllerProvider.notifier)
+                                      .startGame(
+                                        roomId: roomCode,
+                                        playerIds: playerIds,
+                                      );
+                                  if (context.mounted) {
+                                    context.go('/task', extra: {
+                                      'gameId': gameId,
+                                      'roomCode': roomCode,
+                                    });
+                                  }
+                                }
+                              : null,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          allReady
+                              ? 'Tüm oyuncular hazır!'
+                              : 'Herkesin hazır olmasını bekle...',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: allReady
+                                ? AppColors.votePositive
+                                : Colors.white38,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ],
+                  );
+                },
+                loading: () =>
+                    const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Text('Hata: $e'),
               ),
             ),
           ],
@@ -177,40 +145,50 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     );
   }
 
-  Widget _buildRoomCodeBanner() {
+  Widget _buildRoomCodeBanner(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.secondary.withValues(alpha: 0.6),
-              AppColors.surfaceElevated,
-            ],
+          color: AppColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppColors.primary.withValues(alpha: 0.4),
+            width: 1,
           ),
-          borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Icons.key_rounded, color: AppColors.accent, size: 20),
-              const SizedBox(width: 12),
-              Text(
-                'Oda Kodu: ',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: Colors.white54,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Oda Kodu',
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: Colors.white38,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    roomCode,
+                    style: AppTextStyles.displayMedium.copyWith(
+                      color: AppColors.primary,
+                      letterSpacing: 4,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                _roomCode,
-                style: GoogleFonts.nunito(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.accent,
-                  letterSpacing: 4,
-                ),
+              IconButton(
+                icon: const Icon(Icons.copy_rounded, color: Colors.white54),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: roomCode));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Kod kopyalandı!')),
+                  );
+                },
               ),
             ],
           ),
@@ -220,100 +198,57 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   }
 }
 
-/// Oyuncu listesi öğesi.
 class _PlayerTile extends StatelessWidget {
-  const _PlayerTile({required this.player});
+  const _PlayerTile({
+    required this.name,
+    required this.isReady,
+    required this.isCurrentPlayer,
+  });
 
-  final _MockPlayer player;
+  final String name;
+  final bool isReady;
+  final bool isCurrentPlayer;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: isCurrentPlayer
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : AppColors.surface,
           borderRadius: BorderRadius.circular(12),
-          border: player.isHost
-              ? Border.all(
-                  color: AppColors.accent.withValues(alpha: 0.3),
-                  width: 1,
-                )
-              : null,
+          border: Border.all(
+            color: isCurrentPlayer
+                ? AppColors.primary.withValues(alpha: 0.3)
+                : Colors.transparent,
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              // Avatar
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.surfaceElevated,
-                ),
-                child: const SizedBox(
-                  width: 44,
-                  height: 44,
-                  child: Center(
-                    child: Icon(
-                      Icons.person_rounded,
-                      color: Colors.white38,
-                      size: 24,
-                    ),
+              CircleAvatar(
+                backgroundColor: AppColors.surfaceElevated,
+                child: Text(
+                  name.isNotEmpty ? name[0].toUpperCase() : '?',
+                  style: AppTextStyles.titleLarge.copyWith(
+                    color: AppColors.accent,
                   ),
                 ),
               ),
               const SizedBox(width: 12),
-
-              // İsim
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      player.name,
-                      style: AppTextStyles.titleLarge.copyWith(
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
-                    ),
-                    if (player.isHost) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        'Oda Sahibi',
-                        style: AppTextStyles.labelSmall.copyWith(
-                          color: AppColors.accent,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
+              Text(
+                name + (isCurrentPlayer ? ' (Sen)' : ''),
+                style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
               ),
-
-              // Hazır durumu
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: player.isReady
-                      ? AppColors.votePositive.withValues(alpha: 0.15)
-                      : AppColors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  player.isReady ? 'Hazır' : 'Bekliyor',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: player.isReady
-                        ? AppColors.votePositive
-                        : Colors.white38,
-                  ),
-                ),
+              const Spacer(),
+              Icon(
+                isReady
+                    ? Icons.check_circle_rounded
+                    : Icons.radio_button_unchecked_rounded,
+                color: isReady ? AppColors.votePositive : Colors.white38,
               ),
             ],
           ),
@@ -323,15 +258,46 @@ class _PlayerTile extends StatelessWidget {
   }
 }
 
-/// Mock oyuncu verisi — Faz 4'te gerçek veriyle değiştirilecek.
-class _MockPlayer {
-  const _MockPlayer({
-    required this.name,
-    required this.isReady,
-    required this.isHost,
+class _ReadyToggleButton extends ConsumerWidget {
+  const _ReadyToggleButton({
+    required this.roomCode,
+    required this.playerId,
   });
 
-  final String name;
-  final bool isReady;
-  final bool isHost;
+  final String roomCode;
+  final String playerId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final playersAsync = ref.watch(watchPlayersProvider(roomCode));
+    final players = playersAsync.value ?? [];
+    final me = players.cast<dynamic>().firstWhere(
+          (p) => p.id == playerId,
+          orElse: () => null,
+        );
+    final isReady = me?.isReady ?? false;
+
+    return isReady
+        ? DangerButton(
+            label: 'Hazır Değilim',
+            icon: Icons.close_rounded,
+            outlined: true,
+            onPressed: () => ref
+                .read(roomControllerProvider.notifier)
+                .toggleReady(
+                    roomCode: roomCode,
+                    playerId: playerId,
+                    isReady: false),
+          )
+        : PrimaryButton(
+            label: 'Hazırım!',
+            icon: Icons.check_circle_outline_rounded,
+            onPressed: () => ref
+                .read(roomControllerProvider.notifier)
+                .toggleReady(
+                    roomCode: roomCode,
+                    playerId: playerId,
+                    isReady: true),
+          );
+  }
 }

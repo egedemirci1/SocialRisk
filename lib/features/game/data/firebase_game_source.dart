@@ -4,7 +4,7 @@ import '../domain/game_entity.dart';
 import '../domain/game_repository.dart';
 import 'game_model.dart';
 import 'tasks_seed_data.dart';
-import '../../core/utils/helpers.dart';
+import '../../../core/utils/helpers.dart';
 
 class FirebaseGameSource implements GameRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

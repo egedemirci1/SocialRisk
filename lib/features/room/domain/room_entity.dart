@@ -1,4 +1,4 @@
-import '../../shared/models/enums.dart';
+import '../../../shared/models/enums.dart';
 
 class RoomEntity {
   final String roomCode;
@@ -36,4 +36,7 @@ class PlayerEntity {
     this.passStreak = 0,
     this.isReady = false,
   });
+
+  /// Alias — ekran kodları `player.name` kullanıyor.
+  String get name => displayName;
 }

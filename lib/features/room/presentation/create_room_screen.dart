@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../../shared/models/enums.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../providers/room_provider.dart';
 
 /// Oda oluşturma ekranı — Oyuncu kapasitesi, bitiş koşulu ayarları.
 class CreateRoomScreen extends ConsumerStatefulWidget {
@@ -24,11 +28,34 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   Future<void> _createRoom() async {
     setState(() => _isCreating = true);
     try {
-      // TODO: ref.read(roomProvider.notifier).createRoom(...)
-      debugPrint('Oda oluşturuluyor: maxPlayers=$_maxPlayers, '
-          'mode=${_isScoreMode ? "score" : "rounds"}, '
-          'value=${_isScoreMode ? _scoreTarget.toInt() : _roundTarget.toInt()}');
-      await Future<void>.delayed(const Duration(milliseconds: 500));
+      final user = ref.read(currentUserProvider);
+      if (user == null) return;
+
+      final endType = _isScoreMode
+          ? EndConditionType.score
+          : EndConditionType.rounds;
+      final endValue = _isScoreMode
+          ? _scoreTarget.toInt()
+          : _roundTarget.toInt();
+
+      final roomCode = await ref
+          .read(roomControllerProvider.notifier)
+          .createRoom(
+            hostId: user.uid,
+            hostName: user.displayName ?? 'Host',
+            endConditionType: endType,
+            endConditionValue: endValue,
+          );
+
+      if (mounted && roomCode.isNotEmpty) {
+        context.push('/lobby', extra: roomCode);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: ${e.toString()}')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isCreating = false);
     }

@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../providers/game_provider.dart';
 
-/// Bekleme ekranı — Diğer oyuncuların oylama/görev tamamlamasını bekle.
+/// Bekleme ekranı — Diğer oyuncuların görevi tamamlamasını bekle.
 class WaitingScreen extends ConsumerStatefulWidget {
-  const WaitingScreen({super.key});
+  const WaitingScreen({
+    super.key,
+    required this.gameId,
+    required this.roomCode,
+  });
+
+  final String gameId;
+  final String roomCode;
 
   @override
   ConsumerState<WaitingScreen> createState() => _WaitingScreenState();
@@ -37,85 +47,107 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Mock veri
-    const activePlayerName = 'Oyuncu 2';
+    final gameAsync = ref.watch(watchGameProvider(widget.gameId));
+    final user = ref.watch(currentUserProvider);
 
-    return Scaffold(
-      body: GradientContainer(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(flex: 2),
+    return gameAsync.when(
+      data: (game) {
+        if (game == null) {
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
+        }
 
-            // Pulse animasyonlu ikon
-            ScaleTransition(
-              scale: _pulseAnimation,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.secondary.withValues(alpha: 0.3),
-                ),
-                child: const SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: Center(
-                    child: Icon(
-                      Icons.hourglass_top_rounded,
-                      color: AppColors.accent,
-                      size: 56,
+        // Sıra bana geldiyse görev ekranına geri dön
+        if (game.currentPlayerId == user?.uid) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.go('/task', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            }
+          });
+        }
+
+        return Scaffold(
+          body: GradientContainer(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(flex: 2),
+
+                ScaleTransition(
+                  scale: _pulseAnimation,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.secondary.withValues(alpha: 0.3),
+                    ),
+                    child: const SizedBox(
+                      width: 120,
+                      height: 120,
+                      child: Center(
+                        child: Icon(
+                          Icons.hourglass_top_rounded,
+                          color: AppColors.accent,
+                          size: 56,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 32),
+                const SizedBox(height: 32),
 
-            Text(
-              'Bekleniyor...',
-              style: AppTextStyles.displayMedium.copyWith(
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '$activePlayerName görevini yapıyor',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.white54,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-
-            // Küçük bilgi kartı
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.info_outline_rounded,
-                        color: Colors.white38, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Görev bitince oylama başlayacak',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: Colors.white38,
-                      ),
-                    ),
-                  ],
+                Text(
+                  'Bekleniyor...',
+                  style: AppTextStyles.displayMedium.copyWith(
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-            ),
+                const SizedBox(height: 12),
+                Text(
+                  '${game.currentPlayerId} görevini yapıyor',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: Colors.white54,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
 
-            const Spacer(flex: 3),
-          ],
-        ),
-      ),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.info_outline_rounded,
+                            color: Colors.white38, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Görev bitince oylama başlayacak',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: Colors.white38,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const Spacer(flex: 3),
+              ],
+            ),
+          ),
+        );
+      },
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) => Scaffold(body: Center(child: Text('Hata: $e'))),
     );
   }
 }

@@ -1,5 +1,5 @@
-import '../domain/room_entity.dart';
-import '../../shared/models/enums.dart';
+import 'room_entity.dart';
+import '../../../shared/models/enums.dart';
 
 abstract class RoomRepository {
   Future<String> createRoom({

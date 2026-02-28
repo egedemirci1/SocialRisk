@@ -2,12 +2,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../data/firebase_vote_source.dart';
 import '../domain/vote_repository.dart';
-import '../../shared/models/enums.dart';
+import '../../../shared/models/enums.dart';
 
 part 'vote_provider.g.dart';
 
 @riverpod
-VoteRepository voteRepository(VoteRepositoryRef ref) {
+VoteRepository voteRepository(Ref ref) {
   return FirebaseVoteSource();
 }
 

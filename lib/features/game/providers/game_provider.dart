@@ -2,18 +2,18 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../data/firebase_game_source.dart';
 import '../domain/game_entity.dart';
 import '../domain/game_repository.dart';
-import '../../core/constants/game_constants.dart';
-import '../../shared/models/enums.dart';
+import '../../../core/constants/game_constants.dart';
+import '../../../shared/models/enums.dart';
 
 part 'game_provider.g.dart';
 
 @riverpod
-GameRepository gameRepository(GameRepositoryRef ref) {
+GameRepository gameRepository(Ref ref) {
   return FirebaseGameSource();
 }
 
 @riverpod
-Stream<GameEntity?> watchGame(WatchGameRef ref, String gameId) {
+Stream<GameEntity?> watchGame(Ref ref, String gameId) {
   return ref.watch(gameRepositoryProvider).watchGame(gameId);
 }
 

@@ -6,17 +6,17 @@ import '../domain/auth_repository.dart';
 part 'auth_provider.g.dart';
 
 @riverpod
-AuthRepository authRepository(AuthRepositoryRef ref) {
+AuthRepository authRepository(Ref ref) {
   return FirebaseAuthSource();
 }
 
 @riverpod
-Stream<User?> authStateChanges(AuthStateChangesRef ref) {
+Stream<User?> authStateChanges(Ref ref) {
   return ref.watch(authRepositoryProvider).authStateChanges;
 }
 
 @riverpod
-User? currentUser(CurrentUserRef ref) {
+User? currentUser(Ref ref) {
   return ref.watch(authRepositoryProvider).currentUser;
 }
 
