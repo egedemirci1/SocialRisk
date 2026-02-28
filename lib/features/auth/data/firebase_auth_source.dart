@@ -7,7 +7,7 @@ class FirebaseAuthSource implements AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  Stream<User?> get authStateChanges => _auth.userChanges();
 
   @override
   User? get currentUser => _auth.currentUser;

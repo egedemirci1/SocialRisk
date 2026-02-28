@@ -17,7 +17,9 @@ Stream<User?> authStateChanges(Ref ref) {
 
 @Riverpod(keepAlive: true)
 User? currentUser(Ref ref) {
-  return ref.watch(authRepositoryProvider).currentUser;
+  // authStateChangesProvider'ı watch edelim ki isim değişikliklerinde UI yenilensin
+  final authState = ref.watch(authStateChangesProvider);
+  return authState.value;
 }
 
 @Riverpod(keepAlive: true)

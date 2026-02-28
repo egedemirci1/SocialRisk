@@ -123,14 +123,21 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         final user = ref.read(currentUserProvider);
         final isMyTurn = game.currentPlayerId == user?.uid;
 
-        // Sıra sende değilse bekleme ekranına yönlendir
+        // Sıra sende değilse durumuna göre ilgili ekrana yönlendir
         if (!isMyTurn) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
-              context.replace('/waiting', extra: {
-                'gameId': widget.gameId,
-                'roomCode': widget.roomCode,
-              });
+              if (game.status == GameStatus.voting) {
+                context.replace('/voting', extra: {
+                  'gameId': widget.gameId,
+                  'roomCode': widget.roomCode,
+                });
+              } else {
+                context.replace('/waiting', extra: {
+                  'gameId': widget.gameId,
+                  'roomCode': widget.roomCode,
+                });
+              }
             }
           });
           return const Scaffold(

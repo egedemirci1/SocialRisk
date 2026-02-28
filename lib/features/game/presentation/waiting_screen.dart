@@ -71,8 +71,21 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
           });
         }
 
+        // Aktif oyuncu görevini kabul etmiş ve oylama başlamışsa, oylama ekranına git
+        if (game.status == GameStatus.voting && !_isNavigating) {
+          _isNavigating = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.go('/voting', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            }
+          });
+        }
+
         // Sıra bana geldiyse görev ekranına geri dön
-        if (game.currentPlayerId == user?.uid && !_isNavigating) {
+        if (game.currentPlayerId == user?.uid && game.status == GameStatus.playing && !_isNavigating) {
           _isNavigating = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
