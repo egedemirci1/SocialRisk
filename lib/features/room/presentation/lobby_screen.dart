@@ -86,7 +86,7 @@ class LobbyScreen extends ConsumerWidget {
 
                   // Non-host: oyun başladığında otomatik yönlendir
                   if (!isHost && room?.status == GameStatus.playing) {
-                    final gameId = room?.currentGameId;
+                    final gameId = room?.gameId;
                     if (gameId != null && gameId.isNotEmpty) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (context.mounted) {

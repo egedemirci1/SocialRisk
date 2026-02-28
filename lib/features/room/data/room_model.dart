@@ -76,7 +76,6 @@ class RoomModel {
       ),
       players: players,
       gameId: gameId,
-      players: players,
       createdAt: createdAt,
     );
   }

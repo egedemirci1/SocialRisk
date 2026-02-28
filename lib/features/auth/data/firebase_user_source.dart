@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/user_entity.dart';
 import '../domain/user_repository.dart';
 import 'user_model.dart';
-import '../../../shared/models/enums.dart'; // Just in case we need enums later
 
 class FirebaseUserSource implements UserRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
