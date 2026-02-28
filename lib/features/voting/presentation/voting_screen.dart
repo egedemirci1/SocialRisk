@@ -53,8 +53,8 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
           room?.endConditionType ?? EndConditionType.rounds;
       final endConditionValue = room?.endConditionValue ?? 10;
 
-      // Puanı uygula ve sonraki tura geç
-      await ref.read(gameControllerProvider.notifier).applyScoreAndNextTurn(
+      // Puanı uygula
+      await ref.read(gameControllerProvider.notifier).applyScore(
             gameId: widget.gameId,
             roomId: widget.roomCode,
             playerId: currentPlayerId,

@@ -125,43 +125,65 @@ class RoundResultScreen extends ConsumerWidget {
             gameAsync.when(
               data: (game) {
                 final isGameOver = game?.status == GameStatus.finished;
-                return PrimaryButton(
-                  label: isGameOver ? 'Sonuçları Gör' : 'Sıradaki Tura Geç',
-                  icon: isGameOver
-                      ? Icons.emoji_events_rounded
-                      : Icons.arrow_forward_rounded,
-                  onPressed: () {
-                    if (isGameOver) {
-                      context.go('/game-over', extra: roomCode);
-                    } else {
+                
+                // Navigate non-hosts automatically when next round starts
+                ref.listen<AsyncValue<GameEntity?>>(
+                  watchGameProvider(gameId),
+                  (previous, next) {
+                    if (!context.mounted) return;
+                    final previousStatus = previous?.value?.status;
+                    final currentStatus = next.value?.status;
+                    
+                    if (previousStatus == GameStatus.voting && 
+                        currentStatus == GameStatus.playing) {
                       context.go('/waiting', extra: {
                         'gameId': gameId,
                         'roomCode': roomCode,
                       });
+                    } else if (currentStatus == GameStatus.finished) {
+                      context.go('/game-over', extra: roomCode);
                     }
-                  },
+                  }
+                );
+
+                return Consumer(
+                  builder: (context, ref, child) {
+                    final roomAsync = ref.watch(watchRoomProvider(roomCode));
+                    final user = ref.read(authControllerProvider).value;
+                    final isHost = roomAsync.value?.hostId == user?.uid;
+
+                    if (isHost) {
+                      return PrimaryButton(
+                        label: isGameOver ? 'Sonuçları Gör' : 'Sıradaki Tura Geç',
+                        icon: isGameOver
+                            ? Icons.emoji_events_rounded
+                            : Icons.arrow_forward_rounded,
+                        onPressed: () async {
+                          if (isGameOver) {
+                            context.go('/game-over', extra: roomCode);
+                          } else {
+                            // Host trigger next turn
+                            await ref.read(gameControllerProvider.notifier).nextTurn(gameId);
+                          }
+                        },
+                      );
+                    } else {
+                      return Column(
+                        children: [
+                          const CircularProgressIndicator(color: AppColors.primary),
+                          const SizedBox(height: 16),
+                          Text(
+                            isGameOver ? 'Oyun bitti, sonuçlar bekleniyor...' : 'Hostun sıradaki tura geçmesi bekleniyor...',
+                            style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
+                          ),
+                        ],
+                      );
+                    }
+                  }
                 );
               },
-              loading: () => PrimaryButton(
-                label: 'Sıradaki Tura Geç',
-                icon: Icons.arrow_forward_rounded,
-                onPressed: () {
-                  context.go('/waiting', extra: {
-                    'gameId': gameId,
-                    'roomCode': roomCode,
-                  });
-                },
-              ),
-              error: (e, st) => PrimaryButton(
-                label: 'Sıradaki Tura Geç',
-                icon: Icons.arrow_forward_rounded,
-                onPressed: () {
-                  context.go('/waiting', extra: {
-                    'gameId': gameId,
-                    'roomCode': roomCode,
-                  });
-                },
-              ),
+              loading: () => const CircularProgressIndicator(),
+              error: (e, st) => Text('Hata: $e'),
             ),
             const SizedBox(height: 32),
           ],
@@ -170,6 +192,7 @@ class RoundResultScreen extends ConsumerWidget {
     );
   }
 }
+
 
 class _ScoreRow extends StatelessWidget {
   const _ScoreRow({

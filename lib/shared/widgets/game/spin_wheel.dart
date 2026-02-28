@@ -80,6 +80,7 @@ class _SpinWheelState extends State<SpinWheel>
       vsync: this,
       duration: const Duration(milliseconds: 4000),
     );
+    _animation = AlwaysStoppedAnimation(_currentAngle);
   }
 
   @override

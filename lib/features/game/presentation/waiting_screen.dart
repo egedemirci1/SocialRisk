@@ -145,7 +145,9 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '$currentPlayerName görevini yapıyor',
+                  game.status == GameStatus.performing
+                      ? '$currentPlayerName görevini yapıyor'
+                      : '$currentPlayerName seçim yapıyor',
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: Colors.white54,
                   ),

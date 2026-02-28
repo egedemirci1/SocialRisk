@@ -43,6 +43,10 @@ class GameController extends _$GameController {
     await ref.read(gameRepositoryProvider).acceptTask(gameId);
   }
 
+  Future<void> proceedToVoting(String gameId) async {
+    await ref.read(gameRepositoryProvider).proceedToVoting(gameId);
+  }
+
   Future<void> assignTaskByCategory({
     required String gameId,
     required String category,
@@ -66,7 +70,7 @@ class GameController extends _$GameController {
     );
   }
 
-  Future<void> applyScoreAndNextTurn({
+  Future<void> applyScore({
     required String gameId,
     required String roomId,
     required String playerId,
@@ -124,9 +128,12 @@ class GameController extends _$GameController {
             .addPointsToWallet(uid: doc.id, points: score);
         }
       }
-    } else {
-      await repo.nextTurn(gameId);
     }
+    // nextTurn çağrısı buradan kaldırıldı. Host 'RoundResultScreen'den manuel tetikleyecek.
+  }
+
+  Future<void> nextTurn(String gameId) async {
+    await ref.read(gameRepositoryProvider).nextTurn(gameId);
   }
 
   Future<void> endGame(String gameId) async {

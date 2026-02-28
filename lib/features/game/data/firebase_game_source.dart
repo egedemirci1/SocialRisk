@@ -97,7 +97,13 @@ class FirebaseGameSource implements GameRepository {
 
   @override
   Future<void> acceptTask(String gameId) async {
-    // Görev kabul edildi — oyun durumu 'voting' (oylama) aşamasına geçer.
+    // Görev kabul edildi — oyun durumu 'performing' (görevi yapma) aşamasına geçer.
+    await _gameDoc(gameId).update({'status': 'performing'});
+  }
+
+  @override
+  Future<void> proceedToVoting(String gameId) async {
+    // Görev yapıldı — oylama aşamasına geç.
     await _gameDoc(gameId).update({'status': 'voting'});
   }
 

@@ -74,7 +74,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           .read(gameControllerProvider.notifier)
           .acceptTask(widget.gameId);
       if (mounted) {
-        context.push('/voting', extra: {
+        context.push('/performing', extra: {
           'gameId': widget.gameId,
           'roomCode': widget.roomCode,
         });
@@ -129,6 +129,11 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             if (mounted) {
               if (game.status == GameStatus.voting) {
                 context.replace('/voting', extra: {
+                  'gameId': widget.gameId,
+                  'roomCode': widget.roomCode,
+                });
+              } else if (game.status == GameStatus.performing) {
+                context.replace('/waiting', extra: {
                   'gameId': widget.gameId,
                   'roomCode': widget.roomCode,
                 });

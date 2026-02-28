@@ -7,6 +7,7 @@ import '../../features/room/presentation/create_room_screen.dart';
 import '../../features/room/presentation/join_room_screen.dart';
 import '../../features/room/presentation/lobby_screen.dart';
 import '../../features/game/presentation/task_screen.dart';
+import '../../features/game/presentation/performing_screen.dart';
 import '../../features/game/presentation/waiting_screen.dart';
 import '../../features/game/presentation/round_result_screen.dart';
 import '../../features/game/presentation/game_over_screen.dart';
@@ -88,8 +89,18 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final extra = state.extra as Map<String, String>? ?? {};
         return TaskScreen(
-          gameId: extra['gameId'] ?? '',
-          roomCode: extra['roomCode'] ?? '',
+           gameId: extra['gameId'] ?? '',
+           roomCode: extra['roomCode'] ?? '',
+        );
+      },
+    ),
+    GoRoute(
+      path: '/performing',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, String>? ?? {};
+        return PerformingScreen(
+           gameId: extra['gameId'] ?? '',
+           roomCode: extra['roomCode'] ?? '',
         );
       },
     ),

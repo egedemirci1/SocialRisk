@@ -20,6 +20,8 @@ abstract class GameRepository {
 
   Future<void> acceptTask(String gameId);
 
+  Future<void> proceedToVoting(String gameId);
+
   Future<void> passTask({
     required String gameId,
     required String roomId,

@@ -7,6 +7,7 @@ enum GameMode {
 enum GameStatus {
   waiting,
   playing,
+  performing,
   voting,
   finished
 }
