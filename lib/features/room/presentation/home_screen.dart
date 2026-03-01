@@ -86,6 +86,22 @@ class HomeScreen extends ConsumerWidget {
           playerName,
           style: AppTextStyles.displayMedium.copyWith(color: Colors.white),
         ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.amber.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+          ),
+          child: Text(
+            '👑 Efsane', // Mock Title
+            style: AppTextStyles.labelSmall.copyWith(
+              color: Colors.amber, 
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -102,6 +118,26 @@ class HomeScreen extends ConsumerWidget {
         const SizedBox(height: 16),
         _JoinRoomButton(
           onPressed: () => context.push('/join-room'),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: PrimaryButton(
+                label: 'Mağaza',
+                icon: Icons.storefront_rounded,
+                onPressed: () => context.push('/store'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: PrimaryButton(
+                label: 'Desten',
+                icon: Icons.style_rounded,
+                onPressed: () => context.push('/custom-deck'),
+              ),
+            ),
+          ],
         ),
         if (isAdmin(user?.uid)) ...[
           const SizedBox(height: 16),

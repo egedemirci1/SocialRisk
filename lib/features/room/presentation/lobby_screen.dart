@@ -318,9 +318,36 @@ class _PlayerTile extends StatelessWidget {
                 radius: 20,
               ),
               const SizedBox(width: 12),
-              Text(
-                name + (isCurrentPlayer ? ' (Sen)' : ''),
-                style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    name + (isCurrentPlayer ? ' (Sen)' : ''),
+                    style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+                  ),
+                  // Mock Title - bu alan ege backend'i bağlayınca `player.activeTitle` olacak.
+                  if (score > 1000) // Şimdilik puanla mockluyoruz, unvanı olan biriymiş gibi
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+                        ),
+                        child: Text(
+                          '👑 Efsane', // Mock
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: Colors.amber, 
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
               const Spacer(),
               Icon(

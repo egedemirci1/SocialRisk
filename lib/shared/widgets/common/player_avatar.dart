@@ -12,6 +12,7 @@ class PlayerAvatar extends StatelessWidget {
     this.score = 0,
     this.radius = 24,
     this.showEffect = true,
+    this.frameId,
   });
 
   final String displayName;
@@ -19,6 +20,7 @@ class PlayerAvatar extends StatelessWidget {
   final int score;
   final double radius;
   final bool showEffect;
+  final String? frameId;
 
   /// Puan aralığına göre efekt belirle
   String? get _effect {
@@ -78,6 +80,36 @@ class PlayerAvatar extends StatelessWidget {
                 : null,
           ),
         ),
+
+        // Satın Alınan Kozmetik Çerçeve (Frame)
+        if (frameId != null)
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: frameId == 'frame_fire'
+                      ? AppColors.fire
+                      : frameId == 'frame_ice'
+                          ? AppColors.ice
+                          : AppColors.primary,
+                  width: 3.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: (frameId == 'frame_fire'
+                            ? AppColors.fire
+                            : frameId == 'frame_ice'
+                                ? AppColors.ice
+                                : AppColors.primary)
+                        .withValues(alpha: 0.5),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                  )
+                ],
+              ),
+            ),
+          ),
 
         // Efekt emojisi
         if (_effect != null)
