@@ -126,18 +126,22 @@ class GameController extends _$GameController {
 
     if (shouldEnd) {
       // Oyun sonu - E23: İlgili tüm oyuncuların kazançlarını hesaplarına yatır.
-      final updatedPlayersSnap = await FirebaseFirestore.instance
-          .collection('rooms')
-          .doc(roomId)
-          .collection('players')
-          .get();
-      
-      for (final doc in updatedPlayersSnap.docs) {
-        final score = doc.data()['score'] as int? ?? 0;
-        if (score > 0) {
-          await ref.read(economyControllerProvider.notifier)
-            .addPointsToWallet(uid: doc.id, points: score);
+      try {
+        final updatedPlayersSnap = await FirebaseFirestore.instance
+            .collection('rooms')
+            .doc(roomId)
+            .collection('players')
+            .get();
+        
+        for (final doc in updatedPlayersSnap.docs) {
+          final score = doc.data()['score'] as int? ?? 0;
+          if (score > 0) {
+            await ref.read(economyControllerProvider.notifier)
+              .addPointsToWallet(uid: doc.id, points: score);
+          }
         }
+      } catch (_) {
+        // Provider dispose olmuş olabilir, wallet işlemi game-over ekranında da yapılabilir
       }
     }
 
