@@ -3,13 +3,16 @@ import 'dart:math';
 class AppHelpers {
   static String generateRoomCode() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    return List.generate(6, (index) => chars[Random().nextInt(chars.length)]).join();
+    return List.generate(
+      6,
+      (index) => chars[Random().nextInt(chars.length)],
+    ).join();
   }
 
   static int calculatePenalty(int basePenalty, int passStreak) {
     if (passStreak <= 0) return 0;
-    // penalty = basePenalty * passStreak (lineer artış)
-    return basePenalty * passStreak;
+    // penalty = basePenalty * (3^passStreak) (eksponansiyel artış)
+    return (basePenalty * pow(3, passStreak)).toInt();
   }
 
   static String formatTimestamp(DateTime dateTime) {

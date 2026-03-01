@@ -29,15 +29,13 @@ class AuthController extends _$AuthController {
 
   Future<void> signIn(String name) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() =>
-      ref.read(authRepositoryProvider).signInAnonymously(name)
-    );
+    final repo = ref.read(authRepositoryProvider);
+    state = await AsyncValue.guard(() => repo.signInAnonymously(name));
   }
 
   Future<void> logout() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() =>
-      ref.read(authRepositoryProvider).signOut()
-    );
+    final repo = ref.read(authRepositoryProvider);
+    state = await AsyncValue.guard(() => repo.signOut());
   }
 }

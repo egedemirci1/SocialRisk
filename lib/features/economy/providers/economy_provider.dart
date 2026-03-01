@@ -26,10 +26,9 @@ class EconomyController extends _$EconomyController {
     required int points,
   }) async {
     state = const AsyncLoading();
+    final repo = ref.read(economyRepositoryProvider);
     state = await AsyncValue.guard(
-      () => ref
-          .read(economyRepositoryProvider)
-          .addPointsToWallet(uid: uid, points: points),
+      () => repo.addPointsToWallet(uid: uid, points: points),
     );
   }
 
@@ -40,10 +39,9 @@ class EconomyController extends _$EconomyController {
     required int price,
   }) async {
     state = const AsyncLoading();
+    final repo = ref.read(economyRepositoryProvider);
     state = await AsyncValue.guard(
-      () => ref
-          .read(economyRepositoryProvider)
-          .buyCosmetic(uid: uid, cosmeticId: cosmeticId, price: price),
+      () => repo.buyCosmetic(uid: uid, cosmeticId: cosmeticId, price: price),
     );
   }
 
@@ -53,10 +51,9 @@ class EconomyController extends _$EconomyController {
     required String? cosmeticId,
   }) async {
     state = const AsyncLoading();
+    final repo = ref.read(economyRepositoryProvider);
     state = await AsyncValue.guard(
-      () => ref
-          .read(economyRepositoryProvider)
-          .setActiveFrame(uid: uid, cosmeticId: cosmeticId),
+      () => repo.setActiveFrame(uid: uid, cosmeticId: cosmeticId),
     );
   }
 
@@ -66,10 +63,9 @@ class EconomyController extends _$EconomyController {
     required String? cosmeticId,
   }) async {
     state = const AsyncLoading();
+    final repo = ref.read(economyRepositoryProvider);
     state = await AsyncValue.guard(
-      () => ref
-          .read(economyRepositoryProvider)
-          .setActiveTitle(uid: uid, cosmeticId: cosmeticId),
+      () => repo.setActiveTitle(uid: uid, cosmeticId: cosmeticId),
     );
   }
 }

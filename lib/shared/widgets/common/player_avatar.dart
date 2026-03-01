@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../features/auth/providers/user_provider.dart';
 
 /// Oyuncu avatar widget'ı — Fotoğraf veya baş harf gösterir.
 /// Puan bazlı efekt desteği mevcut (🔥 alev / ❄️ buz / ✨ parıltı).
-class PlayerAvatar extends StatelessWidget {
+class PlayerAvatar extends ConsumerWidget {
   const PlayerAvatar({
     super.key,
     required this.displayName,
@@ -13,6 +15,7 @@ class PlayerAvatar extends StatelessWidget {
     this.radius = 24,
     this.showEffect = true,
     this.frameId,
+    this.uid,
   });
 
   final String displayName;
@@ -21,6 +24,7 @@ class PlayerAvatar extends StatelessWidget {
   final double radius;
   final bool showEffect;
   final String? frameId;
+  final String? uid;
 
   /// Puan aralığına göre efekt belirle
   String? get _effect {
@@ -39,7 +43,16 @@ class PlayerAvatar extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    String? currentFrameId = frameId;
+
+    if (uid != null) {
+      final userAsync = ref.watch(watchUserProfileProvider(uid!));
+      if (userAsync.value != null && userAsync.value!.activeFrame != null) {
+        currentFrameId = userAsync.value!.activeFrame;
+      }
+    }
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -64,13 +77,12 @@ class PlayerAvatar extends StatelessWidget {
           child: CircleAvatar(
             radius: radius,
             backgroundColor: AppColors.surfaceElevated,
-            backgroundImage:
-                avatarUrl != null ? NetworkImage(avatarUrl!) : null,
+            backgroundImage: avatarUrl != null
+                ? NetworkImage(avatarUrl!)
+                : null,
             child: avatarUrl == null
                 ? Text(
-                    displayName.isNotEmpty
-                        ? displayName[0].toUpperCase()
-                        : '?',
+                    displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
                     style: GoogleFonts.inter(
                       fontSize: radius * 0.8,
                       fontWeight: FontWeight.w700,
@@ -82,30 +94,31 @@ class PlayerAvatar extends StatelessWidget {
         ),
 
         // Satın Alınan Kozmetik Çerçeve (Frame)
-        if (frameId != null)
+        if (currentFrameId != null)
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: frameId == 'frame_fire'
+                  color: currentFrameId == 'frame_fire'
                       ? AppColors.fire
-                      : frameId == 'frame_ice'
-                          ? AppColors.ice
-                          : AppColors.primary,
+                      : currentFrameId == 'frame_ice'
+                      ? AppColors.ice
+                      : AppColors.primary,
                   width: 3.5,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: (frameId == 'frame_fire'
-                            ? AppColors.fire
-                            : frameId == 'frame_ice'
+                    color:
+                        (currentFrameId == 'frame_fire'
+                                ? AppColors.fire
+                                : currentFrameId == 'frame_ice'
                                 ? AppColors.ice
                                 : AppColors.primary)
-                        .withValues(alpha: 0.5),
+                            .withValues(alpha: 0.5),
                     blurRadius: 8,
                     spreadRadius: 2,
-                  )
+                  ),
                 ],
               ),
             ),
@@ -116,10 +129,7 @@ class PlayerAvatar extends StatelessWidget {
           Positioned(
             right: -4,
             top: -4,
-            child: Text(
-              _effect!,
-              style: TextStyle(fontSize: radius * 0.55),
-            ),
+            child: Text(_effect!, style: TextStyle(fontSize: radius * 0.55)),
           ),
       ],
     );

@@ -30,12 +30,9 @@ class GameController extends _$GameController {
     required GameMode mode,
   }) async {
     state = const AsyncLoading();
-    final result = await AsyncValue.guard(() =>
-      ref.read(gameRepositoryProvider).startGame(
-        roomId: roomId,
-        playerIds: playerIds,
-        mode: mode,
-      ),
+    final repo = ref.read(gameRepositoryProvider);
+    final result = await AsyncValue.guard(
+      () => repo.startGame(roomId: roomId, playerIds: playerIds, mode: mode),
     );
     state = result;
     return result.value ?? '';
@@ -49,10 +46,9 @@ class GameController extends _$GameController {
     required String gameId,
     required String? target,
   }) async {
-    await ref.read(gameRepositoryProvider).setSpinningTarget(
-      gameId: gameId,
-      target: target,
-    );
+    await ref
+        .read(gameRepositoryProvider)
+        .setSpinningTarget(gameId: gameId, target: target);
   }
 
   Future<void> proceedToVoting(String gameId) async {
@@ -63,10 +59,9 @@ class GameController extends _$GameController {
     required String gameId,
     required String category,
   }) async {
-    await ref.read(gameRepositoryProvider).assignTaskByCategory(
-      gameId: gameId,
-      category: category,
-    );
+    await ref
+        .read(gameRepositoryProvider)
+        .assignTaskByCategory(gameId: gameId, category: category);
   }
 
   Future<void> chooseDifficulty({
@@ -74,11 +69,13 @@ class GameController extends _$GameController {
     required String roomId,
     required String difficulty,
   }) async {
-    await ref.read(gameRepositoryProvider).chooseDifficulty(
-      gameId: gameId,
-      roomId: roomId,
-      difficulty: difficulty,
-    );
+    await ref
+        .read(gameRepositoryProvider)
+        .chooseDifficulty(
+          gameId: gameId,
+          roomId: roomId,
+          difficulty: difficulty,
+        );
   }
 
   Future<void> passTask({
@@ -86,12 +83,14 @@ class GameController extends _$GameController {
     required String roomId,
     required String playerId,
   }) async {
-    await ref.read(gameRepositoryProvider).passTask(
-      gameId: gameId,
-      roomId: roomId,
-      playerId: playerId,
-      basePenalty: GameConstants.basePenalty,
-    );
+    await ref
+        .read(gameRepositoryProvider)
+        .passTask(
+          gameId: gameId,
+          roomId: roomId,
+          playerId: playerId,
+          basePenalty: GameConstants.basePenalty,
+        );
   }
 
   Future<void> applyScore({
@@ -125,7 +124,7 @@ class GameController extends _$GameController {
           .doc(roomId)
           .collection('players')
           .get();
-      
+
       for (final doc in playersSnap.docs) {
         final score = doc.data()['score'] as int? ?? 0;
         // Check condition: Any player's score >= required score
@@ -144,12 +143,13 @@ class GameController extends _$GameController {
             .doc(roomId)
             .collection('players')
             .get();
-        
+
+        final economyNotifier = ref.read(economyControllerProvider.notifier);
+
         for (final doc in updatedPlayersSnap.docs) {
           final score = doc.data()['score'] as int? ?? 0;
           if (score > 0) {
-            await ref.read(economyControllerProvider.notifier)
-              .addPointsToWallet(uid: doc.id, points: score);
+            await economyNotifier.addPointsToWallet(uid: doc.id, points: score);
           }
         }
       } catch (_) {
@@ -179,10 +179,9 @@ class GameController extends _$GameController {
     required String gameId,
     required String roomId,
   }) async {
-    await ref.read(gameRepositoryProvider).initEconomyRound(
-      gameId: gameId,
-      roomId: roomId,
-    );
+    await ref
+        .read(gameRepositoryProvider)
+        .initEconomyRound(gameId: gameId, roomId: roomId);
   }
 
   Future<void> pickCategoryEconomy({
@@ -190,11 +189,13 @@ class GameController extends _$GameController {
     required String playerId,
     required String category,
   }) async {
-    await ref.read(gameRepositoryProvider).pickCategoryEconomy(
-      gameId: gameId,
-      playerId: playerId,
-      category: category,
-    );
+    await ref
+        .read(gameRepositoryProvider)
+        .pickCategoryEconomy(
+          gameId: gameId,
+          playerId: playerId,
+          category: category,
+        );
   }
 
   Future<void> endGame(String gameId) async {

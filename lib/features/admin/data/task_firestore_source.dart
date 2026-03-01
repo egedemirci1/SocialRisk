@@ -154,10 +154,44 @@ class TaskFirestoreSource {
   // ── Seed Migration ───────────────────────────────────
 
   /// Mevcut hardcoded görevleri Firestore'a yükler (bir kerelik).
-  Future<int> seedTasks(List<Map<String, dynamic>> tasks) async {
+  /// [clearAllFirst] true ise, önce tasks koleksiyonunu tamamen boşaltır (duplicate'leri silmek için).
+  Future<int> seedTasks(
+    List<Map<String, dynamic>> tasks, {
+    bool clearAllFirst = false,
+  }) async {
+    if (clearAllFirst) {
+      await deleteAllTasksFromCollection();
+    } else {
+      // Sadece 'içerik' kontrolü yaparak ekle (Duplicate önleme)
+      final existingSnap = await _tasksRef.get();
+      final existingContents = existingSnap.docs
+          .map((doc) => doc.data()['content'] as String?)
+          .where((content) => content != null)
+          .toSet();
+
+      final newTasks = tasks
+          .where((t) => !existingContents.contains(t['content']))
+          .toList();
+      if (newTasks.isEmpty) return 0;
+
+      final batch = _firestore.batch();
+      for (final task in newTasks) {
+        final docRef = _tasksRef.doc();
+        batch.set(docRef, {
+          ...task,
+          'likes': 0,
+          'dislikes': 0,
+          'isActive': true,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
+      await batch.commit();
+      return newTasks.length;
+    }
+
+    // Eğer clearAllFirst yapıldıysa sıfırdan doldur:
     final batch = _firestore.batch();
     int count = 0;
-
     for (final task in tasks) {
       final docRef = _tasksRef.doc();
       batch.set(docRef, {
@@ -169,9 +203,18 @@ class TaskFirestoreSource {
       });
       count++;
     }
-
     await batch.commit();
     return count;
+  }
+
+  /// Tüm tasks koleksiyonunu uçurur (Admin/Seed temizliği için).
+  Future<void> deleteAllTasksFromCollection() async {
+    final snap = await _tasksRef.get();
+    final batch = _firestore.batch();
+    for (final doc in snap.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
   }
 
   // ── Helper ───────────────────────────────────────────

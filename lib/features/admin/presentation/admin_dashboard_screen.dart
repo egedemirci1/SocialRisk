@@ -22,6 +22,16 @@ class AdminDashboardScreen extends ConsumerWidget {
             onPressed: () => context.push('/admin/task-editor'),
           ),
           IconButton(
+            icon: const Icon(Icons.download_rounded),
+            tooltip: 'Seed Soruları Yükle',
+            onPressed: () {
+              ref.read(adminControllerProvider.notifier).seedTasks();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Seed işlemi başlatıldı...')),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.report_rounded),
             onPressed: () => context.push('/admin/reports'),
           ),
@@ -47,7 +57,10 @@ class AdminDashboardScreen extends ConsumerWidget {
                 color: AppColors.surfaceElevated,
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
-                  title: Text(task.content, style: const TextStyle(color: Colors.white)),
+                  title: Text(
+                    task.content,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                   subtitle: Text(
                     '${task.category} • ${task.difficulty} • Beğeni: ${task.likes} / Dislike: ${task.dislikes}',
                     style: const TextStyle(color: Colors.white54),
@@ -59,22 +72,37 @@ class AdminDashboardScreen extends ConsumerWidget {
                         value: task.isActive,
                         activeColor: AppColors.primary,
                         onChanged: (val) {
-                          ref.read(adminControllerProvider.notifier).toggleTaskActiveStatus(task.id, val);
+                          ref
+                              .read(adminControllerProvider.notifier)
+                              .toggleTaskActiveStatus(task.id, val);
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.edit_rounded, color: Colors.white70),
-                        onPressed: () => context.push('/admin/task-editor', extra: task),
+                        icon: const Icon(
+                          Icons.edit_rounded,
+                          color: Colors.white70,
+                        ),
+                        onPressed: () =>
+                            context.push('/admin/task-editor', extra: task),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_rounded, color: AppColors.error),
+                        icon: const Icon(
+                          Icons.delete_rounded,
+                          color: AppColors.error,
+                        ),
                         onPressed: () async {
                           final confirm = await showDialog<bool>(
                             context: context,
                             builder: (ctx) => AlertDialog(
                               backgroundColor: AppColors.surface,
-                              title: const Text('Sil?', style: TextStyle(color: Colors.white)),
-                              content: const Text('Bu görev kalıcı olarak silinecek.', style: TextStyle(color: Colors.white70)),
+                              title: const Text(
+                                'Sil?',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              content: const Text(
+                                'Bu görev kalıcı olarak silinecek.',
+                                style: TextStyle(color: Colors.white70),
+                              ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(ctx, false),
@@ -82,13 +110,18 @@ class AdminDashboardScreen extends ConsumerWidget {
                                 ),
                                 TextButton(
                                   onPressed: () => Navigator.pop(ctx, true),
-                                  child: const Text('Sil', style: TextStyle(color: AppColors.error)),
+                                  child: const Text(
+                                    'Sil',
+                                    style: TextStyle(color: AppColors.error),
+                                  ),
                                 ),
                               ],
                             ),
                           );
                           if (confirm == true) {
-                            ref.read(adminControllerProvider.notifier).deleteTask(task.id);
+                            ref
+                                .read(adminControllerProvider.notifier)
+                                .deleteTask(task.id);
                           }
                         },
                       ),
@@ -100,7 +133,12 @@ class AdminDashboardScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Hata: $e', style: const TextStyle(color: AppColors.error))),
+        error: (e, _) => Center(
+          child: Text(
+            'Hata: $e',
+            style: const TextStyle(color: AppColors.error),
+          ),
+        ),
       ),
     );
   }

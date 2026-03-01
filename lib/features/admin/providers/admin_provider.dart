@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../domain/task_item_entity.dart';
 import '../domain/report_entity.dart';
 import 'task_provider.dart';
+import '../data/task_seed_migration.dart';
 
 part 'admin_provider.g.dart';
 
@@ -17,17 +18,25 @@ const List<String> adminUids = [
 bool isAdmin(String? uid) => uid != null && adminUids.contains(uid);
 
 // -- Providers --
-final adminTasksProvider = StreamProvider.autoDispose<List<TaskItemEntity>>((ref) {
+final adminTasksProvider = StreamProvider.autoDispose<List<TaskItemEntity>>((
+  ref,
+) {
   final source = ref.watch(taskSourceProvider);
   return source.watchAllTasks();
 });
 
-final watchReportsProvider = StreamProvider.autoDispose<List<ReportEntity>>((ref) {
+final watchReportsProvider = StreamProvider.autoDispose<List<ReportEntity>>((
+  ref,
+) {
   return FirebaseFirestore.instance
       .collection('reports')
       .orderBy('createdAt', descending: true)
       .snapshots()
-      .map((snap) => snap.docs.map((doc) => ReportEntity.fromJson(doc.data(), doc.id)).toList());
+      .map(
+        (snap) => snap.docs
+            .map((doc) => ReportEntity.fromJson(doc.data(), doc.id))
+            .toList(),
+      );
 });
 
 @riverpod
@@ -37,52 +46,74 @@ class AdminController extends _$AdminController {
 
   Future<void> addTask(TaskItemEntity task) async {
     state = const AsyncLoading();
+    final source = ref.read(taskSourceProvider);
     state = await AsyncValue.guard(() async {
-      await ref.read(taskSourceProvider).addTask(task);
+      await source.addTask(task);
     });
   }
 
   Future<void> updateTask(TaskItemEntity task) async {
     state = const AsyncLoading();
+    final source = ref.read(taskSourceProvider);
     state = await AsyncValue.guard(() async {
-      await ref.read(taskSourceProvider).updateTask(task);
+      await source.updateTask(task);
     });
   }
 
   Future<void> toggleTaskActiveStatus(String taskId, bool isActive) async {
     try {
-      await FirebaseFirestore.instance.collection('tasks').doc(taskId).update({'isActive': isActive});
+      await FirebaseFirestore.instance.collection('tasks').doc(taskId).update({
+        'isActive': isActive,
+      });
     } catch (e) {
       // ignore
     }
   }
 
   Future<void> deleteTask(String taskId) async {
+    final source = ref.read(taskSourceProvider);
     try {
-      await ref.read(taskSourceProvider).deleteTask(taskId);
+      await source.deleteTask(taskId);
     } catch (e) {
       // ignore
     }
   }
 
+  Future<void> seedTasks() async {
+    state = const AsyncLoading();
+    final source = ref.read(taskSourceProvider);
+    state = await AsyncValue.guard(() async {
+      final success = await source.seedTasks(
+        TaskSeedMigration.seedData,
+        clearAllFirst: true,
+      );
+      if (success == 0) throw Exception('Zaten seed edilmiş veya hata oluştu.');
+    });
+  }
+
   // --- Photo Moderation ---
   Future<void> approvePhoto(String targetUserId, String reportId) async {
     // Fotoğrafı onayla dersen raporu siliyoruz, flag vs koymuyoruz.
-    await FirebaseFirestore.instance.collection('reports').doc(reportId).delete();
+    await FirebaseFirestore.instance
+        .collection('reports')
+        .doc(reportId)
+        .delete();
   }
 
   Future<void> banPhoto(String targetUserId, String reportId) async {
     // Kullanıcının avatarını kaldır ve avatarFlagged: true yap.
     final batch = FirebaseFirestore.instance.batch();
-    
-    batch.update(FirebaseFirestore.instance.collection('users').doc(targetUserId), {
-      'avatarUrl': null,
-      'avatarFlagged': true,
-    });
-    
+
+    batch.update(
+      FirebaseFirestore.instance.collection('users').doc(targetUserId),
+      {'avatarUrl': null, 'avatarFlagged': true},
+    );
+
     // Raporu da kapat/sil
-    batch.delete(FirebaseFirestore.instance.collection('reports').doc(reportId));
-    
+    batch.delete(
+      FirebaseFirestore.instance.collection('reports').doc(reportId),
+    );
+
     await batch.commit();
   }
 }
