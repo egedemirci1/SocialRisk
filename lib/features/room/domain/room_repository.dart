@@ -9,7 +9,7 @@ abstract class RoomRepository {
     required EndConditionType endConditionType,
     required int endConditionValue,
     required RoomVisibility visibility,
-    required GameDifficulty difficulty,
+    required GamePreset preset,
     required GameMode mode,
   });
 

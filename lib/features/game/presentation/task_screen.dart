@@ -15,6 +15,9 @@ import '../../auth/providers/auth_provider.dart';
 import '../../../shared/models/enums.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../domain/game_entity.dart';
+import '../../room/domain/room_entity.dart';
+import 'widgets/player_spotlight.dart';
+import 'widgets/spectator_strip.dart';
 
 /// Görev ekranı — Çark → Kategori → Görev → Kabul/Pas.
 class TaskScreen extends ConsumerStatefulWidget {
@@ -130,12 +133,17 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         final user = ref.read(currentUserProvider);
         final isMyTurn = game.currentPlayerId == user?.uid;
 
-        // Aktif oyuncunun ismini bul
+        // Aktif oyuncunun ismini ve objesini bul
         final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
         String currentPlayerName = game.currentPlayerId;
+        PlayerEntity? currentPlayer;
+        List<PlayerEntity> players = [];
+        
         if (playersAsync.value != null) {
+          players = playersAsync.value!;
           try {
-            currentPlayerName = playersAsync.value!.firstWhere((p) => p.id == game.currentPlayerId).name;
+            currentPlayer = players.firstWhere((p) => p.id == game.currentPlayerId);
+            currentPlayerName = currentPlayer.name;
           } catch (_) {}
         }
 
@@ -157,7 +165,12 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         // Durumuna göre yönlendir
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            if (game.status == GameStatus.voting) {
+            if (game.status == GameStatus.choosingDifficulty) {
+              context.replace('/difficulty', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            } else if (game.status == GameStatus.voting) {
               context.replace('/voting', extra: {
                 'gameId': widget.gameId,
                 'roomCode': widget.roomCode,
@@ -181,7 +194,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(isMyTurn ? 'Senin Sıran!' : '$currentPlayerName oynuyor'),
+            title: const Text('Sosyal Risk'),
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
@@ -191,18 +204,36 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             ],
           ),
           body: GradientContainer(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: task != null
-                ? _buildTaskView(
-                    game.passStreak,
-                    task,
-                    roomAsync.value?.visibility ?? RoomVisibility.open,
-                    isMyTurn,
-                    currentPlayerName,
-                  )
-                : (roomAsync.value?.mode == GameMode.economy
-                    ? _buildEconomyRedirect(game)
-                    : _buildWheelView(game, isMyTurn, currentPlayerName)),
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: task != null
+                        ? _buildTaskView(
+                            game.passStreak,
+                            task,
+                            roomAsync.value?.visibility ?? RoomVisibility.open,
+                            isMyTurn,
+                            currentPlayerName,
+                          )
+                        : (roomAsync.value?.mode == GameMode.economy
+                            ? _buildEconomyRedirect(game)
+                            : _buildWheelView(game, isMyTurn, currentPlayerName, currentPlayer)),
+                  ),
+                ),
+                if (players.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 24, top: 8),
+                    child: SpectatorStrip(
+                      players: players,
+                      currentPlayerId: game.currentPlayerId,
+                      myPlayerId: user?.uid,
+                    ),
+                  ),
+              ],
+            ),
           ),
         );
       },
@@ -214,14 +245,27 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   }
 
   /// Çark görünümü
-  Widget _buildWheelView(GameEntity game, bool isMyTurn, String playerName) {
+  Widget _buildWheelView(GameEntity game, bool isMyTurn, String playerName, PlayerEntity? currentPlayer) {
     return Column(
       children: [
+        const SizedBox(height: 24),
+        if (currentPlayer != null)
+          PlayerSpotlight(
+            player: currentPlayer,
+            isMe: isMyTurn,
+          )
+        else
+          Text(
+            isMyTurn ? 'Senin Sıran!' : '$playerName oynuyor',
+            style: AppTextStyles.headlineMedium.copyWith(
+              color: AppColors.accent,
+            ),
+          ),
         const Spacer(),
         Text(
-          isMyTurn ? '🎡 Çarkı Çevir!' : '🎡 $playerName çarkı çeviriyor...',
-          style: AppTextStyles.headlineMedium.copyWith(
-            color: AppColors.accent,
+          '🎡 Çarkı Çevir!',
+          style: AppTextStyles.titleMedium.copyWith(
+            color: Colors.white70,
           ),
         ),
         const SizedBox(height: 8),

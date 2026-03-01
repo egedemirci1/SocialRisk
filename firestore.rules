@@ -83,11 +83,25 @@ service cloud.firestore {
 
     // ─── Cosmetics (Mağaza öğeleri) ──────────────────────
     match /cosmetics/{cosmeticId} {
-      // Herkes okuyabilir
       allow read: if isAuthenticated();
-
-      // Yazma: sadece admin (veya Cloud Functions)
       allow write: if false;
+    }
+
+    // ─── Tasks (Görevler ve Admin) ────────────────────────
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated();
+      // Oyuncuların likes/dislikes güncelleyebilmesi için write izni ver
+      allow write: if isAuthenticated();
+    }
+    
+    match /taskFeedback/{feedbackId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    // ─── Raporlar (Moderasyon) ────────────────────────────
+    match /reports/{reportId} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if isAuthenticated() && request.auth.uid in ['y51M7E6YXZT5I04M9YFqGzSgZ7Y2'];
     }
   }
 }

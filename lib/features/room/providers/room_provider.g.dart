@@ -226,7 +226,7 @@ final class RoomControllerProvider
   RoomController create() => RoomController();
 }
 
-String _$roomControllerHash() => r'4aae508d37ac668094550a602c70cfc70cd9f39b';
+String _$roomControllerHash() => r'43d9bfbbad8de4db3ca67c037e5259a13b580204';
 
 abstract class _$RoomController extends $AsyncNotifier<String?> {
   FutureOr<String?> build();

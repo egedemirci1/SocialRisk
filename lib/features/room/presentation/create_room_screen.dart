@@ -20,12 +20,12 @@ class CreateRoomScreen extends ConsumerStatefulWidget {
 class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   int _maxPlayers = 4;
   bool _isScoreMode = true; // true = Puan Hedefi, false = Tur Sayısı
-  double _scoreTarget = 5000;
-  double _roundTarget = 10;
+  double _scoreTarget = 500; // Yeni default
+  double _roundTarget = 5;   // Yeni default
   bool _isCreating = false;
-  bool _isOpenMode = true; // true = Açık Mod, false = Kapalı Mod
-  GameDifficulty _difficulty = GameDifficulty.mixed;
-  GameMode _selectedMode = GameMode.classic; // Faz 10
+  bool _isOpenMode = true;
+  GamePreset _preset = GamePreset.classic; // Yeni alan
+  GameMode _selectedMode = GameMode.classic;
 
   Future<void> _createRoom() async {
     setState(() => _isCreating = true);
@@ -49,7 +49,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         endConditionType: endType,
         endConditionValue: endValue,
         visibility: _isOpenMode ? RoomVisibility.open : RoomVisibility.closed,
-        difficulty: _difficulty,
+        preset: _preset,
         hostAvatarUrl: user.photoURL,
         mode: _selectedMode,
       );
@@ -122,11 +122,11 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
 
               const SizedBox(height: 24),
               
-              // Zorluk Seviyesi
+              // İçerik Modu (Preset)
               _buildSection(
-                title: 'Görev Zorluğu',
-                icon: Icons.fitness_center_rounded,
-                child: _buildDifficultyMode(),
+                title: 'İçerik Modu',
+                icon: Icons.auto_awesome_mosaic_rounded,
+                child: _buildPresetMode(),
               ),
 
               const SizedBox(height: 40),
@@ -272,9 +272,9 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           ),
           Slider(
             value: _scoreTarget,
-            min: 1000,
-            max: 10000,
-            divisions: 18,
+            min: 100,
+            max: 2000,
+            divisions: 19,
             activeColor: AppColors.accent,
             inactiveColor: AppColors.surfaceElevated,
             onChanged: (value) {
@@ -378,24 +378,24 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
     );
   }
 
-  Widget _buildDifficultyMode() {
+  Widget _buildPresetMode() {
     return Column(
       children: [
         Row(
           children: [
             Expanded(
               child: _ToggleChip(
-                label: 'Kolay',
-                isSelected: _difficulty == GameDifficulty.easy,
-                onTap: () => setState(() => _difficulty = GameDifficulty.easy),
+                label: 'Klasik',
+                isSelected: _preset == GamePreset.classic,
+                onTap: () => setState(() => _preset = GamePreset.classic),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: _ToggleChip(
-                label: 'Orta',
-                isSelected: _difficulty == GameDifficulty.medium,
-                onTap: () => setState(() => _difficulty = GameDifficulty.medium),
+                label: 'Aile (PG)',
+                isSelected: _preset == GamePreset.family,
+                onTap: () => setState(() => _preset = GamePreset.family),
               ),
             ),
           ],
@@ -405,27 +405,27 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           children: [
             Expanded(
               child: _ToggleChip(
-                label: 'Zor',
-                isSelected: _difficulty == GameDifficulty.hard,
-                onTap: () => setState(() => _difficulty = GameDifficulty.hard),
+                label: 'Sevgili',
+                isSelected: _preset == GamePreset.couple,
+                onTap: () => setState(() => _preset = GamePreset.couple),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: _ToggleChip(
-                label: 'Karışık',
-                isSelected: _difficulty == GameDifficulty.mixed,
-                onTap: () => setState(() => _difficulty = GameDifficulty.mixed),
+                label: 'Yetişkin (18+)',
+                isSelected: _preset == GamePreset.adult,
+                onTap: () => setState(() => _preset = GamePreset.adult),
               ),
             ),
           ],
         ),
         const SizedBox(height: 12),
         Text(
-          _difficulty == GameDifficulty.easy ? 'Daha masum ve risksiz görevler gelir (1x Çarpan).' 
-          : _difficulty == GameDifficulty.medium ? 'Biraz daha cesaret isteyen görevler (2x Çarpan).'
-          : _difficulty == GameDifficulty.hard ? 'Ciddi risk ve utanma uyandıran görevler (3x Çarpan).'
-          : 'Bütün kategorilerden rastgele seviyede görevler.',
+          _preset == GamePreset.classic ? 'Tüm kategoriler devrede, genel kitleye uygun.' 
+          : _preset == GamePreset.family ? 'Çocuklara ve ailelere uygun, risksiz görevler.'
+          : _preset == GamePreset.couple ? 'Çiftlere özel, daha flörtöz ve itiraf dolu.'
+          : 'Sınırların aşıldığı, her türlü 18+ içerikli görevler.',
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white38,
             fontSize: 12,

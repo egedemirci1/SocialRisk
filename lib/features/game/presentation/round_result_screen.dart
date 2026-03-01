@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
-import '../../../shared/widgets/score/score_counter.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
 import '../../../shared/models/enums.dart';
@@ -11,6 +10,7 @@ import '../providers/game_provider.dart';
 import '../domain/game_entity.dart';
 import '../../room/providers/room_provider.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../admin/providers/task_provider.dart'; // Yeni eklendi 
 import '../../../shared/widgets/common/player_avatar.dart';
 
 /// Tur sonu ekranı — Oylama sonucu ve kazanılan/kaybedilen puan.
@@ -258,6 +258,16 @@ class RoundResultScreen extends ConsumerWidget {
                     ),
 
                     const SizedBox(height: 24),
+                    
+                    // Görev Feedback Alanı
+                    if (game.currentTask != null)
+                      _TaskFeedbackSection(
+                        taskId: game.currentTask!.id,
+                        taskContent: game.currentTask!.content,
+                        gameId: gameId,
+                      ),
+                      
+                    const SizedBox(height: 24),
 
                     Consumer(
                       builder: (context, ref, child) {
@@ -340,6 +350,147 @@ class _ScoreRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _TaskFeedbackSection extends ConsumerStatefulWidget {
+  final String taskId;
+  final String taskContent;
+  final String gameId;
+
+  const _TaskFeedbackSection({
+    required this.taskId,
+    required this.taskContent,
+    required this.gameId,
+  });
+
+  @override
+  ConsumerState<_TaskFeedbackSection> createState() => _TaskFeedbackSectionState();
+}
+
+class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
+  bool? _givenFeedback; // true = like, false = dislike, null = none
+
+  Future<void> _submitFeedback(bool isLike) async {
+    if (_givenFeedback != null) return;
+
+    final user = ref.read(currentUserProvider);
+    if (user == null) return;
+
+    setState(() => _givenFeedback = isLike);
+
+    await ref.read(taskControllerProvider.notifier).submitFeedback(
+      taskId: widget.taskId,
+      userId: user.uid,
+      isLike: isLike,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(
+              'Görevi Değerlendir',
+              style: AppTextStyles.titleMedium.copyWith(color: Colors.white70),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '"${widget.taskContent}"',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.white,
+                fontStyle: FontStyle.italic,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _FeedbackButton(
+                  icon: Icons.thumb_up_rounded,
+                  label: 'İyiydi',
+                  isActive: _givenFeedback == true,
+                  isDisabled: _givenFeedback != null && _givenFeedback != true,
+                  activeColor: AppColors.votePositive,
+                  onTap: () => _submitFeedback(true),
+                ),
+                const SizedBox(width: 16),
+                _FeedbackButton(
+                  icon: Icons.thumb_down_rounded,
+                  label: 'Kötü',
+                  isActive: _givenFeedback == false,
+                  isDisabled: _givenFeedback != null && _givenFeedback != false,
+                  activeColor: AppColors.voteNegative,
+                  onTap: () => _submitFeedback(false),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FeedbackButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isActive;
+  final bool isDisabled;
+  final Color activeColor;
+  final VoidCallback onTap;
+
+  const _FeedbackButton({
+    required this.icon,
+    required this.label,
+    required this.isActive,
+    required this.isDisabled,
+    required this.activeColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isActive
+        ? activeColor
+        : isDisabled
+            ? Colors.white24
+            : Colors.white54;
+
+    return InkWell(
+      onTap: isDisabled || isActive ? null : onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? activeColor.withValues(alpha: 0.15) : AppColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isActive ? activeColor : Colors.transparent,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: AppTextStyles.bodyMedium.copyWith(color: color, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

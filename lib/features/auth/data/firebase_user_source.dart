@@ -1,4 +1,7 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../domain/user_entity.dart';
 import '../domain/user_repository.dart';
 import 'user_model.dart';
@@ -61,10 +64,55 @@ class FirebaseUserSource implements UserRepository {
   }
 
   @override
+  Future<String?> uploadAvatar(String uid, dynamic fileData) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref().child('avatars/$uid.jpg');
+      
+      UploadTask uploadTask;
+      if (fileData is Uint8List) {
+        uploadTask = storageRef.putData(fileData, SettableMetadata(contentType: 'image/jpeg'));
+      } else if (fileData is File) {
+        uploadTask = storageRef.putFile(fileData);
+      } else {
+        throw Exception('Geçersiz dosya formatı (Uint8List veya File olmalı)');
+      }
+
+      final snapshot = await uploadTask;
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      
+      // Update the user's document as well
+      await updateAvatarUrl(uid, downloadUrl);
+      
+      return downloadUrl;
+    } catch (e) {
+      throw Exception('Profil fotoğrafı yüklenirken hata oluştu: $e');
+    }
+  }
+
+  @override
   Stream<UserEntity?> watchUserProfile(String uid) {
     return _userDoc(uid).snapshots().map((doc) {
       if (!doc.exists) return null;
       return UserModel.fromJson(doc.data()!, doc.id).toEntity();
+    });
+  }
+
+  @override
+  Future<void> reportUser({
+    required String reporterId,
+    required String targetUserId,
+    required String targetUserName,
+    required String targetUserAvatar,
+    required String reason,
+  }) async {
+    final reportRef = FirebaseFirestore.instance.collection('reports').doc();
+    await reportRef.set({
+      'reporterId': reporterId,
+      'targetUserId': targetUserId,
+      'targetUserName': targetUserName,
+      'targetUserAvatar': targetUserAvatar,
+      'reason': reason,
+      'createdAt': FieldValue.serverTimestamp(),
     });
   }
 }

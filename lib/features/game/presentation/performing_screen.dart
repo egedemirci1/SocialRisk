@@ -8,7 +8,10 @@ import '../../../shared/widgets/common/gradient_container.dart';
 import '../../../shared/models/enums.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
+import '../../room/domain/room_entity.dart';
 import '../providers/game_provider.dart';
+import 'widgets/player_spotlight.dart';
+import 'widgets/spectator_strip.dart';
 
 /// Görevi yapma ekranı — Görevi kabul eden kişi yapar, diğerleri izler/bekler.
 class PerformingScreen extends ConsumerStatefulWidget {
@@ -73,9 +76,11 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
     final roomAsync = ref.watch(watchRoomProvider(widget.roomCode));
     final user = ref.watch(currentUserProvider);
 
+    final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Görevi Yapma Zamanı!'),
+        title: const Text('Sosyal Risk'),
         automaticallyImplyLeading: false,
       ),
       body: GradientContainer(
@@ -90,62 +95,97 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
             final task = game.currentTask;
             final isClosed = roomAsync.value?.visibility == RoomVisibility.closed;
 
+            // Oyuncu bilgilerini al
+            PlayerEntity? currentPlayer;
+            List<PlayerEntity> players = [];
+            if (playersAsync.value != null) {
+              players = playersAsync.value!;
+              try {
+                currentPlayer = players.firstWhere((p) => p.id == game.currentPlayerId);
+              } catch (_) {}
+            }
+
             return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Spacer(),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Spacer(),
+                      
+                      if (currentPlayer != null)
+                        PlayerSpotlight(
+                          player: currentPlayer,
+                          isMe: isMyTurn,
+                        ),
+                        
+                      const SizedBox(height: 32),
+
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                isMyTurn ? 'Görevin Ne İdi?' : 'Sıradaki Görev',
+                                style: AppTextStyles.labelSmall.copyWith(color: AppColors.accent),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                isClosed && !isMyTurn ? '❓ Gizli Görev İçeriği' : (task?.content ?? 'Bilinmiyor'),
+                                style: AppTextStyles.headlineMedium.copyWith(color: Colors.white),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 48),
+
+                      if (isMyTurn) ...[
                         Text(
-                          isMyTurn ? 'Görevin Ne İdi?' : 'Sıradaki Görev',
-                          style: AppTextStyles.labelSmall.copyWith(color: AppColors.accent),
+                          'Görevi tamamladıktan sonra oylamayı başlatabilirsiniz.',
+                          style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 24),
+                        PrimaryButton(
+                          label: 'Görevi Tamamladım! Oylamaya Geç',
+                          icon: Icons.how_to_vote_rounded,
+                          isLoading: _isProceeding,
+                          onPressed: _proceedToVoting,
+                        ),
+                      ] else ...[
+                        const CircularProgressIndicator(color: AppColors.primary),
+                        const SizedBox(height: 24),
                         Text(
-                          isClosed && !isMyTurn ? '❓ Gizli Görev İçeriği' : (task?.content ?? 'Bilinmiyor'),
-                          style: AppTextStyles.headlineMedium.copyWith(color: Colors.white),
+                          'Sırası gelen oyuncunun görevi yapması bekleniyor...',
+                          style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
                           textAlign: TextAlign.center,
                         ),
                       ],
-                    ),
+                      const Spacer(flex: 2),
+                    ],
                   ),
                 ),
                 
-                const SizedBox(height: 48),
-
-                if (isMyTurn) ...[
-                  Text(
-                    'Görevi tamamladıktan sonra oylamayı başlatabilirsiniz.',
-                    style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
-                    textAlign: TextAlign.center,
+                if (players.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 24, top: 8),
+                    child: SpectatorStrip(
+                      players: players,
+                      currentPlayerId: game.currentPlayerId,
+                      myPlayerId: user?.uid,
+                    ),
                   ),
-                  const SizedBox(height: 24),
-                  PrimaryButton(
-                    label: 'Görevi Tamamladım! Oylamaya Geç',
-                    icon: Icons.how_to_vote_rounded,
-                    isLoading: _isProceeding,
-                    onPressed: _proceedToVoting,
-                  ),
-                ] else ...[
-                  const CircularProgressIndicator(color: AppColors.primary),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Sırası gelen oyuncunun görevi yapması bekleniyor...',
-                    style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-                const Spacer(flex: 2),
               ],
             );
           },

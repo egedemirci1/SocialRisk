@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../domain/user_entity.dart';
 import '../domain/user_repository.dart';
 import '../data/firebase_user_source.dart';
+import 'auth_provider.dart';
 
 part 'user_provider.g.dart';
 
@@ -38,6 +39,36 @@ class UserController extends _$UserController {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() =>
       ref.read(userRepositoryProvider).updateAvatarUrl(uid, avatarUrl)
+    );
+  }
+
+  Future<String?> uploadAvatar(String uid, dynamic file) async {
+    state = const AsyncLoading();
+    String? downloadUrl;
+    state = await AsyncValue.guard(() async {
+      downloadUrl = await ref.read(userRepositoryProvider).uploadAvatar(uid, file);
+    });
+    return downloadUrl;
+  }
+
+  Future<void> reportUser({
+    required String targetUserId,
+    required String targetUserName,
+    required String targetUserAvatar,
+    required String reason,
+  }) async {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return;
+    
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() =>
+      ref.read(userRepositoryProvider).reportUser(
+        reporterId: user.uid,
+        targetUserId: targetUserId,
+        targetUserName: targetUserName,
+        targetUserAvatar: targetUserAvatar,
+        reason: reason,
+      )
     );
   }
 }

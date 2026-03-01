@@ -5,7 +5,6 @@ abstract class GameRepository {
   Future<String> startGame({
     required String roomId,
     required List<String> playerIds,
-    required GameDifficulty difficulty,
     required GameMode mode,
   });
 
@@ -24,6 +23,13 @@ abstract class GameRepository {
   Future<void> assignTaskByCategory({
     required String gameId,
     required String category,
+  });
+
+  /// Zorluk seçildiğinde Firestore'dan görevi çekip atar.
+  Future<void> chooseDifficulty({
+    required String gameId,
+    required String roomId,
+    required String difficulty,
   });
 
   Future<void> acceptTask(String gameId);

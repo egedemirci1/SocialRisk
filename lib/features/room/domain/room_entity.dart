@@ -10,7 +10,7 @@ class RoomEntity {
   final RoomVisibility visibility;
   final List<PlayerEntity> players;
   final String? gameId;
-  final GameDifficulty difficulty;
+  final GamePreset preset;
   final DateTime createdAt;
 
   const RoomEntity({
@@ -22,7 +22,7 @@ class RoomEntity {
     this.endConditionValue = 5000,
     this.visibility = RoomVisibility.open,
     this.players = const [],
-    this.difficulty = GameDifficulty.mixed,
+    this.preset = GamePreset.classic,
     this.gameId,
     required this.createdAt,
   });

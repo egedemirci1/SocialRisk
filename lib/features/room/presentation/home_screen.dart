@@ -5,7 +5,9 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../auth/domain/user_entity.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../admin/providers/admin_provider.dart';
 
 /// Ana menü ekranı — Oda Oluştur veya Odaya Katıl.
 class HomeScreen extends ConsumerWidget {
@@ -24,7 +26,7 @@ class HomeScreen extends ConsumerWidget {
             const Spacer(flex: 2),
             _buildWelcome(context, displayName),
             const Spacer(),
-            _buildActions(context),
+            _buildActions(context, user),
             const Spacer(flex: 2),
             _buildFooter(context, ref),
             const SizedBox(height: 16),
@@ -90,7 +92,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActions(BuildContext context) {
+  Widget _buildActions(BuildContext context, UserEntity? user) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -103,6 +105,14 @@ class HomeScreen extends ConsumerWidget {
         _JoinRoomButton(
           onPressed: () => context.push('/join-room'),
         ),
+        if (isAdmin(user?.uid)) ...[
+          const SizedBox(height: 16),
+          PrimaryButton(
+            label: 'Admin Paneli',
+            icon: Icons.admin_panel_settings_rounded,
+            onPressed: () => context.push('/admin/dashboard'),
+          ),
+        ],
       ],
     );
   }

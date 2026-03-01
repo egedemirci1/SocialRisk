@@ -11,7 +11,7 @@ class RoomModel {
   final int endConditionValue;
   final String visibility;
   final String? gameId;
-  final String difficulty;
+  final String preset;
   final DateTime createdAt;
 
   const RoomModel({
@@ -22,7 +22,7 @@ class RoomModel {
     required this.endConditionType,
     required this.endConditionValue,
     this.visibility = 'open',
-    this.difficulty = 'mixed',
+    this.preset = 'classic',
     this.gameId,
     required this.createdAt,
   });
@@ -34,9 +34,9 @@ class RoomModel {
       mode: json['mode'] as String? ?? 'classic',
       status: json['status'] as String? ?? 'waiting',
       endConditionType: json['endConditionType'] as String? ?? 'score',
-      endConditionValue: json['endConditionValue'] as int? ?? 5000,
+      endConditionValue: json['endConditionValue'] as int? ?? 500,
       visibility: json['visibility'] as String? ?? 'open',
-      difficulty: json['difficulty'] as String? ?? 'mixed',
+      preset: json['preset'] as String? ?? 'classic',
       gameId: json['gameId'] as String?,
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
@@ -51,7 +51,7 @@ class RoomModel {
       'endConditionType': endConditionType,
       'endConditionValue': endConditionValue,
       'visibility': visibility,
-      'difficulty': difficulty,
+      'preset': preset,
       'gameId': gameId,
       'createdAt': FieldValue.serverTimestamp(),
     };
@@ -78,9 +78,9 @@ class RoomModel {
         (e) => e.name == visibility,
         orElse: () => RoomVisibility.open,
       ),
-      difficulty: GameDifficulty.values.firstWhere(
-        (e) => e.name == difficulty,
-        orElse: () => GameDifficulty.mixed,
+      preset: GamePreset.values.firstWhere(
+        (e) => e.name == preset,
+        orElse: () => GamePreset.classic,
       ),
       players: players,
       gameId: gameId,

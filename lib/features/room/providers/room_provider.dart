@@ -33,7 +33,7 @@ class RoomController extends _$RoomController {
     required EndConditionType endConditionType,
     required int endConditionValue,
     required RoomVisibility visibility,
-    required GameDifficulty difficulty,
+    required GamePreset preset,
     required GameMode mode,
   }) async {
     state = const AsyncLoading();
@@ -49,7 +49,7 @@ class RoomController extends _$RoomController {
         endConditionType: endConditionType,
         endConditionValue: endConditionValue,
         visibility: visibility,
-        difficulty: difficulty,
+        preset: preset,
         mode: mode,
       ),
     );

@@ -27,7 +27,6 @@ class GameController extends _$GameController {
   Future<String> startGame({
     required String roomId,
     required List<String> playerIds,
-    required GameDifficulty difficulty,
     required GameMode mode,
   }) async {
     state = const AsyncLoading();
@@ -35,7 +34,6 @@ class GameController extends _$GameController {
       ref.read(gameRepositoryProvider).startGame(
         roomId: roomId,
         playerIds: playerIds,
-        difficulty: difficulty,
         mode: mode,
       ),
     );
@@ -68,6 +66,18 @@ class GameController extends _$GameController {
     await ref.read(gameRepositoryProvider).assignTaskByCategory(
       gameId: gameId,
       category: category,
+    );
+  }
+
+  Future<void> chooseDifficulty({
+    required String gameId,
+    required String roomId,
+    required String difficulty,
+  }) async {
+    await ref.read(gameRepositoryProvider).chooseDifficulty(
+      gameId: gameId,
+      roomId: roomId,
+      difficulty: difficulty,
     );
   }
 

@@ -9,6 +9,7 @@ import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
+import 'package:social_risk/features/admin/data/task_seed_migration.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +17,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Seed tasks on startup if empty (fixes task not found error)
+  await TaskSeedMigration.run();
 
   // E30: Offline persistence — Firestore cache ayarları
   FirebaseFirestore.instance.settings = const Settings(

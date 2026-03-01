@@ -14,6 +14,9 @@ class GameEntity {
   final GameDifficulty difficulty;
   final int? lastRoundScore;
   final int? lastRoundMultiplier;
+  // Tur içi zorluk seçimi (Risk/Ödül)
+  final String? selectedCategory;
+  final String? selectedDifficulty; // easy, medium, hard
   // Faz 10: Ekonomi modu alanları
   final GameMode mode;
   final Map<String, int> categoryMarketValues;
@@ -35,6 +38,8 @@ class GameEntity {
     this.difficulty = GameDifficulty.mixed,
     this.lastRoundScore,
     this.lastRoundMultiplier,
+    this.selectedCategory,
+    this.selectedDifficulty,
     this.mode = GameMode.classic,
     this.categoryMarketValues = const {},
     this.lockedCategories = const [],

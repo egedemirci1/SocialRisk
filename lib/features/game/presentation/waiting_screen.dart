@@ -7,7 +7,6 @@ import '../../../shared/widgets/common/gradient_container.dart';
 import '../../../shared/models/enums.dart';
 import '../../room/providers/room_provider.dart';
 import '../providers/game_provider.dart';
-import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 
 /// Bekleme ekranı — Diğer oyuncuların görevi tamamlamasını bekle.
@@ -52,7 +51,6 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
   @override
   Widget build(BuildContext context) {
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
-    final user = ref.watch(currentUserProvider);
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
 
     return gameAsync.when(

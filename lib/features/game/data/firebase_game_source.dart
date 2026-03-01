@@ -3,13 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/game_entity.dart';
 import '../domain/game_repository.dart';
 import 'game_model.dart';
-import 'tasks_seed_data.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../shared/models/enums.dart';
 import '../../../core/constants/game_constants.dart';
+import '../../admin/data/task_firestore_source.dart';
 
 class FirebaseGameSource implements GameRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final TaskFirestoreSource _taskSource = TaskFirestoreSource();
   final Random _random = Random();
 
   CollectionReference<Map<String, dynamic>> get _gamesRef =>
@@ -22,7 +23,6 @@ class FirebaseGameSource implements GameRepository {
   Future<String> startGame({
     required String roomId,
     required List<String> playerIds,
-    required GameDifficulty difficulty,
     required GameMode mode,
   }) async {
     // Sırayı karıştır
@@ -36,7 +36,6 @@ class FirebaseGameSource implements GameRepository {
       currentTask: null,
       turnOrder: shuffled,
       status: 'playing',
-      difficulty: difficulty.name,
       mode: mode.name,
       categoryMarketValues: mode == GameMode.economy
           ? Map<String, int>.from(GameConstants.defaultMarketValues)
@@ -89,47 +88,63 @@ class FirebaseGameSource implements GameRepository {
     required String gameId,
     required String category,
   }) async {
-    final snap = await _gameDoc(gameId).get();
-    if (!snap.exists) return;
+    // Yeni akış: Kategori belirlendiğinde görev atanmaz. Zorluk seçimi beklenir.
+    await _gameDoc(gameId).update({
+      'selectedCategory': category,
+      'status': 'choosingDifficulty',
+      'spinningTarget': null,
+    });
+  }
 
-    final game = GameModel.fromJson(snap.data()!, snap.id);
-    final usedIds = game.usedTaskIds;
-    final difficulty = GameDifficulty.values.firstWhere(
-        (e) => e.name == game.difficulty,
-        orElse: () => GameDifficulty.mixed);
+  @override
+  Future<void> chooseDifficulty({
+    required String gameId,
+    required String roomId,
+    required String difficulty,
+  }) async {
+    final gameSnap = await _gameDoc(gameId).get();
+    if (!gameSnap.exists) return;
 
-    // Kategoriye uyan ve daha önce kullanılmamış görevleri bul
-    var availableTasks = tasksSeedData.where((t) => 
-      t.category == category && !usedIds.contains(t.id)
-    ).toList();
-
-    // Zorluğa göre filtreleme
-    if (difficulty != GameDifficulty.mixed) {
-      final targetMultiplier = difficulty == GameDifficulty.easy 
-        ? 1 
-        : (difficulty == GameDifficulty.medium ? 2 : 3);
-        
-      final filteredByDifficulty = availableTasks.where((t) => t.multiplier == targetMultiplier).toList();
-      
-      // Eğer seçili zorlukta görev kalmadıysa filtreyi esnet
-      if (filteredByDifficulty.isNotEmpty) {
-        availableTasks = filteredByDifficulty;
-      }
+    final game = GameModel.fromJson(gameSnap.data()!, gameSnap.id);
+    final category = game.selectedCategory;
+    
+    if (category == null) {
+      throw Exception('Önce kategori seçilmeli!');
     }
 
-    // Eğer o kategorideki tüm (veya ilgili zorluktaki) görevler bittiyse, 
-    // fallback olarak kullanılmışları da dahil et (sadece o kategori için)
-    if (availableTasks.isEmpty) {
-      availableTasks = tasksSeedData.where((t) => t.category == category).toList();
-    }
+    // Odanın preset bilgisini al
+    final roomSnap = await _firestore.collection('rooms').doc(roomId).get();
+    final preset = roomSnap.data()?['preset'] as String? ?? 'classic';
 
-    // Rastgele birini seç
-    final selectedTask = availableTasks[_random.nextInt(availableTasks.length)];
-
-    await setCurrentTask(
-      gameId: gameId, 
-      task: selectedTask.toEntity(),
+    // Firestore'dan görev çek
+    final taskEntity = await _taskSource.getRandomTask(
+      category: category,
+      difficulty: difficulty,
+      preset: preset,
+      usedTaskIds: game.usedTaskIds,
     );
+
+    if (taskEntity == null) {
+      // Çok düşük ihtimal: Hiç görev yok
+      throw Exception('Bu kategoride görev bulunamadı!');
+    }
+
+    // Görevin çarpanını seçilen zorluğa göre ayarla
+    final multiplier = difficulty == 'easy' ? 1 : (difficulty == 'medium' ? 2 : 3);
+
+    final taskModel = TaskModel(
+      id: taskEntity.id,
+      category: taskEntity.category,
+      content: taskEntity.content,
+      multiplier: multiplier,
+    );
+
+    await _gameDoc(gameId).update({
+      'selectedDifficulty': difficulty,
+      'currentTask': taskModel.toJson(),
+      'usedTaskIds': FieldValue.arrayUnion([taskEntity.id]),
+      'status': 'playing', // Veya direkt performing? Gösterim task_screen'de halledilebilir.
+    });
   }
 
   @override
@@ -233,6 +248,8 @@ class FirebaseGameSource implements GameRepository {
     final updates = <String, dynamic>{
       'currentPlayerId': nextPlayerId,
       'currentTask': null,
+      'selectedCategory': null,
+      'selectedDifficulty': null,
       'status': 'playing',
       'spinningTarget': null,
     };
@@ -255,6 +272,8 @@ class FirebaseGameSource implements GameRepository {
       'currentRound': game.currentRound + 1,
       'currentPlayerId': game.turnOrder.first,
       'currentTask': null, // Çark çevrilecek
+      'selectedCategory': null,
+      'selectedDifficulty': null,
       'spinningTarget': null,
     });
   }
@@ -307,6 +326,8 @@ class FirebaseGameSource implements GameRepository {
       'lockedCategories': [],
       'categoryMarketValues': GameConstants.defaultMarketValues,
       'currentTask': null,
+      'selectedCategory': null,
+      'selectedDifficulty': null,
       'spinningTarget': null,
       'currentPlayerId': pickOrder.first,
       'status': 'playing',
@@ -369,7 +390,6 @@ class FirebaseGameSource implements GameRepository {
     await assignTaskByCategory(gameId: gameId, category: category);
   }
 
-  TaskModel _getRandomTask() {
-    return tasksSeedData[_random.nextInt(tasksSeedData.length)];
-  }
+  // _getRandomTask ve seedData kullanımı kaldırıldı.
+
 }

@@ -21,7 +21,8 @@ class AppColors {
   static const voteNeutral      = Color(0xFFFF9800);
   static const voteNegative     = Color(0xFFF44336);
 
-  // Ceza / Pas
+  // Ceza / Hata
+  static const error            = Color(0xFFE53935);
   static const penalty          = Color(0xFFE53935);
   static const passWarning      = Color(0xFFFFC107);
 }

@@ -15,6 +15,9 @@ class GameModel {
   final String difficulty;
   final int? lastRoundScore;
   final int? lastRoundMultiplier;
+  // Tur içi zorluk seçimi
+  final String? selectedCategory;
+  final String? selectedDifficulty;
   // Faz 10: Ekonomi modu
   final String mode;
   final Map<String, int> categoryMarketValues;
@@ -35,6 +38,8 @@ class GameModel {
     this.difficulty = 'mixed',
     this.lastRoundScore,
     this.lastRoundMultiplier,
+    this.selectedCategory,
+    this.selectedDifficulty,
     this.mode = 'classic',
     this.categoryMarketValues = const {},
     this.lockedCategories = const [],
@@ -56,6 +61,8 @@ class GameModel {
       difficulty: json['difficulty'] as String? ?? 'mixed',
       lastRoundScore: json['lastRoundScore'] as int?,
       lastRoundMultiplier: json['lastRoundMultiplier'] as int?,
+      selectedCategory: json['selectedCategory'] as String?,
+      selectedDifficulty: json['selectedDifficulty'] as String?,
       mode: json['mode'] as String? ?? 'classic',
       categoryMarketValues: Map<String, int>.from(json['categoryMarketValues'] ?? {}),
       lockedCategories: List<String>.from(json['lockedCategories'] ?? []),
@@ -78,6 +85,8 @@ class GameModel {
       if (spinningTarget != null) 'spinningTarget': spinningTarget,
       if (lastRoundScore != null) 'lastRoundScore': lastRoundScore,
       if (lastRoundMultiplier != null) 'lastRoundMultiplier': lastRoundMultiplier,
+      if (selectedCategory != null) 'selectedCategory': selectedCategory,
+      if (selectedDifficulty != null) 'selectedDifficulty': selectedDifficulty,
       'categoryMarketValues': categoryMarketValues,
       'lockedCategories': lockedCategories,
       'categoryPickOrder': categoryPickOrder,
@@ -111,6 +120,8 @@ class GameModel {
       spinningTarget: spinningTarget,
       lastRoundScore: lastRoundScore,
       lastRoundMultiplier: lastRoundMultiplier,
+      selectedCategory: selectedCategory,
+      selectedDifficulty: selectedDifficulty,
       mode: GameMode.values.firstWhere(
         (e) => e.name == mode,
         orElse: () => GameMode.classic,

@@ -8,6 +8,7 @@ import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/buttons/danger_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
+import '../../../shared/widgets/common/report_dialog.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/room_provider.dart';
 import '../../game/providers/game_provider.dart';
@@ -94,6 +95,15 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                       isReady: player.isReady,
                       isCurrentPlayer: isMe,
                       score: player.score,
+                      onLongPress: isMe ? null : () {
+                        ReportDialog.show(
+                          context,
+                          ref,
+                          targetUserId: player.id,
+                          targetUserName: player.name,
+                          targetUserAvatar: player.avatarUrl ?? '',
+                        );
+                      },
                     );
                   },
                 ),
@@ -149,7 +159,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                                     final gameId = await gameRepo.startGame(
                                       roomId: widget.roomCode,
                                       playerIds: playerIds,
-                                      difficulty: room?.difficulty ?? GameDifficulty.mixed,
+                                      // difficulty artık oda ayarı değil, startGame'e gerekmez. 
+                                      // gameRepo.startGame metodunu da güncellememiz gerekecek.
                                       mode: room?.mode ?? GameMode.classic,
                                     );
 
@@ -264,18 +275,22 @@ class _PlayerTile extends StatelessWidget {
     required this.isReady,
     required this.isCurrentPlayer,
     this.score = 0,
+    this.onLongPress,
   });
 
   final String name;
   final bool isReady;
   final bool isCurrentPlayer;
   final int score;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: DecoratedBox(
+    return GestureDetector(
+      onLongPress: onLongPress,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: DecoratedBox(
         decoration: BoxDecoration(
           color: isCurrentPlayer
               ? AppColors.primary.withValues(alpha: 0.1)
@@ -312,6 +327,7 @@ class _PlayerTile extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

@@ -7,6 +7,9 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/providers/user_provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 /// Profil ekranı — Avatar yükleme, isim değiştirme.
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -18,7 +21,9 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   late final TextEditingController _nameController;
+  final ImagePicker _picker = ImagePicker();
   bool _isSaving = false;
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -56,11 +61,89 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
+  Future<void> _pickAndUploadImage(ImageSource source) async {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return;
+
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 75,
+      );
+
+      if (image == null) return;
+
+      setState(() => _isUploading = true);
+
+      final bytes = await image.readAsBytes();
+
+      await ref.read(userControllerProvider.notifier).uploadAvatar(
+        user.uid,
+        bytes,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profil fotoğrafı güncellendi!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isUploading = false);
+      }
+    }
+  }
+
+  void _showImageSourceSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library_rounded, color: AppColors.accent),
+              title: const Text('Galeriden Seç', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(context);
+                _pickAndUploadImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_rounded, color: AppColors.accent),
+              title: const Text('Fotoğraf Çek', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(context);
+                _pickAndUploadImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Current user for basic info (auth)
     final user = ref.watch(currentUserProvider);
+    // User profile from firestore for avatar updates
+    final userProfileAsync = user != null ? ref.watch(watchUserProfileProvider(user.uid)) : const AsyncValue.loading();
+    
     final displayName = user?.displayName ?? 'Oyuncu';
-    final avatarUrl = user?.photoURL;
+    final avatarUrl = userProfileAsync.value?.avatarUrl ?? user?.photoURL;
 
     // İlk açılışta mevcut ismi doldur
     if (_nameController.text.isEmpty) {
@@ -83,46 +166,52 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const SizedBox(height: 40),
 
               // Avatar
-              Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: AppColors.surfaceElevated,
-                    backgroundImage:
-                        avatarUrl != null ? NetworkImage(avatarUrl) : null,
-                    child: avatarUrl == null
-                        ? Text(
-                            displayName.isNotEmpty
-                                ? displayName[0].toUpperCase()
-                                : '?',
-                            style: GoogleFonts.inter(
-                              fontSize: 48,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white54,
-                            ),
-                          )
-                        : null,
-                  ),
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.background,
-                        width: 3,
-                      ),
+              GestureDetector(
+                onTap: _isUploading ? null : _showImageSourceSheet,
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundColor: AppColors.surfaceElevated,
+                      backgroundImage:
+                          avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                      child: _isUploading
+                          ? const CircularProgressIndicator(color: AppColors.primary)
+                          : avatarUrl == null
+                              ? Text(
+                                  displayName.isNotEmpty
+                                      ? displayName[0].toUpperCase()
+                                      : '?',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 48,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white54,
+                                  ),
+                                )
+                              : null,
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Icon(
-                        Icons.camera_alt_rounded,
-                        color: Colors.white,
-                        size: 20,
+                    if (!_isUploading)
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.background,
+                            width: 3,
+                          ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Icon(
+                            Icons.camera_alt_rounded,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
 

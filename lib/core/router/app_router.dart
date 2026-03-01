@@ -11,10 +11,16 @@ import '../../features/game/presentation/performing_screen.dart';
 import '../../features/game/presentation/waiting_screen.dart';
 import '../../features/game/presentation/round_result_screen.dart';
 import '../../features/game/presentation/game_over_screen.dart';
+import '../../features/game/presentation/difficulty_choice_screen.dart';
 import '../../features/voting/presentation/voting_screen.dart';
 import '../../features/auth/presentation/profile_screen.dart';
 import '../../features/economy/presentation/store_screen.dart';
 import '../../features/game/presentation/economy_pick_screen.dart';
+import '../../features/admin/presentation/admin_dashboard_screen.dart';
+import '../../features/admin/presentation/task_editor_screen.dart';
+import '../../features/admin/presentation/reported_photos_screen.dart';
+import '../../features/admin/providers/admin_provider.dart';
+import '../../features/admin/domain/task_item_entity.dart';
 
 /// Listens to Firebase auth state so GoRouter re-evaluates redirect
 /// automatically when the user signs in or out.
@@ -50,6 +56,11 @@ final appRouter = GoRouter(
 
     // Signed in — don't let them stay on login page
     if (isOnLoginPage) return '/home';
+
+    // Admin pages guard
+    if (state.matchedLocation.startsWith('/admin')) {
+      if (!isAdmin(user.uid)) return '/home';
+    }
 
     return null;
   },
@@ -143,6 +154,16 @@ final appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: '/difficulty',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final gameId = extra?['gameId'] as String? ?? '';
+        final roomCode = extra?['roomCode'] as String? ?? '';
+
+        return DifficultyChoiceScreen(gameId: gameId, roomCode: roomCode);
+      },
+    ),
+    GoRoute(
       path: '/economy-pick',
       builder: (context, state) {
         final extra = state.extra as Map<String, String>? ?? {};
@@ -151,6 +172,21 @@ final appRouter = GoRouter(
           roomCode: extra['roomCode'] ?? '',
         );
       },
+    ),
+    GoRoute(
+      path: '/admin/dashboard',
+      builder: (context, state) => const AdminDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/admin/task-editor',
+      builder: (context, state) {
+        final task = state.extra as TaskItemEntity?;
+        return TaskEditorScreen(taskToEdit: task);
+      },
+    ),
+    GoRoute(
+      path: '/admin/reports',
+      builder: (context, state) => const ReportedPhotosScreen(),
     ),
   ],
 );
