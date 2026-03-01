@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/room_entity.dart';
 import '../domain/room_repository.dart';
 import 'room_model.dart';
-import '../../../shared/models/enums.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../core/constants/game_constants.dart';
+import '../../../shared/models/enums.dart';
+import 'package:rxdart/rxdart.dart';
 
 class FirebaseRoomSource implements RoomRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -96,17 +97,23 @@ class FirebaseRoomSource implements RoomRepository {
 
   @override
   Stream<RoomEntity?> watchRoom(String roomCode) {
-    return _roomDoc(roomCode).snapshots().asyncMap((roomSnap) async {
-      if (!roomSnap.exists) return null;
+    final roomStream = _roomDoc(roomCode).snapshots();
+    final playersStream = _playersRef(roomCode).snapshots();
 
-      final roomModel = RoomModel.fromJson(roomSnap.data()!);
-      final playersSnap = await _playersRef(roomCode).get();
-      final players = playersSnap.docs
-          .map((doc) => PlayerModel.fromJson(doc.data(), doc.id).toEntity())
-          .toList();
+    return Rx.combineLatest2(
+      roomStream,
+      playersStream,
+      (roomSnap, playersSnap) {
+        if (!roomSnap.exists) return null;
 
-      return roomModel.toEntity(players);
-    });
+        final roomModel = RoomModel.fromJson(roomSnap.data()!);
+        final players = playersSnap.docs
+            .map((doc) => PlayerModel.fromJson(doc.data(), doc.id).toEntity())
+            .toList();
+
+        return roomModel.toEntity(players);
+      },
+    );
   }
 
   @override

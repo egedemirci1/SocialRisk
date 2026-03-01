@@ -30,6 +30,7 @@
 - [x] Faz 3: Oyun ekranları (Task/Voting/Waiting/RoundResult/GameOver)
 - [x] Faz 4: Firebase provider birleştirme + auth redirect
 - [x] BUG: Provider dispose hatası (create_room + join_room)
+- [x] BUG: Lobi'de Host'un sonradan katılan Client'ı görememesi sorunu (RxDart ile çözüldü)
 
 ---
 

@@ -189,10 +189,15 @@ class RoundResultScreen extends ConsumerWidget {
                             final isMe = player.id == game.currentPlayerId; // aktif oyuncu
                             
                             Color rankColor;
-                            if (index == 0) rankColor = const Color(0xFFFFD700);
-                            else if (index == 1) rankColor = const Color(0xFFC0C0C0);
-                            else if (index == 2) rankColor = const Color(0xFFCD7F32);
-                            else rankColor = Colors.white38;
+                            if (index == 0) {
+                              rankColor = const Color(0xFFFFD700);
+                            } else if (index == 1) {
+                              rankColor = const Color(0xFFC0C0C0);
+                            } else if (index == 2) {
+                              rankColor = const Color(0xFFCD7F32);
+                            } else {
+                              rankColor = Colors.white38;
+                            }
 
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 8),
