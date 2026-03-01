@@ -25,14 +25,13 @@ class FirebaseGameSource implements GameRepository {
   }) async {
     // Sırayı karıştır
     final shuffled = List<String>.from(playerIds)..shuffle(_random);
-    final firstTask = _getRandomTask();
 
     final gameModel = GameModel(
       gameId: '',
       roomId: roomId,
       currentRound: 1,
       currentPlayerId: shuffled.first,
-      currentTask: firstTask.toJson(),
+      currentTask: null, // Çark çevrilecek, görev atanmayacak
       turnOrder: shuffled,
       status: 'playing',
       difficulty: difficulty.name,

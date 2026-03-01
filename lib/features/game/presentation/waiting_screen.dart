@@ -62,6 +62,9 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
               body: Center(child: CircularProgressIndicator()));
         }
 
+        // Her build'de sıfırla — yeniden yönlendirme yapılabilsin
+        _isNavigating = false;
+
         // Oyun bittiyse sonuç ekranına git
         if (game.status == GameStatus.finished && !_isNavigating) {
           _isNavigating = true;
@@ -85,8 +88,21 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
           });
         }
 
-        // Sıra bana geldiyse görev ekranına geri dön
-        if (game.currentPlayerId == user?.uid && game.status == GameStatus.playing && !_isNavigating) {
+        // Sonuçlar ekranına git
+        if (game.status == GameStatus.results && !_isNavigating) {
+          _isNavigating = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.go('/round-result', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            }
+          });
+        }
+
+        // Sıra bana geldiyse veya playing durumundaysa görev ekranına geri dön
+        if (game.status == GameStatus.playing && !_isNavigating) {
           _isNavigating = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {

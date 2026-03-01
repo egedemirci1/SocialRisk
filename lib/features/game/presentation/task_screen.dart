@@ -145,7 +145,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           }
         );
 
-        // Durumuna göre yönlendir (Yalnızca Voting ve Performing için yönlendir)
+        // Durumuna göre yönlendir
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             if (game.status == GameStatus.voting) {
@@ -154,7 +154,13 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                 'roomCode': widget.roomCode,
               });
             } else if (game.status == GameStatus.performing && !isMyTurn) {
+              // Sadece "performing" aşamasında diğer oyuncular bekleme ekranına
               context.replace('/waiting', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            } else if (game.status == GameStatus.results) {
+              context.replace('/round-result', extra: {
                 'gameId': widget.gameId,
                 'roomCode': widget.roomCode,
               });
