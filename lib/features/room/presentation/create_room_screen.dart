@@ -28,6 +28,8 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   GamePreset _preset = GamePreset.classic; // Yeni alan
   GameMode _selectedMode = GameMode.classic;
 
+  bool _useCustomDeck = false;
+
   Future<void> _createRoom() async {
     setState(() => _isCreating = true);
     try {
@@ -56,6 +58,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         preset: _preset,
         hostAvatarUrl: userProfile?.avatarUrl,
         mode: _selectedMode,
+        useCustomDeck: _useCustomDeck,
       );
 
       if (mounted && roomCode.isNotEmpty) {
@@ -433,6 +436,27 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white38,
             fontSize: 12,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        // Kendi destemi kullan toggle
+        Row(
+          children: [
+            Expanded(
+              child: _ToggleChip(
+                label: 'Kendi Destemi Kullan',
+                isSelected: _useCustomDeck,
+                onTap: () => setState(() => _useCustomDeck = !_useCustomDeck),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Profilinde oluşturduğun özel sorular oyuna dahil edilir (Zorluk ve kategori uyarsa).',
+          style: AppTextStyles.labelSmall.copyWith(
+            color: Colors.white38,
           ),
           textAlign: TextAlign.center,
         ),

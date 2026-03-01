@@ -62,8 +62,8 @@ Bu blokta geliştiriciler Frontend/Backend yerine **Modül bazlı** ayrılarak �
 3. **Bitiş Koşulu Kapsamı (End Condition Thresholds):** Toplam kazanma (Bitiş) puanını ayarını UI ve model bazında Max değer `500`, Min değer `50` olarak sınırlandır.
 
 ### 👨‍💻 Kendi Destem ve Mağaza Modülü (Ege)
-1. **Özel Deste UI & Logic (Lobby Setup):** Lobi oluşturma ekranına, kullanıcının kendi destesini (Custom Deck) seçebileceği UI toggle'ını ekle. Seçildiyse oda oyun başladığında `users/{uid}/custom_tasks` üzerinden o desteyi de soru havuzuna katsın.
-2. **Mağaza (Store) Düzenlemeleri & Test UI:** Test parası ekleme butonunun UI state/onClick kısımlarını bağla. Eşya alımında Transaction işleminin çökmesi veya eksik bakiye uyarısı sorunlarını (Logic) debug et.
+- [x] **Özel Deste UI & Logic (Lobby Setup):** Lobi oluşturma ekranına, kullanıcının kendi destesini (Custom Deck) seçebileceği UI toggle'ını ekle. Seçildiyse oda oyun başladığında `users/{uid}/custom_tasks` üzerinden o desteyi de soru havuzuna katsın.
+- [x] **Mağaza (Store) Düzenlemeleri & Test UI:** Test parası ekleme butonunun UI state/onClick kısımlarını bağla. Eşya alımında Transaction işleminin çökmesi veya eksik bakiye uyarısı sorunlarını (Logic) debug et.
 3. **Full System Polish:** Ege ve Reze kodları birleştirip E2E test ile baştan sona oynanış kontrol edilecek.
 
 ---
