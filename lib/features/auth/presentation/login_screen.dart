@@ -30,7 +30,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     super.initState();
     _fadeController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 300),
     );
     _fadeAnimation = CurvedAnimation(
       parent: _fadeController,

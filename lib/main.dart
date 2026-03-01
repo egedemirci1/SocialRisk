@@ -4,33 +4,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
-import 'package:social_risk/features/admin/data/task_seed_migration.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
+  // ─── PERFORMANCE: Disable Google Fonts HTTP fetching ───
+  // Without this, every GoogleFonts.inter() / .nunito() call downloads
+  // font files from the internet on startup, adding 3-8 seconds.
+  // Fonts will use bundled assets or system fallbacks instead.
+  GoogleFonts.config.allowRuntimeFetching = false;
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Seed tasks on startup if empty (fire-and-forget — don't block app start)
-  TaskSeedMigration.run().catchError((e) {
-    debugPrint('TaskSeedMigration skipped: $e');
-    return 0;
-  });
+  // ─── NOTE: TaskSeedMigration removed from startup ───
+  // It was hitting Firestore before auth → always failed with permission-denied.
+  // Seed tasks from the admin panel instead.
 
-  // E30: Offline persistence — Firestore cache ayarları
+  // Firestore offline persistence
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
     cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
   );
 
-  // E29: Crashlytics — only on native platforms (NOT supported on web)
+  // Crashlytics — only on native platforms (NOT supported on web)
   if (!kIsWeb) {
     FlutterError.onError = (details) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(details);

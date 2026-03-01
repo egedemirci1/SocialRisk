@@ -134,20 +134,25 @@
       }
     }
 
+    // Delay splash removal so LoginScreen has time to fully paint
+    function scheduleSplashRemoval() {
+      setTimeout(removeSplash, 600);
+    }
+
     // Method 1: Listen for Flutter's first-frame event
-    window.addEventListener('flutter-first-frame', removeSplash);
+    window.addEventListener('flutter-first-frame', scheduleSplashRemoval);
 
     // Method 2: MutationObserver — detect when Flutter adds its rendering elements
     var observer = new MutationObserver(function () {
       if (document.querySelector('flt-glass-pane, flutter-view, flt-scene-host')) {
-        removeSplash();
+        scheduleSplashRemoval();
         observer.disconnect();
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
-    // Method 3: Fallback timeout — remove after 6 seconds no matter what
-    setTimeout(removeSplash, 6000);
+    // Method 3: Fallback timeout — remove after 8 seconds no matter what
+    setTimeout(removeSplash, 8000);
   </script>
 
   <script src="flutter_bootstrap.js" async></script>
