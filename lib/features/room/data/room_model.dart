@@ -12,6 +12,7 @@ class RoomModel {
   final String visibility;
   final String? gameId;
   final String preset;
+  final bool useCustomDeck;
   final DateTime createdAt;
 
   const RoomModel({
@@ -23,6 +24,7 @@ class RoomModel {
     required this.endConditionValue,
     this.visibility = 'open',
     this.preset = 'classic',
+    this.useCustomDeck = false,
     this.gameId,
     required this.createdAt,
   });
@@ -37,6 +39,7 @@ class RoomModel {
       endConditionValue: json['endConditionValue'] as int? ?? 500,
       visibility: json['visibility'] as String? ?? 'open',
       preset: json['preset'] as String? ?? 'classic',
+      useCustomDeck: json['useCustomDeck'] as bool? ?? false,
       gameId: json['gameId'] as String?,
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
@@ -52,6 +55,7 @@ class RoomModel {
       'endConditionValue': endConditionValue,
       'visibility': visibility,
       'preset': preset,
+      'useCustomDeck': useCustomDeck,
       'gameId': gameId,
       'createdAt': FieldValue.serverTimestamp(),
     };
@@ -82,6 +86,7 @@ class RoomModel {
         (e) => e.name == preset,
         orElse: () => GamePreset.classic,
       ),
+      useCustomDeck: useCustomDeck,
       players: players,
       gameId: gameId,
       createdAt: createdAt,

@@ -13,6 +13,7 @@ abstract class RoomRepository {
     required RoomVisibility visibility,
     required GamePreset preset,
     required GameMode mode,
+    required bool useCustomDeck,
   });
 
   Future<void> joinRoom({
@@ -24,10 +25,7 @@ abstract class RoomRepository {
     String? activeTitle,
   });
 
-  Future<void> leaveRoom({
-    required String roomCode,
-    required String playerId,
-  });
+  Future<void> leaveRoom({required String roomCode, required String playerId});
 
   Stream<RoomEntity?> watchRoom(String roomCode);
 

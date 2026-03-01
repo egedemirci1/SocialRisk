@@ -91,6 +91,53 @@ class AdminController extends _$AdminController {
     });
   }
 
+  Future<void> seedCosmetics() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final cosmeticsRef = FirebaseFirestore.instance.collection('cosmetics');
+      final snap = await cosmeticsRef.get();
+      if (snap.docs.isEmpty) {
+        final items = [
+          {
+            'name': 'Ateş Çerçevesi',
+            'type': 'frame',
+            'imageUrl': '🔥',
+            'price': 500,
+            'isActive': true,
+          },
+          {
+            'name': 'Buz Çerçevesi',
+            'type': 'frame',
+            'imageUrl': '🧊',
+            'price': 500,
+            'isActive': true,
+          },
+          {
+            'name': 'Kral Unvanı',
+            'type': 'title',
+            'imageUrl': '👑',
+            'price': 1000,
+            'isActive': true,
+          },
+          {
+            'name': 'Soytarı Unvanı',
+            'type': 'title',
+            'imageUrl': '🤡',
+            'price': 200,
+            'isActive': true,
+          },
+        ];
+        final batch = FirebaseFirestore.instance.batch();
+        for (var item in items) {
+          batch.set(cosmeticsRef.doc(), item);
+        }
+        await batch.commit();
+      } else {
+        throw Exception('Kozmetikler zaten seed edilmiş.');
+      }
+    });
+  }
+
   // --- Photo Moderation ---
   Future<void> approvePhoto(String targetUserId, String reportId) async {
     // Fotoğrafı onayla dersen raporu siliyoruz, flag vs koymuyoruz.

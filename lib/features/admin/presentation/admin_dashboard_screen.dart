@@ -31,6 +31,16 @@ class AdminDashboardScreen extends ConsumerWidget {
             },
           ),
           IconButton(
+            icon: const Icon(Icons.storefront_rounded),
+            tooltip: 'Seed Kozmetikler Yükle',
+            onPressed: () {
+              ref.read(adminControllerProvider.notifier).seedCosmetics();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Kozmetikler seed ediliyor...')),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.report_rounded),
             onPressed: () => context.push('/admin/reports'),
           ),
@@ -69,7 +79,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                     children: [
                       Switch(
                         value: task.isActive,
-                        activeColor: AppColors.primary,
+                        activeTrackColor: AppColors.primary,
                         onChanged: (val) {
                           ref
                               .read(adminControllerProvider.notifier)

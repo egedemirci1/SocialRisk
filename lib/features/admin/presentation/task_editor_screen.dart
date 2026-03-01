@@ -63,10 +63,11 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
 
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Hata: $e')));
+      }
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -97,7 +98,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _category,
+                initialValue: _category,
                 decoration: const InputDecoration(
                   labelText: 'Kategori',
                   filled: true,
@@ -126,7 +127,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _difficulty,
+                initialValue: _difficulty,
                 decoration: const InputDecoration(
                   labelText: 'Zorluk',
                   filled: true,
@@ -147,7 +148,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<TaskType>(
-                value: _type,
+                initialValue: _type,
                 decoration: const InputDecoration(
                   labelText: 'Görev Tipi',
                   filled: true,

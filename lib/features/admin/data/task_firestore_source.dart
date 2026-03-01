@@ -22,8 +22,29 @@ class TaskFirestoreSource {
     required String difficulty,
     required String preset,
     List<String> usedTaskIds = const [],
+    bool includeCustomDeck = false,
+    String? hostId,
   }) async {
-    // Firestore'dan filtreli sorgu
+    List<DocumentSnapshot<Map<String, dynamic>>> allAvailableDocs = [];
+
+    // 1. Özel görevleri çek
+    if (includeCustomDeck && hostId != null) {
+      final customSnap = await _firestore
+          .collection('users')
+          .doc(hostId)
+          .collection('custom_tasks')
+          .where('category', isEqualTo: category)
+          .where('difficulty', isEqualTo: difficulty)
+          .get();
+
+      final customAvailable = customSnap.docs
+          .where((doc) => !usedTaskIds.contains(doc.id))
+          .toList();
+
+      allAvailableDocs.addAll(customAvailable);
+    }
+
+    // 2. Normal görevleri çek
     Query<Map<String, dynamic>> query = _tasksRef
         .where('category', isEqualTo: category)
         .where('difficulty', isEqualTo: difficulty)
@@ -32,12 +53,14 @@ class TaskFirestoreSource {
 
     final snap = await query.get();
 
-    // Kullanılmış olanları filtrele
+    // Normal kullanılmış olanları filtrele
     final available = snap.docs
         .where((doc) => !usedTaskIds.contains(doc.id))
         .toList();
 
-    if (available.isEmpty) {
+    allAvailableDocs.addAll(available);
+
+    if (allAvailableDocs.isEmpty) {
       // Fallback: Kullanılmışları da dahil et
       if (snap.docs.isNotEmpty) {
         final randomDoc =
@@ -73,7 +96,8 @@ class TaskFirestoreSource {
     }
 
     // Rastgele birini seç
-    final randomDoc = available[DateTime.now().millisecond % available.length];
+    final randomDoc =
+        allAvailableDocs[DateTime.now().millisecond % allAvailableDocs.length];
     return _docToEntity(randomDoc);
   }
 

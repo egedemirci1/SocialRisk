@@ -11,6 +11,7 @@ class RoomEntity {
   final List<PlayerEntity> players;
   final String? gameId;
   final GamePreset preset;
+  final bool useCustomDeck;
   final DateTime createdAt;
 
   const RoomEntity({
@@ -23,6 +24,7 @@ class RoomEntity {
     this.visibility = RoomVisibility.open,
     this.players = const [],
     this.preset = GamePreset.classic,
+    this.useCustomDeck = false,
     this.gameId,
     required this.createdAt,
   });

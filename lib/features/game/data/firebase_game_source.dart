@@ -78,7 +78,9 @@ class FirebaseGameSource implements GameRepository {
     );
     await _gameDoc(gameId).update({
       'currentTask': taskModel.toJson(),
-      'usedTaskIds': FieldValue.arrayUnion([task.id]), // E15: Görevi kullanıldı olarak işaretle
+      'usedTaskIds': FieldValue.arrayUnion([
+        task.id,
+      ]), // E15: Görevi kullanıldı olarak işaretle
       'spinningTarget': null,
     });
   }
@@ -107,7 +109,7 @@ class FirebaseGameSource implements GameRepository {
 
     final game = GameModel.fromJson(gameSnap.data()!, gameSnap.id);
     final category = game.selectedCategory;
-    
+
     if (category == null) {
       throw Exception('Önce kategori seçilmeli!');
     }
@@ -115,6 +117,8 @@ class FirebaseGameSource implements GameRepository {
     // Odanın preset bilgisini al
     final roomSnap = await _firestore.collection('rooms').doc(roomId).get();
     final preset = roomSnap.data()?['preset'] as String? ?? 'classic';
+    final useCustomDeck = roomSnap.data()?['useCustomDeck'] as bool? ?? false;
+    final hostId = roomSnap.data()?['hostId'] as String?;
 
     // Firestore'dan görev çek
     final taskEntity = await _taskSource.getRandomTask(
@@ -122,6 +126,8 @@ class FirebaseGameSource implements GameRepository {
       difficulty: difficulty,
       preset: preset,
       usedTaskIds: game.usedTaskIds,
+      includeCustomDeck: useCustomDeck,
+      hostId: hostId,
     );
 
     if (taskEntity == null) {
@@ -130,7 +136,9 @@ class FirebaseGameSource implements GameRepository {
     }
 
     // Görevin çarpanını seçilen zorluğa göre ayarla
-    final multiplier = difficulty == 'easy' ? 1 : (difficulty == 'medium' ? 2 : 3);
+    final multiplier = difficulty == 'easy'
+        ? 1
+        : (difficulty == 'medium' ? 2 : 3);
 
     final taskModel = TaskModel(
       id: taskEntity.id,
@@ -143,7 +151,8 @@ class FirebaseGameSource implements GameRepository {
       'selectedDifficulty': difficulty,
       'currentTask': taskModel.toJson(),
       'usedTaskIds': FieldValue.arrayUnion([taskEntity.id]),
-      'status': 'playing', // Veya direkt performing? Gösterim task_screen'de halledilebilir.
+      'status':
+          'playing', // Veya direkt performing? Gösterim task_screen'de halledilebilir.
     });
   }
 
@@ -176,8 +185,8 @@ class FirebaseGameSource implements GameRepository {
     final playerSnap = await playerDoc.get();
     final currentStreak = (playerSnap.data()?['passStreak'] as int?) ?? 0;
     final newStreak = currentStreak + 1;
-    
-    // E11: README'ye göre basePenalty 50 olmalı, AppHelpers 100 kullanıyordu. 
+
+    // E11: README'ye göre basePenalty 50 olmalı, AppHelpers 100 kullanıyordu.
     // Parametre olarak gelen basePenalty'yi (GameConstants'tan gelir) kullan.
     final penalty = AppHelpers.calculatePenalty(basePenalty, newStreak);
 
@@ -214,7 +223,7 @@ class FirebaseGameSource implements GameRepository {
     if (!snap.exists) return;
 
     final game = GameModel.fromJson(snap.data()!, snap.id);
-    
+
     // Aktif oyuncuları kontrol et
     final playersSnap = await _firestore
         .collection('rooms')
@@ -222,23 +231,23 @@ class FirebaseGameSource implements GameRepository {
         .collection('players')
         .get();
     final activePlayerIds = playersSnap.docs.map((d) => d.id).toSet();
-    
+
     // Sıradaki aktif oyuncuyu bul (çıkmış oyuncuları atla)
     final currentIndex = game.turnOrder.indexOf(game.currentPlayerId);
     String? nextPlayerId;
     int nextIndex = currentIndex;
     bool isNewRound = false;
-    
+
     for (int i = 1; i <= game.turnOrder.length; i++) {
       nextIndex = (currentIndex + i) % game.turnOrder.length;
       if (nextIndex == 0) isNewRound = true;
-      
+
       if (activePlayerIds.contains(game.turnOrder[nextIndex])) {
         nextPlayerId = game.turnOrder[nextIndex];
         break;
       }
     }
-    
+
     // Kimse kalmadıysa oyunu bitir
     if (nextPlayerId == null) {
       await _gameDoc(gameId).update({'status': 'finished'});
@@ -353,7 +362,10 @@ class FirebaseGameSource implements GameRepository {
     // Pazar değerini düşür
     final updatedMarket = Map<String, int>.from(game.categoryMarketValues);
     final currentValue = updatedMarket[category] ?? 1;
-    final newValue = (currentValue - GameConstants.marketDecayAmount).clamp(1, 10);
+    final newValue = (currentValue - GameConstants.marketDecayAmount).clamp(
+      1,
+      10,
+    );
     updatedMarket[category] = newValue;
 
     // Seçim sayısını takip et ve kilitle
@@ -391,5 +403,4 @@ class FirebaseGameSource implements GameRepository {
   }
 
   // _getRandomTask ve seedData kullanımı kaldırıldı.
-
 }

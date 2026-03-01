@@ -31,6 +31,7 @@ class FirebaseRoomSource implements RoomRepository {
     required RoomVisibility visibility,
     required GamePreset preset,
     required GameMode mode,
+    required bool useCustomDeck,
   }) async {
     String roomCode = AppHelpers.generateRoomCode();
 
@@ -48,6 +49,7 @@ class FirebaseRoomSource implements RoomRepository {
       endConditionValue: endConditionValue,
       visibility: visibility.name,
       preset: preset.name,
+      useCustomDeck: useCustomDeck,
       createdAt: DateTime.now(),
     );
 
@@ -109,20 +111,19 @@ class FirebaseRoomSource implements RoomRepository {
     final roomStream = _roomDoc(roomCode).snapshots();
     final playersStream = _playersRef(roomCode).snapshots();
 
-    return Rx.combineLatest2(
-      roomStream,
-      playersStream,
-      (roomSnap, playersSnap) {
-        if (!roomSnap.exists) return null;
+    return Rx.combineLatest2(roomStream, playersStream, (
+      roomSnap,
+      playersSnap,
+    ) {
+      if (!roomSnap.exists) return null;
 
-        final roomModel = RoomModel.fromJson(roomSnap.data()!);
-        final players = playersSnap.docs
-            .map((doc) => PlayerModel.fromJson(doc.data(), doc.id).toEntity())
-            .toList();
+      final roomModel = RoomModel.fromJson(roomSnap.data()!);
+      final players = playersSnap.docs
+          .map((doc) => PlayerModel.fromJson(doc.data(), doc.id).toEntity())
+          .toList();
 
-        return roomModel.toEntity(players);
-      },
-    );
+      return roomModel.toEntity(players);
+    });
   }
 
   @override
