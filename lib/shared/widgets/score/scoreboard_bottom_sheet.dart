@@ -75,6 +75,7 @@ class ScoreboardBottomSheet extends ConsumerWidget {
                             name: player.name,
                             score: player.score,
                             avatarUrl: player.avatarUrl,
+                            activeFrame: player.activeFrame,
                           ),
                         );
                       },
@@ -98,12 +99,14 @@ class _ScoreTile extends StatelessWidget {
     required this.name,
     required this.score,
     required this.avatarUrl,
+    this.activeFrame,
   });
 
   final int rank;
   final String name;
   final int score;
   final String? avatarUrl;
+  final String? activeFrame;
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +144,8 @@ class _ScoreTile extends StatelessWidget {
             PlayerAvatar(
               displayName: name,
               avatarUrl: avatarUrl,
+              score: score,
+              frameId: activeFrame,
               radius: 18,
             ),
             const SizedBox(width: 16),

@@ -12,9 +12,10 @@ import '../../room/providers/room_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../admin/providers/task_provider.dart'; // Yeni eklendi 
 import '../../../shared/widgets/common/player_avatar.dart';
+import 'package:lottie/lottie.dart';
 
 /// Tur sonu ekranı — Oylama sonucu ve kazanılan/kaybedilen puan.
-class RoundResultScreen extends ConsumerWidget {
+class RoundResultScreen extends ConsumerStatefulWidget {
   const RoundResultScreen({
     super.key,
     required this.gameId,
@@ -25,9 +26,28 @@ class RoundResultScreen extends ConsumerWidget {
   final String roomCode;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final gameAsync = ref.watch(watchGameProvider(gameId));
-    final playersAsync = ref.watch(watchPlayersProvider(roomCode));
+  ConsumerState<RoundResultScreen> createState() => _RoundResultScreenState();
+}
+
+class _RoundResultScreenState extends ConsumerState<RoundResultScreen> with SingleTickerProviderStateMixin {
+  late final AnimationController _lottieController;
+
+  @override
+  void initState() {
+    super.initState();
+    _lottieController = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _lottieController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final gameAsync = ref.watch(watchGameProvider(widget.gameId));
+    final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
 
     return Scaffold(
       body: gameAsync.when(
@@ -48,7 +68,7 @@ class RoundResultScreen extends ConsumerWidget {
 
           // Navigate non-hosts automatically when next round starts
           ref.listen<AsyncValue<GameEntity?>>(
-            watchGameProvider(gameId),
+            watchGameProvider(widget.gameId),
             (previous, next) {
               if (!context.mounted) return;
               final previousStatus = previous?.value?.status;
@@ -56,12 +76,12 @@ class RoundResultScreen extends ConsumerWidget {
               
               if (previousStatus == GameStatus.results && 
                   currentStatus == GameStatus.playing) {
-                context.go('/waiting', extra: {
-                  'gameId': gameId,
-                  'roomCode': roomCode,
-                });
-              } else if (currentStatus == GameStatus.finished) {
-                context.go('/game-over', extra: roomCode);
+                  context.go('/waiting', extra: {
+                    'gameId': widget.gameId,
+                    'roomCode': widget.roomCode,
+                  });
+                } else if (currentStatus == GameStatus.finished) {
+                  context.go('/game-over', extra: widget.roomCode);
               }
             }
           );
@@ -218,6 +238,8 @@ class RoundResultScreen extends ConsumerWidget {
                                           PlayerAvatar(
                                             displayName: player.name,
                                             avatarUrl: player.avatarUrl,
+                                            score: player.score,
+                                            frameId: player.activeFrame,
                                             radius: 14,
                                           ),
                                           const SizedBox(width: 12),
@@ -264,14 +286,14 @@ class RoundResultScreen extends ConsumerWidget {
                       _TaskFeedbackSection(
                         taskId: game.currentTask!.id,
                         taskContent: game.currentTask!.content,
-                        gameId: gameId,
+                        gameId: widget.gameId,
                       ),
                       
                     const SizedBox(height: 24),
 
                     Consumer(
                       builder: (context, ref, child) {
-                        final roomAsync = ref.watch(watchRoomProvider(roomCode));
+                        final roomAsync = ref.watch(watchRoomProvider(widget.roomCode));
                         final user = ref.watch(currentUserProvider);
                         final isHost = roomAsync.value?.hostId == user?.uid;
 
@@ -283,9 +305,9 @@ class RoundResultScreen extends ConsumerWidget {
                                 : Icons.arrow_forward_rounded,
                             onPressed: () async {
                               if (isGameOver) {
-                                context.go('/game-over', extra: roomCode);
+                                context.go('/game-over', extra: widget.roomCode);
                               } else {
-                                await ref.read(gameControllerProvider.notifier).nextTurn(gameId);
+                                await ref.read(gameControllerProvider.notifier).nextTurn(widget.gameId);
                               }
                             },
                           );
@@ -314,6 +336,25 @@ class RoundResultScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, st) => Center(child: Text('Hata: $e')),
       ),
+      
+      // Lottie overlay
+      floatingActionButton: gameAsync.value?.lastRoundScore != null && gameAsync.value!.lastRoundScore! > 0
+          ? IgnorePointer(
+              child: Lottie.asset(
+                'assets/lotties/confetti.json',
+                controller: _lottieController,
+                onLoaded: (composition) {
+                  _lottieController
+                    ..duration = composition.duration
+                    ..forward(from: 0.0);
+                },
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                fit: BoxFit.cover,
+              ),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

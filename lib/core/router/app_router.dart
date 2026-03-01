@@ -68,76 +68,112 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const LoginScreen(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        child: const LoginScreen(),
+        state: state,
+      ),
     ),
     GoRoute(
       path: '/home',
-      builder: (context, state) => const HomeScreen(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        child: const HomeScreen(),
+        state: state,
+      ),
     ),
     GoRoute(
       path: '/profile',
-      builder: (context, state) => const ProfileScreen(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        child: const ProfileScreen(),
+        state: state,
+      ),
     ),
     GoRoute(
       path: '/custom-deck',
-      builder: (context, state) => const CustomDeckEditorScreen(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        child: const CustomDeckEditorScreen(),
+        state: state,
+      ),
     ),
     GoRoute(
       path: '/store',
-      builder: (context, state) => const StoreScreen(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        child: const StoreScreen(),
+        state: state,
+      ),
     ),
     GoRoute(
       path: '/create-room',
-      builder: (context, state) => const CreateRoomScreen(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        child: const CreateRoomScreen(),
+        state: state,
+      ),
     ),
     GoRoute(
       path: '/join-room',
-      builder: (context, state) => const JoinRoomScreen(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        child: const JoinRoomScreen(),
+        state: state,
+      ),
     ),
     GoRoute(
       path: '/lobby',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final roomCode = state.extra as String? ?? '';
-        return LobbyScreen(roomCode: roomCode);
+        return _buildPageWithTransition(
+          child: LobbyScreen(roomCode: roomCode),
+          state: state,
+        );
       },
     ),
     GoRoute(
       path: '/task',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final extra = state.extra as Map<String, String>? ?? {};
-        return TaskScreen(
-           gameId: extra['gameId'] ?? '',
-           roomCode: extra['roomCode'] ?? '',
+        return _buildPageWithTransition(
+          child: TaskScreen(
+            gameId: extra['gameId'] ?? '',
+            roomCode: extra['roomCode'] ?? '',
+          ),
+          state: state,
         );
       },
     ),
     GoRoute(
       path: '/performing',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final extra = state.extra as Map<String, String>? ?? {};
-        return PerformingScreen(
-           gameId: extra['gameId'] ?? '',
-           roomCode: extra['roomCode'] ?? '',
+        return _buildPageWithTransition(
+          child: PerformingScreen(
+            gameId: extra['gameId'] ?? '',
+            roomCode: extra['roomCode'] ?? '',
+          ),
+          state: state,
         );
       },
     ),
     GoRoute(
       path: '/voting',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final extra = state.extra as Map<String, String>? ?? {};
-        return VotingScreen(
-          gameId: extra['gameId'] ?? '',
-          roomCode: extra['roomCode'] ?? '',
+        return _buildPageWithTransition(
+          child: VotingScreen(
+            gameId: extra['gameId'] ?? '',
+            roomCode: extra['roomCode'] ?? '',
+          ),
+          state: state,
         );
       },
     ),
     GoRoute(
       path: '/waiting',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final extra = state.extra as Map<String, String>? ?? {};
-        return WaitingScreen(
-          gameId: extra['gameId'] ?? '',
-          roomCode: extra['roomCode'] ?? '',
+        return _buildPageWithTransition(
+          child: WaitingScreen(
+            gameId: extra['gameId'] ?? '',
+            roomCode: extra['roomCode'] ?? '',
+          ),
+          state: state,
         );
       },
     ),
@@ -153,9 +189,12 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/game-over',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final extra = state.extra as String? ?? '';
-        return GameOverScreen(roomCode: extra);
+        return _buildPageWithTransition(
+          child: GameOverScreen(roomCode: extra),
+          state: state,
+        );
       },
     ),
     GoRoute(
@@ -170,28 +209,64 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/economy-pick',
-      builder: (context, state) {
-        final extra = state.extra as Map<String, String>? ?? {};
-        return EconomyPickScreen(
-          gameId: extra['gameId'] ?? '',
-          roomCode: extra['roomCode'] ?? '',
+      pageBuilder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+        return _buildPageWithTransition(
+          child: EconomyPickScreen(
+            gameId: extra['gameId'] as String? ?? '',
+            roomCode: extra['roomCode'] as String? ?? '',
+          ),
+          state: state,
         );
       },
     ),
     GoRoute(
-      path: '/admin/dashboard',
-      builder: (context, state) => const AdminDashboardScreen(),
+      path: '/admin',
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        child: const AdminDashboardScreen(),
+        state: state,
+      ),
     ),
     GoRoute(
       path: '/admin/task-editor',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final task = state.extra as TaskItemEntity?;
-        return TaskEditorScreen(taskToEdit: task);
+        return _buildPageWithTransition(
+          child: TaskEditorScreen(taskToEdit: task),
+          state: state,
+        );
       },
     ),
     GoRoute(
-      path: '/admin/reports',
-      builder: (context, state) => const ReportedPhotosScreen(),
+      path: '/admin/reported-photos',
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        child: const ReportedPhotosScreen(),
+        state: state,
+      ),
     ),
   ],
 );
+
+/// A utility to build standard fade/slide transition pages
+CustomTransitionPage<void> _buildPageWithTransition({
+  required Widget child,
+  required GoRouterState state,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 300),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: animation,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.0, 0.05),
+            end: Offset.zero,
+          ).animate(CurveTween(curve: Curves.easeOut).animate(animation)),
+          child: child,
+        ),
+      );
+    },
+  );
+}

@@ -51,6 +51,8 @@ class SpectatorStrip extends StatelessWidget {
                   child: PlayerAvatar(
                     displayName: player.name,
                     avatarUrl: player.avatarUrl,
+                    score: player.score,
+                    frameId: player.activeFrame,
                     radius: 24,
                   ),
                 ),
