@@ -190,6 +190,8 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                               return PlayerAvatar(
                                 displayName: performerName,
                                 avatarUrl: avatarUrl,
+                                score: performer.isNotEmpty ? performer.first.score : 0,
+                                frameId: performer.isNotEmpty ? performer.first.activeFrame : null,
                                 radius: 36,
                                 showEffect: false,
                               );
