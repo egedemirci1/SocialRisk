@@ -6,6 +6,7 @@ abstract class GameRepository {
     required String roomId,
     required List<String> playerIds,
     required GameDifficulty difficulty,
+    required GameMode mode,
   });
 
   Stream<GameEntity?> watchGame(String gameId);
@@ -53,4 +54,17 @@ abstract class GameRepository {
   });
 
   Future<void> endGame(String gameId);
+
+  // Faz 10: Ekonomi Modu
+  Future<void> initEconomyRound({
+    required String gameId,
+    required String roomId,
+  });
+
+  Future<void> pickCategoryEconomy({
+    required String gameId,
+    required String playerId,
+    required String category,
+  });
 }
+

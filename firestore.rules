@@ -1,26 +1,93 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Rooms collection
+
+    // ─── Yardımcı fonksiyonlar ────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // ─── Rooms ────────────────────────────────────────────
     match /rooms/{roomId} {
-      // Herkes oda oku ve yazabilir (basitlik için)
-      allow read, write: if request.auth != null;
-      
-      // Players alt koleksiyonu
+      // Herkes oda bilgilerini okuyabilir (lobi katılım için gerekli)
+      allow read: if isAuthenticated();
+
+      // Oda oluşturma: giriş yapmış kullanıcı
+      allow create: if isAuthenticated();
+
+      // Güncelleme: sadece odadaki oyuncular
+      allow update: if isAuthenticated()
+        && exists(/databases/$(database)/documents/rooms/$(roomId)/players/$(request.auth.uid));
+
+      // Silme: sadece host
+      allow delete: if isAuthenticated()
+        && resource.data.hostId == request.auth.uid;
+
+      // ─── Players alt koleksiyonu ──────────────────────
       match /players/{playerId} {
-        allow read, write: if request.auth != null;
+        // Okuma: odadaki herkes
+        allow read: if isAuthenticated();
+
+        // Oluşturma: sadece kendi belgesini oluşturabilir
+        allow create: if isAuthenticated()
+          && isOwner(playerId);
+
+        // Güncelleme: sadece kendi verisi (isReady, score vb.)
+        // VEYA oyun mantığı güncellerse (sunucu taraflı — E28 ile taşınacak)
+        allow update: if isAuthenticated();
+
+        // Silme (odadan çıkma): kendi belgesi veya host
+        allow delete: if isAuthenticated()
+          && (isOwner(playerId)
+            || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid);
       }
     }
-    
-    // Games collection
+
+    // ─── Games ────────────────────────────────────────────
     match /games/{gameId} {
-      // Herkes oyunu görebilir ama "closed" visibility ise 
-      // currentTask.content gizlenebilir (Client-side filtreleme yerine security rules denense de 
-      // Firestore'da field-level read filter karmaşıktır. Bu yüzden E18 için temel seviyede:
-      // Sadece odadaki oyuncuların okumasına izin ver)
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
+      // Okuma: giriş yapmış herkes (visibility filtrelemesi client-side)
+      allow read: if isAuthenticated();
+
+      // Oluşturma: giriş yapmış kullanıcı
+      allow create: if isAuthenticated();
+
+      // Güncelleme: giriş yapmış kullanıcı (oyun akışı için gerekli)
+      // NOT: İdeal olarak Cloud Functions (E28) ile sunucu taraflı yapılmalı
+      allow update: if isAuthenticated();
+
+      // Silme: yok (oyunlar silinmez)
+      allow delete: if false;
+    }
+
+    // ─── Users (Profil + Cüzdan + Envanter) ──────────────
+    match /users/{userId} {
+      // Okuma: herkes (avatar vb. görmek için)
+      allow read: if isAuthenticated();
+
+      // Oluşturma: kendi belgesini
+      allow create: if isAuthenticated()
+        && isOwner(userId);
+
+      // Güncelleme: kendi belgesini
+      // walletPoints: Client-side güncelleme izinli (E28 Cloud Functions ile kısıtlanacak)
+      allow update: if isAuthenticated()
+        && isOwner(userId);
+
+      // Silme yok
+      allow delete: if false;
+    }
+
+    // ─── Cosmetics (Mağaza öğeleri) ──────────────────────
+    match /cosmetics/{cosmeticId} {
+      // Herkes okuyabilir
+      allow read: if isAuthenticated();
+
+      // Yazma: sadece admin (veya Cloud Functions)
+      allow write: if false;
     }
   }
 }

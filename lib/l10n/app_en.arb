@@ -1,0 +1,124 @@
+{
+  "@@locale": "en",
+  "appTitle": "Social Risk",
+  "login": "Sign In",
+  "loginSubtitle": "Enter your name and start the adventure!",
+  "enterName": "Enter name",
+  "enterButton": "Enter",
+  "signInWithGoogle": "Sign in with Google",
+  "signInWithApple": "Sign in with Apple",
+  "home": "Main Menu",
+  "createRoom": "Create Room",
+  "joinRoom": "Join Room",
+  "profile": "Profile",
+  "store": "Store",
+  "lobby": "Lobby",
+  "roomCode": "Room Code",
+  "codeCopied": "Code copied!",
+  "startGame": "Start Game",
+  "allPlayersReady": "All players are ready!",
+  "waitForPlayers": "Waiting for all players to be ready...",
+  "ready": "Ready!",
+  "notReady": "Not Ready",
+  "playerCapacity": "Player Capacity",
+  "player": "players",
+  "endCondition": "End Condition",
+  "scoreTarget": "Score Target",
+  "roundTarget": "Round Count",
+  "points": "points",
+  "rounds": "rounds",
+  "gameMode": "Game Mode",
+  "classicWheel": "Classic Wheel",
+  "classicDesc": "Luck and chaos — spin the wheel, whatever category comes up!",
+  "economyMode": "Economy",
+  "economyDesc": "Strategy — score leader picks first, market contracts!",
+  "visibilityMode": "Visibility Mode",
+  "openMode": "Open Mode",
+  "closedMode": "Closed Mode",
+  "openModeDesc": "Everyone can see the task content beforehand.",
+  "closedModeDesc": "Only category and multiplier visible. Content is hidden!",
+  "difficulty": "Task Difficulty",
+  "easy": "Easy",
+  "medium": "Medium",
+  "hard": "Hard",
+  "mixed": "Mixed",
+  "createRoomButton": "Create Room",
+  "enterRoomCode": "Enter 6-digit room code",
+  "joinButton": "Join",
+  "spinWheel": "Spin the Wheel!",
+  "spinningPlayer": "{playerName} is spinning...",
+  "@spinningPlayer": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "categoryRandom": "Category is random!",
+  "yourTurn": "Your Turn!",
+  "playerPlaying": "{playerName} is playing",
+  "@playerPlaying": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "yourTask": "Your Task:",
+  "playerTask": "{playerName}'s Task:",
+  "@playerTask": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "closedModeLabel": "Closed Mode",
+  "revealTask": "Reveal Task 🔓",
+  "acceptTask": "Accept Task",
+  "passTask": "Pass (Penalty: -{penalty} points)",
+  "@passTask": {
+    "placeholders": {
+      "penalty": {"type": "int"}
+    }
+  },
+  "waitingForDecision": "Waiting for {playerName} to decide...",
+  "@waitingForDecision": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "winner": "WINNER!",
+  "finalRanking": "Final Ranking",
+  "goToStore": "Go to Store",
+  "goToRooms": "Back to Rooms",
+  "walletAdded": "+{points} Points Added to Wallet",
+  "@walletAdded": {
+    "placeholders": {
+      "points": {"type": "int"}
+    }
+  },
+  "pickCategory": "Pick Category",
+  "yourPick": "Your turn to pick!",
+  "playerPicking": "{playerName} is picking...",
+  "@playerPicking": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "pickProgress": "Pick {current}/{total}",
+  "@pickProgress": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "marketStatus": "Market Status",
+  "categoryLocked": "This category is locked!",
+  "error": "Error: {message}",
+  "@error": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "storeTitle": "Store & Wallet",
+  "cosmetics": "Cosmetics",
+  "frames": "Frames",
+  "badges": "Badges & Titles",
+  "owned": "Owned",
+  "you": "You"
+}

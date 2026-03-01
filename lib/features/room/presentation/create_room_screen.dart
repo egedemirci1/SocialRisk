@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
@@ -26,6 +25,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   bool _isCreating = false;
   bool _isOpenMode = true; // true = Açık Mod, false = Kapalı Mod
   GameDifficulty _difficulty = GameDifficulty.mixed;
+  GameMode _selectedMode = GameMode.classic; // Faz 10
 
   Future<void> _createRoom() async {
     setState(() => _isCreating = true);
@@ -51,6 +51,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         visibility: _isOpenMode ? RoomVisibility.open : RoomVisibility.closed,
         difficulty: _difficulty,
         hostAvatarUrl: user.photoURL,
+        mode: _selectedMode,
       );
 
       if (mounted && roomCode.isNotEmpty) {
@@ -304,62 +305,39 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   }
 
   Widget _buildGameMode() {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
+    return Column(
+      children: [
+        Row(
           children: [
-            const Icon(Icons.casino_rounded, color: AppColors.accent, size: 28),
+            Expanded(
+              child: _ToggleChip(
+                label: '🎡 Klasik Çark',
+                isSelected: _selectedMode == GameMode.classic,
+                onTap: () => setState(() => _selectedMode = GameMode.classic),
+              ),
+            ),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Klasik Çark Modu',
-                    style: AppTextStyles.titleLarge.copyWith(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Şans ve kaos — çarkı çevir!',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: Colors.white38,
-                  ),
-                ),
-              ],
-            ),
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                child: Text(
-                  'AKTİF',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                    letterSpacing: 1,
-                  ),
-                ),
+              child: _ToggleChip(
+                label: '🏦 Ekonomi',
+                isSelected: _selectedMode == GameMode.economy,
+                onTap: () => setState(() => _selectedMode = GameMode.economy),
               ),
             ),
           ],
         ),
-      ),
+        const SizedBox(height: 12),
+        Text(
+          _selectedMode == GameMode.classic
+              ? 'Şans ve kaos — çarkı çevir, hangi kategori gelirse o!'
+              : 'Strateji — puan lideri önce seçer, pazar daralır!',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: Colors.white38,
+            fontSize: 12,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 

@@ -28,6 +28,7 @@ class GameController extends _$GameController {
     required String roomId,
     required List<String> playerIds,
     required GameDifficulty difficulty,
+    required GameMode mode,
   }) async {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(() =>
@@ -35,6 +36,7 @@ class GameController extends _$GameController {
         roomId: roomId,
         playerIds: playerIds,
         difficulty: difficulty,
+        mode: mode,
       ),
     );
     state = result;
@@ -160,6 +162,29 @@ class GameController extends _$GameController {
 
   Future<void> nextTurn(String gameId) async {
     await ref.read(gameRepositoryProvider).nextTurn(gameId);
+  }
+
+  // Faz 10: Ekonomi Modu
+  Future<void> initEconomyRound({
+    required String gameId,
+    required String roomId,
+  }) async {
+    await ref.read(gameRepositoryProvider).initEconomyRound(
+      gameId: gameId,
+      roomId: roomId,
+    );
+  }
+
+  Future<void> pickCategoryEconomy({
+    required String gameId,
+    required String playerId,
+    required String category,
+  }) async {
+    await ref.read(gameRepositoryProvider).pickCategoryEconomy(
+      gameId: gameId,
+      playerId: playerId,
+      category: category,
+    );
   }
 
   Future<void> endGame(String gameId) async {

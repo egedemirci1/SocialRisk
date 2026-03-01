@@ -34,6 +34,7 @@ class RoomController extends _$RoomController {
     required int endConditionValue,
     required RoomVisibility visibility,
     required GameDifficulty difficulty,
+    required GameMode mode,
   }) async {
     state = const AsyncLoading();
     
@@ -49,6 +50,7 @@ class RoomController extends _$RoomController {
         endConditionValue: endConditionValue,
         visibility: visibility,
         difficulty: difficulty,
+        mode: mode,
       ),
     );
     state = result;

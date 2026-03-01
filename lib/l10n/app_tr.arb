@@ -1,0 +1,124 @@
+{
+  "@@locale": "tr",
+  "appTitle": "Sosyal Risk",
+  "login": "Giriş Yap",
+  "loginSubtitle": "İsmini yaz ve maceraya başla!",
+  "enterName": "İsim gir",
+  "enterButton": "Gir",
+  "signInWithGoogle": "Google ile Giriş",
+  "signInWithApple": "Apple ile Giriş",
+  "home": "Ana Menü",
+  "createRoom": "Oda Oluştur",
+  "joinRoom": "Odaya Katıl",
+  "profile": "Profil",
+  "store": "Mağaza",
+  "lobby": "Lobi",
+  "roomCode": "Oda Kodu",
+  "codeCopied": "Kod kopyalandı!",
+  "startGame": "Oyunu Başlat",
+  "allPlayersReady": "Tüm oyuncular hazır!",
+  "waitForPlayers": "Herkesin hazır olmasını bekle...",
+  "ready": "Hazırım!",
+  "notReady": "Hazır Değilim",
+  "playerCapacity": "Oyuncu Kapasitesi",
+  "player": "oyuncu",
+  "endCondition": "Bitiş Koşulu",
+  "scoreTarget": "Puan Hedefi",
+  "roundTarget": "Tur Sayısı",
+  "points": "puan",
+  "rounds": "tur",
+  "gameMode": "Oyun Modu",
+  "classicWheel": "Klasik Çark",
+  "classicDesc": "Şans ve kaos — çarkı çevir, hangi kategori gelirse o!",
+  "economyMode": "Ekonomi",
+  "economyDesc": "Strateji — puan lideri önce seçer, pazar daralır!",
+  "visibilityMode": "Görünürlük Modu",
+  "openMode": "Açık Mod",
+  "closedMode": "Kapalı Mod",
+  "openModeDesc": "Herkes görev içeriğini önceden görebilir.",
+  "closedModeDesc": "Sadece kategori ve çarpan görünür. İçerik gizli!",
+  "difficulty": "Görev Zorluğu",
+  "easy": "Kolay",
+  "medium": "Orta",
+  "hard": "Zor",
+  "mixed": "Karışık",
+  "createRoomButton": "Odayı Oluştur",
+  "enterRoomCode": "6 haneli oda kodunu gir",
+  "joinButton": "Katıl",
+  "spinWheel": "Çarkı Çevir!",
+  "spinningPlayer": "{playerName} çarkı çeviriyor...",
+  "@spinningPlayer": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "categoryRandom": "Kategori şansa bağlı!",
+  "yourTurn": "Senin Sıran!",
+  "playerPlaying": "{playerName} oynuyor",
+  "@playerPlaying": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "yourTask": "Görevin:",
+  "playerTask": "{playerName}'in Görevi:",
+  "@playerTask": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "closedModeLabel": "Kapalı Mod",
+  "revealTask": "Görevi Aç 🔓",
+  "acceptTask": "Görevi Kabul Et",
+  "passTask": "Pas Geç (Ceza: -{penalty} puan)",
+  "@passTask": {
+    "placeholders": {
+      "penalty": {"type": "int"}
+    }
+  },
+  "waitingForDecision": "{playerName}'ın karar vermesi bekleniyor...",
+  "@waitingForDecision": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "winner": "KAZANAN!",
+  "finalRanking": "Final Sıralaması",
+  "goToStore": "Mağazaya Git",
+  "goToRooms": "Odalara Dön",
+  "walletAdded": "+{points} Puan Cüzdana Eklendi",
+  "@walletAdded": {
+    "placeholders": {
+      "points": {"type": "int"}
+    }
+  },
+  "pickCategory": "Kategori Seç",
+  "yourPick": "Senin sıran!",
+  "playerPicking": "{playerName} seçiyor...",
+  "@playerPicking": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "pickProgress": "Seçim {current}/{total}",
+  "@pickProgress": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "marketStatus": "Pazar Durumu",
+  "categoryLocked": "Bu kategori kilitli!",
+  "error": "Hata: {message}",
+  "@error": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "storeTitle": "Mağaza & Cüzdan",
+  "cosmetics": "Kozmetikler",
+  "frames": "Çerçeveler",
+  "badges": "Rozetler & Ünvanlar",
+  "owned": "Sahipsin",
+  "you": "Sen"
+}

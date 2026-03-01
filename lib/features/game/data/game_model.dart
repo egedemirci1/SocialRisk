@@ -15,6 +15,12 @@ class GameModel {
   final String difficulty;
   final int? lastRoundScore;
   final int? lastRoundMultiplier;
+  // Faz 10: Ekonomi modu
+  final String mode;
+  final Map<String, int> categoryMarketValues;
+  final List<String> lockedCategories;
+  final List<String> categoryPickOrder;
+  final int currentPickIndex;
 
   const GameModel({
     required this.gameId,
@@ -29,6 +35,11 @@ class GameModel {
     this.difficulty = 'mixed',
     this.lastRoundScore,
     this.lastRoundMultiplier,
+    this.mode = 'classic',
+    this.categoryMarketValues = const {},
+    this.lockedCategories = const [],
+    this.categoryPickOrder = const [],
+    this.currentPickIndex = 0,
   });
 
   factory GameModel.fromJson(Map<String, dynamic> json, String docId) {
@@ -45,6 +56,11 @@ class GameModel {
       difficulty: json['difficulty'] as String? ?? 'mixed',
       lastRoundScore: json['lastRoundScore'] as int?,
       lastRoundMultiplier: json['lastRoundMultiplier'] as int?,
+      mode: json['mode'] as String? ?? 'classic',
+      categoryMarketValues: Map<String, int>.from(json['categoryMarketValues'] ?? {}),
+      lockedCategories: List<String>.from(json['lockedCategories'] ?? []),
+      categoryPickOrder: List<String>.from(json['categoryPickOrder'] ?? []),
+      currentPickIndex: json['currentPickIndex'] as int? ?? 0,
     );
   }
 
@@ -58,9 +74,14 @@ class GameModel {
       'status': status,
       'usedTaskIds': usedTaskIds,
       'difficulty': difficulty,
+      'mode': mode,
       if (spinningTarget != null) 'spinningTarget': spinningTarget,
       if (lastRoundScore != null) 'lastRoundScore': lastRoundScore,
       if (lastRoundMultiplier != null) 'lastRoundMultiplier': lastRoundMultiplier,
+      'categoryMarketValues': categoryMarketValues,
+      'lockedCategories': lockedCategories,
+      'categoryPickOrder': categoryPickOrder,
+      'currentPickIndex': currentPickIndex,
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
@@ -90,6 +111,14 @@ class GameModel {
       spinningTarget: spinningTarget,
       lastRoundScore: lastRoundScore,
       lastRoundMultiplier: lastRoundMultiplier,
+      mode: GameMode.values.firstWhere(
+        (e) => e.name == mode,
+        orElse: () => GameMode.classic,
+      ),
+      categoryMarketValues: categoryMarketValues,
+      lockedCategories: lockedCategories,
+      categoryPickOrder: categoryPickOrder,
+      currentPickIndex: currentPickIndex,
     );
   }
 }

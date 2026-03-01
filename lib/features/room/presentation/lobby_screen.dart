@@ -150,6 +150,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                                       roomId: widget.roomCode,
                                       playerIds: playerIds,
                                       difficulty: room?.difficulty ?? GameDifficulty.mixed,
+                                      mode: room?.mode ?? GameMode.classic,
                                     );
 
                                     // gameId'yi room belgesine yaz

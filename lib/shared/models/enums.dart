@@ -1,5 +1,6 @@
 enum GameMode {
   classic,
+  economy, // Faz 10: Strateji modu
   toxic,   // Gelecek planı
   custom   // Gelecek planı
 }
