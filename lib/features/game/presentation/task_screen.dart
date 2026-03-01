@@ -233,6 +233,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         SpinWheel(
           spinningTarget: game.spinningTarget,
           canSpin: isMyTurn,
+          playerName: playerName,
           onSpinRequest: () {
             final randomCat = _categories[_random.nextInt(_categories.length)];
             ref.read(gameControllerProvider.notifier).setSpinningTarget(
@@ -324,7 +325,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           ),
         ] else ...[
           Text(
-            'Arkadaşının karar vermesi bekleniyor...',
+            '$playerName\'ın karar vermesi bekleniyor...',
             style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
           ),
         ],

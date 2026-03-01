@@ -175,7 +175,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                 Text(
                   game.status == GameStatus.performing
                       ? '$currentPlayerName görevini yapıyor'
-                      : '$currentPlayerName seçim yapıyor',
+                      : '$currentPlayerName çarkı çeviriyor',
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: Colors.white54,
                   ),

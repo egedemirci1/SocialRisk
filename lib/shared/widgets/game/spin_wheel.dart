@@ -25,12 +25,14 @@ class SpinWheel extends StatefulWidget {
     this.canSpin = true,
     this.onSpinRequest,
     required this.onSpinComplete,
+    this.playerName,
   });
 
   final String? spinningTarget;
   final bool canSpin;
   final VoidCallback? onSpinRequest;
   final ValueChanged<String> onSpinComplete;
+  final String? playerName;
 
   @override
   State<SpinWheel> createState() => _SpinWheelState();
@@ -246,7 +248,7 @@ class _SpinWheelState extends State<SpinWheel>
           )
         else if (!_hasResult && !widget.canSpin)
           Text(
-            'Host\'un çarkı çevirmesi bekleniyor...',
+            '${widget.playerName ?? 'Oyuncu'}\'nun çarkı çevirmesi bekleniyor...',
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w500,
