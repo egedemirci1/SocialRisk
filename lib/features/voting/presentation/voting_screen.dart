@@ -12,6 +12,7 @@ import '../../game/providers/game_provider.dart';
 import '../providers/vote_provider.dart';
 import '../../game/domain/game_entity.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
+import '../../../shared/widgets/common/player_avatar.dart';
 
 /// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor.
 class VotingScreen extends ConsumerStatefulWidget {
@@ -177,19 +178,22 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                         children: [
                           const Spacer(),
 
-                          DecoratedBox(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.surfaceElevated,
-                            ),
-                            child: const SizedBox(
-                              width: 72,
-                              height: 72,
-                              child: Center(
-                                child: Icon(Icons.person_rounded,
-                                    color: Colors.white54, size: 36),
-                              ),
-                            ),
+                          // Show performer avatar
+                          Builder(
+                            builder: (context) {
+                              final performer = activePlayers
+                                  .where((p) => p.id == game.currentPlayerId)
+                                  .toList();
+                              final avatarUrl = performer.isNotEmpty
+                                  ? performer.first.avatarUrl
+                                  : null;
+                              return PlayerAvatar(
+                                displayName: performerName,
+                                avatarUrl: avatarUrl,
+                                radius: 36,
+                                showEffect: false,
+                              );
+                            },
                           ),
                           const SizedBox(height: 16),
                           Text(
