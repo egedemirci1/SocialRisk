@@ -70,29 +70,42 @@ class StoreScreen extends ConsumerWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.amber.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+            child: Row(
+              children: [
+                // Testing amaçlı para ekleme butonu
+                IconButton(
+                  icon: const Icon(Icons.add_circle, color: AppColors.votePositive),
+                  tooltip: 'Test Parası Ekle',
+                  onPressed: () {
+                    ref.read(economyControllerProvider.notifier).addPointsToWallet(
+                      uid: user.uid,
+                      points: 10000,
+                    );
+                  },
                 ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.monetization_on_rounded, color: Colors.amber, size: 16),
-                    const SizedBox(width: 4),
-                    userProfileAsync.when(
-                      data: (profile) => Text(
-                        profile?.walletPoints.toString() ?? '0',
-                        style: AppTextStyles.bodyMedium.copyWith(color: Colors.amber),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.monetization_on_rounded, color: Colors.amber, size: 16),
+                      const SizedBox(width: 4),
+                      userProfileAsync.when(
+                        data: (profile) => Text(
+                          profile?.walletPoints.toString() ?? '0',
+                          style: AppTextStyles.bodyMedium.copyWith(color: Colors.amber),
+                        ),
+                        loading: () => const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.amber)),
+                        error: (_, __) => Text('0', style: AppTextStyles.bodyMedium.copyWith(color: Colors.amber)),
                       ),
-                      loading: () => const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.amber)),
-                      error: (_, __) => Text('0', style: AppTextStyles.bodyMedium.copyWith(color: Colors.amber)),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           )
         ],

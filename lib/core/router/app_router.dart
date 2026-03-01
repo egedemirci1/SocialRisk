@@ -15,7 +15,7 @@ import '../../features/game/presentation/difficulty_choice_screen.dart';
 import '../../features/voting/presentation/voting_screen.dart';
 import '../../features/auth/presentation/profile_screen.dart';
 import '../../features/profile/presentation/custom_deck_editor_screen.dart';
-import '../../features/economy/presentation/store_screen.dart';
+import '../../features/store/presentation/store_screen.dart';
 import '../../features/game/presentation/economy_pick_screen.dart';
 import '../../features/admin/presentation/admin_dashboard_screen.dart';
 import '../../features/admin/presentation/task_editor_screen.dart';
