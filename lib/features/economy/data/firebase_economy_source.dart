@@ -37,8 +37,9 @@ class FirebaseEconomySource implements EconomyRepository {
       }
 
       final currentPoints = snapshot.data()?['walletPoints'] as int? ?? 0;
-      final ownedCosmetics =
-          List<String>.from(snapshot.data()?['ownedCosmetics'] ?? []);
+      final ownedCosmetics = List<String>.from(
+        snapshot.data()?['ownedCosmetics'] ?? [],
+      );
 
       if (ownedCosmetics.contains(cosmeticId)) {
         throw Exception("Bu eşyaya zaten sahipsiniz.");
@@ -62,9 +63,15 @@ class FirebaseEconomySource implements EconomyRepository {
     required String uid,
     required String? cosmeticId,
   }) async {
-    await _userDoc(uid).update({
-      'activeFrame': cosmeticId,
-    });
+    await _userDoc(uid).update({'activeFrame': cosmeticId});
+  }
+
+  @override
+  Future<void> setActiveTitle({
+    required String uid,
+    required String? cosmeticId,
+  }) async {
+    await _userDoc(uid).update({'activeTitle': cosmeticId});
   }
 
   @override

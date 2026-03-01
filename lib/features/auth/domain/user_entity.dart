@@ -6,6 +6,7 @@ class UserEntity {
   final String rank;
   final List<String> ownedCosmetics;
   final String? activeFrame;
+  final String? activeTitle;
 
   const UserEntity({
     required this.uid,
@@ -15,5 +16,6 @@ class UserEntity {
     this.rank = 'Newbie',
     this.ownedCosmetics = const [],
     this.activeFrame,
+    this.activeTitle,
   });
 }

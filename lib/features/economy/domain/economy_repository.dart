@@ -2,10 +2,7 @@ import 'cosmetic_item_entity.dart';
 
 abstract class EconomyRepository {
   /// Oyun sonunda oyuncunun cüzdanına puan ekler (veya ceza varsa çıkarır).
-  Future<void> addPointsToWallet({
-    required String uid,
-    required int points,
-  });
+  Future<void> addPointsToWallet({required String uid, required int points});
 
   /// Oyuncu kozmetik bir eşya (çerçeve vb.) satın aldığında cüzdanından puan düşer ve envantere ekler.
   Future<void> buyCosmetic({
@@ -16,6 +13,12 @@ abstract class EconomyRepository {
 
   /// Aktif kozmetik çerçevesini değiştirir.
   Future<void> setActiveFrame({
+    required String uid,
+    required String? cosmeticId,
+  });
+
+  /// Aktif unvanı değiştirir.
+  Future<void> setActiveTitle({
     required String uid,
     required String? cosmeticId,
   });
