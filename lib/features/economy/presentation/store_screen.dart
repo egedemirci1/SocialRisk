@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
-import '../../auth/providers/auth_provider.dart';
 
 class StoreScreen extends ConsumerWidget {
   const StoreScreen({super.key});

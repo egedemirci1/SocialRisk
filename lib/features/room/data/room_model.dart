@@ -11,6 +11,7 @@ class RoomModel {
   final int endConditionValue;
   final String visibility;
   final String? gameId;
+  final String difficulty;
   final DateTime createdAt;
 
   const RoomModel({
@@ -21,6 +22,7 @@ class RoomModel {
     required this.endConditionType,
     required this.endConditionValue,
     this.visibility = 'open',
+    this.difficulty = 'mixed',
     this.gameId,
     required this.createdAt,
   });
@@ -34,6 +36,7 @@ class RoomModel {
       endConditionType: json['endConditionType'] as String? ?? 'score',
       endConditionValue: json['endConditionValue'] as int? ?? 5000,
       visibility: json['visibility'] as String? ?? 'open',
+      difficulty: json['difficulty'] as String? ?? 'mixed',
       gameId: json['gameId'] as String?,
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
@@ -48,6 +51,7 @@ class RoomModel {
       'endConditionType': endConditionType,
       'endConditionValue': endConditionValue,
       'visibility': visibility,
+      'difficulty': difficulty,
       'gameId': gameId,
       'createdAt': FieldValue.serverTimestamp(),
     };
@@ -73,6 +77,10 @@ class RoomModel {
       visibility: RoomVisibility.values.firstWhere(
         (e) => e.name == visibility,
         orElse: () => RoomVisibility.open,
+      ),
+      difficulty: GameDifficulty.values.firstWhere(
+        (e) => e.name == difficulty,
+        orElse: () => GameDifficulty.mixed,
       ),
       players: players,
       gameId: gameId,

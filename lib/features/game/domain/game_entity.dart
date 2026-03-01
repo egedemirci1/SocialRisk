@@ -10,6 +10,10 @@ class GameEntity {
   final GameStatus status;
   final int passStreak;
   final List<String> usedTaskIds;
+  final String? spinningTarget;
+  final GameDifficulty difficulty;
+  final int? lastRoundScore;
+  final int? lastRoundMultiplier;
 
   const GameEntity({
     required this.gameId,
@@ -21,6 +25,10 @@ class GameEntity {
     this.status = GameStatus.playing,
     this.passStreak = 0,
     this.usedTaskIds = const [],
+    this.spinningTarget,
+    this.difficulty = GameDifficulty.mixed,
+    this.lastRoundScore,
+    this.lastRoundMultiplier,
   });
 }
 

@@ -9,6 +9,7 @@ abstract class RoomRepository {
     required EndConditionType endConditionType,
     required int endConditionValue,
     required RoomVisibility visibility,
+    required GameDifficulty difficulty,
   });
 
   Future<void> joinRoom({

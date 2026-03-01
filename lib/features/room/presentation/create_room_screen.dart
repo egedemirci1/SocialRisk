@@ -25,6 +25,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   double _roundTarget = 10;
   bool _isCreating = false;
   bool _isOpenMode = true; // true = Açık Mod, false = Kapalı Mod
+  GameDifficulty _difficulty = GameDifficulty.mixed;
 
   Future<void> _createRoom() async {
     setState(() => _isCreating = true);
@@ -48,6 +49,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         endConditionType: endType,
         endConditionValue: endValue,
         visibility: _isOpenMode ? RoomVisibility.open : RoomVisibility.closed,
+        difficulty: _difficulty,
         hostAvatarUrl: user.photoURL,
       );
 
@@ -115,6 +117,15 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 title: 'Görünürlük Modu',
                 icon: Icons.visibility_outlined,
                 child: _buildVisibilityMode(),
+              ),
+
+              const SizedBox(height: 24),
+              
+              // Zorluk Seviyesi
+              _buildSection(
+                title: 'Görev Zorluğu',
+                icon: Icons.fitness_center_rounded,
+                child: _buildDifficultyMode(),
               ),
 
               const SizedBox(height: 40),
@@ -378,6 +389,64 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           _isOpenMode
               ? 'Herkes görev içeriğini önceden görebilir.'
               : 'Sadece kategori ve çarpan görünür. İçerik gizli!',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: Colors.white38,
+            fontSize: 12,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDifficultyMode() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _ToggleChip(
+                label: 'Kolay',
+                isSelected: _difficulty == GameDifficulty.easy,
+                onTap: () => setState(() => _difficulty = GameDifficulty.easy),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _ToggleChip(
+                label: 'Orta',
+                isSelected: _difficulty == GameDifficulty.medium,
+                onTap: () => setState(() => _difficulty = GameDifficulty.medium),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _ToggleChip(
+                label: 'Zor',
+                isSelected: _difficulty == GameDifficulty.hard,
+                onTap: () => setState(() => _difficulty = GameDifficulty.hard),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _ToggleChip(
+                label: 'Karışık',
+                isSelected: _difficulty == GameDifficulty.mixed,
+                onTap: () => setState(() => _difficulty = GameDifficulty.mixed),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          _difficulty == GameDifficulty.easy ? 'Daha masum ve risksiz görevler gelir (1x Çarpan).' 
+          : _difficulty == GameDifficulty.medium ? 'Biraz daha cesaret isteyen görevler (2x Çarpan).'
+          : _difficulty == GameDifficulty.hard ? 'Ciddi risk ve utanma uyandıran görevler (3x Çarpan).'
+          : 'Bütün kategorilerden rastgele seviyede görevler.',
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white38,
             fontSize: 12,

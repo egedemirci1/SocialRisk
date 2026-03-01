@@ -131,8 +131,6 @@ final appRouter = GoRouter(
         return RoundResultScreen(
           gameId: extra['gameId'] as String? ?? '',
           roomCode: extra['roomCode'] as String? ?? '',
-          earnedScore: extra['earnedScore'] as int? ?? 0,
-          multiplier: extra['multiplier'] as int? ?? 1,
         );
       },
     ),

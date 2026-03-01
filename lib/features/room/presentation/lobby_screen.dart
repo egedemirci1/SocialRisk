@@ -149,6 +149,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                                     final gameId = await gameRepo.startGame(
                                       roomId: widget.roomCode,
                                       playerIds: playerIds,
+                                      difficulty: room?.difficulty ?? GameDifficulty.mixed,
                                     );
 
                                     // gameId'yi room belgesine yaz

@@ -76,8 +76,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Future<void> _signInWithGoogle() async {
     setState(() => _isGoogleLoading = true);
     try {
-      // Google Sign-In — MVP kapsamı dışında, yakında eklenecek
-      _showError('Google girişi yakında!');
+      final provider = GoogleAuthProvider();
+      // Added basic scopes if needed
+      provider.addScope('email');
+      
+      final cred = await FirebaseAuth.instance.signInWithPopup(provider);
+      
+      if (cred.user != null && cred.user!.displayName == null) {
+         // Default name if none exists (unlikely with Google)
+         await cred.user!.updateDisplayName('Oyuncu');
+      }
+      // Router will naturally redirect to /home on state change
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        _showError(e.message ?? 'Google giriş hatası: ${e.code}');
+      }
+    } catch (e) {
+      if (mounted) _showError('Giriş başarısız: $e');
     } finally {
       if (mounted) setState(() => _isGoogleLoading = false);
     }
@@ -86,8 +101,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Future<void> _signInWithApple() async {
     setState(() => _isAppleLoading = true);
     try {
-      // Apple Sign-In — MVP kapsamı dışında, yakında eklenecek
-      _showError('Apple girişi yakında!');
+      final provider = OAuthProvider('apple.com');
+      provider.addScope('email');
+      provider.addScope('name');
+      
+      final cred = await FirebaseAuth.instance.signInWithPopup(provider);
+
+      if (cred.user != null && cred.user!.displayName == null) {
+         // Default name if none exists
+         await cred.user!.updateDisplayName('Oyuncu');
+      }
+      // Router will redirect
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        _showError(e.message ?? 'Apple giriş hatası: ${e.code}');
+      }
+    } catch (e) {
+      if (mounted) _showError('Giriş başarısız: $e');
     } finally {
       if (mounted) setState(() => _isAppleLoading = false);
     }

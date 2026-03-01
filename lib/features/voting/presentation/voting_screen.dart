@@ -10,6 +10,8 @@ import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../../game/providers/game_provider.dart';
 import '../providers/vote_provider.dart';
+import '../../game/domain/game_entity.dart';
+import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 
 /// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor.
 class VotingScreen extends ConsumerStatefulWidget {
@@ -59,6 +61,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             roomId: widget.roomCode,
             playerId: currentPlayerId,
             scoreToAdd: earned,
+            taskMultiplier: taskMultiplier,
             endConditionValue: endConditionValue,
             endConditionType: endConditionType,
             currentRound: currentRound,
@@ -66,22 +69,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
 
       if (!mounted) return;
 
-      // Oyun durumunu kontrol et — Firestore'dan güncel veriyi oku
-      final updatedGame =
-          await ref.read(gameRepositoryProvider).watchGame(widget.gameId).first;
-
-      if (!mounted) return;
-
-      if (updatedGame?.status == GameStatus.finished) {
-        context.go('/game-over', extra: widget.roomCode);
-      } else {
-        context.go('/round-result', extra: {
-          'gameId': widget.gameId,
-          'roomCode': widget.roomCode,
-          'earnedScore': earned,
-          'multiplier': taskMultiplier,
-        });
-      }
+      // Navigation is now handled by ref.listen on GameStatus change
     } catch (e) {
       if (mounted) {
         setState(() => _isProcessing = false);
@@ -114,6 +102,22 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
           }
         }
 
+        // Listen for game status changes to navigate to results or game over
+        ref.listen<AsyncValue<GameEntity?>>(
+          watchGameProvider(widget.gameId),
+          (previous, next) {
+            final currentStatus = next.value?.status;
+            if (currentStatus == GameStatus.results) {
+              context.go('/round-result', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            } else if (currentStatus == GameStatus.finished) {
+              context.go('/game-over', extra: widget.roomCode);
+            }
+          }
+        );
+
         final performerName =
             playerNames[game.currentPlayerId] ?? game.currentPlayerId;
         final task = game.currentTask;
@@ -125,8 +129,10 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                   votesAsync.value!.containsKey(id),
             );
 
-        // Herkes oy verdiyse sonuçları hesapla (tek seferlik)
-        if (allVoted && !_isProcessing) {
+        final isMyTurn = game.currentPlayerId == user?.uid;
+
+        // Herkes oy verdiyse sonuçları hesapla (tek seferlik, sadece aktif oyuncu)
+        if (allVoted && !_isProcessing && isMyTurn) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted && !_isProcessing) {
               _processResults(
@@ -142,6 +148,12 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
           appBar: AppBar(
             title: const Text('Oylama'),
             automaticallyImplyLeading: false,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.leaderboard_rounded),
+                onPressed: () => ScoreboardBottomSheet.show(context, widget.roomCode),
+              ),
+            ],
           ),
           body: GradientContainer(
             padding: const EdgeInsets.symmetric(horizontal: 24),

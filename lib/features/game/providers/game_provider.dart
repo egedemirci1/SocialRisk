@@ -27,12 +27,14 @@ class GameController extends _$GameController {
   Future<String> startGame({
     required String roomId,
     required List<String> playerIds,
+    required GameDifficulty difficulty,
   }) async {
     state = const AsyncLoading();
     final result = await AsyncValue.guard(() =>
       ref.read(gameRepositoryProvider).startGame(
         roomId: roomId,
         playerIds: playerIds,
+        difficulty: difficulty,
       ),
     );
     state = result;
@@ -41,6 +43,16 @@ class GameController extends _$GameController {
 
   Future<void> acceptTask(String gameId) async {
     await ref.read(gameRepositoryProvider).acceptTask(gameId);
+  }
+
+  Future<void> setSpinningTarget({
+    required String gameId,
+    required String? target,
+  }) async {
+    await ref.read(gameRepositoryProvider).setSpinningTarget(
+      gameId: gameId,
+      target: target,
+    );
   }
 
   Future<void> proceedToVoting(String gameId) async {
@@ -75,6 +87,7 @@ class GameController extends _$GameController {
     required String roomId,
     required String playerId,
     required int scoreToAdd,
+    required int taskMultiplier,
     required int endConditionValue,
     required EndConditionType endConditionType,
     required int currentRound,
@@ -112,8 +125,6 @@ class GameController extends _$GameController {
     }
 
     if (shouldEnd) {
-      await repo.endGame(gameId);
-      
       // Oyun sonu - E23: İlgili tüm oyuncuların kazançlarını hesaplarına yatır.
       final updatedPlayersSnap = await FirebaseFirestore.instance
           .collection('rooms')
@@ -129,7 +140,18 @@ class GameController extends _$GameController {
         }
       }
     }
-    // nextTurn çağrısı buradan kaldırıldı. Host 'RoundResultScreen'den manuel tetikleyecek.
+
+    // Her durumda RoundResultScreen'e gitmek için sonuçları ayarla
+    await repo.setRoundResult(
+      gameId: gameId,
+      score: scoreToAdd,
+      multiplier: taskMultiplier,
+    );
+
+    if (shouldEnd) {
+      // Oyun bittiğini belirt
+      await repo.endGame(gameId);
+    }
   }
 
   Future<void> nextTurn(String gameId) async {

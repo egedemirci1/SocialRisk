@@ -21,10 +21,16 @@ class WheelCategory {
 class SpinWheel extends StatefulWidget {
   const SpinWheel({
     super.key,
-    required this.onResult,
+    this.spinningTarget,
+    this.canSpin = true,
+    this.onSpinRequest,
+    required this.onSpinComplete,
   });
 
-  final ValueChanged<String> onResult;
+  final String? spinningTarget;
+  final bool canSpin;
+  final VoidCallback? onSpinRequest;
+  final ValueChanged<String> onSpinComplete;
 
   @override
   State<SpinWheel> createState() => _SpinWheelState();
@@ -89,17 +95,40 @@ class _SpinWheelState extends State<SpinWheel>
     super.dispose();
   }
 
-  void _spin() {
+  @override
+  void didUpdateWidget(covariant SpinWheel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.spinningTarget != oldWidget.spinningTarget &&
+        widget.spinningTarget != null) {
+      _spinTo(widget.spinningTarget!);
+    }
+  }
+
+  void _spinTo(String targetCategory) {
     if (_isSpinning) return;
     setState(() {
       _isSpinning = true;
       _hasResult = false;
     });
 
-    // Minimum 3 tam tur + rastgele bitiş açısı
+    final targetIndex = _categories.indexWhere((c) => c.name == targetCategory);
+    if (targetIndex == -1) return;
+
     final extraTurns = 3 + _random.nextInt(3); // 3-5 tur
-    final stopAngle = _random.nextDouble() * 2 * pi;
-    final totalAngle = extraTurns * 2 * pi + stopAngle;
+    final sliceAngle = 2 * pi / _categories.length;
+    
+    // Rastgele bir sapma (dilimin içinde rastgele bir yer)
+    final offset = (_random.nextDouble() * 0.8 + 0.1) * sliceAngle; // %10-%90 arası
+    
+    // Hedef açı (Ok her zaman en üstte yani 3π/2 (270 derece))
+    // Formül: (Hedef index * sliceAngle) + offset açısı saat yönünün TERSİNE (çünkü çark saat yönünde dönüyor)
+    final targetBaseAngle = (2 * pi) - (targetIndex * sliceAngle) - offset;
+    
+    final currentMod = _currentAngle % (2 * pi);
+    double distance = targetBaseAngle - currentMod;
+    if (distance <= 0) distance += 2 * pi;
+
+    final totalAngle = (extraTurns * 2 * pi) + distance;
 
     _animation = Tween<double>(
       begin: _currentAngle,
@@ -111,22 +140,14 @@ class _SpinWheelState extends State<SpinWheel>
 
     _controller.reset();
     _controller.forward().then((_) {
-      final finalAngle = _animation.value % (2 * pi);
       _currentAngle = _animation.value;
-
-      // Üstteki ok (12 o'clock = 3π/2 yönünde) hangisine denk geldi?
-      // Çark saat yönünde dönüyor, dilimler saat yönünün tersine sıralı
-      final sliceAngle = 2 * pi / _categories.length;
-      // Pointer üstte (pi/2 offset çünkü canvas 3 o'clock = 0)
-      final normalized = (2 * pi - (finalAngle % (2 * pi))) % (2 * pi);
-      final index = (normalized / sliceAngle).floor() % _categories.length;
-
-      setState(() {
-        _isSpinning = false;
-        _hasResult = true;
-      });
-
-      widget.onResult(_categories[index].name);
+      if (mounted) {
+        setState(() {
+          _isSpinning = false;
+          _hasResult = true;
+        });
+        widget.onSpinComplete(targetCategory);
+      }
     });
   }
 
@@ -167,9 +188,9 @@ class _SpinWheelState extends State<SpinWheel>
         const SizedBox(height: 24),
 
         // Çevir butonu
-        if (!_hasResult)
+        if (!_hasResult && widget.canSpin)
           GestureDetector(
-            onTap: _isSpinning ? null : _spin,
+            onTap: _isSpinning ? null : widget.onSpinRequest,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
@@ -212,6 +233,24 @@ class _SpinWheelState extends State<SpinWheel>
                   ),
                 ],
               ),
+            ),
+          )
+        else if (!_hasResult && !widget.canSpin && _isSpinning)
+          Text(
+            'Çark dönüyor...',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.white70,
+            ),
+          )
+        else if (!_hasResult && !widget.canSpin)
+          Text(
+            'Host\'un çarkı çevirmesi bekleniyor...',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.white54,
             ),
           ),
       ],

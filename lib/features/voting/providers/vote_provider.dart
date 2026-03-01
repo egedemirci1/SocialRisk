@@ -11,7 +11,7 @@ VoteRepository voteRepository(Ref ref) {
   return FirebaseVoteSource();
 }
 
-/// watchVotes uses manual StreamProvider because Map<String, VoteValue>
+/// watchVotes uses manual StreamProvider because Map
 /// causes InvalidTypeException with riverpod_generator.
 final watchVotesProvider = StreamProvider.family<Map<String, VoteValue>, String>(
   (ref, gameId) {

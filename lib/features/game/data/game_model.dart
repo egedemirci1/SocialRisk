@@ -11,6 +11,10 @@ class GameModel {
   final List<String> turnOrder;
   final String status;
   final List<String> usedTaskIds;
+  final String? spinningTarget;
+  final String difficulty;
+  final int? lastRoundScore;
+  final int? lastRoundMultiplier;
 
   const GameModel({
     required this.gameId,
@@ -21,6 +25,10 @@ class GameModel {
     required this.turnOrder,
     this.status = 'playing',
     this.usedTaskIds = const [],
+    this.spinningTarget,
+    this.difficulty = 'mixed',
+    this.lastRoundScore,
+    this.lastRoundMultiplier,
   });
 
   factory GameModel.fromJson(Map<String, dynamic> json, String docId) {
@@ -33,6 +41,10 @@ class GameModel {
       turnOrder: List<String>.from(json['turnOrder'] ?? []),
       status: json['status'] as String? ?? 'playing',
       usedTaskIds: List<String>.from(json['usedTaskIds'] ?? []),
+      spinningTarget: json['spinningTarget'] as String?,
+      difficulty: json['difficulty'] as String? ?? 'mixed',
+      lastRoundScore: json['lastRoundScore'] as int?,
+      lastRoundMultiplier: json['lastRoundMultiplier'] as int?,
     );
   }
 
@@ -45,6 +57,10 @@ class GameModel {
       'turnOrder': turnOrder,
       'status': status,
       'usedTaskIds': usedTaskIds,
+      'difficulty': difficulty,
+      if (spinningTarget != null) 'spinningTarget': spinningTarget,
+      if (lastRoundScore != null) 'lastRoundScore': lastRoundScore,
+      if (lastRoundMultiplier != null) 'lastRoundMultiplier': lastRoundMultiplier,
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
@@ -66,7 +82,14 @@ class GameModel {
         (e) => e.name == status,
         orElse: () => GameStatus.playing,
       ),
+      difficulty: GameDifficulty.values.firstWhere(
+        (e) => e.name == difficulty,
+        orElse: () => GameDifficulty.mixed,
+      ),
       usedTaskIds: usedTaskIds,
+      spinningTarget: spinningTarget,
+      lastRoundScore: lastRoundScore,
+      lastRoundMultiplier: lastRoundMultiplier,
     );
   }
 }

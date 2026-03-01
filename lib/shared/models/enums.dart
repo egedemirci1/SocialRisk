@@ -4,11 +4,19 @@ enum GameMode {
   custom   // Gelecek planı
 }
 
+enum GameDifficulty {
+  easy,    // Kolay - multiplier 1
+  medium,  // Orta - multiplier 2
+  hard,    // Zor - multiplier 3
+  mixed    // Karışık - hepsi
+}
+
 enum GameStatus {
   waiting,
   playing,
   performing,
   voting,
+  results,
   finished
 }
 

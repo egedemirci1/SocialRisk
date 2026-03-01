@@ -5,9 +5,10 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
 import '../../../shared/models/enums.dart';
-import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../providers/game_provider.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 
 /// Bekleme ekranı — Diğer oyuncuların görevi tamamlamasını bekle.
 class WaitingScreen extends ConsumerStatefulWidget {
@@ -108,6 +109,17 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
             playerNames[game.currentPlayerId] ?? game.currentPlayerId;
 
         return Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.transparent,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.leaderboard_rounded),
+                onPressed: () => ScoreboardBottomSheet.show(context, widget.roomCode),
+              ),
+            ],
+          ),
+          extendBodyBehindAppBar: true,
           body: GradientContainer(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Column(

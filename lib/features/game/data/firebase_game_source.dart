@@ -5,6 +5,7 @@ import '../domain/game_repository.dart';
 import 'game_model.dart';
 import 'tasks_seed_data.dart';
 import '../../../core/utils/helpers.dart';
+import '../../../shared/models/enums.dart';
 
 class FirebaseGameSource implements GameRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -20,6 +21,7 @@ class FirebaseGameSource implements GameRepository {
   Future<String> startGame({
     required String roomId,
     required List<String> playerIds,
+    required GameDifficulty difficulty,
   }) async {
     // Sırayı karıştır
     final shuffled = List<String>.from(playerIds)..shuffle(_random);
@@ -33,6 +35,7 @@ class FirebaseGameSource implements GameRepository {
       currentTask: firstTask.toJson(),
       turnOrder: shuffled,
       status: 'playing',
+      difficulty: difficulty.name,
     );
 
     final docRef = await _gamesRef.add(gameModel.toJson());
@@ -45,6 +48,14 @@ class FirebaseGameSource implements GameRepository {
       if (!snap.exists) return null;
       return GameModel.fromJson(snap.data()!, snap.id).toEntity();
     });
+  }
+
+  @override
+  Future<void> setSpinningTarget({
+    required String gameId,
+    required String? target,
+  }) async {
+    await _gameDoc(gameId).update({'spinningTarget': target});
   }
 
   @override
@@ -61,6 +72,7 @@ class FirebaseGameSource implements GameRepository {
     await _gameDoc(gameId).update({
       'currentTask': taskModel.toJson(),
       'usedTaskIds': FieldValue.arrayUnion([task.id]), // E15: Görevi kullanıldı olarak işaretle
+      'spinningTarget': null,
     });
   }
 
@@ -74,13 +86,30 @@ class FirebaseGameSource implements GameRepository {
 
     final game = GameModel.fromJson(snap.data()!, snap.id);
     final usedIds = game.usedTaskIds;
+    final difficulty = GameDifficulty.values.firstWhere(
+        (e) => e.name == game.difficulty,
+        orElse: () => GameDifficulty.mixed);
 
     // Kategoriye uyan ve daha önce kullanılmamış görevleri bul
     var availableTasks = tasksSeedData.where((t) => 
       t.category == category && !usedIds.contains(t.id)
     ).toList();
 
-    // Eğer o kategorideki tüm görevler bittiyse (çok düşük ihtimal), 
+    // Zorluğa göre filtreleme
+    if (difficulty != GameDifficulty.mixed) {
+      final targetMultiplier = difficulty == GameDifficulty.easy 
+        ? 1 
+        : (difficulty == GameDifficulty.medium ? 2 : 3);
+        
+      final filteredByDifficulty = availableTasks.where((t) => t.multiplier == targetMultiplier).toList();
+      
+      // Eğer seçili zorlukta görev kalmadıysa filtreyi esnet
+      if (filteredByDifficulty.isNotEmpty) {
+        availableTasks = filteredByDifficulty;
+      }
+    }
+
+    // Eğer o kategorideki tüm (veya ilgili zorluktaki) görevler bittiyse, 
     // fallback olarak kullanılmışları da dahil et (sadece o kategori için)
     if (availableTasks.isEmpty) {
       availableTasks = tasksSeedData.where((t) => t.category == category).toList();
@@ -135,8 +164,25 @@ class FirebaseGameSource implements GameRepository {
     });
 
     // Pas deyince sıranın bitmesi yeni kural, o yüzden burada yeni görev atamıyoruz.
-    // Oyun statüsünü koruyarak nextTurn'e geçiyoruz.
-    await nextTurn(gameId);
+    // Oyun statüsünü koruyarak nextTurn'e geçmiyoruz. RoundResultScreen'e yönlendiriyoruz.
+    await _gameDoc(gameId).update({
+      'status': 'results',
+      'lastRoundScore': -penalty,
+      'lastRoundMultiplier': 0, // Pas geçildiğini belirtmek için
+    });
+  }
+
+  @override
+  Future<void> setRoundResult({
+    required String gameId,
+    required int score,
+    required int multiplier,
+  }) async {
+    await _gameDoc(gameId).update({
+      'status': 'results',
+      'lastRoundScore': score,
+      'lastRoundMultiplier': multiplier,
+    });
   }
 
   @override
@@ -158,6 +204,7 @@ class FirebaseGameSource implements GameRepository {
       'currentPlayerId': game.turnOrder[nextIndex],
       'currentTask': null, // Görev çarktan gelecek
       'status': 'playing', // E13: Oylamadan sonra tekrar 'playing' durumuna dön.
+      'spinningTarget': null,
     };
 
     if (isNewRound) {
@@ -178,6 +225,7 @@ class FirebaseGameSource implements GameRepository {
       'currentRound': game.currentRound + 1,
       'currentPlayerId': game.turnOrder.first,
       'currentTask': null, // Çark çevrilecek
+      'spinningTarget': null,
     });
   }
 

@@ -6,6 +6,8 @@ class AppTextStyles {
   static final displayMedium = GoogleFonts.nunito(fontSize: 24, fontWeight: FontWeight.w700);
   static final headlineMedium= GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w700);
   static final titleLarge    = GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600);
+  static final titleMedium   = GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600);
+  static final titleSmall    = GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600);
   static final bodyMedium    = GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w400);
   static final labelSmall    = GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, letterSpacing: 1.2);
 }

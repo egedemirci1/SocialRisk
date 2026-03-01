@@ -11,6 +11,7 @@ import '../providers/game_provider.dart';
 import '../domain/game_entity.dart';
 import '../../room/providers/room_provider.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../shared/widgets/common/player_avatar.dart';
 
 /// Tur sonu ekranı — Oylama sonucu ve kazanılan/kaybedilen puan.
 class RoundResultScreen extends ConsumerWidget {
@@ -18,138 +19,242 @@ class RoundResultScreen extends ConsumerWidget {
     super.key,
     required this.gameId,
     required this.roomCode,
-    required this.earnedScore,
-    required this.multiplier,
   });
 
   final String gameId;
   final String roomCode;
-  final int earnedScore;
-  final int multiplier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameAsync = ref.watch(watchGameProvider(gameId));
+    final playersAsync = ref.watch(watchPlayersProvider(roomCode));
 
     return Scaffold(
-      body: GradientContainer(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          children: [
-            const Spacer(flex: 2),
+      body: gameAsync.when(
+        data: (game) {
+          if (game == null) return const Center(child: CircularProgressIndicator());
 
-            DecoratedBox(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: earnedScore >= 0
-                    ? AppColors.votePositive.withValues(alpha: 0.15)
-                    : AppColors.voteNegative.withValues(alpha: 0.15),
-              ),
-              child: SizedBox(
-                width: 100,
-                height: 100,
-                child: Center(
-                  child: Text(
-                    earnedScore >= 0 ? '🎉' : '😬',
-                    style: const TextStyle(fontSize: 48),
+          final earnedScore = game.lastRoundScore ?? 0;
+          final multiplier = game.lastRoundMultiplier ?? 1;
+          final isPass = multiplier == 0;
+          final isGameOver = game.status == GameStatus.finished;
+
+          String playerName = game.currentPlayerId;
+          if (playersAsync.value != null) {
+            try {
+              playerName = playersAsync.value!.firstWhere((p) => p.id == game.currentPlayerId).name;
+            } catch (_) {}
+          }
+
+          // Navigate non-hosts automatically when next round starts
+          ref.listen<AsyncValue<GameEntity?>>(
+            watchGameProvider(gameId),
+            (previous, next) {
+              if (!context.mounted) return;
+              final previousStatus = previous?.value?.status;
+              final currentStatus = next.value?.status;
+              
+              if (previousStatus == GameStatus.results && 
+                  currentStatus == GameStatus.playing) {
+                context.go('/waiting', extra: {
+                  'gameId': gameId,
+                  'roomCode': roomCode,
+                });
+              } else if (currentStatus == GameStatus.finished) {
+                context.go('/game-over', extra: roomCode);
+              }
+            }
+          );
+
+          return GradientContainer(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              children: [
+                const Spacer(flex: 2),
+
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: earnedScore >= 0
+                        ? AppColors.votePositive.withValues(alpha: 0.15)
+                        : AppColors.voteNegative.withValues(alpha: 0.15),
+                  ),
+                  child: SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: Center(
+                      child: Text(
+                        earnedScore >= 0 ? '🎉' : '😬',
+                        style: const TextStyle(fontSize: 48),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-            Text(
-              'Tur Tamamlandı!',
-              style: AppTextStyles.displayMedium.copyWith(color: Colors.white),
-            ),
-            const SizedBox(height: 32),
+                Text(
+                  isPass ? 'Görev Pas Geçildi!' : 'Tur Tamamlandı!',
+                  style: AppTextStyles.displayMedium.copyWith(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '$playerName ${isPass ? 'görevi pas geçti ve ceza aldı.' : 'görevini yaptı.'}',
+                  style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
 
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        if (!isPass) ...[
+                          _ScoreRow(
+                            label: 'Oylama Skoru',
+                            value: multiplier != 0
+                                ? '${earnedScore ~/ multiplier}'
+                                : '$earnedScore',
+                            color: earnedScore >= 0
+                                ? AppColors.votePositive
+                                : AppColors.voteNegative,
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            child: Divider(color: Colors.white12),
+                          ),
+                          _ScoreRow(
+                            label: 'Çarpan',
+                            value: '×$multiplier',
+                            color: AppColors.accent,
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            child: Divider(color: Colors.white12),
+                          ),
+                        ],
+                        _ScoreRow(
+                          label: earnedScore >= 0
+                              ? 'Kazanılan Puan'
+                              : 'Kaybedilen Puan',
+                          value: earnedScore >= 0
+                              ? '+$earnedScore'
+                              : '$earnedScore',
+                          color: AppColors.accent,
+                          isBold: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _ScoreRow(
-                      label: 'Oylama Skoru',
-                      value: multiplier != 0
-                          ? '${earnedScore ~/ multiplier}'
-                          : '$earnedScore',
-                      color: earnedScore >= 0
-                          ? AppColors.votePositive
-                          : AppColors.voteNegative,
+                    Text(
+                      'Bu tur: ',
+                      style: AppTextStyles.bodyMedium
+                          .copyWith(color: Colors.white54),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Divider(color: Colors.white12),
-                    ),
-                    _ScoreRow(
-                      label: 'Çarpan',
-                      value: '×$multiplier',
-                      color: AppColors.accent,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Divider(color: Colors.white12),
-                    ),
-                    _ScoreRow(
-                      label: earnedScore >= 0
-                          ? 'Kazanılan Puan'
-                          : 'Kaybedilen Puan',
-                      value: earnedScore >= 0
-                          ? '+$earnedScore'
-                          : '$earnedScore',
-                      color: AppColors.accent,
-                      isBold: true,
-                    ),
+                    ScoreCounter(score: earnedScore, delta: earnedScore),
                   ],
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Bu tur: ',
-                  style: AppTextStyles.bodyMedium
-                      .copyWith(color: Colors.white54),
+                const SizedBox(height: 24),
+
+                // Liderlik Tablosu Görüntüleme
+                Expanded(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: playersAsync.when(
+                      data: (players) {
+                        final sortedPlayers = List.of(players)..sort((a, b) => b.score.compareTo(a.score));
+                        return ListView.builder(
+                          padding: const EdgeInsets.all(12),
+                          itemCount: sortedPlayers.length,
+                          itemBuilder: (context, index) {
+                            final player = sortedPlayers[index];
+                            final isMe = player.id == game.currentPlayerId; // aktif oyuncu
+                            
+                            Color rankColor;
+                            if (index == 0) rankColor = const Color(0xFFFFD700);
+                            else if (index == 1) rankColor = const Color(0xFFC0C0C0);
+                            else if (index == 2) rankColor = const Color(0xFFCD7F32);
+                            else rankColor = Colors.white38;
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: isMe ? AppColors.primary.withValues(alpha: 0.1) : AppColors.surfaceElevated,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: isMe ? Border.all(color: AppColors.primary.withValues(alpha: 0.3)) : null,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 24,
+                                        child: Text(
+                                          '#${index + 1}',
+                                          style: AppTextStyles.titleMedium.copyWith(
+                                            color: rankColor,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      PlayerAvatar(
+                                        displayName: player.name,
+                                        avatarUrl: player.avatarUrl,
+                                        radius: 14,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          player.name,
+                                          style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${player.score}',
+                                        style: AppTextStyles.titleMedium.copyWith(
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (e, _) => Center(child: Text('Skorlar yüklenemedi: $e')),
+                    ),
+                  ),
                 ),
-                ScoreCounter(score: earnedScore, delta: earnedScore),
-              ],
-            ),
 
-            const Spacer(flex: 2),
+                const SizedBox(height: 24),
 
-            gameAsync.when(
-              data: (game) {
-                final isGameOver = game?.status == GameStatus.finished;
-                
-                // Navigate non-hosts automatically when next round starts
-                ref.listen<AsyncValue<GameEntity?>>(
-                  watchGameProvider(gameId),
-                  (previous, next) {
-                    if (!context.mounted) return;
-                    final previousStatus = previous?.value?.status;
-                    final currentStatus = next.value?.status;
-                    
-                    if (previousStatus == GameStatus.voting && 
-                        currentStatus == GameStatus.playing) {
-                      context.go('/waiting', extra: {
-                        'gameId': gameId,
-                        'roomCode': roomCode,
-                      });
-                    } else if (currentStatus == GameStatus.finished) {
-                      context.go('/game-over', extra: roomCode);
-                    }
-                  }
-                );
-
-                return Consumer(
+                Consumer(
                   builder: (context, ref, child) {
                     final roomAsync = ref.watch(watchRoomProvider(roomCode));
                     final user = ref.watch(currentUserProvider);
@@ -165,7 +270,6 @@ class RoundResultScreen extends ConsumerWidget {
                           if (isGameOver) {
                             context.go('/game-over', extra: roomCode);
                           } else {
-                            // Host trigger next turn
                             await ref.read(gameControllerProvider.notifier).nextTurn(gameId);
                           }
                         },
@@ -183,14 +287,14 @@ class RoundResultScreen extends ConsumerWidget {
                       );
                     }
                   }
-                );
-              },
-              loading: () => const CircularProgressIndicator(),
-              error: (e, st) => Text('Hata: $e'),
+                ),
+                const SizedBox(height: 32),
+              ],
             ),
-            const SizedBox(height: 32),
-          ],
-        ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, st) => Center(child: Text('Hata: $e')),
       ),
     );
   }

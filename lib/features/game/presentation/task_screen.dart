@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,10 +9,12 @@ import '../../../shared/widgets/game/spin_wheel.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/buttons/danger_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
-import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../providers/game_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../../shared/models/enums.dart';
+import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
+import '../domain/game_entity.dart';
 
 /// Görev ekranı — Çark → Kategori → Görev → Kabul/Pas.
 class TaskScreen extends ConsumerStatefulWidget {
@@ -32,12 +35,14 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     with SingleTickerProviderStateMixin {
   bool _isAccepting = false;
   bool _isPassing = false;
-  bool _wheelDone = false;
   bool _contentRevealed = false;
-  String? _selectedCategory;
 
   late final AnimationController _cardController;
   late final Animation<double> _cardAnimation;
+  final Random _random = Random();
+  final List<String> _categories = const [
+    'Cesaret', 'İtiraf', 'Taklit', 'Sosyal Medya', 'Fiziksel', 'Bilgi'
+  ];
 
   @override
   void initState() {
@@ -59,12 +64,16 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   }
 
   void _onWheelResult(String category) {
-    setState(() {
-      _selectedCategory = category;
-      _wheelDone = true;
-      _contentRevealed = false;
-    });
-    _cardController.forward();
+    final user = ref.read(currentUserProvider);
+    final game = ref.read(watchGameProvider(widget.gameId)).value;
+    final isMyTurn = game?.currentPlayerId == user?.uid;
+
+    if (isMyTurn) {
+      ref.read(gameControllerProvider.notifier).assignTaskByCategory(
+            gameId: widget.gameId,
+            category: category,
+          );
+    }
   }
 
   Future<void> _acceptTask() async {
@@ -94,10 +103,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             roomId: widget.roomCode,
             playerId: user.uid,
           );
-      // Çarkı sıfırla — yeni görev için tekrar çevirmeli
+      // Reset card state
       setState(() {
-        _wheelDone = false;
-        _selectedCategory = null;
         _contentRevealed = false;
       });
       _cardController.reset();
@@ -123,47 +130,61 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         final user = ref.read(currentUserProvider);
         final isMyTurn = game.currentPlayerId == user?.uid;
 
-        // Sıra sende değilse durumuna göre ilgili ekrana yönlendir
-        if (!isMyTurn) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              if (game.status == GameStatus.voting) {
-                context.replace('/voting', extra: {
-                  'gameId': widget.gameId,
-                  'roomCode': widget.roomCode,
-                });
-              } else if (game.status == GameStatus.performing) {
-                context.replace('/waiting', extra: {
-                  'gameId': widget.gameId,
-                  'roomCode': widget.roomCode,
-                });
-              } else {
-                context.replace('/waiting', extra: {
-                  'gameId': widget.gameId,
-                  'roomCode': widget.roomCode,
-                });
-              }
+        // Listen for task changes to animate the card
+        ref.listen<AsyncValue<GameEntity?>>(
+          watchGameProvider(widget.gameId),
+          (previous, next) {
+            final prevTask = previous?.value?.currentTask;
+            final nextTask = next.value?.currentTask;
+            if (prevTask == null && nextTask != null) {
+              setState(() {
+                _contentRevealed = false;
+              });
+              _cardController.forward(from: 0.0);
             }
-          });
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+          }
+        );
+
+        // Durumuna göre yönlendir (Yalnızca Voting ve Performing için yönlendir)
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            if (game.status == GameStatus.voting) {
+              context.replace('/voting', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            } else if (game.status == GameStatus.performing && !isMyTurn) {
+              context.replace('/waiting', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            } else if (game.status == GameStatus.finished) {
+              context.replace('/game-over', extra: widget.roomCode);
+            }
+          }
+        });
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Senin Sıran!'),
+            title: Text(isMyTurn ? 'Senin Sıran!' : 'Arkadaşının Sırası'),
             automaticallyImplyLeading: false,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.leaderboard_rounded),
+                onPressed: () => ScoreboardBottomSheet.show(context, widget.roomCode),
+              ),
+            ],
           ),
           body: GradientContainer(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: _wheelDone
+            child: task != null
                 ? _buildTaskView(
                     game.passStreak,
                     task,
                     roomAsync.value?.visibility ?? RoomVisibility.open,
+                    isMyTurn,
                   )
-                : _buildWheelView(),
+                : _buildWheelView(game, isMyTurn),
           ),
         );
       },
@@ -174,65 +195,75 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     );
   }
 
-  /// Çark görünümü — henüz kategori seçilmedi
-  Widget _buildWheelView() {
+  /// Çark görünümü
+  Widget _buildWheelView(GameEntity game, bool isMyTurn) {
     return Column(
       children: [
         const Spacer(),
         Text(
-          '🎡 Çarkı Çevir!',
+          isMyTurn ? '🎡 Çarkı Çevir!' : '🎡 Çark Çevriliyor...',
           style: AppTextStyles.headlineMedium.copyWith(
             color: AppColors.accent,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Kategorin şansa bağlı!',
+          'Kategori şansa bağlı!',
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white38,
           ),
         ),
         const SizedBox(height: 24),
-        SpinWheel(onResult: _onWheelResult),
+        SpinWheel(
+          spinningTarget: game.spinningTarget,
+          canSpin: isMyTurn,
+          onSpinRequest: () {
+            final randomCat = _categories[_random.nextInt(_categories.length)];
+            ref.read(gameControllerProvider.notifier).setSpinningTarget(
+                  gameId: widget.gameId,
+                  target: randomCat,
+                );
+          },
+          onSpinComplete: _onWheelResult,
+        ),
         const Spacer(),
       ],
     );
   }
 
   /// Görev görünümü — çark döndü, görev gösterildi
-  Widget _buildTaskView(int passStreak, dynamic task, RoomVisibility visibility) {
+  Widget _buildTaskView(int passStreak, TaskEntity task, RoomVisibility visibility, bool isMyTurn) {
     final isClosed = visibility == RoomVisibility.closed && !_contentRevealed;
     return Column(
       children: [
         const Spacer(),
 
         // Seçilen kategori badge
-        if (_selectedCategory != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
-                borderRadius: BorderRadius.circular(20),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColors.surfaceElevated,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Text(
-                  '🎡 $_selectedCategory',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.accent,
-                    fontWeight: FontWeight.w600,
-                  ),
+              child: Text(
+                '🎡 ${task.category}',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.accent,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
           ),
+        ),
 
         Text(
-          isClosed ? '🔒 Kapalı Mod' : '🎯 Görevin:',
+          isClosed ? '🔒 Kapalı Mod' : (isMyTurn ? '🎯 Görevin:' : '🎯 Arkadaşının Görevi:'),
           style: AppTextStyles.headlineMedium.copyWith(
             color: isClosed ? Colors.white54 : AppColors.accent,
           ),
@@ -242,24 +273,24 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         ScaleTransition(
           scale: _cardAnimation,
           child: GameCard(
-            category: task?.category ?? _selectedCategory ?? '',
+            category: task.category,
             content: isClosed
                 ? '❓ İçeriği görmek için aç'
-                : (task?.content ?? ''),
-            multiplier: task?.multiplier ?? 1,
+                : task.content,
+            multiplier: task.multiplier,
           ),
         ),
 
         const Spacer(),
 
-        if (isClosed) ...[
+        if (isClosed && isMyTurn) ...[
           // Kapalı modda — önce içeriği aç
           PrimaryButton(
             label: 'Görevi Aç 🔓',
             icon: Icons.lock_open_rounded,
             onPressed: () => setState(() => _contentRevealed = true),
           ),
-        ] else ...[
+        ] else if (isMyTurn) ...[
           // Açık mod veya içerik açıldıktan sonra
           PrimaryButton(
             label: 'Görevi Kabul Et',
@@ -274,6 +305,11 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             outlined: true,
             onPressed: _passTask,
             isLoading: _isPassing,
+          ),
+        ] else ...[
+          Text(
+            'Arkadaşının karar vermesi bekleniyor...',
+            style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
           ),
         ],
 
