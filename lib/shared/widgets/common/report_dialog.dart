@@ -4,7 +4,9 @@ import '../../../core/constants/app_colors.dart';
 import '../../../features/auth/providers/user_provider.dart';
 
 class ReportDialog {
-  static Future<void> show(BuildContext context, WidgetRef ref, {
+  static Future<void> show(
+    BuildContext context,
+    WidgetRef ref, {
     required String targetUserId,
     required String targetUserName,
     required String targetUserAvatar,
@@ -25,21 +27,29 @@ class ReportDialog {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: AppColors.surface,
-              title: const Text('Kullanıcıyı Raporla', style: TextStyle(color: Colors.white)),
+              title: const Text(
+                'Kullanıcıyı Raporla',
+                style: TextStyle(color: Colors.white),
+              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                   const Text(
+                  const Text(
                     'Bu kullanıcının profil fotoğrafını raporlamak istediğinize emin misiniz?',
                     style: TextStyle(color: Colors.white70),
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: selectedReason,
+                    initialValue: selectedReason,
                     dropdownColor: AppColors.surfaceElevated,
                     style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(filled: true, fillColor: AppColors.surfaceElevated),
-                    items: reasons.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: AppColors.surfaceElevated,
+                    ),
+                    items: reasons
+                        .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                        .toList(),
                     onChanged: (val) => setState(() => selectedReason = val!),
                   ),
                 ],
@@ -51,7 +61,10 @@ class ReportDialog {
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, true),
-                  child: const Text('Raporla', style: TextStyle(color: AppColors.error)),
+                  child: const Text(
+                    'Raporla',
+                    style: TextStyle(color: AppColors.error),
+                  ),
                 ),
               ],
             );
@@ -62,15 +75,19 @@ class ReportDialog {
 
     if (confirm == true) {
       try {
-        await ref.read(userControllerProvider.notifier).reportUser(
-          targetUserId: targetUserId,
-          targetUserName: targetUserName,
-          targetUserAvatar: targetUserAvatar,
-          reason: selectedReason,
-        );
+        await ref
+            .read(userControllerProvider.notifier)
+            .reportUser(
+              targetUserId: targetUserId,
+              targetUserName: targetUserName,
+              targetUserAvatar: targetUserAvatar,
+              reason: selectedReason,
+            );
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Kullanıcı raporlandı. İnceleyeceğiz.')),
+            const SnackBar(
+              content: Text('Kullanıcı raporlandı. İnceleyeceğiz.'),
+            ),
           );
         }
       } catch (e) {

@@ -43,19 +43,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (newName.isEmpty) return;
     setState(() => _isSaving = true);
     try {
-      await ref
-          .read(currentUserProvider)
-          ?.updateDisplayName(newName);
+      await ref.read(currentUserProvider)?.updateDisplayName(newName);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('İsim güncellendi!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('İsim güncellendi!')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Hata: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -94,19 +92,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
       // Sıkıştır: max 256px, max 1MB
       final bytes = ImageCompressor.compress(rawBytes);
-      debugPrint('Avatar sıkıştırma: ${rawBytes.lengthInBytes ~/ 1024}KB → ${bytes.lengthInBytes ~/ 1024}KB');
-
-      final downloadUrl = await ref.read(userControllerProvider.notifier).uploadAvatar(
-        user.uid,
-        bytes,
+      debugPrint(
+        'Avatar sıkıştırma: ${rawBytes.lengthInBytes ~/ 1024}KB → ${bytes.lengthInBytes ~/ 1024}KB',
       );
+
+      final downloadUrl = await ref
+          .read(userControllerProvider.notifier)
+          .uploadAvatar(user.uid, bytes);
 
       debugPrint('Avatar upload URL: $downloadUrl');
 
       if (downloadUrl == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Fotoğraf yüklenemedi, tekrar deneyin.')),
+            const SnackBar(
+              content: Text('Fotoğraf yüklenemedi, tekrar deneyin.'),
+            ),
           );
         }
         return;
@@ -125,9 +126,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Hata: $e')));
       }
     } finally {
       if (mounted) {
@@ -148,16 +149,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.photo_library_rounded, color: AppColors.accent),
-              title: const Text('Galeriden Seç', style: TextStyle(color: Colors.white)),
+              leading: const Icon(
+                Icons.photo_library_rounded,
+                color: AppColors.accent,
+              ),
+              title: const Text(
+                'Galeriden Seç',
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _pickAndUploadImage(ImageSource.gallery);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.camera_alt_rounded, color: AppColors.accent),
-              title: const Text('Fotoğraf Çek', style: TextStyle(color: Colors.white)),
+              leading: const Icon(
+                Icons.camera_alt_rounded,
+                color: AppColors.accent,
+              ),
+              title: const Text(
+                'Fotoğraf Çek',
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _pickAndUploadImage(ImageSource.camera);
@@ -174,12 +187,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     // Current user for basic info (auth)
     final user = ref.watch(currentUserProvider);
     // User profile from firestore for avatar updates
-    final userProfileAsync = user != null ? ref.watch(watchUserProfileProvider(user.uid)) : const AsyncValue.loading();
-    
+    final userProfileAsync = user != null
+        ? ref.watch(watchUserProfileProvider(user.uid))
+        : const AsyncValue.loading();
+
     final displayName = user?.displayName ?? 'Oyuncu';
     // Only use Firestore avatarUrl (Google photoURL may 429)
     final avatarUrl = userProfileAsync.value?.avatarUrl;
-    final showImage = avatarUrl != null && avatarUrl.isNotEmpty && !_avatarLoadFailed;
+    final showImage =
+        avatarUrl != null && avatarUrl.isNotEmpty && !_avatarLoadFailed;
 
     // İlk açılışta mevcut ismi doldur
     if (_nameController.text.isEmpty) {
@@ -220,19 +236,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     CircleAvatar(
                       radius: 60,
                       backgroundColor: AppColors.surfaceElevated,
-                      backgroundImage: showImage ? NetworkImage(avatarUrl) : null,
+                      backgroundImage: showImage
+                          ? NetworkImage(avatarUrl)
+                          : null,
                       onBackgroundImageError: showImage
-                          ? (_, __) {
+                          ? (_, _) {
                               if (!_avatarLoadFailed) {
                                 setState(() => _avatarLoadFailed = true);
                               }
                             }
                           : null,
                       child: _isUploading
-                          ? const CircularProgressIndicator(color: AppColors.primary)
+                          ? const CircularProgressIndicator(
+                              color: AppColors.primary,
+                            )
                           : !showImage
-                              ? firstLetterWidget()
-                              : null,
+                          ? firstLetterWidget()
+                          : null,
                     ),
                     if (!_isUploading)
                       DecoratedBox(
@@ -298,8 +318,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: const Icon(Icons.person_outline_rounded,
-                      color: Colors.white38),
+                  prefixIcon: const Icon(
+                    Icons.person_outline_rounded,
+                    color: Colors.white38,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -324,26 +346,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   child: Column(
                     children: [
                       _StatRow(
-                          icon: Icons.emoji_events_rounded,
-                          label: 'Toplam Puan',
-                          value: '0'),
+                        icon: Icons.emoji_events_rounded,
+                        label: 'Toplam Puan',
+                        value: '0',
+                      ),
                       const Divider(color: Colors.white12, height: 24),
                       _StatRow(
-                          icon: Icons.videogame_asset_rounded,
-                          label: 'Oyun Sayısı',
-                          value: '0'),
+                        icon: Icons.videogame_asset_rounded,
+                        label: 'Oyun Sayısı',
+                        value: '0',
+                      ),
                       const Divider(color: Colors.white12, height: 24),
                       _StatRow(
-                          icon: Icons.star_rounded,
-                          label: 'Seviye',
-                          value: 'Yeni'),
+                        icon: Icons.star_rounded,
+                        label: 'Seviye',
+                        value: 'Yeni',
+                      ),
                     ],
                   ),
                 ),
               ),
 
               const SizedBox(height: 24),
-              
+
               // Mağaza Butonu
               PrimaryButton(
                 label: 'Mağaza & Cüzdan',
