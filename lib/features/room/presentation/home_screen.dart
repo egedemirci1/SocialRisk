@@ -140,18 +140,23 @@ class _JoinRoomButton extends StatelessWidget {
       label: 'Odaya Katıl',
       child: DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppColors.accent.withValues(alpha: 0.6),
-            width: 1.5,
-          ),
+          color: Colors.white.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              spreadRadius: 2,
+            )
+          ],
         ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: onPressed,
-            borderRadius: BorderRadius.circular(12),
-            splashColor: AppColors.accent.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+            splashColor: AppColors.accent.withValues(alpha: 0.2),
             child: SizedBox(
               height: 52,
               child: Row(
@@ -159,14 +164,14 @@ class _JoinRoomButton extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.login_rounded,
-                    color: AppColors.accent,
+                    color: Colors.white.withValues(alpha: 0.9),
                     size: 20,
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'Odaya Katıl',
                     style: AppTextStyles.titleLarge.copyWith(
-                      color: AppColors.accent,
+                      color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 16,
                     ),
                   ),

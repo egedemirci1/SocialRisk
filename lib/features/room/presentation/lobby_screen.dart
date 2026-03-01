@@ -80,6 +80,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
             _buildRoomCodeBanner(context),
 
             const SizedBox(height: 16),
+            const _RotatingTooltips(),
+            const SizedBox(height: 8),
 
             // Oyuncu listesi
             Expanded(
@@ -377,5 +379,64 @@ class _ReadyToggleButton extends ConsumerWidget {
                     playerId: playerId,
                     isReady: true),
           );
+  }
+}
+
+class _RotatingTooltips extends StatefulWidget {
+  const _RotatingTooltips();
+
+  @override
+  State<_RotatingTooltips> createState() => _RotatingTooltipsState();
+}
+
+class _RotatingTooltipsState extends State<_RotatingTooltips> {
+  int _currentIndex = 0;
+  final List<String> _tips = [
+    '💡 İpucu: Pas geçmek sırayı bitirir ve puanını düşürür!',
+    '💡 İpucu: Oylamada dürüst ol, arkadaşının kaderi sende.',
+    '💡 İpucu: Çok fazla pas dersen eksi puanlara düşersin.',
+    '💡 İpucu: Soru türüne göre puan kazancı değişir.',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    Future.delayed(const Duration(seconds: 5), () {
+      if (!mounted) return;
+      setState(() => _currentIndex = (_currentIndex + 1) % _tips.length);
+      _startTimer();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 600),
+        transitionBuilder: (child, animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0.0, 0.2),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            ),
+          );
+        },
+        child: Text(
+          _tips[_currentIndex],
+          key: ValueKey<int>(_currentIndex),
+          style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 }
