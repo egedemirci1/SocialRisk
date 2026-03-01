@@ -14,6 +14,12 @@ class GameEntity {
   final GameDifficulty difficulty;
   final int? lastRoundScore;
   final int? lastRoundMultiplier;
+  // Faz 10: Ekonomi modu alanları
+  final GameMode mode;
+  final Map<String, int> categoryMarketValues;
+  final List<String> lockedCategories;
+  final List<String> categoryPickOrder;
+  final int currentPickIndex;
 
   const GameEntity({
     required this.gameId,
@@ -29,6 +35,11 @@ class GameEntity {
     this.difficulty = GameDifficulty.mixed,
     this.lastRoundScore,
     this.lastRoundMultiplier,
+    this.mode = GameMode.classic,
+    this.categoryMarketValues = const {},
+    this.lockedCategories = const [],
+    this.categoryPickOrder = const [],
+    this.currentPickIndex = 0,
   });
 }
 

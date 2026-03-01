@@ -200,7 +200,9 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                     isMyTurn,
                     currentPlayerName,
                   )
-                : _buildWheelView(game, isMyTurn, currentPlayerName),
+                : (roomAsync.value?.mode == GameMode.economy
+                    ? _buildEconomyRedirect(game)
+                    : _buildWheelView(game, isMyTurn, currentPlayerName)),
           ),
         );
       },
@@ -246,6 +248,19 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         const Spacer(),
       ],
     );
+  }
+
+  /// Ekonomi modunda kategori seçim ekranına yönlendir
+  Widget _buildEconomyRedirect(GameEntity game) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.replace('/economy-pick', extra: {
+          'gameId': widget.gameId,
+          'roomCode': widget.roomCode,
+        });
+      }
+    });
+    return const Center(child: CircularProgressIndicator());
   }
 
   /// Görev görünümü — çark döndü, görev gösterildi

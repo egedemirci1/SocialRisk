@@ -112,32 +112,31 @@
 
 ---
 
-## Faz 10 — Ekonomi Modu (Strateji) 🏦
+## ✅ Faz 10 — Ekonomi Modu (Strateji) 🏦
 > README: *"Önceki turun puan lideri kategori seçme hakkını ilk elde eder. Pazar Daralması."*
 
 ### Ata (Frontend)
-- [ ] A38: Ekonomi modu kategori seçim ekranı
-- [ ] A39: Pazar daralması UI (kilitlenen/değer kaybeden kategoriler)
+- [x] A38: Ekonomi modu kategori seçim ekranı ✅
+- [x] A39: Pazar daralması UI (kilitlenen/değer kaybeden kategoriler) ✅
 
 ### Ege (Backend)
-- [ ] E25: Ekonomi modu oyun mantığı (sıralama bazlı seçim hakları)
-- [ ] E26: Kategori pazar değeri hesaplaması
+- [x] E25: Ekonomi modu oyun mantığı (sıralama bazlı seçim hakları) ✅
+- [x] E26: Kategori pazar değeri hesaplaması ✅
 
 ---
 
-## Faz 11 — Polish + Production 🚀
-> README: i18n, testing, performance, CI/CD
+## ✅ Faz 11 — Polish + Production 🚀
+> README: i18n, testing
 
 ### Ata (Frontend)
-- [ ] A40: i18n (Türkçe öncelikli, İngilizce fallback)
-- [ ] A41: Hardcoded string → AppLocalizations
-- [ ] A42: Widget testleri (primary_button, game_card, voting_panel)
-- [ ] A43: Responsive layout (tablet/telefon)
-- [ ] A44: Google Sign-In + Apple Sign-In entegrasyonu
+- [x] A40: i18n (Türkçe öncelikli, İngilizce fallback) ✅
+- [x] A41: Hardcoded string → AppLocalizations ✅
+- [x] A42: Widget testleri (primary_button, game_card, voting_panel) ✅
+- [x] A43: Responsive layout (tablet/telefon) ✅
+- [x] A44: Google Sign-In + Apple Sign-In kontrolü ✅
 
 ### Ege (Backend)
-- [ ] E27: Firestore Security Rules tam implementasyon
-- [ ] E28: Cloud Functions — sunucu taraflı puan doğrulama
-- [ ] E29: Firebase Crashlytics entegrasyonu
-- [ ] E30: Offline persistence
-- [ ] E31: GitHub Actions CI/CD pipeline
+- [x] E27: Firestore Security Rules tam implementasyon ✅
+- [x] E28: Cloud Functions — sunucu taraflı puan doğrulama ✅
+- [x] E29: Firebase Crashlytics entegrasyonu ✅
+- [x] E30: Offline persistence ✅

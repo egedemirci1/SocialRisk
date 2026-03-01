@@ -227,6 +227,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         const SizedBox(height: 12),
         TextField(
           controller: _nameController,
+          maxLength: 24,
           textCapitalization: TextCapitalization.words,
           style: GoogleFonts.inter(
             fontSize: 16,
@@ -234,6 +235,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           ),
           decoration: const InputDecoration(
             hintText: 'İsmini yaz...',
+            counterText: '', // Hide the counter to keep UI clean
             prefixIcon: Icon(
               Icons.person_outline_rounded,
               color: Colors.white38,

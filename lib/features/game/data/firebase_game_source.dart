@@ -6,6 +6,7 @@ import 'game_model.dart';
 import 'tasks_seed_data.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../shared/models/enums.dart';
+import '../../../core/constants/game_constants.dart';
 
 class FirebaseGameSource implements GameRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -22,6 +23,7 @@ class FirebaseGameSource implements GameRepository {
     required String roomId,
     required List<String> playerIds,
     required GameDifficulty difficulty,
+    required GameMode mode,
   }) async {
     // Sırayı karıştır
     final shuffled = List<String>.from(playerIds)..shuffle(_random);
@@ -31,10 +33,17 @@ class FirebaseGameSource implements GameRepository {
       roomId: roomId,
       currentRound: 1,
       currentPlayerId: shuffled.first,
-      currentTask: null, // Çark çevrilecek, görev atanmayacak
+      currentTask: null,
       turnOrder: shuffled,
       status: 'playing',
       difficulty: difficulty.name,
+      mode: mode.name,
+      categoryMarketValues: mode == GameMode.economy
+          ? Map<String, int>.from(GameConstants.defaultMarketValues)
+          : const {},
+      lockedCategories: const [],
+      categoryPickOrder: mode == GameMode.economy ? shuffled : const [],
+      currentPickIndex: 0,
     );
 
     final docRef = await _gamesRef.add(gameModel.toJson());
@@ -267,6 +276,97 @@ class FirebaseGameSource implements GameRepository {
   @override
   Future<void> endGame(String gameId) async {
     await _gameDoc(gameId).update({'status': 'finished'});
+  }
+
+  // ── Faz 10: Ekonomi Modu ───────────────────────────────
+
+  @override
+  Future<void> initEconomyRound({
+    required String gameId,
+    required String roomId,
+  }) async {
+    // Oyuncuları puana göre sırala (yüksekten düşüğe)
+    final playersSnap = await _firestore
+        .collection('rooms')
+        .doc(roomId)
+        .collection('players')
+        .get();
+
+    final playerScores = <MapEntry<String, int>>[];
+    for (final doc in playersSnap.docs) {
+      final score = doc.data()['score'] as int? ?? 0;
+      playerScores.add(MapEntry(doc.id, score));
+    }
+    playerScores.sort((a, b) => b.value.compareTo(a.value));
+
+    final pickOrder = playerScores.map((e) => e.key).toList();
+
+    await _gameDoc(gameId).update({
+      'categoryPickOrder': pickOrder,
+      'currentPickIndex': 0,
+      'lockedCategories': [],
+      'categoryMarketValues': GameConstants.defaultMarketValues,
+      'currentTask': null,
+      'spinningTarget': null,
+      'currentPlayerId': pickOrder.first,
+      'status': 'playing',
+    });
+  }
+
+  @override
+  Future<void> pickCategoryEconomy({
+    required String gameId,
+    required String playerId,
+    required String category,
+  }) async {
+    final snap = await _gameDoc(gameId).get();
+    if (!snap.exists) return;
+
+    final game = GameModel.fromJson(snap.data()!, snap.id);
+
+    // Kilitlenen kategori seçilemez
+    if (game.lockedCategories.contains(category)) {
+      throw Exception('Bu kategori kilitli!');
+    }
+
+    // Pazar değerini düşür
+    final updatedMarket = Map<String, int>.from(game.categoryMarketValues);
+    final currentValue = updatedMarket[category] ?? 1;
+    final newValue = (currentValue - GameConstants.marketDecayAmount).clamp(1, 10);
+    updatedMarket[category] = newValue;
+
+    // Seçim sayısını takip et ve kilitle
+    // categoryMarketValues'taki başlangıç değeri ile şimdiki farktan hesaplayalım
+    final defaultVal = GameConstants.defaultMarketValues[category] ?? 1;
+    final timesSelected = defaultVal - newValue + 1;
+    final updatedLocked = List<String>.from(game.lockedCategories);
+    if (timesSelected >= GameConstants.lockThreshold) {
+      updatedLocked.add(category);
+    }
+
+    // Sonraki seçiciyi belirle
+    final nextPickIndex = game.currentPickIndex + 1;
+    final allPicked = nextPickIndex >= game.categoryPickOrder.length;
+
+    final updates = <String, dynamic>{
+      'categoryMarketValues': updatedMarket,
+      'lockedCategories': updatedLocked,
+      'currentPickIndex': nextPickIndex,
+    };
+
+    if (allPicked) {
+      // Tüm oyuncular seçti — herkes kendi görevini yapar
+      // İlk sıradaki oyuncudan başla
+      updates['currentPlayerId'] = game.categoryPickOrder.first;
+    } else {
+      // Sonraki seçici
+      updates['currentPlayerId'] = game.categoryPickOrder[nextPickIndex];
+    }
+
+    await _gameDoc(gameId).update(updates);
+
+    // Görevi ata
+    await assignTaskByCategory(gameId: gameId, category: category);
   }
 
   TaskModel _getRandomTask() {

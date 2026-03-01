@@ -28,6 +28,7 @@ class FirebaseRoomSource implements RoomRepository {
     required int endConditionValue,
     required RoomVisibility visibility,
     required GameDifficulty difficulty,
+    required GameMode mode,
   }) async {
     String roomCode = AppHelpers.generateRoomCode();
 
@@ -39,7 +40,7 @@ class FirebaseRoomSource implements RoomRepository {
     final roomModel = RoomModel(
       roomCode: roomCode,
       hostId: hostId,
-      mode: GameMode.classic.name,
+      mode: mode.name,
       status: GameStatus.waiting.name,
       endConditionType: endConditionType.name,
       endConditionValue: endConditionValue,
