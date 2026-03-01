@@ -1,3 +1,5 @@
+import '../../../shared/models/enums.dart';
+
 /// Firestore'daki görev dokümanını temsil eden entity.
 /// Admin paneli ve oyun içi görev çekme için kullanılır.
 class TaskItemEntity {
@@ -5,7 +7,8 @@ class TaskItemEntity {
   final String category;
   final String content;
   final String difficulty; // easy, medium, hard
-  final List<String> presets; // classic, family, couple, adult
+  final TaskType type;
+  final List<String> tags; // classic, family, couple, adult, vb.
   final int likes;
   final int dislikes;
   final bool isActive;
@@ -16,7 +19,8 @@ class TaskItemEntity {
     required this.category,
     required this.content,
     required this.difficulty,
-    this.presets = const ['classic'],
+    this.type = TaskType.action,
+    this.tags = const ['classic'],
     this.likes = 0,
     this.dislikes = 0,
     this.isActive = true,

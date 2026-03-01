@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/task_item_entity.dart';
 import '../providers/admin_provider.dart';
+import '../../../shared/models/enums.dart';
 
 class TaskEditorScreen extends ConsumerStatefulWidget {
   final TaskItemEntity? taskToEdit;
@@ -17,10 +18,11 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
   late String _content;
   late String _category;
   late String _difficulty;
-  late List<String> _presets;
+  late TaskType _type;
+  late List<String> _tags;
   bool _isSaving = false;
 
-  final List<String> _allPresets = ['classic', 'family', 'couple', 'adult'];
+  final List<String> _allTags = ['classic', 'family', 'couple', 'adult'];
 
   @override
   void initState() {
@@ -29,13 +31,14 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
     _content = t?.content ?? '';
     _category = t?.category ?? 'Cesaret';
     _difficulty = t?.difficulty ?? 'easy';
-    _presets = t?.presets != null ? List.from(t!.presets) : ['classic', 'adult'];
+    _type = t?.type ?? TaskType.action;
+    _tags = t?.tags != null ? List.from(t!.tags) : ['classic', 'adult'];
   }
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
-    
+
     setState(() => _isSaving = true);
     try {
       final task = TaskItemEntity(
@@ -43,7 +46,8 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
         category: _category,
         content: _content,
         difficulty: _difficulty,
-        presets: _presets,
+        type: _type,
+        tags: _tags,
         likes: widget.taskToEdit?.likes ?? 0,
         dislikes: widget.taskToEdit?.dislikes ?? 0,
         isActive: widget.taskToEdit?.isActive ?? true,
@@ -59,7 +63,10 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
 
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e')));
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Hata: $e')));
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -68,7 +75,9 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.taskToEdit == null ? 'Görev Ekle' : 'Görev Düzenle')),
+      appBar: AppBar(
+        title: Text(widget.taskToEdit == null ? 'Görev Ekle' : 'Görev Düzenle'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -77,53 +86,120 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
             children: [
               TextFormField(
                 initialValue: _content,
-                decoration: const InputDecoration(labelText: 'Görev Metni', filled: true),
+                decoration: const InputDecoration(
+                  labelText: 'Görev Metni',
+                  filled: true,
+                ),
                 style: const TextStyle(color: Colors.white),
-                validator: (v) => v == null || v.isEmpty ? 'Boş bırakılamaz' : null,
+                validator: (v) =>
+                    v == null || v.isEmpty ? 'Boş bırakılamaz' : null,
                 onSaved: (v) => _content = v!,
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _category,
-                decoration: const InputDecoration(labelText: 'Kategori', filled: true),
+                decoration: const InputDecoration(
+                  labelText: 'Kategori',
+                  filled: true,
+                ),
                 dropdownColor: Colors.grey[800],
-                items: ['Cesaret', 'İtiraf', 'Taklit', 'Sosyal Medya', 'Fiziksel', 'Bilgi']
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c, style: const TextStyle(color: Colors.white))))
-                    .toList(),
+                items:
+                    [
+                          'Cesaret',
+                          'İtiraf',
+                          'Taklit',
+                          'Sosyal Medya',
+                          'Fiziksel',
+                          'Bilgi',
+                        ]
+                        .map(
+                          (c) => DropdownMenuItem(
+                            value: c,
+                            child: Text(
+                              c,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        )
+                        .toList(),
                 onChanged: (v) => setState(() => _category = v!),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _difficulty,
-                decoration: const InputDecoration(labelText: 'Zorluk', filled: true),
+                decoration: const InputDecoration(
+                  labelText: 'Zorluk',
+                  filled: true,
+                ),
                 dropdownColor: Colors.grey[800],
                 items: ['easy', 'medium', 'hard']
-                    .map((d) => DropdownMenuItem(value: d, child: Text(d, style: const TextStyle(color: Colors.white))))
+                    .map(
+                      (d) => DropdownMenuItem(
+                        value: d,
+                        child: Text(
+                          d,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    )
                     .toList(),
                 onChanged: (v) => setState(() => _difficulty = v!),
               ),
               const SizedBox(height: 16),
-              const Align(alignment: Alignment.centerLeft, child: Text('Hangi Modlarda Çıksın?', style: TextStyle(color: Colors.white70))),
+              DropdownButtonFormField<TaskType>(
+                value: _type,
+                decoration: const InputDecoration(
+                  labelText: 'Görev Tipi',
+                  filled: true,
+                ),
+                dropdownColor: Colors.grey[800],
+                items: TaskType.values
+                    .map(
+                      (t) => DropdownMenuItem(
+                        value: t,
+                        child: Text(
+                          t.name,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (v) => setState(() => _type = v!),
+              ),
+              const SizedBox(height: 16),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Hangi Etiketlerde Çıksın?',
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ),
               Wrap(
                 spacing: 8,
-                children: _allPresets.map((p) => ChoiceChip(
-                  label: Text(p),
-                  selected: _presets.contains(p),
-                  onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        _presets.add(p);
-                      } else {
-                        _presets.remove(p);
-                      }
-                    });
-                  },
-                )).toList(),
+                children: _allTags
+                    .map(
+                      (p) => ChoiceChip(
+                        label: Text(p),
+                        selected: _tags.contains(p),
+                        onSelected: (selected) {
+                          setState(() {
+                            if (selected) {
+                              _tags.add(p);
+                            } else {
+                              _tags.remove(p);
+                            }
+                          });
+                        },
+                      ),
+                    )
+                    .toList(),
               ),
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: _isSaving ? null : _save,
-                child: _isSaving ? const CircularProgressIndicator() : const Text('Kaydet'),
+                child: _isSaving
+                    ? const CircularProgressIndicator()
+                    : const Text('Kaydet'),
               ),
             ],
           ),
