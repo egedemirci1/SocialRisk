@@ -14,6 +14,8 @@ import '../providers/room_provider.dart';
 import '../../game/providers/game_provider.dart';
 import '../../../shared/models/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../economy/providers/economy_provider.dart';
+import '../../economy/domain/cosmetic_item_entity.dart';
 
 /// Lobi ekranı — Oyuncu listesi, hazır/değil durumu, ve Başla butonu.
 class LobbyScreen extends ConsumerStatefulWidget {
@@ -56,6 +58,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     final user = ref.watch(currentUserProvider);
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
     final roomAsync = ref.watch(watchRoomProvider(widget.roomCode));
+    final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
+    final cosmetics = cosmeticsAsync.value ?? [];
 
     return Scaffold(
       appBar: AppBar(
@@ -92,12 +96,17 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                   itemBuilder: (context, index) {
                     final player = players[index];
                     final isMe = player.id == user?.uid;
+                    final activeTitleItem = player.activeTitle != null 
+                        ? cosmetics.where((c) => c.id == player.activeTitle).firstOrNull
+                        : null;
                     return _PlayerTile(
                       name: player.name,
                       avatarUrl: player.avatarUrl,
                       isReady: player.isReady,
                       isCurrentPlayer: isMe,
                       score: player.score,
+                      activeFrame: player.activeFrame,
+                      activeTitleItem: activeTitleItem,
                       onLongPress: isMe ? null : () {
                         ReportDialog.show(
                           context,
@@ -279,6 +288,8 @@ class _PlayerTile extends StatelessWidget {
     required this.isReady,
     required this.isCurrentPlayer,
     this.score = 0,
+    this.activeFrame,
+    this.activeTitleItem,
     this.onLongPress,
   });
 
@@ -287,6 +298,8 @@ class _PlayerTile extends StatelessWidget {
   final bool isReady;
   final bool isCurrentPlayer;
   final int score;
+  final String? activeFrame;
+  final CosmeticItemEntity? activeTitleItem;
   final VoidCallback? onLongPress;
 
   @override
@@ -316,6 +329,7 @@ class _PlayerTile extends StatelessWidget {
                 avatarUrl: avatarUrl,
                 score: score,
                 radius: 20,
+                frameId: activeFrame,
               ),
               const SizedBox(width: 12),
               Column(
@@ -326,8 +340,7 @@ class _PlayerTile extends StatelessWidget {
                     name + (isCurrentPlayer ? ' (Sen)' : ''),
                     style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
                   ),
-                  // Mock Title - bu alan ege backend'i bağlayınca `player.activeTitle` olacak.
-                  if (score > 1000) // Şimdilik puanla mockluyoruz, unvanı olan biriymiş gibi
+                  if (activeTitleItem != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2.0),
                       child: Container(
@@ -338,7 +351,7 @@ class _PlayerTile extends StatelessWidget {
                           border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
                         ),
                         child: Text(
-                          '👑 Efsane', // Mock
+                          '${activeTitleItem?.imageUrl} ${activeTitleItem?.name}',
                           style: AppTextStyles.labelSmall.copyWith(
                             color: Colors.amber, 
                             fontSize: 10,

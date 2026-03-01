@@ -10,6 +10,10 @@ import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../admin/providers/admin_provider.dart';
 
+import '../../economy/providers/economy_provider.dart';
+import '../../auth/domain/user_entity.dart';
+import '../../economy/domain/cosmetic_item_entity.dart';
+
 /// Ana menü ekranı — Oda Oluştur veya Odaya Katıl.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -18,8 +22,12 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final userProfileAsync = user != null ? ref.watch(watchUserProfileProvider(user.uid)) : const AsyncValue.loading();
+    final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
+    
     final displayName = user?.displayName ?? 'Oyuncu';
-    final avatarUrl = userProfileAsync.value?.avatarUrl;
+    final profile = userProfileAsync.value;
+    final cosmetics = cosmeticsAsync.value ?? [];
+    final avatarUrl = profile?.avatarUrl;
     final showImage = avatarUrl != null && avatarUrl.isNotEmpty;
 
     return Scaffold(
@@ -28,7 +36,7 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           children: [
             const Spacer(flex: 2),
-            _buildWelcome(context, displayName, avatarUrl, showImage),
+            _buildWelcome(context, displayName, avatarUrl, showImage, profile, cosmetics),
             const Spacer(),
             _buildActions(context, user),
             const Spacer(flex: 2),
@@ -40,7 +48,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWelcome(BuildContext context, String playerName, String? avatarUrl, bool showImage) {
+  Widget _buildWelcome(BuildContext context, String playerName, String? avatarUrl, bool showImage, UserEntity? profile, List<CosmeticItemEntity> cosmetics) {
     Widget firstLetterWidget() => Text(
       playerName.isNotEmpty ? playerName[0].toUpperCase() : '?',
       style: const TextStyle(
@@ -50,6 +58,10 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
 
+    final activeTitleItem = profile?.activeTitle != null
+        ? cosmetics.where((c) => c.id == profile!.activeTitle).firstOrNull
+        : null;
+
     return Column(
       children: [
         GestureDetector(
@@ -57,6 +69,8 @@ class HomeScreen extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.bottomRight,
             children: [
+              // Avatarerçeve render'ını HomeScreen'de de PlayerAvatar'a devredebiliriz 
+              // ama şimdilik mevcut yapıyı koruyalım. (İstersen burayı da PlayerAvatar ile değiştirebiliriz)
               CircleAvatar(
                 radius: 40,
                 backgroundColor: AppColors.surfaceElevated,
@@ -86,22 +100,24 @@ class HomeScreen extends ConsumerWidget {
           playerName,
           style: AppTextStyles.displayMedium.copyWith(color: Colors.white),
         ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            color: Colors.amber.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
-          ),
-          child: Text(
-            '👑 Efsane', // Mock Title
-            style: AppTextStyles.labelSmall.copyWith(
-              color: Colors.amber, 
-              fontWeight: FontWeight.bold,
+        if (activeTitleItem != null) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.amber.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+            ),
+            child: Text(
+              '${activeTitleItem.imageUrl} ${activeTitleItem.name}',
+              style: AppTextStyles.labelSmall.copyWith(
+                color: Colors.amber, 
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
+        ],
       ],
     );
   }

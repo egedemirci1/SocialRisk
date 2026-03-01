@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../../shared/models/enums.dart';
+import '../../custom_decks/domain/user_task_entity.dart';
+import '../../custom_decks/providers/user_task_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 
 class CustomDeckEditorScreen extends ConsumerStatefulWidget {
   const CustomDeckEditorScreen({super.key});
@@ -13,13 +17,7 @@ class CustomDeckEditorScreen extends ConsumerStatefulWidget {
 }
 
 class _CustomDeckEditorScreenState extends ConsumerState<CustomDeckEditorScreen> {
-  // Temporary mock data until the backend is connected
-  final List<Map<String, dynamic>> _mockTasks = [
-    {'content': 'En çok utandığın anı anlat.', 'category': 'İtiraf', 'difficulty': 'medium'},
-    {'content': '30 saniye boyunca havla.', 'category': 'Cesaret', 'difficulty': 'easy'},
-  ];
-
-  void _showAddTaskDialog() {
+  void _showAddTaskDialog(String uid) {
     final contentController = TextEditingController();
     String selectedCategory = 'Cesaret';
     String selectedDifficulty = 'easy';
@@ -70,14 +68,18 @@ class _CustomDeckEditorScreenState extends ConsumerState<CustomDeckEditorScreen>
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
                   onPressed: () {
-                    if (contentController.text.trim().isNotEmpty) {
-                      setState(() {
-                        _mockTasks.add({
-                          'content': contentController.text.trim(),
-                          'category': selectedCategory,
-                          'difficulty': selectedDifficulty,
-                        });
-                      });
+                    final content = contentController.text.trim();
+                    if (content.isNotEmpty) {
+                      final newTask = UserTaskEntity(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        category: selectedCategory,
+                        content: content,
+                        difficulty: selectedDifficulty,
+                        type: TaskType.action,
+                        tags: const ['custom'],
+                        isActive: true,
+                      );
+                      ref.read(customTaskControllerProvider.notifier).addTask(uid: uid, task: newTask);
                       Navigator.pop(context);
                     }
                   },
@@ -93,6 +95,11 @@ class _CustomDeckEditorScreenState extends ConsumerState<CustomDeckEditorScreen>
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(currentUserProvider);
+    if (user == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+
+    final customTasksAsync = ref.watch(watchCustomTasksProvider(user.uid));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Senin Soruların'),
@@ -103,47 +110,53 @@ class _CustomDeckEditorScreenState extends ConsumerState<CustomDeckEditorScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.add_circle_outline_rounded),
-            onPressed: _showAddTaskDialog,
+            onPressed: () => _showAddTaskDialog(user.uid),
           ),
         ],
       ),
       body: GradientContainer(
-        child: _mockTasks.isEmpty
-            ? Center(
+        child: customTasksAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+          error: (err, stack) => Center(child: Text('Bir hata oluştu: $err', style: const TextStyle(color: AppColors.voteNegative))),
+          data: (tasks) {
+            if (tasks.isEmpty) {
+              return Center(
                 child: Text(
                   'Henüz kendi sorun yok.\nSağ üstten yeni soru ekle!',
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
                 ),
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: _mockTasks.length,
-                itemBuilder: (context, index) {
-                  final task = _mockTasks[index];
-                  return Card(
-                    color: AppColors.surface,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      title: Text(task['content'], style: const TextStyle(color: Colors.white)),
-                      subtitle: Text(
-                        '${task['category']} • Zorluk: ${task['difficulty']}',
-                        style: const TextStyle(color: Colors.white54, fontSize: 12),
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline_rounded, color: AppColors.voteNegative),
-                        onPressed: () {
-                          setState(() {
-                            _mockTasks.removeAt(index);
-                          });
-                        },
-                      ),
+              );
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                final task = tasks[index];
+                return Card(
+                  color: AppColors.surface,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    title: Text(task.content, style: const TextStyle(color: Colors.white)),
+                    subtitle: Text(
+                      '${task.category} • Zorluk: ${task.difficulty}',
+                      style: const TextStyle(color: Colors.white54, fontSize: 12),
                     ),
-                  );
-                },
-              ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline_rounded, color: AppColors.voteNegative),
+                      onPressed: () {
+                         ref.read(customTaskControllerProvider.notifier).deleteTask(uid: user.uid, taskId: task.id);
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

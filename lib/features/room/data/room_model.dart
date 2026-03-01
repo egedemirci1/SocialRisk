@@ -93,6 +93,8 @@ class PlayerModel {
   final String id;
   final String displayName;
   final String? avatarUrl;
+  final String? activeFrame;
+  final String? activeTitle;
   final int score;
   final int passStreak;
   final bool isReady;
@@ -101,6 +103,8 @@ class PlayerModel {
     required this.id,
     required this.displayName,
     this.avatarUrl,
+    this.activeFrame,
+    this.activeTitle,
     this.score = 0,
     this.passStreak = 0,
     this.isReady = false,
@@ -111,6 +115,8 @@ class PlayerModel {
       id: docId,
       displayName: json['displayName'] as String? ?? 'Oyuncu',
       avatarUrl: json['avatarUrl'] as String?,
+      activeFrame: json['activeFrame'] as String?,
+      activeTitle: json['activeTitle'] as String?,
       score: json['score'] as int? ?? 0,
       passStreak: json['passStreak'] as int? ?? 0,
       isReady: json['isReady'] as bool? ?? false,
@@ -121,6 +127,8 @@ class PlayerModel {
     return {
       'displayName': displayName,
       'avatarUrl': avatarUrl,
+      'activeFrame': activeFrame,
+      'activeTitle': activeTitle,
       'score': score,
       'passStreak': passStreak,
       'isReady': isReady,
@@ -132,6 +140,8 @@ class PlayerModel {
       id: id,
       displayName: displayName,
       avatarUrl: avatarUrl,
+      activeFrame: activeFrame,
+      activeTitle: activeTitle,
       score: score,
       passStreak: passStreak,
       isReady: isReady,

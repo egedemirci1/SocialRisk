@@ -24,6 +24,8 @@ class FirebaseRoomSource implements RoomRepository {
     required String hostId,
     required String hostName,
     String? hostAvatarUrl,
+    String? hostActiveFrame,
+    String? hostActiveTitle,
     required EndConditionType endConditionType,
     required int endConditionValue,
     required RoomVisibility visibility,
@@ -56,6 +58,8 @@ class FirebaseRoomSource implements RoomRepository {
       id: hostId,
       displayName: hostName,
       avatarUrl: hostAvatarUrl,
+      activeFrame: hostActiveFrame,
+      activeTitle: hostActiveTitle,
       isReady: true,
     );
     await _playersRef(roomCode).doc(hostId).set(hostPlayer.toJson());
@@ -69,6 +73,8 @@ class FirebaseRoomSource implements RoomRepository {
     required String playerId,
     required String playerName,
     String? playerAvatarUrl,
+    String? activeFrame,
+    String? activeTitle,
   }) async {
     final roomDoc = await _roomDoc(roomCode).get();
     if (!roomDoc.exists) {
@@ -84,6 +90,8 @@ class FirebaseRoomSource implements RoomRepository {
       id: playerId,
       displayName: playerName,
       avatarUrl: playerAvatarUrl,
+      activeFrame: activeFrame,
+      activeTitle: activeTitle,
     );
     await _playersRef(roomCode).doc(playerId).set(player.toJson());
   }

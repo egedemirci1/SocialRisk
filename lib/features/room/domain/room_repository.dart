@@ -6,6 +6,8 @@ abstract class RoomRepository {
     required String hostId,
     required String hostName,
     String? hostAvatarUrl,
+    String? hostActiveFrame,
+    String? hostActiveTitle,
     required EndConditionType endConditionType,
     required int endConditionValue,
     required RoomVisibility visibility,
@@ -18,6 +20,8 @@ abstract class RoomRepository {
     required String playerId,
     required String playerName,
     String? playerAvatarUrl,
+    String? activeFrame,
+    String? activeTitle,
   });
 
   Future<void> leaveRoom({

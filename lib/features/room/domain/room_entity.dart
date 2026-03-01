@@ -32,6 +32,8 @@ class PlayerEntity {
   final String id;
   final String displayName;
   final String? avatarUrl;
+  final String? activeFrame;
+  final String? activeTitle;
   final int score;
   final int passStreak;
   final bool isReady;
@@ -40,6 +42,8 @@ class PlayerEntity {
     required this.id,
     required this.displayName,
     this.avatarUrl,
+    this.activeFrame,
+    this.activeTitle,
     this.score = 0,
     this.passStreak = 0,
     this.isReady = false,

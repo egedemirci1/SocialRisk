@@ -46,6 +46,8 @@ class RoomController extends _$RoomController {
         hostId: hostId,
         hostName: hostName,
         hostAvatarUrl: userProfile?.avatarUrl,
+        hostActiveFrame: userProfile?.activeFrame,
+        hostActiveTitle: userProfile?.activeTitle,
         endConditionType: endConditionType,
         endConditionValue: endConditionValue,
         visibility: visibility,
@@ -64,10 +66,14 @@ class RoomController extends _$RoomController {
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
+      final userProfile = await ref.read(userRepositoryProvider).getUserProfile(playerId);
       await ref.read(roomRepositoryProvider).joinRoom(
         roomCode: roomCode,
         playerId: playerId,
         playerName: playerName,
+        playerAvatarUrl: userProfile?.avatarUrl,
+        activeFrame: userProfile?.activeFrame,
+        activeTitle: userProfile?.activeTitle,
       );
       return roomCode;
     });
