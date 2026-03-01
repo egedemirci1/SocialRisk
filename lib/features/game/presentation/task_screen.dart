@@ -130,6 +130,15 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         final user = ref.read(currentUserProvider);
         final isMyTurn = game.currentPlayerId == user?.uid;
 
+        // Aktif oyuncunun ismini bul
+        final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
+        String currentPlayerName = game.currentPlayerId;
+        if (playersAsync.value != null) {
+          try {
+            currentPlayerName = playersAsync.value!.firstWhere((p) => p.id == game.currentPlayerId).name;
+          } catch (_) {}
+        }
+
         // Listen for task changes to animate the card
         ref.listen<AsyncValue<GameEntity?>>(
           watchGameProvider(widget.gameId),
@@ -172,7 +181,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(isMyTurn ? 'Senin Sıran!' : 'Arkadaşının Sırası'),
+            title: Text(isMyTurn ? 'Senin Sıran!' : '$currentPlayerName oynuyor'),
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
@@ -189,8 +198,9 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                     task,
                     roomAsync.value?.visibility ?? RoomVisibility.open,
                     isMyTurn,
+                    currentPlayerName,
                   )
-                : _buildWheelView(game, isMyTurn),
+                : _buildWheelView(game, isMyTurn, currentPlayerName),
           ),
         );
       },
@@ -202,12 +212,12 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   }
 
   /// Çark görünümü
-  Widget _buildWheelView(GameEntity game, bool isMyTurn) {
+  Widget _buildWheelView(GameEntity game, bool isMyTurn, String playerName) {
     return Column(
       children: [
         const Spacer(),
         Text(
-          isMyTurn ? '🎡 Çarkı Çevir!' : '🎡 Çark Çevriliyor...',
+          isMyTurn ? '🎡 Çarkı Çevir!' : '🎡 $playerName çarkı çeviriyor...',
           style: AppTextStyles.headlineMedium.copyWith(
             color: AppColors.accent,
           ),
@@ -238,7 +248,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   }
 
   /// Görev görünümü — çark döndü, görev gösterildi
-  Widget _buildTaskView(int passStreak, TaskEntity task, RoomVisibility visibility, bool isMyTurn) {
+  Widget _buildTaskView(int passStreak, TaskEntity task, RoomVisibility visibility, bool isMyTurn, String playerName) {
     final isClosed = visibility == RoomVisibility.closed && !_contentRevealed;
     return Column(
       children: [
@@ -269,7 +279,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         ),
 
         Text(
-          isClosed ? '🔒 Kapalı Mod' : (isMyTurn ? '🎯 Görevin:' : '🎯 Arkadaşının Görevi:'),
+          isClosed ? '🔒 Kapalı Mod' : (isMyTurn ? '🎯 Görevin:' : '🎯 $playerName\'in Görevi:'),
           style: AppTextStyles.headlineMedium.copyWith(
             color: isClosed ? Colors.white54 : AppColors.accent,
           ),

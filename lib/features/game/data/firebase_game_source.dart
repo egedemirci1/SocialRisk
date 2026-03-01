@@ -190,19 +190,41 @@ class FirebaseGameSource implements GameRepository {
     if (!snap.exists) return;
 
     final game = GameModel.fromJson(snap.data()!, snap.id);
+    
+    // Aktif oyuncuları kontrol et
+    final playersSnap = await _firestore
+        .collection('rooms')
+        .doc(game.roomId)
+        .collection('players')
+        .get();
+    final activePlayerIds = playersSnap.docs.map((d) => d.id).toSet();
+    
+    // Sıradaki aktif oyuncuyu bul (çıkmış oyuncuları atla)
     final currentIndex = game.turnOrder.indexOf(game.currentPlayerId);
-    final nextIndex = (currentIndex + 1) % game.turnOrder.length;
-    final isNewRound = nextIndex == 0;
-
-    // Normal akışta `AssignTaskByCategory` kullanılacağı için 
-    // `nextTurn` içerisinde otomatik görev atamıyoruz, UI'dan çark çevrilmesi beklenecek.
-    // Oyun state'i 'waiting_for_spin' veya benzeri olabilir, şimdilik 'playing' diyoruz
-    // ve currentTask'i null yapıyoruz ki çark ekranı çıksun.
+    String? nextPlayerId;
+    int nextIndex = currentIndex;
+    bool isNewRound = false;
+    
+    for (int i = 1; i <= game.turnOrder.length; i++) {
+      nextIndex = (currentIndex + i) % game.turnOrder.length;
+      if (nextIndex == 0) isNewRound = true;
+      
+      if (activePlayerIds.contains(game.turnOrder[nextIndex])) {
+        nextPlayerId = game.turnOrder[nextIndex];
+        break;
+      }
+    }
+    
+    // Kimse kalmadıysa oyunu bitir
+    if (nextPlayerId == null) {
+      await _gameDoc(gameId).update({'status': 'finished'});
+      return;
+    }
 
     final updates = <String, dynamic>{
-      'currentPlayerId': game.turnOrder[nextIndex],
-      'currentTask': null, // Görev çarktan gelecek
-      'status': 'playing', // E13: Oylamadan sonra tekrar 'playing' durumuna dön.
+      'currentPlayerId': nextPlayerId,
+      'currentTask': null,
+      'status': 'playing',
       'spinningTarget': null,
     };
 

@@ -315,26 +315,27 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           children: [
             const Icon(Icons.casino_rounded, color: AppColors.accent, size: 28),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Klasik Çark Modu',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: Colors.white,
-                    fontSize: 16,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Klasik Çark Modu',
+                    style: AppTextStyles.titleLarge.copyWith(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Şans ve kaos — çarkı çevir!',
+                  const SizedBox(height: 2),
+                  Text(
+                    'Şans ve kaos — çarkı çevir!',
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: Colors.white38,
                   ),
                 ),
               ],
             ),
-            const Spacer(),
+            ),
             DecoratedBox(
               decoration: BoxDecoration(
                 color: AppColors.primary.withValues(alpha: 0.2),
