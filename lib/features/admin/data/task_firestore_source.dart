@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/task_item_entity.dart';
+import '../../../shared/models/enums.dart';
 
 /// Firestore'daki görevleri yöneten data source.
 /// CRUD + oyun içi görev çekme + feedback.
@@ -27,7 +28,7 @@ class TaskFirestoreSource {
         .where('category', isEqualTo: category)
         .where('difficulty', isEqualTo: difficulty)
         .where('isActive', isEqualTo: true)
-        .where('presets', arrayContains: preset);
+        .where('tags', arrayContains: preset);
 
     final snap = await query.get();
 
@@ -39,7 +40,8 @@ class TaskFirestoreSource {
     if (available.isEmpty) {
       // Fallback: Kullanılmışları da dahil et
       if (snap.docs.isNotEmpty) {
-        final randomDoc = snap.docs[DateTime.now().millisecond % snap.docs.length];
+        final randomDoc =
+            snap.docs[DateTime.now().millisecond % snap.docs.length];
         return _docToEntity(randomDoc);
       }
 
@@ -47,7 +49,7 @@ class TaskFirestoreSource {
       final fallbackSnap = await _tasksRef
           .where('category', isEqualTo: category)
           .where('isActive', isEqualTo: true)
-          .where('presets', arrayContains: preset)
+          .where('tags', arrayContains: preset)
           .get();
 
       final fallbackAvailable = fallbackSnap.docs
@@ -55,14 +57,15 @@ class TaskFirestoreSource {
           .toList();
 
       if (fallbackAvailable.isNotEmpty) {
-        final randomDoc = fallbackAvailable[
-            DateTime.now().millisecond % fallbackAvailable.length];
+        final randomDoc =
+            fallbackAvailable[DateTime.now().millisecond %
+                fallbackAvailable.length];
         return _docToEntity(randomDoc);
       }
 
       if (fallbackSnap.docs.isNotEmpty) {
-        final randomDoc = fallbackSnap.docs[
-            DateTime.now().millisecond % fallbackSnap.docs.length];
+        final randomDoc = fallbackSnap
+            .docs[DateTime.now().millisecond % fallbackSnap.docs.length];
         return _docToEntity(randomDoc);
       }
 
@@ -70,8 +73,7 @@ class TaskFirestoreSource {
     }
 
     // Rastgele birini seç
-    final randomDoc =
-        available[DateTime.now().millisecond % available.length];
+    final randomDoc = available[DateTime.now().millisecond % available.length];
     return _docToEntity(randomDoc);
   }
 
@@ -90,7 +92,8 @@ class TaskFirestoreSource {
       'category': task.category,
       'content': task.content,
       'difficulty': task.difficulty,
-      'presets': task.presets,
+      'type': task.type.name,
+      'tags': task.tags,
       'likes': 0,
       'dislikes': 0,
       'isActive': true,
@@ -105,7 +108,8 @@ class TaskFirestoreSource {
       'category': task.category,
       'content': task.content,
       'difficulty': task.difficulty,
-      'presets': task.presets,
+      'type': task.type.name,
+      'tags': task.tags,
       'isActive': task.isActive,
     });
   }
@@ -144,9 +148,7 @@ class TaskFirestoreSource {
 
     // Sayacı artır
     final field = isLike ? 'likes' : 'dislikes';
-    await _tasksRef.doc(taskId).update({
-      field: FieldValue.increment(1),
-    });
+    await _tasksRef.doc(taskId).update({field: FieldValue.increment(1)});
   }
 
   // ── Seed Migration ───────────────────────────────────
@@ -181,7 +183,11 @@ class TaskFirestoreSource {
       category: data['category'] as String? ?? '',
       content: data['content'] as String? ?? '',
       difficulty: data['difficulty'] as String? ?? 'easy',
-      presets: List<String>.from(data['presets'] ?? ['classic']),
+      type: TaskType.values.firstWhere(
+        (e) => e.name == data['type'],
+        orElse: () => TaskType.action,
+      ),
+      tags: List<String>.from(data['tags'] ?? ['classic']),
       likes: data['likes'] as int? ?? 0,
       dislikes: data['dislikes'] as int? ?? 0,
       isActive: data['isActive'] as bool? ?? true,

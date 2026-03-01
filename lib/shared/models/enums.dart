@@ -1,23 +1,23 @@
 enum GameMode {
   classic,
   economy, // Faz 10: Strateji modu
-  toxic,   // Gelecek planı
-  custom   // Gelecek planı
+  toxic, // Gelecek planı
+  custom, // Gelecek planı
 }
 
 /// İçerik preset'i — odadaki görev havuzunu belirler.
 enum GamePreset {
-  classic,  // Tüm kategoriler, genel içerik
-  family,   // Aile dostu (PG)
-  couple,   // Sevgili modu
-  adult     // Yetişkin (18+)
+  classic, // Tüm kategoriler, genel içerik
+  family, // Aile dostu (PG)
+  couple, // Sevgili modu
+  adult, // Yetişkin (18+)
 }
 
 enum GameDifficulty {
-  easy,    // Kolay - multiplier 1
-  medium,  // Orta - multiplier 2
-  hard,    // Zor - multiplier 3
-  mixed    // Karışık - hepsi
+  easy, // Kolay - multiplier 1
+  medium, // Orta - multiplier 2
+  hard, // Zor - multiplier 3
+  mixed, // Karışık - hepsi
 }
 
 enum GameStatus {
@@ -27,21 +27,20 @@ enum GameStatus {
   performing,
   voting,
   results,
-  finished
+  finished,
 }
 
-enum VoteValue {
-  like,
-  neutral,
-  dislike
-}
+enum VoteValue { like, neutral, dislike }
 
-enum EndConditionType {
-  score,
-  rounds
-}
+enum EndConditionType { score, rounds }
 
 enum RoomVisibility {
-  open,   // İçerik önceden görünür
-  closed  // Sadece kategori + çarpan görünür
+  open, // İçerik önceden görünür
+  closed, // Sadece kategori + çarpan görünür
+}
+
+enum TaskType {
+  action, // Aksiyon/Cesaret
+  question, // İtiraf/Soru
+  physical, // Fiziksel aktivite
 }
