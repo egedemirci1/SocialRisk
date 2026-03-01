@@ -87,21 +87,34 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    function isAdmin() {
+      return isAuthenticated() && request.auth.uid in [
+        'y51M7E6YXZT5I04M9YFqGzSgZ7Y2',
+        'hW42qgzVJIXr6sOLO0q1zPOdv6w1'
+      ];
+    }
+
     // ─── Tasks (Görevler ve Admin) ────────────────────────
     match /tasks/{taskId} {
       allow read: if isAuthenticated();
-      // Oyuncuların likes/dislikes güncelleyebilmesi için write izni ver
-      allow write: if isAuthenticated();
+      // Yalnızca adminler görev ekleyebilir, silebilir veya güncelleyebilir.
+      allow write: if isAdmin();
     }
     
     match /taskFeedback/{feedbackId} {
-      allow read, write: if isAuthenticated();
+      allow read: if isAuthenticated();
+      // Herkes feedback verebilir.
+      allow create: if isAuthenticated();
+      // Feedback güncellenemez/silinemez (veya isterseniz kısıtlayın)
+      allow update, delete: if false;
     }
     
     // ─── Raporlar (Moderasyon) ────────────────────────────
     match /reports/{reportId} {
+      // Herkes rapor oluşturabilir (şikayet mekanizması)
       allow create: if isAuthenticated();
-      allow read, update, delete: if isAuthenticated() && request.auth.uid in ['y51M7E6YXZT5I04M9YFqGzSgZ7Y2'];
+      // Yalnızca adminler raporları okuyabilir ve yönetebilir
+      allow read, update, delete: if isAdmin();
     }
   }
 }
