@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/task_item_entity.dart';
+import '../domain/task_item_entity.dart';
 import '../providers/admin_provider.dart';
 
 class TaskEditorScreen extends ConsumerStatefulWidget {

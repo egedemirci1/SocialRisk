@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,7 +6,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
-import '../../auth/domain/user_entity.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../admin/providers/admin_provider.dart';
 
@@ -92,7 +92,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActions(BuildContext context, UserEntity? user) {
+  Widget _buildActions(BuildContext context, User? user) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

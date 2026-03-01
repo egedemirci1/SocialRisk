@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../domain/task_item_entity.dart';
 import '../domain/report_entity.dart';
 import 'task_provider.dart';
+
+part 'admin_provider.g.dart';
 
 // Admin UID Whitelist
 const List<String> adminUids = [
@@ -13,7 +16,7 @@ bool isAdmin(String? uid) => uid != null && adminUids.contains(uid);
 
 // -- Providers --
 final adminTasksProvider = StreamProvider.autoDispose<List<TaskItemEntity>>((ref) {
-  final source = ref.watch(taskFirestoreSourceProvider);
+  final source = ref.watch(taskSourceProvider);
   return source.watchAllTasks();
 });
 
@@ -25,34 +28,23 @@ final watchReportsProvider = StreamProvider.autoDispose<List<ReportEntity>>((ref
       .map((snap) => snap.docs.map((doc) => ReportEntity.fromJson(doc.data(), doc.id)).toList());
 });
 
-final adminControllerProvider = StateNotifierProvider<AdminController, AsyncValue<void>>((ref) {
-  return AdminController(ref);
-});
-
-class AdminController extends StateNotifier<AsyncValue<void>> {
-  final Ref _ref;
-  AdminController(this._ref) : super(const AsyncValue.data(null));
+@riverpod
+class AdminController extends _$AdminController {
+  @override
+  FutureOr<void> build() {}
 
   Future<void> addTask(TaskItemEntity task) async {
-    state = const AsyncValue.loading();
-    try {
-      await _ref.read(taskFirestoreSourceProvider).addTask(task);
-      state = const AsyncValue.data(null);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-      rethrow;
-    }
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(taskSourceProvider).addTask(task);
+    });
   }
 
   Future<void> updateTask(TaskItemEntity task) async {
-    state = const AsyncValue.loading();
-    try {
-      await _ref.read(taskFirestoreSourceProvider).updateTask(task);
-      state = const AsyncValue.data(null);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-      rethrow;
-    }
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(taskSourceProvider).updateTask(task);
+    });
   }
 
   Future<void> toggleTaskActiveStatus(String taskId, bool isActive) async {
@@ -65,7 +57,7 @@ class AdminController extends StateNotifier<AsyncValue<void>> {
 
   Future<void> deleteTask(String taskId) async {
     try {
-      await _ref.read(taskFirestoreSourceProvider).deleteTask(taskId);
+      await ref.read(taskSourceProvider).deleteTask(taskId);
     } catch (e) {
       // ignore
     }
