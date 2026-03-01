@@ -50,12 +50,21 @@ Bu plan, 4 saat içerisinde (her blok 1 saat) eksiklerin tamamlanması için **a
 
 ---
 
-## ⏱️ BLOK 4: Full Test & Merge (180-240 dk)
+## ⏱️ BLOK 4: Full Test & Final Integration (180-240 dk)
 
-1. **Conflict Check:** Ege ve Reze kodlarını birleştirip `flutter analyze` ve `flutter build web` kontrolü yapacak.
-2. **E2E Playtest:** 4 telefon (veya sekme) ile 5 tur oyun oynanacak; oylama, puanlama ve oyun sonu ekranları tek tek kontrol edilecek.
-3. **Last Fixes:** UI'da taşan yazıları (`OverflowBox`) ve mobil cihazlardaki klavye sorunlarını (`SingleChildScrollView`) son bir kez gözden geçir.
-4. **Ready for Push:** Her şey tamamsa master/main branch'e çekilecek.
+Bu blokta geliştiriciler Frontend/Backend yerine **Modül bazlı** ayrılarak özellikleri uçtan uca (UI+Logic) geliştirecektir.
+
+### 👨‍💻 Oylama ve Oyun Akış Modülü (Reze)
+1. **Oylama Ekranı Hatası (Double Voting Routing):** `PerformingScreen` -> `VotingScreen` geçişindeki akışta, muhtemelen listener'lar nedeniyle ekranın 2 defa açılması/kapanması hatasını çöz (`app_router` veya `GameController` redirect mantığını gözden geçir).
+2. **Puanlama Matematiği (Voting Calculation Fix):**
+   - Beğenmedim: Sabit `-10` puan (Kaybedilen puanda çarpan iptal)
+   - Beğendim: Sabit `+10 * çarpan` (Sadece kazançta çarpan)
+3. **Bitiş Koşulu Kapsamı (End Condition Thresholds):** Toplam kazanma (Bitiş) puanını ayarını UI ve model bazında Max değer `500`, Min değer `50` olarak sınırlandır.
+
+### 👨‍💻 Kendi Destem ve Mağaza Modülü (Ege)
+1. **Özel Deste UI & Logic (Lobby Setup):** Lobi oluşturma ekranına, kullanıcının kendi destesini (Custom Deck) seçebileceği UI toggle'ını ekle. Seçildiyse oda oyun başladığında `users/{uid}/custom_tasks` üzerinden o desteyi de soru havuzuna katsın.
+2. **Mağaza (Store) Düzenlemeleri & Test UI:** Test parası ekleme butonunun UI state/onClick kısımlarını bağla. Eşya alımında Transaction işleminin çökmesi veya eksik bakiye uyarısı sorunlarını (Logic) debug et.
+3. **Full System Polish:** Ege ve Reze kodları birleştirip E2E test ile baştan sona oynanış kontrol edilecek.
 
 ---
 
