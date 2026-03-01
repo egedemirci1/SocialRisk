@@ -24,9 +24,8 @@ class CustomTaskController extends _$CustomTaskController {
     required UserTaskEntity task,
   }) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref.read(userTaskSourceProvider).addTask(uid: uid, task: task),
-    );
+    final repo = ref.read(userTaskSourceProvider);
+    state = await AsyncValue.guard(() => repo.addTask(uid: uid, task: task));
   }
 
   Future<void> updateTask({
@@ -34,16 +33,15 @@ class CustomTaskController extends _$CustomTaskController {
     required UserTaskEntity task,
   }) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref.read(userTaskSourceProvider).updateTask(uid: uid, task: task),
-    );
+    final repo = ref.read(userTaskSourceProvider);
+    state = await AsyncValue.guard(() => repo.updateTask(uid: uid, task: task));
   }
 
   Future<void> deleteTask({required String uid, required String taskId}) async {
     state = const AsyncLoading();
+    final repo = ref.read(userTaskSourceProvider);
     state = await AsyncValue.guard(
-      () =>
-          ref.read(userTaskSourceProvider).deleteTask(uid: uid, taskId: taskId),
+      () => repo.deleteTask(uid: uid, taskId: taskId),
     );
   }
 }

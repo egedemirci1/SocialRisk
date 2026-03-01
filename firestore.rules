@@ -85,6 +85,11 @@ service cloud.firestore {
 
       // Silme yok
       allow delete: if false;
+
+      // ─── Custom Tasks alt koleksiyonu ─────────────────
+      match /custom_tasks/{taskId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
     }
 
     // ─── Cosmetics (Mağaza öğeleri) ──────────────────────

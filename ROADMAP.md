@@ -38,7 +38,7 @@ Bu plan, 4 saat içerisinde (her blok 1 saat) eksiklerin tamamlanması için **a
 ## ⏱️ BLOK 3: Premium Polish & Oyun Matematiği (120-180 dk)
 
 ### 👨‍💻 Geliştirici A (Logic/Backend/Ege)
-1. **Math Verification (`game_controller.dart`):** Pas geçme cezasının (`50 * 3^n`) doğru hesaplandığını ve veritabanına eksi olarak işlendiğini doğrula.
+1. **Math Verification (`game_controller.dart`):** Pas geçme cezasının (`50 * 3^n`) doğru hesaplandığını ve veritabanına eksi olarak işlendiğini doğrula. Puan algoritmasının da mantıklı olduğunu, zorluğa göre puanın zorluğunu vs. kontrol et.
 2. **Result Calculation:** Oylama bittiğinde `( 👍 - 👎 ) * multiplier` formülünün Firestore `Cloud Function` veya `Provider` içinde hatasız çalıştığını test et.
 3. **Inventory Bridge:** Mağazadan alınan bir eşyanın (örn: Çerçeve) anında `PlayerAvatar`'da görünmesi için `Stream` bağlantısını kur.
 
