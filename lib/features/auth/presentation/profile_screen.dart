@@ -9,7 +9,7 @@ import '../../../shared/widgets/common/gradient_container.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import '../../../core/utils/image_compressor.dart';
 
 /// Profil ekranı — Avatar yükleme, isim değiştirme.
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -77,7 +77,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
       setState(() => _isUploading = true);
 
-      final bytes = await image.readAsBytes();
+      final rawBytes = await image.readAsBytes();
+
+      // Max 10MB dosya boyutu kontrolü
+      const maxUploadSize = 10 * 1024 * 1024; // 10 MB
+      if (rawBytes.lengthInBytes > maxUploadSize) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Dosya boyutu çok büyük (Max: 10MB)')),
+          );
+          setState(() => _isUploading = false);
+        }
+        return;
+      }
+
+      // Sıkıştır: max 256px, max 1MB
+      final bytes = ImageCompressor.compress(rawBytes);
+      debugPrint('Avatar sıkıştırma: ${rawBytes.lengthInBytes ~/ 1024}KB → ${bytes.lengthInBytes ~/ 1024}KB');
 
       await ref.read(userControllerProvider.notifier).uploadAvatar(
         user.uid,
