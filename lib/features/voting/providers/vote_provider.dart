@@ -46,7 +46,7 @@ class VoteController extends _$VoteController {
   }) async {
     final repo = ref.read(voteRepositoryProvider);
     final voteResult = await repo.calculateVoteResult(gameId);
-    final finalScore = voteResult * taskMultiplier * 100;
+    final finalScore = voteResult * taskMultiplier * 10;
 
     await repo.clearVotes(gameId);
 
