@@ -7,6 +7,7 @@ import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
 import '../../../shared/models/enums.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
 
 /// Oda oluşturma ekranı — Oyuncu kapasitesi, bitiş koşulu ayarları.
@@ -40,6 +41,9 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           ? _scoreTarget.toInt()
           : _roundTarget.toInt();
 
+      // Custom profili al ki avatarUrl'yi okuyabilelim
+      final userProfile = await ref.read(userRepositoryProvider).getUserProfile(user.uid);
+
       // Repository'yi async gap öncesi yakala — provider dispose olsa bile
       // repo referansı hâlâ geçerli kalır.
       final repo = ref.read(roomRepositoryProvider);
@@ -50,7 +54,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         endConditionValue: endValue,
         visibility: _isOpenMode ? RoomVisibility.open : RoomVisibility.closed,
         preset: _preset,
-        hostAvatarUrl: user.photoURL,
+        hostAvatarUrl: userProfile?.avatarUrl,
         mode: _selectedMode,
       );
 

@@ -52,21 +52,27 @@ class FirebaseUserSource implements UserRepository {
       updatedAt: DateTime.now(),
     );
 
-    await _userDoc(user.uid).update(model.toJson());
+    await _userDoc(user.uid).set(model.toJson(), SetOptions(merge: true));
   }
 
   @override
   Future<void> updateAvatarUrl(String uid, String avatarUrl) async {
-    await _userDoc(uid).update({
+    await _userDoc(uid).set({
       'avatarUrl': avatarUrl,
       'updatedAt': FieldValue.serverTimestamp(),
-    });
+    }, SetOptions(merge: true));
   }
 
   @override
   Future<String?> uploadAvatar(String uid, dynamic fileData) async {
     try {
-      final storageRef = FirebaseStorage.instance.ref().child('avatars/$uid.jpg');
+      // 1. Eski profil URL'sini al
+      final oldProfile = await getUserProfile(uid);
+      final oldAvatarUrl = oldProfile?.avatarUrl;
+
+      // 2. Yeni resim için benzersiz isim oluştur (Cache Buster)
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final storageRef = FirebaseStorage.instance.ref().child('avatars/${uid}_$timestamp.jpg');
       
       UploadTask uploadTask;
       if (fileData is Uint8List) {
@@ -82,6 +88,18 @@ class FirebaseUserSource implements UserRepository {
       
       // Update the user's document as well
       await updateAvatarUrl(uid, downloadUrl);
+      
+      // 3. Eski resmi Storage'dan sil
+      if (oldAvatarUrl != null && 
+          oldAvatarUrl.isNotEmpty && 
+          oldAvatarUrl.startsWith('https://firebasestorage.googleapis.com')) {
+        try {
+          final oldRef = FirebaseStorage.instance.refFromURL(oldAvatarUrl);
+          await oldRef.delete();
+        } catch (e) {
+          // Eski resim silinirken hata olsa bile, yeni resim yüklendiği için işlemi kesme
+        }
+      }
       
       return downloadUrl;
     } catch (e) {

@@ -7,6 +7,7 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/primary_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/providers/user_provider.dart';
 import '../../admin/providers/admin_provider.dart';
 
 /// Ana menü ekranı — Oda Oluştur veya Odaya Katıl.
@@ -16,7 +17,10 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
+    final userProfileAsync = user != null ? ref.watch(watchUserProfileProvider(user.uid)) : const AsyncValue.loading();
     final displayName = user?.displayName ?? 'Oyuncu';
+    final avatarUrl = userProfileAsync.value?.avatarUrl;
+    final showImage = avatarUrl != null && avatarUrl.isNotEmpty;
 
     return Scaffold(
       body: GradientContainer(
@@ -24,7 +28,7 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           children: [
             const Spacer(flex: 2),
-            _buildWelcome(context, displayName),
+            _buildWelcome(context, displayName, avatarUrl, showImage),
             const Spacer(),
             _buildActions(context, user),
             const Spacer(flex: 2),
@@ -36,7 +40,16 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWelcome(BuildContext context, String playerName) {
+  Widget _buildWelcome(BuildContext context, String playerName, String? avatarUrl, bool showImage) {
+    Widget firstLetterWidget() => Text(
+      playerName.isNotEmpty ? playerName[0].toUpperCase() : '?',
+      style: const TextStyle(
+        fontSize: 40,
+        fontWeight: FontWeight.w700,
+        color: Colors.white54,
+      ),
+    );
+
     return Column(
       children: [
         GestureDetector(
@@ -44,26 +57,11 @@ class HomeScreen extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.bottomRight,
             children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.surfaceElevated,
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.5),
-                    width: 2,
-                  ),
-                ),
-                child: const SizedBox(
-                  width: 80,
-                  height: 80,
-                  child: Center(
-                    child: Icon(
-                      Icons.person_rounded,
-                      color: Colors.white54,
-                      size: 40,
-                    ),
-                  ),
-                ),
+              CircleAvatar(
+                radius: 40,
+                backgroundColor: AppColors.surfaceElevated,
+                backgroundImage: showImage ? NetworkImage(avatarUrl!) : null,
+                child: !showImage ? firstLetterWidget() : null,
               ),
               const DecoratedBox(
                 decoration: BoxDecoration(

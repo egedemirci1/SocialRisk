@@ -92,6 +92,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     final isMe = player.id == user?.uid;
                     return _PlayerTile(
                       name: player.name,
+                      avatarUrl: player.avatarUrl,
                       isReady: player.isReady,
                       isCurrentPlayer: isMe,
                       score: player.score,
@@ -272,6 +273,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
 class _PlayerTile extends StatelessWidget {
   const _PlayerTile({
     required this.name,
+    this.avatarUrl,
     required this.isReady,
     required this.isCurrentPlayer,
     this.score = 0,
@@ -279,6 +281,7 @@ class _PlayerTile extends StatelessWidget {
   });
 
   final String name;
+  final String? avatarUrl;
   final bool isReady;
   final bool isCurrentPlayer;
   final int score;
@@ -308,6 +311,7 @@ class _PlayerTile extends StatelessWidget {
             children: [
               PlayerAvatar(
                 displayName: name,
+                avatarUrl: avatarUrl,
                 score: score,
                 radius: 20,
               ),
