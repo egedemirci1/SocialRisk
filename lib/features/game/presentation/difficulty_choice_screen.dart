@@ -123,7 +123,7 @@ class _DifficultyChoiceScreenState extends ConsumerState<DifficultyChoiceScreen>
                   _buildDifficultyCard(
                     title: 'Kolay',
                     multiplier: '1x',
-                    description: 'Masum ve risksiz bir görev.',
+                    description: 'Rahat ve keyifli bir başlangıç.',
                     color: Colors.green.shade400,
                     onTap: () => _selectDifficulty('easy'),
                   ),
@@ -132,7 +132,7 @@ class _DifficultyChoiceScreenState extends ConsumerState<DifficultyChoiceScreen>
                   _buildDifficultyCard(
                     title: 'Orta',
                     multiplier: '2x',
-                    description: 'Biraz utandırıcı ama yapılabilir.',
+                    description: 'Biraz zorlu ama yapılabilir.',
                     color: Colors.orange.shade400,
                     onTap: () => _selectDifficulty('medium'),
                   ),
@@ -141,7 +141,7 @@ class _DifficultyChoiceScreenState extends ConsumerState<DifficultyChoiceScreen>
                   _buildDifficultyCard(
                     title: 'Zor',
                     multiplier: '3x',
-                    description: 'Gerçek bir cesaret testi!',
+                    description: 'Sınırlarını zorlamaya hazır ol!',
                     color: Colors.red.shade400,
                     onTap: () => _selectDifficulty('hard'),
                   ),

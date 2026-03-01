@@ -147,8 +147,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           } catch (_) {}
         }
 
-        // Listen for task changes to animate the card
-        ref.listen<AsyncValue<GameEntity?>>(
+         ref.listen<AsyncValue<GameEntity?>>(
           watchGameProvider(widget.gameId),
           (previous, next) {
             final prevTask = previous?.value?.currentTask;
@@ -161,6 +160,14 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             }
           }
         );
+
+        // If we arrive with a task already set (e.g. returning from difficulty
+        // selection), ensure the card animation plays so the card is visible.
+        if (task != null && !_cardController.isAnimating && _cardController.value == 0.0) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _cardController.forward(from: 0.0);
+          });
+        }
 
         // Durumuna göre yönlendir
         WidgetsBinding.instance.addPostFrameCallback((_) {
