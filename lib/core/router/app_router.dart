@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
-import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/room/presentation/home_screen.dart';
 import '../../features/room/presentation/create_room_screen.dart';
 import '../../features/room/presentation/join_room_screen.dart';
@@ -48,16 +47,15 @@ final appRouter = GoRouter(
   refreshListenable: _authRefreshNotifier,
   redirect: (context, state) {
     final user = FirebaseAuth.instance.currentUser;
-    final loc = state.matchedLocation;
-    final isAuthPage = loc == '/' || loc == '/login';
+    final isOnLoginPage = state.matchedLocation == '/';
 
     if (user == null) {
-      // Not signed in — allow splash and login, redirect others
-      return isAuthPage ? null : '/login';
+      // Not signed in — send to login if not already there
+      return isOnLoginPage ? null : '/';
     }
 
-    // Signed in — don't let them stay on splash or login
-    if (isAuthPage) return '/home';
+    // Signed in — don't let them stay on login page
+    if (isOnLoginPage) return '/home';
 
     // Admin pages guard
     if (state.matchedLocation.startsWith('/admin')) {
@@ -69,10 +67,6 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const SplashScreen(),
-    ),
-    GoRoute(
-      path: '/login',
       builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(

@@ -22,18 +22,22 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkAuthAndNavigate() async {
-    // Minimum splash süresi (branding için)
-    await Future.delayed(const Duration(milliseconds: 800));
+    // Give Firebase Auth up to 2 seconds to restore a cached session.
+    // authStateChanges().first may never complete if the initial event
+    // already fired before this widget subscribed, so we use a timeout.
+    User? user;
+    try {
+      user = await FirebaseAuth.instance
+          .authStateChanges()
+          .first
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {
+      // Timeout or error — fall back to synchronous check
+      user = FirebaseAuth.instance.currentUser;
+    }
 
     if (!mounted) return;
-
-    // Auth durumuna göre yönlendir
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      context.go('/home');
-    } else {
-      context.go('/login');
-    }
+    context.go(user != null ? '/home' : '/login');
   }
 
   @override
@@ -44,7 +48,6 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Logo / Emoji
               DecoratedBox(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
