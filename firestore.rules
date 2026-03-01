@@ -61,6 +61,12 @@ service cloud.firestore {
 
       // Silme: yok (oyunlar silinmez)
       allow delete: if false;
+
+      // ─── Votes alt koleksiyonu ──────────────────────
+      match /votes/{voterId} {
+        // Okuma ve yazma: giriş yapmış her oyuncu
+        allow read, write: if isAuthenticated();
+      }
     }
 
     // ─── Users (Profil + Cüzdan + Envanter) ──────────────
