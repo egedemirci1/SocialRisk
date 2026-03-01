@@ -169,33 +169,40 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           });
         }
 
-        // Durumuna göre yönlendir
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            if (game.status == GameStatus.choosingDifficulty) {
-              context.replace('/difficulty', extra: {
-                'gameId': widget.gameId,
-                'roomCode': widget.roomCode,
-              });
-            } else if (game.status == GameStatus.voting) {
-              context.replace('/voting', extra: {
-                'gameId': widget.gameId,
-                'roomCode': widget.roomCode,
-              });
-            } else if (game.status == GameStatus.performing && !isMyTurn) {
-              // Sadece "performing" aşamasında diğer oyuncular bekleme ekranına
-              context.replace('/waiting', extra: {
-                'gameId': widget.gameId,
-                'roomCode': widget.roomCode,
-              });
-            } else if (game.status == GameStatus.results) {
-              context.replace('/round-result', extra: {
-                'gameId': widget.gameId,
-                'roomCode': widget.roomCode,
-              });
-            } else if (game.status == GameStatus.finished) {
-              context.replace('/game-over', extra: widget.roomCode);
-            }
+        // Navigate based on game status changes to prevent double routing
+        ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (previous, next) {
+          if (!mounted) return;
+          final nextGame = next.value;
+          final prevGame = previous?.value;
+          
+          if (nextGame != null && prevGame?.status != nextGame.status) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                if (nextGame.status == GameStatus.choosingDifficulty) {
+                  context.replace('/difficulty', extra: {
+                    'gameId': widget.gameId,
+                    'roomCode': widget.roomCode,
+                  });
+                } else if (nextGame.status == GameStatus.voting) {
+                  context.replace('/voting', extra: {
+                    'gameId': widget.gameId,
+                    'roomCode': widget.roomCode,
+                  });
+                } else if (nextGame.status == GameStatus.performing && !isMyTurn) {
+                  context.replace('/waiting', extra: {
+                    'gameId': widget.gameId,
+                    'roomCode': widget.roomCode,
+                  });
+                } else if (nextGame.status == GameStatus.results) {
+                  context.replace('/round-result', extra: {
+                    'gameId': widget.gameId,
+                    'roomCode': widget.roomCode,
+                  });
+                } else if (nextGame.status == GameStatus.finished) {
+                  context.replace('/game-over', extra: widget.roomCode);
+                }
+              }
+            });
           }
         });
 

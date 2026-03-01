@@ -6,9 +6,6 @@ class GameConstants {
   static const int defaultMaxRounds = 10;
 
   static const int basePenalty = 50;
-  static const int voteMultiplierLike = 1;
-  static const int voteMultiplierNeutral = 0;
-  static const int voteMultiplierDislike = -1;
 
   static const Duration voteDuration = Duration(seconds: 15);
   static const Duration lobbyRefreshRate = Duration(seconds: 2);

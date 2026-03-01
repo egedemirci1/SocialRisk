@@ -9,7 +9,7 @@ abstract class VoteRepository {
 
   Stream<Map<String, VoteValue>> watchVotes(String gameId);
 
-  Future<int> calculateVoteResult(String gameId);
+  Future<int> calculateVoteResult(String gameId, {int taskMultiplier = 1});
 
   Future<void> clearVotes(String gameId);
 }

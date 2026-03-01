@@ -276,9 +276,9 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           ),
           Slider(
             value: _scoreTarget,
-            min: 100,
-            max: 2000,
-            divisions: 19,
+            min: 50,
+            max: 500,
+            divisions: 9, // Adımlar: 50, 100, 150... 500
             activeColor: AppColors.accent,
             inactiveColor: AppColors.surfaceElevated,
             onChanged: (value) {

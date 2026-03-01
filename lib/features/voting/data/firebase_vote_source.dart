@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/vote_repository.dart';
 import 'vote_model.dart';
 import '../../../shared/models/enums.dart';
-import '../../../core/constants/game_constants.dart';
 
 class FirebaseVoteSource implements VoteRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -33,7 +32,7 @@ class FirebaseVoteSource implements VoteRepository {
   }
 
   @override
-  Future<int> calculateVoteResult(String gameId) async {
+  Future<int> calculateVoteResult(String gameId, {int taskMultiplier = 1}) async {
     final snapshot = await _votesRef(gameId).get();
     int totalScore = 0;
 
@@ -41,13 +40,15 @@ class FirebaseVoteSource implements VoteRepository {
       final vote = VoteModel.fromJson(doc.data(), doc.id);
       switch (vote.value) {
         case VoteValue.like:
-          totalScore += GameConstants.voteMultiplierLike;
+          // Beğendim: 10 * multiplier
+          totalScore += (10 * taskMultiplier);
           break;
         case VoteValue.neutral:
-          totalScore += GameConstants.voteMultiplierNeutral;
+          totalScore += 0;
           break;
         case VoteValue.dislike:
-          totalScore += GameConstants.voteMultiplierDislike;
+          // Beğenmedim: Sabit -10 (çarpan etkisiz)
+          totalScore -= 10;
           break;
       }
     }

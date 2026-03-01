@@ -39,14 +39,13 @@ class VoteController extends _$VoteController {
     );
   }
 
-  /// Oyları topla, çarpanla hesapla → finalScore = votingResult × multiplier
+  /// Oyları topla, repo içindeki çarpan kurallarıyla nihai puanı hesapla
   Future<int> calculateAndApplyScore({
     required String gameId,
     required int taskMultiplier,
   }) async {
     final repo = ref.read(voteRepositoryProvider);
-    final voteResult = await repo.calculateVoteResult(gameId);
-    final finalScore = voteResult * taskMultiplier * 10;
+    final finalScore = await repo.calculateVoteResult(gameId, taskMultiplier: taskMultiplier);
 
     await repo.clearVotes(gameId);
 

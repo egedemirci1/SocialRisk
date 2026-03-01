@@ -6,6 +6,7 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
 import '../../../shared/models/enums.dart';
 import '../../room/providers/room_provider.dart';
+import '../domain/game_entity.dart';
 import '../providers/game_provider.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 
@@ -28,7 +29,6 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulseController;
   late final Animation<double> _pulseAnimation;
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -53,63 +53,42 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
 
+    ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (previous, next) {
+      if (!mounted) return;
+      final nextGame = next.value;
+      final prevGame = previous?.value;
+      
+      if (nextGame != null && prevGame?.status != nextGame.status) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            if (nextGame.status == GameStatus.finished) {
+              context.replace('/game-over', extra: widget.roomCode);
+            } else if (nextGame.status == GameStatus.voting) {
+              context.replace('/voting', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            } else if (nextGame.status == GameStatus.results) {
+              context.replace('/round-result', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            } else if (nextGame.status == GameStatus.playing) {
+              context.replace('/task', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            }
+          }
+        });
+      }
+    });
+
     return gameAsync.when(
       data: (game) {
         if (game == null) {
           return const Scaffold(
               body: Center(child: CircularProgressIndicator()));
-        }
-
-        // Her build'de sıfırla — yeniden yönlendirme yapılabilsin
-        _isNavigating = false;
-
-        // Oyun bittiyse sonuç ekranına git
-        if (game.status == GameStatus.finished && !_isNavigating) {
-          _isNavigating = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              context.go('/game-over', extra: widget.roomCode);
-            }
-          });
-        }
-
-        // Aktif oyuncu görevini kabul etmiş ve oylama başlamışsa, oylama ekranına git
-        if (game.status == GameStatus.voting && !_isNavigating) {
-          _isNavigating = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              context.go('/voting', extra: {
-                'gameId': widget.gameId,
-                'roomCode': widget.roomCode,
-              });
-            }
-          });
-        }
-
-        // Sonuçlar ekranına git
-        if (game.status == GameStatus.results && !_isNavigating) {
-          _isNavigating = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              context.go('/round-result', extra: {
-                'gameId': widget.gameId,
-                'roomCode': widget.roomCode,
-              });
-            }
-          });
-        }
-
-        // Sıra bana geldiyse veya playing durumundaysa görev ekranına geri dön
-        if (game.status == GameStatus.playing && !_isNavigating) {
-          _isNavigating = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              context.go('/task', extra: {
-                'gameId': widget.gameId,
-                'roomCode': widget.roomCode,
-              });
-            }
-          });
         }
 
         // Aktif oyuncunun ismini bul

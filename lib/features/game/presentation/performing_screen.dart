@@ -57,10 +57,12 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
       final game = next.value;
       if (game == null) return;
       
+      final prevGame = previous?.value;
+      
       final user = ref.read(currentUserProvider);
       final isMyTurn = game.currentPlayerId == user?.uid;
 
-      if (!isMyTurn && game.status == GameStatus.voting) {
+      if (!isMyTurn && game.status == GameStatus.voting && prevGame?.status != GameStatus.voting) {
          WidgetsBinding.instance.addPostFrameCallback((_) {
            if (mounted) {
              context.go('/voting', extra: {
