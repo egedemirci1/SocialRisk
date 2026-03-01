@@ -24,6 +24,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final ImagePicker _picker = ImagePicker();
   bool _isSaving = false;
   bool _isUploading = false;
+  bool _avatarLoadFailed = false;
 
   @override
   void initState() {
@@ -95,10 +96,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       final bytes = ImageCompressor.compress(rawBytes);
       debugPrint('Avatar sıkıştırma: ${rawBytes.lengthInBytes ~/ 1024}KB → ${bytes.lengthInBytes ~/ 1024}KB');
 
-      await ref.read(userControllerProvider.notifier).uploadAvatar(
+      final downloadUrl = await ref.read(userControllerProvider.notifier).uploadAvatar(
         user.uid,
         bytes,
       );
+
+      debugPrint('Avatar upload URL: $downloadUrl');
+
+      if (downloadUrl == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Fotoğraf yüklenemedi, tekrar deneyin.')),
+          );
+        }
+        return;
+      }
+
+      // Force refresh: clear image cache and invalidate user profile provider
+      PaintingBinding.instance.imageCache.clear();
+      PaintingBinding.instance.imageCache.clearLiveImages();
+      _avatarLoadFailed = false;
+      ref.invalidate(watchUserProfileProvider(user.uid));
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -159,12 +177,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final userProfileAsync = user != null ? ref.watch(watchUserProfileProvider(user.uid)) : const AsyncValue.loading();
     
     final displayName = user?.displayName ?? 'Oyuncu';
-    final avatarUrl = userProfileAsync.value?.avatarUrl ?? user?.photoURL;
+    // Only use Firestore avatarUrl (Google photoURL may 429)
+    final avatarUrl = userProfileAsync.value?.avatarUrl;
+    final showImage = avatarUrl != null && avatarUrl.isNotEmpty && !_avatarLoadFailed;
 
     // İlk açılışta mevcut ismi doldur
     if (_nameController.text.isEmpty) {
       _nameController.text = displayName;
     }
+
+    // First-letter fallback widget
+    Widget firstLetterWidget() => Text(
+      displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
+      style: GoogleFonts.inter(
+        fontSize: 48,
+        fontWeight: FontWeight.w700,
+        color: Colors.white54,
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -190,21 +220,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     CircleAvatar(
                       radius: 60,
                       backgroundColor: AppColors.surfaceElevated,
-                      backgroundImage:
-                          avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                      backgroundImage: showImage ? NetworkImage(avatarUrl) : null,
+                      onBackgroundImageError: showImage
+                          ? (_, __) {
+                              if (!_avatarLoadFailed) {
+                                setState(() => _avatarLoadFailed = true);
+                              }
+                            }
+                          : null,
                       child: _isUploading
                           ? const CircularProgressIndicator(color: AppColors.primary)
-                          : avatarUrl == null
-                              ? Text(
-                                  displayName.isNotEmpty
-                                      ? displayName[0].toUpperCase()
-                                      : '?',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 48,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white54,
-                                  ),
-                                )
+                          : !showImage
+                              ? firstLetterWidget()
                               : null,
                     ),
                     if (!_isUploading)

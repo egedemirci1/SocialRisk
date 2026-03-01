@@ -18,8 +18,11 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Seed tasks on startup if empty (fixes task not found error)
-  await TaskSeedMigration.run();
+  // Seed tasks on startup if empty (fire-and-forget — don't block app start)
+  TaskSeedMigration.run().catchError((e) {
+    debugPrint('TaskSeedMigration skipped: $e');
+    return 0;
+  });
 
   // E30: Offline persistence — Firestore cache ayarları
   FirebaseFirestore.instance.settings = const Settings(
@@ -27,16 +30,17 @@ void main() async {
     cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
   );
 
-  // E29: Crashlytics — Flutter framework hatalarını yakala
-  FlutterError.onError = (details) {
-    FirebaseCrashlytics.instance.recordFlutterFatalError(details);
-  };
+  // E29: Crashlytics — only on native platforms (NOT supported on web)
+  if (!kIsWeb) {
+    FlutterError.onError = (details) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+    };
 
-  // E29: Crashlytics — Yakalanmamış async hataları yakala
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  }
 
   runApp(
     const ProviderScope(

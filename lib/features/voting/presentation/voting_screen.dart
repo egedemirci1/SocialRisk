@@ -122,14 +122,24 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             playerNames[game.currentPlayerId] ?? game.currentPlayerId;
         final task = game.currentTask;
         final myVote = votesAsync.value?[user?.uid];
+        
+        // Check if all ACTIVE players (not turnOrder) have voted
+        final activePlayers = playersAsync.value ?? [];
+        final activePlayerIds = activePlayers.map((p) => p.id).toList();
         final allVoted = votesAsync.value != null &&
-            game.turnOrder.every(
+            activePlayerIds.every(
               (id) =>
                   id == game.currentPlayerId ||
                   votesAsync.value!.containsKey(id),
             );
 
         final isMyTurn = game.currentPlayerId == user?.uid;
+
+        // Debug: log vote status
+        debugPrint('Voting: allVoted=$allVoted, isMyTurn=$isMyTurn, '
+            'activePlayers=${activePlayerIds.length}, '
+            'votes=${votesAsync.value?.length ?? 0}, '
+            'processing=$_isProcessing');
 
         // Herkes oy verdiyse sonuçları hesapla (tek seferlik, sadece aktif oyuncu)
         if (allVoted && !_isProcessing && isMyTurn) {
@@ -157,102 +167,113 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
           ),
           body: GradientContainer(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: [
-                const Spacer(),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        children: [
+                          const Spacer(),
 
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.surfaceElevated,
-                  ),
-                  child: const SizedBox(
-                    width: 72,
-                    height: 72,
-                    child: Center(
-                      child: Icon(Icons.person_rounded,
-                          color: Colors.white54, size: 36),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  performerName,
-                  style: AppTextStyles.displayMedium.copyWith(
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'görevini tamamladı:',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: Colors.white38,
-                  ),
-                ),
-                const SizedBox(height: 12),
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.surfaceElevated,
+                            ),
+                            child: const SizedBox(
+                              width: 72,
+                              height: 72,
+                              child: Center(
+                                child: Icon(Icons.person_rounded,
+                                    color: Colors.white54, size: 36),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            performerName,
+                            style: AppTextStyles.displayMedium.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'görevini tamamladı:',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: Colors.white38,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
 
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceElevated,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      '"${task?.content ?? ''}"',
-                      style: AppTextStyles.titleLarge.copyWith(
-                        color: Colors.white70,
-                        fontStyle: FontStyle.italic,
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceElevated,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                '"${task?.content ?? ''}"',
+                                style: AppTextStyles.titleLarge.copyWith(
+                                  color: Colors.white70,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+
+                          const Spacer(),
+
+                          if (_isProcessing)
+                            Column(
+                              children: [
+                                const CircularProgressIndicator(),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'Sonuçlar hesaplanıyor...',
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: Colors.white38,
+                                  ),
+                                ),
+                              ],
+                            )
+                          else if (user?.uid == game.currentPlayerId)
+                            Text(
+                              'Diğer oyuncuların oyu bekleniyor...',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: Colors.white38,
+                              ),
+                            )
+                          else if (myVote != null)
+                            Text(
+                              'Oyun verildi ✓',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.votePositive,
+                              ),
+                            )
+                          else
+                            VotingPanel(
+                              onVote: (value) {
+                                if (user == null) return;
+                                final voteValue = VoteValue.values.byName(value);
+                                ref.read(voteControllerProvider.notifier).castVote(
+                                      gameId: widget.gameId,
+                                      voterId: user.uid,
+                                      value: voteValue,
+                                    );
+                              },
+                            ),
+
+                          const SizedBox(height: 32),
+                        ],
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
-                ),
-
-                const Spacer(),
-
-                if (_isProcessing)
-                  Column(
-                    children: [
-                      const CircularProgressIndicator(),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Sonuçlar hesaplanıyor...',
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: Colors.white38,
-                        ),
-                      ),
-                    ],
-                  )
-                else if (user?.uid == game.currentPlayerId)
-                  Text(
-                    'Diğer oyuncuların oyu bekleniyor...',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: Colors.white38,
-                    ),
-                  )
-                else if (myVote != null)
-                  Text(
-                    'Oyun verildi ✓',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.votePositive,
-                    ),
-                  )
-                else
-                  VotingPanel(
-                    onVote: (value) {
-                      if (user == null) return;
-                      final voteValue = VoteValue.values.byName(value);
-                      ref.read(voteControllerProvider.notifier).castVote(
-                            gameId: widget.gameId,
-                            voterId: user.uid,
-                            value: voteValue,
-                          );
-                    },
-                  ),
-
-                const SizedBox(height: 32),
-              ],
+                );
+              },
             ),
           ),
         );

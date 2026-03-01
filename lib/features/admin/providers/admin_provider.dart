@@ -10,7 +10,8 @@ part 'admin_provider.g.dart';
 // Admin UID Whitelist
 const List<String> adminUids = [
   'y51M7E6YXZT5I04M9YFqGzSgZ7Y2',
-  'hW42qgzVJIXr6sOLO0q1zPOdv6w1', // Senin UID'n güncellendi
+  'hW42qgzVJIXr6sOLO0q1zPOdv6w1',
+  'd7sLOX946mRfrmkYMRUOJXNa44l2', // Reze
 ];
 
 bool isAdmin(String? uid) => uid != null && adminUids.contains(uid);
