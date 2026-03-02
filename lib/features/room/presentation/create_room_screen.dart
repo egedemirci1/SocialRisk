@@ -22,7 +22,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   int _maxPlayers = 4;
   bool _isScoreMode = true; // true = Puan Hedefi, false = Tur Sayısı
   double _scoreTarget = 500; // Yeni default
-  double _roundTarget = 5;   // Yeni default
+  double _roundTarget = 5; // Yeni default
   bool _isCreating = false;
   bool _isOpenMode = true;
   GamePreset _preset = GamePreset.classic; // Yeni alan
@@ -44,7 +44,9 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           : _roundTarget.toInt();
 
       // Custom profili al ki avatarUrl'yi okuyabilelim
-      final userProfile = await ref.read(userRepositoryProvider).getUserProfile(user.uid);
+      final userProfile = await ref
+          .read(userRepositoryProvider)
+          .getUserProfile(user.uid);
 
       // Repository'yi async gap öncesi yakala — provider dispose olsa bile
       // repo referansı hâlâ geçerli kalır.
@@ -66,9 +68,9 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Hata: ${e.toString()}')));
       }
     } finally {
       if (mounted) setState(() => _isCreating = false);
@@ -128,7 +130,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               ),
 
               const SizedBox(height: 24),
-              
+
               // İçerik Modu (Preset)
               _buildSection(
                 title: 'İçerik Modu',
@@ -175,9 +177,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 const SizedBox(width: 8),
                 Text(
                   title,
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: Colors.white,
-                  ),
+                  style: AppTextStyles.titleLarge.copyWith(color: Colors.white),
                 ),
               ],
             ),
@@ -204,9 +204,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             const SizedBox(width: 8),
             Text(
               'oyuncu',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.white54,
-              ),
+              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
             ),
           ],
         ),
@@ -232,12 +230,14 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('2', style: AppTextStyles.labelSmall.copyWith(
-              color: Colors.white38,
-            )),
-            Text('8', style: AppTextStyles.labelSmall.copyWith(
-              color: Colors.white38,
-            )),
+            Text(
+              '2',
+              style: AppTextStyles.labelSmall.copyWith(color: Colors.white38),
+            ),
+            Text(
+              '8',
+              style: AppTextStyles.labelSmall.copyWith(color: Colors.white38),
+            ),
           ],
         ),
       ],
@@ -429,10 +429,13 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         ),
         const SizedBox(height: 12),
         Text(
-          _preset == GamePreset.classic ? 'Tüm kategoriler devrede, genel kitleye uygun.' 
-          : _preset == GamePreset.family ? 'Çocuklara ve ailelere uygun, risksiz görevler.'
-          : _preset == GamePreset.couple ? 'Çiftlere özel, daha flörtöz ve itiraf dolu.'
-          : 'Sınırların aşıldığı, her türlü 18+ içerikli görevler.',
+          _preset == GamePreset.classic
+              ? 'Tüm kategoriler devrede, genel kitleye uygun.'
+              : _preset == GamePreset.family
+              ? 'Çocuklara ve ailelere uygun, risksiz görevler.'
+              : _preset == GamePreset.couple
+              ? 'Çiftlere özel, daha flörtöz ve itiraf dolu.'
+              : 'Sınırların aşıldığı, her türlü 18+ içerikli görevler.',
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white38,
             fontSize: 12,
@@ -455,9 +458,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         const SizedBox(height: 8),
         Text(
           'Profilinde oluşturduğun özel sorular oyuna dahil edilir (Zorluk ve kategori uyarsa).',
-          style: AppTextStyles.labelSmall.copyWith(
-            color: Colors.white38,
-          ),
+          style: AppTextStyles.labelSmall.copyWith(color: Colors.white38),
           textAlign: TextAlign.center,
         ),
       ],

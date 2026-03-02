@@ -23,21 +23,49 @@ class AdminDashboardScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.download_rounded),
             tooltip: 'Seed Soruları Yükle',
-            onPressed: () {
-              ref.read(adminControllerProvider.notifier).seedTasks();
+            onPressed: () async {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Seed işlemi başlatıldı...')),
               );
+              try {
+                await ref.read(adminControllerProvider.notifier).seedTasks();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Görevler seed edildi!')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Hata: $e')));
+                }
+              }
             },
           ),
           IconButton(
             icon: const Icon(Icons.storefront_rounded),
             tooltip: 'Seed Kozmetikler Yükle',
-            onPressed: () {
-              ref.read(adminControllerProvider.notifier).seedCosmetics();
+            onPressed: () async {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Kozmetikler seed ediliyor...')),
               );
+              try {
+                await ref
+                    .read(adminControllerProvider.notifier)
+                    .seedCosmetics();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Seed tamamlandı!')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Hata: $e')));
+                }
+              }
             },
           ),
           IconButton(

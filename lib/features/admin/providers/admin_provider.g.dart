@@ -20,7 +20,7 @@ final class AdminControllerProvider
         argument: null,
         retry: null,
         name: r'adminControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -33,7 +33,7 @@ final class AdminControllerProvider
   AdminController create() => AdminController();
 }
 
-String _$adminControllerHash() => r'0fb75191c2fed00fc599f4f3c957244e716fb8cc';
+String _$adminControllerHash() => r'1a1766dabd817245f7a5e7f77749153bbf7957e2';
 
 abstract class _$AdminController extends $AsyncNotifier<void> {
   FutureOr<void> build();

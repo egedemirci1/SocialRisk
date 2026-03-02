@@ -39,7 +39,7 @@ final watchReportsProvider = StreamProvider.autoDispose<List<ReportEntity>>((
       );
 });
 
-@riverpod
+@Riverpod(keepAlive: true)
 class AdminController extends _$AdminController {
   @override
   FutureOr<void> build() {}
@@ -81,19 +81,28 @@ class AdminController extends _$AdminController {
 
   Future<void> seedTasks() async {
     state = const AsyncLoading();
-    final source = ref.read(taskSourceProvider);
-    state = await AsyncValue.guard(() async {
+    try {
+      final source = ref.read(taskSourceProvider);
       final success = await source.seedTasks(
         TaskSeedMigration.seedData,
         clearAllFirst: true,
       );
-      if (success == 0) throw Exception('Zaten seed edilmiş veya hata oluştu.');
-    });
+      if (success == 0) {
+        state = AsyncError(
+          Exception('Zaten seed edilmiş veya hata oluştu.'),
+          StackTrace.current,
+        );
+      } else {
+        state = const AsyncData(null);
+      }
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
   }
 
   Future<void> seedCosmetics() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
+    try {
       final cosmeticsRef = FirebaseFirestore.instance.collection('cosmetics');
       final snap = await cosmeticsRef.get();
       if (snap.docs.isEmpty) {
@@ -132,10 +141,16 @@ class AdminController extends _$AdminController {
           batch.set(cosmeticsRef.doc(), item);
         }
         await batch.commit();
+        state = const AsyncData(null);
       } else {
-        throw Exception('Kozmetikler zaten seed edilmiş.');
+        state = AsyncError(
+          Exception('Kozmetikler zaten seed edilmiş.'),
+          StackTrace.current,
+        );
       }
-    });
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
   }
 
   // --- Photo Moderation ---

@@ -15,7 +15,7 @@ Future<List<CosmeticItemEntity>> fetchCosmetics(Ref ref) {
   return ref.watch(economyRepositoryProvider).fetchCosmetics();
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class EconomyController extends _$EconomyController {
   @override
   FutureOr<void> build() {}

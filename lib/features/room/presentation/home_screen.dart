@@ -21,9 +21,11 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
-    final userProfileAsync = user != null ? ref.watch(watchUserProfileProvider(user.uid)) : const AsyncValue.loading();
+    final userProfileAsync = user != null
+        ? ref.watch(watchUserProfileProvider(user.uid))
+        : const AsyncValue.loading();
     final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
-    
+
     final displayName = user?.displayName ?? 'Oyuncu';
     final profile = userProfileAsync.value;
     final cosmetics = cosmeticsAsync.value ?? [];
@@ -36,7 +38,14 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           children: [
             const Spacer(flex: 2),
-            _buildWelcome(context, displayName, avatarUrl, showImage, profile, cosmetics),
+            _buildWelcome(
+              context,
+              displayName,
+              avatarUrl,
+              showImage,
+              profile,
+              cosmetics,
+            ),
             const Spacer(),
             _buildActions(context, user),
             const Spacer(flex: 2),
@@ -48,7 +57,14 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWelcome(BuildContext context, String playerName, String? avatarUrl, bool showImage, UserEntity? profile, List<CosmeticItemEntity> cosmetics) {
+  Widget _buildWelcome(
+    BuildContext context,
+    String playerName,
+    String? avatarUrl,
+    bool showImage,
+    UserEntity? profile,
+    List<CosmeticItemEntity> cosmetics,
+  ) {
     Widget firstLetterWidget() => Text(
       playerName.isNotEmpty ? playerName[0].toUpperCase() : '?',
       style: const TextStyle(
@@ -69,7 +85,7 @@ class HomeScreen extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.bottomRight,
             children: [
-              // Avatarerçeve render'ını HomeScreen'de de PlayerAvatar'a devredebiliriz 
+              // Avatarerçeve render'ını HomeScreen'de de PlayerAvatar'a devredebiliriz
               // ama şimdilik mevcut yapıyı koruyalım. (İstersen burayı da PlayerAvatar ile değiştirebiliriz)
               CircleAvatar(
                 radius: 40,
@@ -84,7 +100,11 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(4),
-                  child: Icon(Icons.edit_rounded, color: Colors.white, size: 14),
+                  child: Icon(
+                    Icons.edit_rounded,
+                    color: Colors.white,
+                    size: 14,
+                  ),
                 ),
               ),
             ],
@@ -112,7 +132,7 @@ class HomeScreen extends ConsumerWidget {
             child: Text(
               '${activeTitleItem.imageUrl} ${activeTitleItem.name}',
               style: AppTextStyles.labelSmall.copyWith(
-                color: Colors.amber, 
+                color: Colors.amber,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -132,9 +152,7 @@ class HomeScreen extends ConsumerWidget {
           onPressed: () => context.push('/create-room'),
         ),
         const SizedBox(height: 16),
-        _JoinRoomButton(
-          onPressed: () => context.push('/join-room'),
-        ),
+        _JoinRoomButton(onPressed: () => context.push('/join-room')),
         const SizedBox(height: 16),
         Row(
           children: [
@@ -160,7 +178,7 @@ class HomeScreen extends ConsumerWidget {
           PrimaryButton(
             label: 'Admin Paneli',
             icon: Icons.admin_panel_settings_rounded,
-            onPressed: () => context.push('/admin/dashboard'),
+            onPressed: () => context.push('/admin'),
           ),
         ],
       ],
@@ -200,7 +218,7 @@ class _JoinRoomButton extends StatelessWidget {
               color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
               spreadRadius: 2,
-            )
+            ),
           ],
         ),
         child: Material(

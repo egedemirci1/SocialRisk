@@ -12,35 +12,33 @@ import '../../auth/providers/user_provider.dart';
 class StoreScreen extends ConsumerWidget {
   const StoreScreen({super.key});
 
-  void _buyItem(
+  Future<void> _buyItem(
     BuildContext context,
     WidgetRef ref,
     String uid,
     CosmeticItemEntity item,
-  ) {
-    ref
-        .read(economyControllerProvider.notifier)
-        .buyCosmetic(uid: uid, cosmeticId: item.id, price: item.price)
-        .then((_) {
-          if (!context.mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${item.name} satın alındı!'),
-              backgroundColor: AppColors.votePositive,
-            ),
-          );
-        })
-        .catchError((e) {
-          if (!context.mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Hata: ${e.toString().replaceAll('Exception: ', '')}',
-              ),
-              backgroundColor: AppColors.voteNegative,
-            ),
-          );
-        });
+  ) async {
+    try {
+      await ref
+          .read(economyControllerProvider.notifier)
+          .buyCosmetic(uid: uid, cosmeticId: item.id, price: item.price);
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${item.name} satın alındı!'),
+          backgroundColor: AppColors.votePositive,
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Hata: ${e.toString().replaceAll('Exception: ', '')}'),
+          backgroundColor: AppColors.voteNegative,
+        ),
+      );
+    }
   }
 
   void _equipItem(
@@ -95,19 +93,28 @@ class StoreScreen extends ConsumerWidget {
                     color: AppColors.votePositive,
                   ),
                   tooltip: 'Test Parası Ekle',
-                  onPressed: () {
-                    ref
-                        .read(economyControllerProvider.notifier)
-                        .addPointsToWallet(uid: user.uid, points: 10000)
-                        .then((_) {
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Test parası eklendi! (+10,000)'),
-                              backgroundColor: AppColors.votePositive,
-                            ),
-                          );
-                        });
+                  onPressed: () async {
+                    try {
+                      await ref
+                          .read(economyControllerProvider.notifier)
+                          .addPointsToWallet(uid: user.uid, points: 10000);
+
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Test parası eklendi! (+10,000)'),
+                          backgroundColor: AppColors.votePositive,
+                        ),
+                      );
+                    } catch (e) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Hata: $e'),
+                          backgroundColor: AppColors.voteNegative,
+                        ),
+                      );
+                    }
                   },
                 ),
                 Container(

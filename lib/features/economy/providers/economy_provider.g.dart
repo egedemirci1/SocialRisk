@@ -108,7 +108,7 @@ final class EconomyControllerProvider
         argument: null,
         retry: null,
         name: r'economyControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -121,7 +121,7 @@ final class EconomyControllerProvider
   EconomyController create() => EconomyController();
 }
 
-String _$economyControllerHash() => r'53ef4a3fc74cdedf6fc048cba363e7ee09d142a4';
+String _$economyControllerHash() => r'44e1e1cfaa6fe3e45acb940871844d62c574161b';
 
 abstract class _$EconomyController extends $AsyncNotifier<void> {
   FutureOr<void> build();

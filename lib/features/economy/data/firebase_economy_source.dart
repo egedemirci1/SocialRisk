@@ -78,48 +78,6 @@ class FirebaseEconomySource implements EconomyRepository {
   Future<List<CosmeticItemEntity>> fetchCosmetics() async {
     var snapshot = await _firestore.collection('cosmetics').get();
 
-    // Geçici Auto-Seed mantığı (Admin erişimi olmayanlar için kolaylık)
-    if (snapshot.docs.isEmpty) {
-      final items = [
-        {
-          'name': 'Ateş Çerçevesi',
-          'type': 'frame',
-          'imageUrl': '🔥',
-          'price': 500,
-          'isActive': true,
-        },
-        {
-          'name': 'Buz Çerçevesi',
-          'type': 'frame',
-          'imageUrl': '🧊',
-          'price': 500,
-          'isActive': true,
-        },
-        {
-          'name': 'Kral Unvanı',
-          'type': 'title',
-          'imageUrl': '👑',
-          'price': 1000,
-          'isActive': true,
-        },
-        {
-          'name': 'Soytarı Unvanı',
-          'type': 'title',
-          'imageUrl': '🤡',
-          'price': 200,
-          'isActive': true,
-        },
-      ];
-      final batch = _firestore.batch();
-      for (var item in items) {
-        batch.set(_firestore.collection('cosmetics').doc(), item);
-      }
-      await batch.commit();
-
-      // Tekrar çek
-      snapshot = await _firestore.collection('cosmetics').get();
-    }
-
     return snapshot.docs.map((doc) {
       final model = CosmeticItemModel.fromJson(doc.data(), doc.id);
       return model.toEntity();
