@@ -14,15 +14,11 @@ import 'package:social_risk/l10n/app_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ─── PERFORMANCE: Disable Google Fonts HTTP fetching ───
-  // Without this, every GoogleFonts.inter() / .nunito() call downloads
-  // font files from the internet on startup, adding 3-8 seconds.
-  // Fonts will use bundled assets or system fallbacks instead.
-  GoogleFonts.config.allowRuntimeFetching = false;
+  // ─── FONTS: Enable Google Fonts HTTP fetching ───
+  // Allows downloading fonts like Cinzel over HTTP.
+  GoogleFonts.config.allowRuntimeFetching = true;
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // ─── NOTE: TaskSeedMigration removed from startup ───
   // It was hitting Firestore before auth → always failed with permission-denied.
@@ -46,11 +42,7 @@ void main() async {
     };
   }
 
-  runApp(
-    const ProviderScope(
-      child: SocialRiskApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: SocialRiskApp()));
 }
 
 class SocialRiskApp extends StatelessWidget {
@@ -74,5 +66,3 @@ class SocialRiskApp extends StatelessWidget {
     );
   }
 }
-
-
