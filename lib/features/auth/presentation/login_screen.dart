@@ -3,8 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:video_player/video_player.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../../shared/widgets/common/video_background.dart';
+import '../../../shared/widgets/buttons/medieval_button.dart';
 
 /// Login ekranı — Orta Çağ / Fantastik Tema
 class LoginScreen extends ConsumerStatefulWidget {
@@ -27,13 +28,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   late final AnimationController _breathingController;
   late final Animation<double> _breathingAnimation;
 
-  late VideoPlayerController _videoController;
-  bool _isVideoInitialized = false;
-
   @override
   void initState() {
     super.initState();
-    _initVideoPlayer();
 
     _fadeController = AnimationController(
       vsync: this,
@@ -58,32 +55,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     _breathingController.repeat(reverse: true);
   }
 
-  Future<void> _initVideoPlayer() async {
-    _videoController = VideoPlayerController.asset(
-      'assets/videos/ana-menu-arkaplan.mp4',
-    );
-
-    try {
-      await _videoController.initialize();
-      await _videoController.setLooping(true);
-      await _videoController.setVolume(0); // Mute
-      await _videoController.play();
-      if (mounted) {
-        setState(() {
-          _isVideoInitialized = true;
-        });
-      }
-    } catch (e) {
-      debugPrint("Video initialization error: $e");
-    }
-  }
-
   @override
   void dispose() {
     _nameController.dispose();
     _fadeController.dispose();
     _breathingController.dispose();
-    _videoController.dispose();
     super.dispose();
   }
 
@@ -180,17 +156,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           const GradientContainer(child: SizedBox.shrink()),
 
           // 2. Video Background
-          if (_isVideoInitialized)
-            SizedBox.expand(
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  width: _videoController.value.size.width,
-                  height: _videoController.value.size.height,
-                  child: VideoPlayer(_videoController),
-                ),
-              ),
-            ),
+          const VideoBackground(videoPath: 'assets/videos/Log-In-Screen.mp4'),
 
           // 3. Dark Overlay (Taverna atmosferi için karartma)
           Container(color: overlayColor.withOpacity(0.5)),
@@ -395,7 +361,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           onSubmitted: (_) => _signInAnonymously(),
         ),
         const SizedBox(height: 20),
-        _MedievalLoginButton(
+        MedievalButton(
           label: 'Hancı Olarak Gir',
           icon: Icons.shield_rounded,
           backgroundColor: const Color(0xFF5C1616), // Dark Crimson
@@ -444,7 +410,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       children: [
         // Google
         Expanded(
-          child: _MedievalLoginButton(
+          child: MedievalButton(
             label: '', // Sadece ikon
             iconWidget: Text(
               'G',
@@ -464,7 +430,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         const SizedBox(width: 16),
         // Apple
         Expanded(
-          child: _MedievalLoginButton(
+          child: MedievalButton(
             label: '', // Sadece ikon
             icon: Icons.apple_rounded,
             backgroundColor: const Color(0xFF1E140F),
@@ -475,134 +441,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Etkileşimli buton (tıklandığında küçülme animasyonu)
-class _InteractiveButton extends StatefulWidget {
-  const _InteractiveButton({required this.child, required this.onTap});
-
-  final Widget child;
-  final VoidCallback onTap;
-
-  @override
-  State<_InteractiveButton> createState() => _InteractiveButtonState();
-}
-
-class _InteractiveButtonState extends State<_InteractiveButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-    );
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.95,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => _controller.forward(),
-      onTapUp: (_) {
-        _controller.reverse();
-        widget.onTap();
-      },
-      onTapCancel: () => _controller.reverse(),
-      child: ScaleTransition(scale: _scaleAnimation, child: widget.child),
-    );
-  }
-}
-
-/// Orta Çağ Temalı Etkileşimli Buton
-class _MedievalLoginButton extends StatelessWidget {
-  const _MedievalLoginButton({
-    required this.label,
-    this.icon,
-    this.iconWidget,
-    required this.backgroundColor,
-    required this.textColor,
-    required this.borderColor,
-    required this.onPressed,
-    this.isLoading = false,
-  });
-
-  final String label;
-  final IconData? icon;
-  final Widget? iconWidget;
-  final Color backgroundColor;
-  final Color textColor;
-  final Color borderColor;
-  final VoidCallback onPressed;
-  final bool isLoading;
-
-  @override
-  Widget build(BuildContext context) {
-    return _InteractiveButton(
-      onTap: isLoading ? () {} : onPressed,
-      child: Semantics(
-        button: true,
-        label: label,
-        child: Container(
-          height: 60,
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: borderColor, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.5),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Center(
-            child: isLoading
-                ? SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(textColor),
-                    ),
-                  )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (iconWidget != null) iconWidget!,
-                      if (icon != null) Icon(icon, color: textColor, size: 28),
-                      if (label.isNotEmpty) ...[
-                        const SizedBox(width: 12),
-                        Text(
-                          label,
-                          style: GoogleFonts.cinzel(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                            color: textColor,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-          ),
-        ),
-      ),
     );
   }
 }

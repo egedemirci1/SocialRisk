@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
-import '../../../shared/widgets/common/gradient_container.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -11,6 +9,13 @@ import '../../auth/providers/user_provider.dart';
 
 class StoreScreen extends ConsumerWidget {
   const StoreScreen({super.key});
+
+  // Tematik Renkler
+  static const _bgColor = Color(0xFF140D0B); // En arka plan
+  static const _accentGold = Color(0xFFD4AF37); // Altın
+  static const _accentCrimson = Color(0xFF5C1616); // Bordo
+  static const _textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
+  static const _cardColor = Color(0xFF1E140F); // Koyu kahve/Ahşap tonu
 
   Future<void> _buyItem(
     BuildContext context,
@@ -26,16 +31,22 @@ class StoreScreen extends ConsumerWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${item.name} satın alındı!'),
-          backgroundColor: AppColors.votePositive,
+          content: Text(
+            '${item.name} satın alındı!',
+            style: GoogleFonts.cinzel(fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.green.shade800,
         ),
       );
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Hata: ${e.toString().replaceAll('Exception: ', '')}'),
-          backgroundColor: AppColors.voteNegative,
+          content: Text(
+            'Hata: ${e.toString().replaceAll('Exception: ', '')}',
+            style: GoogleFonts.cinzel(fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: _accentCrimson,
         ),
       );
     }
@@ -58,8 +69,11 @@ class StoreScreen extends ConsumerWidget {
     }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${item.name} kuşandın.'),
-        backgroundColor: AppColors.primary,
+        content: Text(
+          '${item.name} kuşandın.',
+          style: GoogleFonts.cinzel(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.blueGrey.shade800,
       ),
     );
   }
@@ -68,17 +82,30 @@ class StoreScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     if (user == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        backgroundColor: _bgColor,
+        body: Center(child: CircularProgressIndicator(color: _accentGold)),
+      );
     }
 
     final userProfileAsync = ref.watch(watchUserProfileProvider(user.uid));
     final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
 
     return Scaffold(
+      backgroundColor: _bgColor,
       appBar: AppBar(
-        title: const Text('Mağaza'),
+        title: Text(
+          'Mağaza',
+          style: GoogleFonts.cinzelDecorative(
+            fontWeight: FontWeight.w700,
+            color: _textLight,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
+          icon: const Icon(Icons.arrow_back_ios_rounded, color: _accentGold),
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -88,10 +115,7 @@ class StoreScreen extends ConsumerWidget {
               children: [
                 // Testing amaçlı para ekleme butonu
                 IconButton(
-                  icon: const Icon(
-                    Icons.add_circle,
-                    color: AppColors.votePositive,
-                  ),
+                  icon: const Icon(Icons.add_circle, color: Colors.green),
                   tooltip: 'Test Parası Ekle',
                   onPressed: () async {
                     try {
@@ -101,17 +125,27 @@ class StoreScreen extends ConsumerWidget {
 
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Test parası eklendi! (+10,000)'),
-                          backgroundColor: AppColors.votePositive,
+                        SnackBar(
+                          content: Text(
+                            'Test parası eklendi! (+10,000)',
+                            style: GoogleFonts.cinzel(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          backgroundColor: Colors.green.shade800,
                         ),
                       );
                     } catch (e) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Hata: $e'),
-                          backgroundColor: AppColors.voteNegative,
+                          content: Text(
+                            'Hata: $e',
+                            style: GoogleFonts.cinzel(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          backgroundColor: _accentCrimson,
                         ),
                       );
                     }
@@ -123,25 +157,24 @@ class StoreScreen extends ConsumerWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.amber.withValues(alpha: 0.2),
+                    color: _cardColor.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.amber.withValues(alpha: 0.5),
-                    ),
+                    border: Border.all(color: _accentGold.withOpacity(0.5)),
                   ),
                   child: Row(
                     children: [
                       const Icon(
                         Icons.monetization_on_rounded,
-                        color: Colors.amber,
+                        color: _accentGold,
                         size: 16,
                       ),
                       const SizedBox(width: 4),
                       userProfileAsync.when(
                         data: (profile) => Text(
                           profile?.walletPoints.toString() ?? '0',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.amber,
+                          style: GoogleFonts.cinzel(
+                            color: _accentGold,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         loading: () => const SizedBox(
@@ -149,13 +182,14 @@ class StoreScreen extends ConsumerWidget {
                           height: 14,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.amber,
+                            color: _accentGold,
                           ),
                         ),
                         error: (e, stack) => Text(
                           '0',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.amber,
+                          style: GoogleFonts.cinzel(
+                            color: _accentGold,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -167,130 +201,196 @@ class StoreScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: GradientContainer(
-        child: cosmeticsAsync.when(
-          loading: () => const Center(
-            child: CircularProgressIndicator(color: AppColors.primary),
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Arka Plan Resmi
+          Image.asset(
+            'assets/Loading-Screen-Background.png',
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                const SizedBox.shrink(),
           ),
-          error: (err, stack) => Center(
-            child: Text(
-              'Mağaza yüklenemedi: $err',
-              style: TextStyle(color: AppColors.voteNegative),
-            ),
-          ),
-          data: (items) {
-            final profile = userProfileAsync.value;
-            final owned = profile?.ownedCosmetics ?? [];
+          // Karartma (Overlay)
+          Container(color: _bgColor.withOpacity(0.85)),
 
-            return GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.75,
+          SafeArea(
+            child: cosmeticsAsync.when(
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: _accentGold),
               ),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index];
-                final isOwned = owned.contains(item.id);
-                // We fake color based on item.type for UI wow-factor if we don't have color in entity
-                final itemColor = item.type == 'frame'
-                    ? AppColors.fire
-                    : Colors.amber;
-                final isEquipped =
-                    (item.type == 'frame' && profile?.activeFrame == item.id) ||
-                    (item.type == 'title' && profile?.activeTitle == item.id);
+              error: (err, stack) => Center(
+                child: Text(
+                  'Mağaza yüklenemedi: $err',
+                  style: GoogleFonts.cinzel(
+                    color: _accentCrimson,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              data: (items) {
+                final profile = userProfileAsync.value;
+                final owned = profile?.ownedCosmetics ?? [];
 
-                return Card(
-                  color: isEquipped
-                      ? AppColors.primary.withValues(alpha: 0.2)
-                      : AppColors.surfaceElevated,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(
-                      color: isEquipped
-                          ? AppColors.primary
-                          : itemColor.withValues(alpha: 0.3),
-                      width: 2,
-                    ),
+                return GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.72,
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: itemColor.withValues(alpha: 0.1),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    final isOwned = owned.contains(item.id);
+                    // We fake color based on item.type for UI wow-factor if we don't have color in entity
+                    final itemColor = item.type == 'frame'
+                        ? const Color(0xFFC44536) // Darker fire orange
+                        : _accentGold;
+                    final isEquipped =
+                        (item.type == 'frame' &&
+                            profile?.activeFrame == item.id) ||
+                        (item.type == 'title' &&
+                            profile?.activeTitle == item.id);
+
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: isEquipped
+                            ? _accentGold.withOpacity(0.15)
+                            : _cardColor.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isEquipped
+                              ? _accentGold
+                              : itemColor.withOpacity(0.3),
+                          width: 2,
                         ),
-                        child: Center(
-                          child: Text(
-                            item.imageUrl, // Assuming icon is temporarily stored in imageUrl like "🔥"
-                            style: const TextStyle(fontSize: 32),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.5),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
                           ),
-                        ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        item.name,
-                        style: AppTextStyles.titleMedium.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Text(
-                        item.type == 'frame' ? 'Çerçeve' : 'Unvan',
-                        style: AppTextStyles.labelSmall.copyWith(
-                          color: Colors.white54,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      if (isOwned)
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isEquipped
-                                ? Colors.white24
-                                : AppColors.primary,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: itemColor.withOpacity(0.1),
+                              border: Border.all(
+                                color: itemColor.withOpacity(0.5),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                item.imageUrl, // Assuming icon is temporarily stored in imageUrl like "🔥"
+                                style: const TextStyle(fontSize: 32),
+                              ),
                             ),
                           ),
-                          onPressed: () =>
-                              _equipItem(context, ref, user.uid, item),
-                          child: Text(
-                            isEquipped ? 'Kuşanıldı' : 'Kuşan',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        )
-                      else
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: itemColor.withValues(alpha: 0.8),
-                            foregroundColor: Colors.white,
+                          const SizedBox(height: 16),
+                          Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
+                              horizontal: 8.0,
+                            ),
+                            child: Text(
+                              item.name,
+                              style: GoogleFonts.cinzel(
+                                color: _textLight,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          onPressed: () =>
-                              _buyItem(context, ref, user.uid, item),
-                          icon: const Icon(
-                            Icons.monetization_on_rounded,
-                            size: 16,
+                          const SizedBox(height: 4),
+                          Text(
+                            item.type == 'frame' ? 'Çerçeve' : 'Unvan',
+                            style: GoogleFonts.cinzel(
+                              color: Colors.white54,
+                              fontSize: 12,
+                            ),
                           ),
-                          label: Text(item.price.toString()),
-                        ),
-                    ],
-                  ),
+                          const SizedBox(height: 16),
+                          if (isOwned)
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: isEquipped
+                                    ? Colors.black45
+                                    : _accentCrimson,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  side: BorderSide(
+                                    color: _accentGold.withOpacity(0.5),
+                                  ),
+                                ),
+                              ),
+                              onPressed: () =>
+                                  _equipItem(context, ref, user.uid, item),
+                              child: Text(
+                                isEquipped ? 'Kuşanıldı' : 'Kuşan',
+                                style: GoogleFonts.cinzel(
+                                  color: isEquipped
+                                      ? Colors.white54
+                                      : _textLight,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            )
+                          else
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _cardColor,
+                                foregroundColor: _accentGold,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  side: BorderSide(
+                                    color: _accentGold.withOpacity(0.5),
+                                  ),
+                                ),
+                              ),
+                              onPressed: () =>
+                                  _buyItem(context, ref, user.uid, item),
+                              icon: const Icon(
+                                Icons.monetization_on_rounded,
+                                size: 16,
+                                color: _accentGold,
+                              ),
+                              label: Text(
+                                item.price.toString(),
+                                style: GoogleFonts.cinzel(
+                                  color: _textLight,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
                 );
               },
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }

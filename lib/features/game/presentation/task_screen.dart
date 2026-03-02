@@ -2,13 +2,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/widgets/cards/game_card.dart';
 import '../../../shared/widgets/game/spin_wheel.dart';
-import '../../../shared/widgets/buttons/primary_button.dart';
-import '../../../shared/widgets/buttons/danger_button.dart';
-import '../../../shared/widgets/common/gradient_container.dart';
+import '../../../shared/widgets/buttons/medieval_button.dart';
 import '../../room/providers/room_provider.dart';
 import '../providers/game_provider.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -19,13 +16,9 @@ import '../../room/domain/room_entity.dart';
 import 'widgets/player_spotlight.dart';
 import 'widgets/spectator_strip.dart';
 
-/// Görev ekranı — Çark → Kategori → Görev → Kabul/Pas.
+/// Görev ekranı — Çark → Kategori → Görev → Kabul/Pas (Orta Çağ Temalı).
 class TaskScreen extends ConsumerStatefulWidget {
-  const TaskScreen({
-    super.key,
-    required this.gameId,
-    required this.roomCode,
-  });
+  const TaskScreen({super.key, required this.gameId, required this.roomCode});
 
   final String gameId;
   final String roomCode;
@@ -44,8 +37,20 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   late final Animation<double> _cardAnimation;
   final Random _random = Random();
   final List<String> _categories = const [
-    'Cesaret', 'İtiraf', 'Taklit', 'Sosyal Medya', 'Fiziksel', 'Bilgi'
+    'Cesaret',
+    'İtiraf',
+    'Taklit',
+    'Sosyal Medya',
+    'Fiziksel',
+    'Bilgi',
   ];
+
+  // Tematik Renkler
+  static const _bgColor = Color(0xFF140D0B); // En arka plan
+  static const _accentGold = Color(0xFFD4AF37); // Altın
+  static const _accentCrimson = Color(0xFF5C1616); // Bordo
+  static const _textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
+  static const _cardColor = Color(0xFF1E140F); // Koyu kahve/Ahşap tonu
 
   @override
   void initState() {
@@ -72,24 +77,21 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     final isMyTurn = game?.currentPlayerId == user?.uid;
 
     if (isMyTurn) {
-      ref.read(gameControllerProvider.notifier).assignTaskByCategory(
-            gameId: widget.gameId,
-            category: category,
-          );
+      ref
+          .read(gameControllerProvider.notifier)
+          .assignTaskByCategory(gameId: widget.gameId, category: category);
     }
   }
 
   Future<void> _acceptTask() async {
     setState(() => _isAccepting = true);
     try {
-      await ref
-          .read(gameControllerProvider.notifier)
-          .acceptTask(widget.gameId);
+      await ref.read(gameControllerProvider.notifier).acceptTask(widget.gameId);
       if (mounted) {
-        context.push('/performing', extra: {
-          'gameId': widget.gameId,
-          'roomCode': widget.roomCode,
-        });
+        context.push(
+          '/performing',
+          extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+        );
       }
     } finally {
       if (mounted) setState(() => _isAccepting = false);
@@ -101,7 +103,9 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     try {
       final user = ref.read(currentUserProvider);
       if (user == null) return;
-      await ref.read(gameControllerProvider.notifier).passTask(
+      await ref
+          .read(gameControllerProvider.notifier)
+          .passTask(
             gameId: widget.gameId,
             roomId: widget.roomCode,
             playerId: user.uid,
@@ -124,8 +128,9 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     return gameAsync.when(
       data: (game) {
         if (game == null) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          return Scaffold(
+            backgroundColor: _bgColor,
+            body: Center(child: CircularProgressIndicator(color: _accentGold)),
           );
         }
 
@@ -138,66 +143,86 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         String currentPlayerName = game.currentPlayerId;
         PlayerEntity? currentPlayer;
         List<PlayerEntity> players = [];
-        
+
         if (playersAsync.value != null) {
           players = playersAsync.value!;
           try {
-            currentPlayer = players.firstWhere((p) => p.id == game.currentPlayerId);
+            currentPlayer = players.firstWhere(
+              (p) => p.id == game.currentPlayerId,
+            );
             currentPlayerName = currentPlayer.name;
           } catch (_) {}
         }
 
-         ref.listen<AsyncValue<GameEntity?>>(
-          watchGameProvider(widget.gameId),
-          (previous, next) {
-            final prevTask = previous?.value?.currentTask;
-            final nextTask = next.value?.currentTask;
-            if (prevTask == null && nextTask != null) {
-              setState(() {
-                _contentRevealed = false;
-              });
-              _cardController.forward(from: 0.0);
-            }
+        ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
+          previous,
+          next,
+        ) {
+          final prevTask = previous?.value?.currentTask;
+          final nextTask = next.value?.currentTask;
+          if (prevTask == null && nextTask != null) {
+            setState(() {
+              _contentRevealed = false;
+            });
+            _cardController.forward(from: 0.0);
           }
-        );
+        });
 
         // If we arrive with a task already set (e.g. returning from difficulty
         // selection), ensure the card animation plays so the card is visible.
-        if (task != null && !_cardController.isAnimating && _cardController.value == 0.0) {
+        if (task != null &&
+            !_cardController.isAnimating &&
+            _cardController.value == 0.0) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) _cardController.forward(from: 0.0);
           });
         }
 
         // Navigate based on game status changes to prevent double routing
-        ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (previous, next) {
+        ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
+          previous,
+          next,
+        ) {
           if (!mounted) return;
           final nextGame = next.value;
           final prevGame = previous?.value;
-          
+
           if (nextGame != null && prevGame?.status != nextGame.status) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
                 if (nextGame.status == GameStatus.choosingDifficulty) {
-                  context.replace('/difficulty', extra: {
-                    'gameId': widget.gameId,
-                    'roomCode': widget.roomCode,
-                  });
+                  context.replace(
+                    '/difficulty',
+                    extra: {
+                      'gameId': widget.gameId,
+                      'roomCode': widget.roomCode,
+                    },
+                  );
                 } else if (nextGame.status == GameStatus.voting) {
-                  context.replace('/voting', extra: {
-                    'gameId': widget.gameId,
-                    'roomCode': widget.roomCode,
-                  });
-                } else if (nextGame.status == GameStatus.performing && !isMyTurn) {
-                  context.replace('/waiting', extra: {
-                    'gameId': widget.gameId,
-                    'roomCode': widget.roomCode,
-                  });
+                  context.replace(
+                    '/voting',
+                    extra: {
+                      'gameId': widget.gameId,
+                      'roomCode': widget.roomCode,
+                    },
+                  );
+                } else if (nextGame.status == GameStatus.performing &&
+                    !isMyTurn) {
+                  context.replace(
+                    '/waiting',
+                    extra: {
+                      'gameId': widget.gameId,
+                      'roomCode': widget.roomCode,
+                    },
+                  );
                 } else if (nextGame.status == GameStatus.results) {
-                  context.replace('/round-result', extra: {
-                    'gameId': widget.gameId,
-                    'roomCode': widget.roomCode,
-                  });
+                  context.replace(
+                    '/round-result',
+                    extra: {
+                      'gameId': widget.gameId,
+                      'roomCode': widget.roomCode,
+                    },
+                  );
                 } else if (nextGame.status == GameStatus.finished) {
                   context.replace('/game-over', extra: widget.roomCode);
                 }
@@ -207,87 +232,132 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         });
 
         return Scaffold(
+          backgroundColor: _bgColor,
           appBar: AppBar(
-            title: const Text('Sosyal Risk'),
+            title: Text(
+              'Sosyal Risk',
+              style: GoogleFonts.cinzelDecorative(
+                fontWeight: FontWeight.w700,
+                color: _textLight,
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            centerTitle: true,
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
-                icon: const Icon(Icons.leaderboard_rounded),
-                onPressed: () => ScoreboardBottomSheet.show(context, widget.roomCode),
+                icon: const Icon(Icons.leaderboard_rounded, color: _accentGold),
+                onPressed: () =>
+                    ScoreboardBottomSheet.show(context, widget.roomCode),
               ),
             ],
           ),
-          body: GradientContainer(
-            padding: EdgeInsets.zero,
-            child: Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: task != null
-                        ? _buildTaskView(
-                            game.passStreak,
-                            task,
-                            roomAsync.value?.visibility ?? RoomVisibility.open,
-                            isMyTurn,
-                            currentPlayerName,
-                          )
-                        : (roomAsync.value?.mode == GameMode.economy
-                            ? _buildEconomyRedirect(game)
-                            : _buildWheelView(game, isMyTurn, currentPlayerName, currentPlayer)),
-                  ),
-                ),
-                if (players.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 24, top: 8),
-                    child: SpectatorStrip(
-                      players: players,
-                      currentPlayerId: game.currentPlayerId,
-                      myPlayerId: user?.uid,
+          extendBodyBehindAppBar: true,
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Arka Plan Resmi
+              Image.asset(
+                'assets/Loading-Screen-Background.png',
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const SizedBox.shrink(),
+              ),
+              // Karartma (Overlay)
+              Container(color: _bgColor.withOpacity(0.85)),
+
+              SafeArea(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: task != null
+                            ? _buildTaskView(
+                                game.passStreak,
+                                task,
+                                roomAsync.value?.visibility ??
+                                    RoomVisibility.open,
+                                isMyTurn,
+                                currentPlayerName,
+                              )
+                            : (roomAsync.value?.mode == GameMode.economy
+                                  ? _buildEconomyRedirect(game)
+                                  : _buildWheelView(
+                                      game,
+                                      isMyTurn,
+                                      currentPlayerName,
+                                      currentPlayer,
+                                    )),
+                      ),
                     ),
-                  ),
-              ],
-            ),
+                    if (players.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24, top: 8),
+                        child: SpectatorStrip(
+                          players: players,
+                          currentPlayerId: game.currentPlayerId,
+                          myPlayerId: user?.uid,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
         );
       },
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, _) =>
-          Scaffold(body: Center(child: Text('Hata: $e'))),
+      loading: () => Scaffold(
+        backgroundColor: _bgColor,
+        body: Center(child: CircularProgressIndicator(color: _accentGold)),
+      ),
+      error: (e, _) => Scaffold(
+        backgroundColor: _bgColor,
+        body: Center(
+          child: Text(
+            'Hata: $e',
+            style: GoogleFonts.cinzel(color: _accentCrimson),
+          ),
+        ),
+      ),
     );
   }
 
   /// Çark görünümü
-  Widget _buildWheelView(GameEntity game, bool isMyTurn, String playerName, PlayerEntity? currentPlayer) {
+  Widget _buildWheelView(
+    GameEntity game,
+    bool isMyTurn,
+    String playerName,
+    PlayerEntity? currentPlayer,
+  ) {
     return Column(
       children: [
         const SizedBox(height: 24),
         if (currentPlayer != null)
-          PlayerSpotlight(
-            player: currentPlayer,
-            isMe: isMyTurn,
-          )
+          PlayerSpotlight(player: currentPlayer, isMe: isMyTurn)
         else
           Text(
             isMyTurn ? 'Senin Sıran!' : '$playerName oynuyor',
-            style: AppTextStyles.headlineMedium.copyWith(
-              color: AppColors.accent,
+            style: GoogleFonts.cinzel(
+              color: _accentGold,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
             ),
           ),
         const Spacer(),
         Text(
           '🎡 Çarkı Çevir!',
-          style: AppTextStyles.titleMedium.copyWith(
-            color: Colors.white70,
+          style: GoogleFonts.cinzel(
+            color: _textLight,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           'Kategori şansa bağlı!',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white38,
-          ),
+          style: GoogleFonts.cinzel(color: Colors.white54, fontSize: 14),
         ),
         const SizedBox(height: 24),
         SpinWheel(
@@ -296,10 +366,9 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           playerName: playerName,
           onSpinRequest: () {
             final randomCat = _categories[_random.nextInt(_categories.length)];
-            ref.read(gameControllerProvider.notifier).setSpinningTarget(
-                  gameId: widget.gameId,
-                  target: randomCat,
-                );
+            ref
+                .read(gameControllerProvider.notifier)
+                .setSpinningTarget(gameId: widget.gameId, target: randomCat);
           },
           onSpinComplete: _onWheelResult,
         ),
@@ -312,17 +381,23 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   Widget _buildEconomyRedirect(GameEntity game) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.replace('/economy-pick', extra: {
-          'gameId': widget.gameId,
-          'roomCode': widget.roomCode,
-        });
+        context.replace(
+          '/economy-pick',
+          extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+        );
       }
     });
-    return const Center(child: CircularProgressIndicator());
+    return Center(child: CircularProgressIndicator(color: _accentGold));
   }
 
   /// Görev görünümü — çark döndü, görev gösterildi
-  Widget _buildTaskView(int passStreak, TaskEntity task, RoomVisibility visibility, bool isMyTurn, String playerName) {
+  Widget _buildTaskView(
+    int passStreak,
+    TaskEntity task,
+    RoomVisibility visibility,
+    bool isMyTurn,
+    String playerName,
+  ) {
     final isClosed = visibility == RoomVisibility.closed && !_contentRevealed;
     return Column(
       children: [
@@ -333,19 +408,18 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           padding: const EdgeInsets.only(bottom: 16),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: AppColors.surfaceElevated,
+              color: _cardColor.withOpacity(0.9),
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: _accentGold.withOpacity(0.5)),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
                 '🎡 ${task.category}',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.accent,
-                  fontWeight: FontWeight.w600,
+                style: GoogleFonts.cinzel(
+                  color: _accentGold,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -353,10 +427,15 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         ),
 
         Text(
-          isClosed ? '🔒 Kapalı Mod' : (isMyTurn ? '🎯 Görevin:' : '🎯 $playerName\'in Görevi:'),
-          style: AppTextStyles.headlineMedium.copyWith(
-            color: isClosed ? Colors.white54 : AppColors.accent,
+          isClosed
+              ? '🔒 Kapalı Mod'
+              : (isMyTurn ? '🎯 Görevin:' : '🎯 $playerName\'in Görevi:'),
+          style: GoogleFonts.cinzelDecorative(
+            color: isClosed ? Colors.white54 : _textLight,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
           ),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 24),
 
@@ -364,42 +443,54 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           scale: _cardAnimation,
           child: GameCard(
             category: task.category,
-            content: isClosed
-                ? '❓ İçeriği görmek için aç'
-                : task.content,
+            content: isClosed ? '❓ İçeriği görmek için aç' : task.content,
             multiplier: task.multiplier,
           ),
         ),
 
+        // TODO: Update game_card.dart styling if needed in another pass.
+        // I will do that as a separate task, as GameCard might be widely used.
         const Spacer(),
 
         if (isClosed && isMyTurn) ...[
           // Kapalı modda — önce içeriği aç
-          PrimaryButton(
+          MedievalButton(
             label: 'Görevi Aç 🔓',
             icon: Icons.lock_open_rounded,
+            backgroundColor: _accentGold.withOpacity(0.2),
+            textColor: _accentGold,
+            borderColor: _accentGold,
             onPressed: () => setState(() => _contentRevealed = true),
           ),
         ] else if (isMyTurn) ...[
           // Açık mod veya içerik açıldıktan sonra
-          PrimaryButton(
+          MedievalButton(
             label: 'Görevi Kabul Et',
             icon: Icons.check_circle_outline_rounded,
+            backgroundColor: _accentCrimson,
+            textColor: _textLight,
+            borderColor: _accentGold,
             onPressed: _acceptTask,
             isLoading: _isAccepting,
           ),
           const SizedBox(height: 12),
-          DangerButton(
+          MedievalButton(
             label: 'Pas Geç (Ceza: -${50 * (passStreak + 1)} puan)',
             icon: Icons.close_rounded,
-            outlined: true,
+            backgroundColor: Colors.black.withOpacity(0.6),
+            textColor: Colors.white70,
+            borderColor: Colors.redAccent.withOpacity(0.4),
             onPressed: _passTask,
             isLoading: _isPassing,
           ),
         ] else ...[
           Text(
             '$playerName\'ın karar vermesi bekleniyor...',
-            style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
+            style: GoogleFonts.cinzel(
+              color: Colors.white54,
+              fontStyle: FontStyle.italic,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
 
@@ -408,4 +499,3 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     );
   }
 }
-

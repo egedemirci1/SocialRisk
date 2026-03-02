@@ -2,24 +2,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
-import '../../../shared/widgets/buttons/primary_button.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../shared/widgets/buttons/medieval_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../../shared/widgets/common/video_background.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../admin/providers/admin_provider.dart';
-
 import '../../economy/providers/economy_provider.dart';
 import '../../auth/domain/user_entity.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
 
-/// Ana menü ekranı — Oda Oluştur veya Odaya Katıl.
+/// Ana menü ekranı — Orta Çağ Temalı Oda Oluştur veya Odaya Katıl.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const overlayColor = Color(0xFF140D0B); // Koyu kahve/siyah tonu
+
     final user = ref.watch(currentUserProvider);
     final userProfileAsync = user != null
         ? ref.watch(watchUserProfileProvider(user.uid))
@@ -33,26 +34,44 @@ class HomeScreen extends ConsumerWidget {
     final showImage = avatarUrl != null && avatarUrl.isNotEmpty;
 
     return Scaffold(
-      body: GradientContainer(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          children: [
-            const Spacer(flex: 2),
-            _buildWelcome(
-              context,
-              displayName,
-              avatarUrl,
-              showImage,
-              profile,
-              cosmetics,
+      backgroundColor: overlayColor,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 1. Base Gradient (Fallback)
+          const GradientContainer(child: SizedBox.shrink()),
+
+          // 2. Video Background
+          const VideoBackground(videoPath: 'assets/videos/Main-Screen.mp4'),
+
+          // 2. Koyu Katman (Taverna atmosferi)
+          Container(color: overlayColor.withOpacity(0.5)),
+
+          // 3. İçerik
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                children: [
+                  const Spacer(flex: 2),
+                  _buildWelcome(
+                    context,
+                    displayName,
+                    avatarUrl,
+                    showImage,
+                    profile,
+                    cosmetics,
+                  ),
+                  const Spacer(),
+                  _buildActions(context, user),
+                  const Spacer(flex: 2),
+                  _buildFooter(context, ref),
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
-            const Spacer(),
-            _buildActions(context, user),
-            const Spacer(flex: 2),
-            _buildFooter(context, ref),
-            const SizedBox(height: 16),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -67,10 +86,10 @@ class HomeScreen extends ConsumerWidget {
   ) {
     Widget firstLetterWidget() => Text(
       playerName.isNotEmpty ? playerName[0].toUpperCase() : '?',
-      style: const TextStyle(
+      style: GoogleFonts.cinzel(
         fontSize: 40,
         fontWeight: FontWeight.w700,
-        color: Colors.white54,
+        color: const Color(0xFFD4AF37), // Altın Rengi
       ),
     );
 
@@ -85,25 +104,42 @@ class HomeScreen extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.bottomRight,
             children: [
-              // Avatarerçeve render'ını HomeScreen'de de PlayerAvatar'a devredebiliriz
-              // ama şimdilik mevcut yapıyı koruyalım. (İstersen burayı da PlayerAvatar ile değiştirebiliriz)
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: AppColors.surfaceElevated,
-                backgroundImage: showImage ? NetworkImage(avatarUrl!) : null,
-                child: !showImage ? firstLetterWidget() : null,
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(
+                      0xFFD4AF37,
+                    ).withOpacity(0.6), // Altın kenarlık
+                    width: 2.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: const Color(0xFF2C1E16), // Koyu kahve
+                  backgroundImage: showImage ? NetworkImage(avatarUrl!) : null,
+                  child: !showImage ? firstLetterWidget() : null,
+                ),
               ),
               const DecoratedBox(
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: Color(0xFF5C1616), // Crimson Edit Butonu
                   shape: BoxShape.circle,
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(4),
+                  padding: EdgeInsets.all(6),
                   child: Icon(
-                    Icons.edit_rounded,
-                    color: Colors.white,
-                    size: 14,
+                    Icons
+                        .history_edu_rounded, // Tüy Kalem / Orta çağ edit ikonu
+                    color: Color(0xFFFDEFC2),
+                    size: 16,
                   ),
                 ),
               ),
@@ -113,27 +149,54 @@ class HomeScreen extends ConsumerWidget {
         const SizedBox(height: 16),
         Text(
           'Hoş geldin,',
-          style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
+          style: GoogleFonts.cinzel(
+            color: const Color(0xFFD4AF37).withOpacity(0.8),
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.0,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           playerName,
-          style: AppTextStyles.displayMedium.copyWith(color: Colors.white),
+          style: GoogleFonts.cinzelDecorative(
+            color: const Color(0xFFFDEFC2),
+            fontSize: 32,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+            shadows: [
+              const Shadow(
+                color: Colors.black87,
+                blurRadius: 8,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
         ),
         if (activeTitleItem != null) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.amber.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+              color: const Color(0xFF1E140F).withOpacity(0.8),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color(0xFFD4AF37).withOpacity(0.5),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.4),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Text(
               '${activeTitleItem.imageUrl} ${activeTitleItem.name}',
-              style: AppTextStyles.labelSmall.copyWith(
-                color: Colors.amber,
+              style: GoogleFonts.cinzel(
+                color: const Color(0xFFD4AF37),
                 fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
             ),
           ),
@@ -143,41 +206,67 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildActions(BuildContext context, User? user) {
+    // Ortak renkler
+    const bgColor = Color(0xFF5C1616); // Crimson
+    const textColor = Color(0xFFFDEFC2);
+    final borderColor = const Color(0xFFD4AF37).withOpacity(0.6);
+
+    const secondaryBg = Color(0xFF1E140F); // Koyu kahve
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        PrimaryButton(
+        MedievalButton(
           label: 'Oda Oluştur',
           icon: Icons.add_circle_outline_rounded,
+          backgroundColor: bgColor,
+          textColor: textColor,
+          borderColor: borderColor,
           onPressed: () => context.push('/create-room'),
         ),
         const SizedBox(height: 16),
-        _JoinRoomButton(onPressed: () => context.push('/join-room')),
-        const SizedBox(height: 16),
+        MedievalButton(
+          label: 'Odaya Katıl',
+          icon: Icons.login_rounded,
+          backgroundColor: secondaryBg,
+          textColor: const Color(0xFFD4AF37), // Altın rengi metin
+          borderColor: borderColor,
+          onPressed: () => context.push('/join-room'),
+        ),
+        const SizedBox(height: 24),
         Row(
           children: [
             Expanded(
-              child: PrimaryButton(
+              child: MedievalButton(
                 label: 'Mağaza',
                 icon: Icons.storefront_rounded,
+                backgroundColor: secondaryBg,
+                textColor: const Color(0xFFD4AF37),
+                borderColor: borderColor,
                 onPressed: () => context.push('/store'),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: PrimaryButton(
+              child: MedievalButton(
                 label: 'Desten',
                 icon: Icons.style_rounded,
+                backgroundColor: secondaryBg,
+                textColor: const Color(0xFFD4AF37),
+                borderColor: borderColor,
                 onPressed: () => context.push('/custom-deck'),
               ),
             ),
           ],
         ),
         if (isAdmin(user?.uid)) ...[
-          const SizedBox(height: 16),
-          PrimaryButton(
+          const SizedBox(height: 24),
+          MedievalButton(
             label: 'Admin Paneli',
             icon: Icons.admin_panel_settings_rounded,
+            backgroundColor: const Color(0xFF2C1E16), // Açık kahve
+            textColor: Colors.amber,
+            borderColor: Colors.amber.withOpacity(0.5),
             onPressed: () => context.push('/admin'),
           ),
         ],
@@ -186,70 +275,30 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildFooter(BuildContext context, WidgetRef ref) {
-    return TextButton.icon(
-      onPressed: () async {
+    return InteractiveButton(
+      onTap: () async {
         await ref.read(authControllerProvider.notifier).logout();
         if (context.mounted) context.go('/');
       },
-      icon: const Icon(Icons.logout_rounded, size: 18),
-      label: const Text('Çıkış Yap'),
-    );
-  }
-}
-
-/// Odaya Katıl butonu — Outlined stil.
-class _JoinRoomButton extends StatelessWidget {
-  const _JoinRoomButton({required this.onPressed});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: 'Odaya Katıl',
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 10,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onPressed,
-            borderRadius: BorderRadius.circular(16),
-            splashColor: AppColors.accent.withValues(alpha: 0.2),
-            child: SizedBox(
-              height: 52,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.login_rounded,
-                    color: Colors.white.withValues(alpha: 0.9),
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Odaya Katıl',
-                    style: AppTextStyles.titleLarge.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.logout_rounded,
+            size: 20,
+            color: Color(0xFFD4AF37), // Altın rengi
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Çıkış Yap',
+            style: GoogleFonts.cinzel(
+              color: const Color(0xFFD4AF37),
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.0,
             ),
           ),
-        ),
+        ],
       ),
     );
   }

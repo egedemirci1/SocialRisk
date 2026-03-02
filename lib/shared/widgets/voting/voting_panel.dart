@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
+import '../../../core/constants/app_colors.dart'; // Still used for votePositive/Neutral/Negative
 
-/// Oylama paneli — Beğen / Nötr / Beğenme butonları + geri sayım.
+/// Oylama paneli — Beğen / Nötr / Beğenme butonları + geri sayım (Orta Çağ Temalı).
 class VotingPanel extends StatefulWidget {
   const VotingPanel({
     super.key,
@@ -26,6 +25,12 @@ class _VotingPanelState extends State<VotingPanel>
   late final AnimationController _timerController;
   late final AnimationController _fadeController;
   late final Animation<double> _fadeAnimation;
+
+  // Tematik Renkler
+  static const _accentGold = Color(0xFFD4AF37); // Altın
+  static const _textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
+  static const _cardColor = Color(0xFF1E140F); // Koyu kahve/Ahşap tonu
+  static const _accentCrimson = Color(0xFF5C1616); // Bordo
 
   @override
   void initState() {
@@ -71,8 +76,9 @@ class _VotingPanelState extends State<VotingPanel>
       opacity: _fadeAnimation,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: _cardColor.withOpacity(0.9),
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: _accentGold.withOpacity(0.5)),
         ),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -81,16 +87,16 @@ class _VotingPanelState extends State<VotingPanel>
             children: [
               Text(
                 'Nasıl buldun?',
-                style: AppTextStyles.headlineMedium.copyWith(
-                  color: Colors.white,
+                style: GoogleFonts.cinzelDecorative(
+                  color: _textLight,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Oyuncunun performansını oyla',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: Colors.white38,
-                ),
+                style: GoogleFonts.cinzel(color: Colors.white70, fontSize: 14),
               ),
               const SizedBox(height: 20),
 
@@ -102,13 +108,13 @@ class _VotingPanelState extends State<VotingPanel>
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
                       value: 1 - _timerController.value,
-                      backgroundColor: AppColors.surfaceElevated,
+                      backgroundColor: Colors.black.withOpacity(0.5),
                       valueColor: AlwaysStoppedAnimation<Color>(
                         _timerController.value > 0.7
-                            ? AppColors.penalty
-                            : AppColors.accent,
+                            ? _accentCrimson
+                            : _accentGold,
                       ),
-                      minHeight: 4,
+                      minHeight: 6,
                     ),
                   );
                 },
@@ -124,8 +130,8 @@ class _VotingPanelState extends State<VotingPanel>
                       label: 'Beğendim',
                       color: AppColors.votePositive,
                       isSelected: _selectedVote == 'like',
-                      isDisabled: _selectedVote != null &&
-                          _selectedVote != 'like',
+                      isDisabled:
+                          _selectedVote != null && _selectedVote != 'like',
                       onTap: () => _castVote('like'),
                     ),
                   ),
@@ -136,8 +142,8 @@ class _VotingPanelState extends State<VotingPanel>
                       label: 'Nötr',
                       color: AppColors.voteNeutral,
                       isSelected: _selectedVote == 'neutral',
-                      isDisabled: _selectedVote != null &&
-                          _selectedVote != 'neutral',
+                      isDisabled:
+                          _selectedVote != null && _selectedVote != 'neutral',
                       onTap: () => _castVote('neutral'),
                     ),
                   ),
@@ -148,8 +154,8 @@ class _VotingPanelState extends State<VotingPanel>
                       label: 'Beğenmedim',
                       color: AppColors.voteNegative,
                       isSelected: _selectedVote == 'dislike',
-                      isDisabled: _selectedVote != null &&
-                          _selectedVote != 'dislike',
+                      isDisabled:
+                          _selectedVote != null && _selectedVote != 'dislike',
                       onTap: () => _castVote('dislike'),
                     ),
                   ),
@@ -192,12 +198,12 @@ class _VoteButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
             color: isSelected
-                ? color.withValues(alpha: 0.2)
-                : AppColors.surfaceElevated,
+                ? color.withOpacity(0.2)
+                : Colors.black.withOpacity(0.4),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isSelected ? color : Colors.transparent,
-              width: 2,
+              color: isSelected ? color : Colors.white12,
+              width: 1.5,
             ),
           ),
           child: AnimatedOpacity(
@@ -205,19 +211,14 @@ class _VoteButton extends StatelessWidget {
             opacity: isDisabled ? 0.4 : 1.0,
             child: Column(
               children: [
-                Text(
-                  emoji,
-                  style: TextStyle(
-                    fontSize: isSelected ? 32 : 28,
-                  ),
-                ),
+                Text(emoji, style: TextStyle(fontSize: isSelected ? 32 : 28)),
                 const SizedBox(height: 6),
                 Text(
                   label,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: isSelected ? color : Colors.white54,
+                  style: GoogleFonts.cinzel(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? color : Colors.white70,
                   ),
                   textAlign: TextAlign.center,
                 ),
