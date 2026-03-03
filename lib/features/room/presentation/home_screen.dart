@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/widgets/buttons/medieval_button.dart';
 import '../../../shared/widgets/common/gradient_container.dart';
+import '../../../shared/widgets/common/player_avatar.dart';
 import '../../../shared/widgets/common/video_background.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
@@ -61,6 +62,7 @@ class HomeScreen extends ConsumerWidget {
                     showImage,
                     profile,
                     cosmetics,
+                    user?.uid,
                   ),
                   const Spacer(),
                   _buildActions(context, user),
@@ -83,15 +85,8 @@ class HomeScreen extends ConsumerWidget {
     bool showImage,
     UserEntity? profile,
     List<CosmeticItemEntity> cosmetics,
+    String? uid,
   ) {
-    Widget firstLetterWidget() => Text(
-      playerName.isNotEmpty ? playerName[0].toUpperCase() : '?',
-      style: GoogleFonts.cinzel(
-        fontSize: 40,
-        fontWeight: FontWeight.w700,
-        color: const Color(0xFFD4AF37), // Altın Rengi
-      ),
-    );
 
     final activeTitleItem = profile?.activeTitle != null
         ? cosmetics.where((c) => c.id == profile!.activeTitle).firstOrNull
@@ -104,40 +99,21 @@ class HomeScreen extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.bottomRight,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(
-                      0xFFD4AF37,
-                    ).withOpacity(0.6), // Altın kenarlık
-                    width: 2.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: CircleAvatar(
-                  radius: 40,
-                  backgroundColor: const Color(0xFF2C1E16), // Koyu kahve
-                  backgroundImage: showImage ? NetworkImage(avatarUrl!) : null,
-                  child: !showImage ? firstLetterWidget() : null,
-                ),
+              PlayerAvatar(
+                displayName: playerName,
+                avatarUrl: showImage ? avatarUrl : null,
+                radius: 40,
+                uid: uid,
               ),
               const DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Color(0xFF5C1616), // Crimson Edit Butonu
+                  color: Color(0xFF5C1616),
                   shape: BoxShape.circle,
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(6),
                   child: Icon(
-                    Icons
-                        .history_edu_rounded, // Tüy Kalem / Orta çağ edit ikonu
+                    Icons.history_edu_rounded,
                     color: Color(0xFFFDEFC2),
                     size: 16,
                   ),

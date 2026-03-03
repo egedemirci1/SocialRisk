@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/game_constants.dart';
-import '../../../shared/widgets/common/gradient_container.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../../../shared/models/enums.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -104,125 +104,152 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
         final totalPickers = game.categoryPickOrder.length;
 
         return Scaffold(
+          backgroundColor: const Color(0xFF140D0B),
+          extendBodyBehindAppBar: true,
           appBar: AppBar(
-            title: const Text('Kategori Seç'),
+            title: Text(
+              'Kategori Seç',
+              style: GoogleFonts.cinzelDecorative(
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFFFDEFC2),
+              ),
+            ),
             automaticallyImplyLeading: false,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            centerTitle: true,
             actions: [
               IconButton(
-                icon: const Icon(Icons.leaderboard_rounded),
+                icon: const Icon(Icons.leaderboard_rounded, color: Color(0xFFD4AF37)),
                 onPressed: () =>
                     ScoreboardBottomSheet.show(context, widget.roomCode),
               ),
             ],
           ),
-          body: GradientContainer(
-            padding: EdgeInsets.zero,
-            child: ResponsiveWrapper(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                'assets/Loading-Screen-Background.png',
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const SizedBox.shrink(),
+              ),
+              Container(color: const Color(0xFF140D0B).withOpacity(0.85)),
+              SafeArea(
+                child: ResponsiveWrapper(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
 
-                // Sıra bilgisi
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceElevated,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isMyPick
-                          ? AppColors.accent.withValues(alpha: 0.5)
-                          : Colors.transparent,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Icon(
-                          isMyPick
-                              ? Icons.star_rounded
-                              : Icons.hourglass_top_rounded,
-                          color: isMyPick ? AppColors.accent : Colors.white38,
-                          size: 28,
+                    // Sıra bilgisi
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E140F).withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isMyPick
+                              ? const Color(0xFFD4AF37).withOpacity(0.5)
+                              : Colors.transparent,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                isMyPick
-                                    ? 'Senin sıran!'
-                                    : '$currentPickerName seçiyor...',
-                                style: AppTextStyles.titleLarge.copyWith(
-                                  color: isMyPick
-                                      ? AppColors.accent
-                                      : Colors.white,
-                                ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isMyPick
+                                  ? Icons.star_rounded
+                                  : Icons.hourglass_top_rounded,
+                              color: isMyPick ? const Color(0xFFD4AF37) : Colors.white38,
+                              size: 28,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    isMyPick
+                                        ? 'Senin sıran!'
+                                        : '$currentPickerName seçiyor...',
+                                    style: GoogleFonts.cinzel(
+                                      color: isMyPick
+                                          ? const Color(0xFFD4AF37)
+                                          : const Color(0xFFFDEFC2),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Seçim ${pickIndex + 1}/$totalPickers',
+                                    style: GoogleFonts.cinzel(
+                                      color: Colors.white38,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Seçim ${pickIndex + 1}/$totalPickers',
-                                style: AppTextStyles.labelSmall.copyWith(
-                                  color: Colors.white38,
-                                ),
-                              ),
-                            ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Başlık
+                    Row(
+                      children: [
+                        const Icon(Icons.trending_down_rounded,
+                            color: Color(0xFFD4AF37), size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Pazar Durumu',
+                          style: GoogleFonts.cinzel(
+                            color: const Color(0xFFFDEFC2),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ),
 
-                const SizedBox(height: 20),
+                    const SizedBox(height: 16),
 
-                // Başlık
-                Row(
-                  children: [
-                    const Icon(Icons.trending_down_rounded,
-                        color: AppColors.primary, size: 20),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Pazar Durumu',
-                      style: AppTextStyles.titleLarge.copyWith(
-                        color: Colors.white,
+                    // Kategori kartları
+                    Expanded(
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 1.2,
+                        children: GameConstants.defaultMarketValues.keys.map((cat) {
+                          final defaultVal =
+                              GameConstants.defaultMarketValues[cat] ?? 1;
+                          final currentVal = marketValues[cat] ?? defaultVal;
+                          final isLocked = lockedCats.contains(cat);
+                          final hasDecayed = currentVal < defaultVal;
+
+                          return _CategoryCard(
+                            category: cat,
+                            currentValue: currentVal,
+                            defaultValue: defaultVal,
+                            isLocked: isLocked,
+                            hasDecayed: hasDecayed,
+                            isPickable: isMyPick && !isLocked && !_isPicking,
+                            onTap: () => _pickCategory(cat),
+                          );
+                        }).toList(),
                       ),
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 16),
-
-                // Kategori kartları
-                Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.2,
-                    children: GameConstants.defaultMarketValues.keys.map((cat) {
-                      final defaultVal =
-                          GameConstants.defaultMarketValues[cat] ?? 1;
-                      final currentVal = marketValues[cat] ?? defaultVal;
-                      final isLocked = lockedCats.contains(cat);
-                      final hasDecayed = currentVal < defaultVal;
-
-                      return _CategoryCard(
-                        category: cat,
-                        currentValue: currentVal,
-                        defaultValue: defaultVal,
-                        isLocked: isLocked,
-                        hasDecayed: hasDecayed,
-                        isPickable: isMyPick && !isLocked && !_isPicking,
-                        onTap: () => _pickCategory(cat),
-                      );
-                    }).toList(),
-                  ),
                 ),
-              ],
-            ),
-            ),
+              ),
+            ],
           ),
         );
       },

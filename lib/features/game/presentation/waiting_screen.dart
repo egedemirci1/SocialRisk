@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
-import '../../../shared/widgets/common/gradient_container.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/models/enums.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../domain/game_entity.dart';
 import '../providers/game_provider.dart';
@@ -57,7 +56,8 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
       if (!mounted) return;
       final nextGame = next.value;
       final prevGame = previous?.value;
-      
+      final user = ref.read(currentUserProvider);
+
       if (nextGame != null && prevGame?.status != nextGame.status) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
@@ -73,7 +73,9 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                 'gameId': widget.gameId,
                 'roomCode': widget.roomCode,
               });
-            } else if (nextGame.status == GameStatus.playing) {
+            } else if (nextGame.status == GameStatus.playing &&
+                       nextGame.currentPlayerId == user?.uid) {
+              // Sadece sırası gelen oyuncu /task'a gider
               context.replace('/task', extra: {
                 'gameId': widget.gameId,
                 'roomCode': widget.roomCode,
@@ -91,6 +93,20 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
               body: Center(child: CircularProgressIndicator()));
         }
 
+        // Güvenlik kontrolü: Eğer bu benim sıramsa ve status=playing ise /task'a git
+        final user = ref.read(currentUserProvider);
+        if (game.status == GameStatus.playing &&
+            game.currentPlayerId == user?.uid) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.replace('/task', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            }
+          });
+        }
+
         // Aktif oyuncunun ismini bul
         final playerNames = <String, String>{};
         if (playersAsync.value != null) {
@@ -102,91 +118,114 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
             playerNames[game.currentPlayerId] ?? game.currentPlayerId;
 
         return Scaffold(
+          backgroundColor: const Color(0xFF140D0B),
+          extendBodyBehindAppBar: true,
           appBar: AppBar(
             automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
+            elevation: 0,
             actions: [
               IconButton(
-                icon: const Icon(Icons.leaderboard_rounded),
+                icon: const Icon(Icons.leaderboard_rounded, color: Color(0xFFD4AF37)),
                 onPressed: () => ScoreboardBottomSheet.show(context, widget.roomCode),
               ),
             ],
           ),
-          extendBodyBehindAppBar: true,
-          body: GradientContainer(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Spacer(flex: 2),
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                'assets/Loading-Screen-Background.png',
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const SizedBox.shrink(),
+              ),
+              Container(color: const Color(0xFF140D0B).withOpacity(0.85)),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Spacer(flex: 2),
 
-                ScaleTransition(
-                  scale: _pulseAnimation,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.secondary.withValues(alpha: 0.3),
-                    ),
-                    child: const SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: Center(
-                        child: Icon(
-                          Icons.hourglass_top_rounded,
-                          color: AppColors.accent,
-                          size: 56,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-
-                Text(
-                  'Bekleniyor...',
-                  style: AppTextStyles.displayMedium.copyWith(
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  game.status == GameStatus.performing
-                      ? '$currentPlayerName görevini yapıyor'
-                      : '$currentPlayerName çarkı çeviriyor',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: Colors.white54,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.info_outline_rounded,
-                            color: Colors.white38, size: 18),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Görev bitince oylama başlayacak',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.white38,
+                      ScaleTransition(
+                        scale: _pulseAnimation,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFFD4AF37).withValues(alpha: 0.15),
+                          ),
+                          child: const SizedBox(
+                            width: 120,
+                            height: 120,
+                            child: Center(
+                              child: Icon(
+                                Icons.hourglass_top_rounded,
+                                color: Color(0xFFD4AF37),
+                                size: 56,
+                              ),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      Text(
+                        'Bekleniyor...',
+                        style: GoogleFonts.cinzelDecorative(
+                          color: const Color(0xFFFDEFC2),
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        game.status == GameStatus.performing
+                            ? '$currentPlayerName görevini yapıyor'
+                            : '$currentPlayerName çarkı çeviriyor',
+                        style: GoogleFonts.cinzel(
+                          color: Colors.white54,
+                          fontSize: 16,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 32),
+
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E140F).withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: const Color(0xFFD4AF37).withOpacity(0.3),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.info_outline_rounded,
+                                  color: Color(0xFFD4AF37), size: 18),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Görev bitince oylama başlayacak',
+                                style: GoogleFonts.cinzel(
+                                  color: Colors.white38,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const Spacer(flex: 3),
+                    ],
                   ),
                 ),
-
-                const Spacer(flex: 3),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

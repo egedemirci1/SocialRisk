@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../features/room/providers/room_provider.dart';
+import '../../../features/auth/providers/user_provider.dart';
+import '../../../features/economy/providers/economy_provider.dart';
 import '../common/player_avatar.dart';
 
 class ScoreboardBottomSheet extends ConsumerWidget {
@@ -76,6 +79,7 @@ class ScoreboardBottomSheet extends ConsumerWidget {
                             score: player.score,
                             avatarUrl: player.avatarUrl,
                             activeFrame: player.activeFrame,
+                            playerId: player.id,
                           ),
                         );
                       },
@@ -93,13 +97,14 @@ class ScoreboardBottomSheet extends ConsumerWidget {
   }
 }
 
-class _ScoreTile extends StatelessWidget {
+class _ScoreTile extends ConsumerWidget {
   const _ScoreTile({
     required this.rank,
     required this.name,
     required this.score,
     required this.avatarUrl,
     this.activeFrame,
+    this.playerId,
   });
 
   final int rank;
@@ -107,9 +112,10 @@ class _ScoreTile extends StatelessWidget {
   final int score;
   final String? avatarUrl;
   final String? activeFrame;
+  final String? playerId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     Color rankColor;
     if (rank == 1) {
       rankColor = const Color(0xFFFFD700); // Gold
@@ -120,6 +126,15 @@ class _ScoreTile extends StatelessWidget {
     } else {
       rankColor = Colors.white38;
     }
+
+    // Canlı profil — ünvan
+    final profile = playerId != null
+        ? ref.watch(watchUserProfileProvider(playerId!)).value
+        : null;
+    final cosmetics = ref.watch(fetchCosmeticsProvider).value ?? [];
+    final titleItem = profile?.activeTitle != null
+        ? cosmetics.where((c) => c.id == profile!.activeTitle).firstOrNull
+        : null;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -146,15 +161,30 @@ class _ScoreTile extends StatelessWidget {
               avatarUrl: avatarUrl,
               score: score,
               frameId: activeFrame,
+              uid: playerId,
               radius: 18,
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(
-                name,
-                style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (titleItem != null)
+                    Text(
+                      '${titleItem.imageUrl} ${titleItem.name}',
+                      style: GoogleFonts.cinzel(
+                        color: const Color(0xFFD4AF37),
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
               ),
             ),
             DecoratedBox(

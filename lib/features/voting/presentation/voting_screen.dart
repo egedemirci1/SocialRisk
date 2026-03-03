@@ -6,6 +6,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/voting/voting_panel.dart';
 import '../../../shared/models/enums.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/providers/user_provider.dart';
+import '../../economy/providers/economy_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../../game/providers/game_provider.dart';
 import '../providers/vote_provider.dart';
@@ -26,6 +28,8 @@ class VotingScreen extends ConsumerStatefulWidget {
 
 class _VotingScreenState extends ConsumerState<VotingScreen> {
   bool _isProcessing = false;
+  bool _hasProcessed = false;
+  bool _hasVoted = false;
 
   // Tematik Renkler
   static const _bgColor = Color(0xFF140D0B); // En arka plan
@@ -39,7 +43,8 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
     required int taskMultiplier,
     required int currentRound,
   }) async {
-    if (_isProcessing) return;
+    if (_isProcessing || _hasProcessed) return;
+    _hasProcessed = true;
     setState(() => _isProcessing = true);
 
     try {
@@ -156,9 +161,9 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
         );
 
         // Herkes oy verdiyse sonuçları hesapla (tek seferlik, sadece aktif oyuncu)
-        if (allVoted && !_isProcessing && isMyTurn) {
+        if (allVoted && !_isProcessing && !_hasProcessed && isMyTurn) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted && !_isProcessing) {
+            if (mounted && !_isProcessing && !_hasProcessed) {
               _processResults(
                 currentPlayerId: game.currentPlayerId,
                 taskMultiplier: task?.multiplier ?? 1,
@@ -239,6 +244,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                                       frameId: performer.isNotEmpty
                                           ? performer.first.activeFrame
                                           : null,
+                                      uid: game.currentPlayerId,
                                       radius: 48,
                                       showEffect: false,
                                     );
@@ -253,7 +259,39 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                // Ünvan badge
+                                Builder(
+                                  builder: (context) {
+                                    final perfProfile = ref.watch(
+                                      watchUserProfileProvider(game.currentPlayerId),
+                                    ).value;
+                                    final allCosmetics = ref.watch(fetchCosmeticsProvider).value ?? [];
+                                    final titleItem = perfProfile?.activeTitle != null
+                                        ? allCosmetics.where((c) => c.id == perfProfile!.activeTitle).firstOrNull
+                                        : null;
+                                    if (titleItem == null) return const SizedBox(height: 8);
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 4, bottom: 4),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: _accentGold.withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(color: _accentGold.withValues(alpha: 0.5)),
+                                        ),
+                                        child: Text(
+                                          '${titleItem.imageUrl} ${titleItem.name}',
+                                          style: GoogleFonts.cinzel(
+                                            color: _accentGold,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 4),
                                 Text(
                                   'görevini tamamladı:',
                                   style: GoogleFonts.cinzel(
@@ -287,7 +325,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
 
                                 const Spacer(),
 
-                                if (_isProcessing)
+                                if (_isProcessing || _hasProcessed)
                                   Column(
                                     children: [
                                       CircularProgressIndicator(
@@ -311,7 +349,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                                       fontSize: 16,
                                     ),
                                   )
-                                else if (myVote != null)
+                                else if (myVote != null || _hasVoted)
                                   DecoratedBox(
                                     decoration: BoxDecoration(
                                       color: Colors.black.withOpacity(0.5),
@@ -340,6 +378,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                                   VotingPanel(
                                     onVote: (value) {
                                       if (user == null) return;
+                                      setState(() => _hasVoted = true);
                                       final voteValue = VoteValue.values.byName(
                                         value,
                                       );

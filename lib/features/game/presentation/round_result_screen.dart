@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/constants/app_colors.dart'; // Still used for votePositive/voteNegative if we wish, or we can use custom
+import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/buttons/medieval_button.dart';
 import '../../../shared/models/enums.dart';
 import '../providers/game_provider.dart';
 import '../domain/game_entity.dart';
 import '../../room/providers/room_provider.dart';
 import '../../auth/providers/auth_provider.dart';
-import '../../admin/providers/task_provider.dart'; // Yeni eklendi
+import '../../auth/providers/user_provider.dart';
+import '../../economy/providers/economy_provider.dart';
+import '../../admin/providers/task_provider.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import 'package:lottie/lottie.dart';
 
@@ -77,20 +79,30 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             } catch (_) {}
           }
 
-          // Navigate non-hosts automatically when next round starts
+          // Navigate when next round starts
           ref.listen<AsyncValue<GameEntity?>>(
             watchGameProvider(widget.gameId),
             (previous, next) {
               if (!context.mounted) return;
               final previousStatus = previous?.value?.status;
               final currentStatus = next.value?.status;
+              final currentUser = ref.read(currentUserProvider);
 
               if (previousStatus == GameStatus.results &&
                   currentStatus == GameStatus.playing) {
-                context.go(
-                  '/waiting',
-                  extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-                );
+                // Sırası gelen oyuncu /task'a, diğerleri /waiting'e
+                final nextPlayerId = next.value?.currentPlayerId;
+                if (nextPlayerId == currentUser?.uid) {
+                  context.go(
+                    '/task',
+                    extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+                  );
+                } else {
+                  context.go(
+                    '/waiting',
+                    extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+                  );
+                }
               } else if (currentStatus == GameStatus.finished) {
                 context.go('/game-over', extra: widget.roomCode);
               }
@@ -315,18 +327,44 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
                                               avatarUrl: player.avatarUrl,
                                               score: player.score,
                                               frameId: player.activeFrame,
+                                              uid: player.id,
                                               radius: 14,
                                             ),
                                             const SizedBox(width: 12),
                                             Expanded(
-                                              child: Text(
-                                                player.name,
-                                                style: GoogleFonts.cinzel(
-                                                  color: _textLight,
-                                                  fontSize: 16,
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    player.name,
+                                                    style: GoogleFonts.cinzel(
+                                                      color: _textLight,
+                                                      fontSize: 16,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  Builder(
+                                                    builder: (context) {
+                                                      final pProfile = ref.watch(
+                                                        watchUserProfileProvider(player.id),
+                                                      ).value;
+                                                      final cosmeticsList = ref.watch(fetchCosmeticsProvider).value ?? [];
+                                                      final tItem = pProfile?.activeTitle != null
+                                                          ? cosmeticsList.where((c) => c.id == pProfile!.activeTitle).firstOrNull
+                                                          : null;
+                                                      if (tItem == null) return const SizedBox.shrink();
+                                                      return Text(
+                                                        '${tItem.imageUrl} ${tItem.name}',
+                                                        style: GoogleFonts.cinzel(
+                                                          color: _accentGold,
+                                                          fontSize: 9,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                             Text(

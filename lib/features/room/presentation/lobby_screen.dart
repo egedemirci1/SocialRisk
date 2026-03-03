@@ -7,6 +7,7 @@ import '../../../shared/widgets/buttons/medieval_button.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../../shared/widgets/common/report_dialog.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
 import '../../game/providers/game_provider.dart';
 import '../../../shared/models/enums.dart';
@@ -123,19 +124,14 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                       itemBuilder: (context, index) {
                         final player = players[index];
                         final isMe = player.id == user?.uid;
-                        final activeTitleItem = player.activeTitle != null
-                            ? cosmetics
-                                  .where((c) => c.id == player.activeTitle)
-                                  .firstOrNull
-                            : null;
                         return _PlayerTile(
+                          playerId: player.id,
                           name: player.name,
                           avatarUrl: player.avatarUrl,
                           isReady: player.isReady,
                           isCurrentPlayer: isMe,
                           score: player.score,
-                          activeFrame: player.activeFrame,
-                          activeTitleItem: activeTitleItem,
+                          cosmetics: cosmetics,
                           onLongPress: isMe
                               ? null
                               : () {
@@ -363,25 +359,25 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   }
 }
 
-class _PlayerTile extends StatelessWidget {
+class _PlayerTile extends ConsumerWidget {
   const _PlayerTile({
+    required this.playerId,
     required this.name,
     this.avatarUrl,
     required this.isReady,
     required this.isCurrentPlayer,
     this.score = 0,
-    this.activeFrame,
-    this.activeTitleItem,
+    this.cosmetics = const [],
     this.onLongPress,
   });
 
+  final String playerId;
   final String name;
   final String? avatarUrl;
   final bool isReady;
   final bool isCurrentPlayer;
   final int score;
-  final String? activeFrame;
-  final CosmeticItemEntity? activeTitleItem;
+  final List<CosmeticItemEntity> cosmetics;
   final VoidCallback? onLongPress;
 
   // Tematik Renkler
@@ -390,7 +386,16 @@ class _PlayerTile extends StatelessWidget {
   static const _cardColor = Color(0xFF1E140F); // Koyu kahve/Ahşap tonu
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Oyuncunun canlı profilini izle — çerçeve ve ünvan her zaman güncel
+    final profileAsync = ref.watch(watchUserProfileProvider(playerId));
+    final profile = profileAsync.value;
+
+    final liveFrame = profile?.activeFrame;
+    final activeTitleItem = profile?.activeTitle != null
+        ? cosmetics.where((c) => c.id == profile!.activeTitle).firstOrNull
+        : null;
+
     return GestureDetector(
       onLongPress: onLongPress,
       child: Padding(
@@ -426,7 +431,7 @@ class _PlayerTile extends StatelessWidget {
                   avatarUrl: avatarUrl,
                   score: score,
                   radius: 20,
-                  frameId: activeFrame,
+                  frameId: liveFrame,
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -459,7 +464,7 @@ class _PlayerTile extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            '${activeTitleItem?.imageUrl} ${activeTitleItem?.name}',
+                            '${activeTitleItem.imageUrl} ${activeTitleItem.name}',
                             style: GoogleFonts.cinzel(
                               color: _accentGold,
                               fontSize: 10,

@@ -138,6 +138,18 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         final user = ref.read(currentUserProvider);
         final isMyTurn = game.currentPlayerId == user?.uid;
 
+        // Güvenlik: sıra bende değilse /waiting'e git
+        if (!isMyTurn && game.status == GameStatus.playing) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.replace('/waiting', extra: {
+                'gameId': widget.gameId,
+                'roomCode': widget.roomCode,
+              });
+            }
+          });
+        }
+
         // Aktif oyuncunun ismini ve objesini bul
         final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
         String currentPlayerName = game.currentPlayerId;
