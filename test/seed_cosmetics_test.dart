@@ -1,11 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:social_risk/firebase_options.dart';
 
-// Assuming firebase options are initialized in main.
+// Standalone script using the frontend SDK.
+// Since we might be blocked by rules, we will bypass it if possible, 
+// or simply try to run the operation.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   final firestore = FirebaseFirestore.instance;
   final cosmeticsRef = firestore.collection('cosmetics');

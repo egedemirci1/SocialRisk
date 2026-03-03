@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:math' as math;
 import '../../../core/constants/app_colors.dart';
 import '../../../features/auth/providers/user_provider.dart';
 
@@ -42,6 +43,48 @@ class PlayerAvatar extends ConsumerWidget {
     return Colors.transparent;
   }
 
+  /// Emojilerle avatarın etrafında taç/çerçeve efekti yaratan yardımcı fonksiyon
+  Widget _buildEmojiRing(String emoji, double r) {
+    const int count = 10;
+    final distance = r + 2; 
+    final ringSize = (distance + r * 0.4) * 2;
+    
+    return IgnorePointer(
+      child: SizedBox(
+        width: ringSize,
+        height: ringSize,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            const SizedBox.shrink(),
+            ...List.generate(count, (index) {
+              final angle = (index * 2 * math.pi) / count;
+              final x = math.cos(angle) * distance;
+              final y = math.sin(angle) * distance;
+              
+              return Positioned(
+                left: r + x - (r * 0.4),
+                top: r + y - (r * 0.4),
+                child: Transform.rotate(
+                  angle: angle + math.pi / 2,
+                  child: Text(
+                    emoji,
+                    style: TextStyle(
+                      fontSize: r * 0.7,
+                      shadows: [
+                        Shadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 4),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String? currentFrameId = frameId;
@@ -64,7 +107,31 @@ class PlayerAvatar extends ConsumerWidget {
               color: _borderColor,
               width: score >= 500 ? 2.5 : 0,
             ),
-            boxShadow: score >= 1500
+            boxShadow: currentFrameId != null 
+              ? [
+                  BoxShadow(
+                    color: (currentFrameId == 'frame_fire'
+                            ? AppColors.fire
+                            : currentFrameId == 'frame_ice'
+                            ? AppColors.ice
+                            : currentFrameId == 'frame_flower'
+                            ? Colors.pinkAccent
+                            : currentFrameId == 'frame_shield'
+                            ? Colors.indigoAccent
+                            : currentFrameId == 'frame_ivy'
+                            ? Colors.green
+                            : currentFrameId == 'frame_neon'
+                            ? Colors.cyanAccent
+                            : currentFrameId == 'frame_stars'
+                            ? const Color(0xFFD4AF37)
+                            : currentFrameId == 'frame_lightning'
+                            ? Colors.lightBlueAccent
+                            : AppColors.primary)
+                        .withValues(alpha: 0.5),
+                    blurRadius: 12,
+                    spreadRadius: 4,
+                  ),
+                ] : score >= 1500
                 ? [
                     BoxShadow(
                       color: _borderColor.withValues(alpha: 0.4),
@@ -93,32 +160,48 @@ class PlayerAvatar extends ConsumerWidget {
           ),
         ),
 
-        // Satın Alınan Kozmetik Çerçeve (Frame)
+        // Satın Alınan Kozmetik Çerçeve (Frame) - Görsel Efekt
         if (currentFrameId != null)
           Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: currentFrameId == 'frame_fire'
-                      ? AppColors.fire
-                      : currentFrameId == 'frame_ice'
-                      ? AppColors.ice
-                      : AppColors.primary,
-                  width: 3.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color:
-                        (currentFrameId == 'frame_fire'
-                                ? AppColors.fire
-                                : currentFrameId == 'frame_ice'
-                                ? AppColors.ice
-                                : AppColors.primary)
-                            .withValues(alpha: 0.5),
-                    blurRadius: 8,
-                    spreadRadius: 2,
+            child: IgnorePointer(
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Arka plandaki renkli aura / glow
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: currentFrameId == 'frame_fire'
+                            ? AppColors.fire.withValues(alpha: 0.8)
+                            : currentFrameId == 'frame_ice'
+                            ? AppColors.ice.withValues(alpha: 0.8)
+                            : currentFrameId == 'frame_flower'
+                            ? Colors.pinkAccent.withValues(alpha: 0.8)
+                            : currentFrameId == 'frame_shield'
+                            ? Colors.indigoAccent.withValues(alpha: 0.8)
+                            : currentFrameId == 'frame_ivy'
+                            ? Colors.green.withValues(alpha: 0.8)
+                            : currentFrameId == 'frame_neon'
+                            ? Colors.cyanAccent.withValues(alpha: 0.8)
+                            : currentFrameId == 'frame_stars'
+                            ? const Color(0xFFD4AF37).withValues(alpha: 0.8)
+                            : currentFrameId == 'frame_lightning'
+                            ? Colors.lightBlueAccent.withValues(alpha: 0.8)
+                            : AppColors.primary,
+                        width: 2.5,
+                      ),
+                    ),
                   ),
+                  // Üstteki emojiler (çiçek, kalkan vs)
+                  if (currentFrameId == 'frame_flower') _buildEmojiRing('🌸', radius),
+                  if (currentFrameId == 'frame_ice') _buildEmojiRing('❄️', radius),
+                  if (currentFrameId == 'frame_fire') _buildEmojiRing('🔥', radius),
+                  if (currentFrameId == 'frame_shield') _buildEmojiRing('🛡️', radius),
+                  if (currentFrameId == 'frame_ivy') _buildEmojiRing('🌿', radius),
+                  if (currentFrameId == 'frame_neon') _buildEmojiRing('⚡', radius),
+                  if (currentFrameId == 'frame_stars') _buildEmojiRing('⭐', radius),
+                  if (currentFrameId == 'frame_lightning') _buildEmojiRing('🌩️', radius),
                 ],
               ),
             ),

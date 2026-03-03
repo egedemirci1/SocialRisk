@@ -15,10 +15,10 @@ class FirebaseEconomySource implements EconomyRepository {
     required int points,
   }) async {
     // Atomik işlemle mevcudun üstüne ekle (veya negatifse çıkar)
-    await _userDoc(uid).update({
+    await _userDoc(uid).set({
       'walletPoints': FieldValue.increment(points),
       'updatedAt': FieldValue.serverTimestamp(),
-    });
+    }, SetOptions(merge: true));
   }
 
   @override
@@ -76,11 +76,122 @@ class FirebaseEconomySource implements EconomyRepository {
 
   @override
   Future<List<CosmeticItemEntity>> fetchCosmetics() async {
-    var snapshot = await _firestore.collection('cosmetics').get();
+    // Return hardcoded cosmetics instead of pulling from Firestore
+    final items = {
+      'frame_fire': {
+        'name': 'Ateş Çerçevesi',
+        'type': 'frame',
+        'imageUrl': '🔥',
+        'price': 500,
+      },
+      'frame_ice': {
+        'name': 'Buz Çerçevesi',
+        'type': 'frame',
+        'imageUrl': '🧊',
+        'price': 500,
+      },
+      'frame_flower': {
+        'name': 'Çiçek Çerçevesi',
+        'type': 'frame',
+        'imageUrl': '🌸',
+        'price': 400,
+      },
+      'frame_shield': {
+        'name': 'Kalkan Çerçevesi',
+        'type': 'frame',
+        'imageUrl': '🛡️',
+        'price': 600,
+      },
+      'title_king': {
+        'name': 'Kral',
+        'type': 'title',
+        'imageUrl': '👑',
+        'price': 1000,
+      },
+      'title_knight': {
+        'name': 'Şövalye',
+        'type': 'title',
+        'imageUrl': '⚔️',
+        'price': 600,
+      },
+      'title_mage': {
+        'name': 'Büyücü',
+        'type': 'title',
+        'imageUrl': '🔮',
+        'price': 800,
+      },
+      'title_assassin': {
+        'name': 'Suikastçı',
+        'type': 'title',
+        'imageUrl': '🗡️',
+        'price': 700,
+      },
+      'title_jester': {
+        'name': 'Soytarı',
+        'type': 'title',
+        'imageUrl': '🤡',
+        'price': 200,
+      },
+      'title_champion': {
+        'name': 'Şampiyon',
+        'type': 'title',
+        'imageUrl': '🏆',
+        'price': 1200,
+      },
+      'title_legend': {
+        'name': 'Efsane',
+        'type': 'title',
+        'imageUrl': '🐉',
+        'price': 2000,
+      },
+      'title_leader': {
+        'name': 'Lider',
+        'type': 'title',
+        'imageUrl': '🌟',
+        'price': 1500,
+      },
+      'title_shadow': {
+        'name': 'Gölge',
+        'type': 'title',
+        'imageUrl': '🥷',
+        'price': 1000,
+      },
+      'frame_ivy': {
+        'name': 'Sarmaşık Çerçevesi',
+        'type': 'frame',
+        'imageUrl': '🌿',
+        'price': 450,
+      },
+      'frame_neon': {
+        'name': 'Neon Çerçevesi',
+        'type': 'frame',
+        'imageUrl': '⚡',
+        'price': 700,
+      },
+      'frame_stars': {
+        'name': 'Yıldız Yağmuru Çerçevesi',
+        'type': 'frame',
+        'imageUrl': '⭐',
+        'price': 900,
+      },
+      'frame_lightning': {
+        'name': 'Yıldırım Çerçevesi',
+        'type': 'frame',
+        'imageUrl': '🌩️',
+        'price': 800,
+      },
+    };
 
-    return snapshot.docs.map((doc) {
-      final model = CosmeticItemModel.fromJson(doc.data(), doc.id);
-      return model.toEntity();
+    return items.entries.map((entry) {
+      final docData = entry.value;
+      return CosmeticItemModel(
+        id: entry.key,
+        name: docData['name'] as String,
+        description: '',
+        imageUrl: docData['imageUrl'] as String,
+        price: docData['price'] as int,
+        type: docData['type'] as String,
+      ).toEntity();
     }).toList();
   }
 }

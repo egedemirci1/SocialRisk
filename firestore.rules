@@ -92,16 +92,18 @@ service cloud.firestore {
       }
     }
 
-    // ─── Cosmetics (Mağaza öğeleri) ──────────────────────
+    // 🛍️ Cosmetics (Mağaza Öğeleri) 🛍️
     match /cosmetics/{cosmeticId} {
       allow read: if isAuthenticated();
-      allow write: if false;
+      // Yalnızca adminler kozmetikleri seed edebilir/güncelleyebilir
+      allow write: if isAdmin();
     }
 
     function isAdmin() {
       return isAuthenticated() && request.auth.uid in [
         'y51M7E6YXZT5I04M9YFqGzSgZ7Y2',
-        'hW42qgzVJIXr6sOLO0q1zPOdv6w1'
+        'hW42qgzVJIXr6sOLO0q1zPOdv6w1',
+        'd7sLOX946mRfrmkYMRUOJXNa44l2' // Reze
       ];
     }
 

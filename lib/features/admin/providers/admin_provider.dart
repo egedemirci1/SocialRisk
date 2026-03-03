@@ -104,50 +104,79 @@ class AdminController extends _$AdminController {
     state = const AsyncLoading();
     try {
       final cosmeticsRef = FirebaseFirestore.instance.collection('cosmetics');
-      final snap = await cosmeticsRef.get();
-      if (snap.docs.isEmpty) {
-        final items = [
-          {
-            'name': 'Ateş Çerçevesi',
-            'type': 'frame',
-            'imageUrl': '🔥',
-            'price': 500,
-            'isActive': true,
-          },
-          {
-            'name': 'Buz Çerçevesi',
-            'type': 'frame',
-            'imageUrl': '🧊',
-            'price': 500,
-            'isActive': true,
-          },
-          {
-            'name': 'Kral Unvanı',
-            'type': 'title',
-            'imageUrl': '👑',
-            'price': 1000,
-            'isActive': true,
-          },
-          {
-            'name': 'Soytarı Unvanı',
-            'type': 'title',
-            'imageUrl': '🤡',
-            'price': 200,
-            'isActive': true,
-          },
-        ];
-        final batch = FirebaseFirestore.instance.batch();
-        for (var item in items) {
-          batch.set(cosmeticsRef.doc(), item);
-        }
-        await batch.commit();
-        state = const AsyncData(null);
-      } else {
-        state = AsyncError(
-          Exception('Kozmetikler zaten seed edilmiş.'),
-          StackTrace.current,
-        );
+      
+      final items = {
+        'frame_fire': {
+          'name': 'Ateş Çerçevesi',
+          'type': 'frame',
+          'imageUrl': '🔥',
+          'price': 500,
+          'isActive': true,
+        },
+        'frame_ice': {
+          'name': 'Buz Çerçevesi',
+          'type': 'frame',
+          'imageUrl': '🧊',
+          'price': 500,
+          'isActive': true,
+        },
+        'frame_flower': {
+          'name': 'Çiçek Çerçevesi',
+          'type': 'frame',
+          'imageUrl': '🌸',
+          'price': 400,
+          'isActive': true,
+        },
+        'frame_shield': {
+          'name': 'Kalkan Çerçevesi',
+          'type': 'frame',
+          'imageUrl': '🛡️',
+          'price': 600,
+          'isActive': true,
+        },
+        'title_king': {
+          'name': 'Kral Unvanı',
+          'type': 'title',
+          'imageUrl': '👑',
+          'price': 1000,
+          'isActive': true,
+        },
+        'title_knight': {
+          'name': 'Şövalye Unvanı',
+          'type': 'title',
+          'imageUrl': '⚔️',
+          'price': 600,
+          'isActive': true,
+        },
+        'title_mage': {
+          'name': 'Büyücü Unvanı',
+          'type': 'title',
+          'imageUrl': '🔮',
+          'price': 800,
+          'isActive': true,
+        },
+        'title_assassin': {
+          'name': 'Suikastçı Unvanı',
+          'type': 'title',
+          'imageUrl': '🗡️',
+          'price': 700,
+          'isActive': true,
+        },
+        'title_jester': {
+          'name': 'Soytarı Unvanı',
+          'type': 'title',
+          'imageUrl': '🤡',
+          'price': 200,
+          'isActive': true,
+        },
+      };
+
+      final batch = FirebaseFirestore.instance.batch();
+      for (var entry in items.entries) {
+        batch.set(cosmeticsRef.doc(entry.key), entry.value);
       }
+      await batch.commit();
+      state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
     }
