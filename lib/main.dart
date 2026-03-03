@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,6 +30,38 @@ void main() async {
     persistenceEnabled: true,
     cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
   );
+
+  // Firebase Auth persistence
+  // Web: Otomatik olarak localStorage kullanır
+  // Android: Otomatik olarak SharedPreferences kullanır
+  // iOS: Otomatik olarak Keychain kullanır
+  // Mobil platformlarda ek ayar gerekmez, Firebase Auth varsayılan olarak oturumu saklar
+  if (kIsWeb) {
+    // Web'de Firebase Auth otomatik olarak localStorage'da oturum bilgilerini saklar
+    // Bu sayede kullanıcı sayfayı yenilediğinde veya tarayıcıyı kapattığında oturum korunur
+    final auth = FirebaseAuth.instance;
+    // Auth state değişikliklerini dinlemek için listener ekliyoruz
+    auth.authStateChanges().listen((User? user) {
+      if (user != null) {
+        debugPrint('User signed in: ${user.uid}');
+      } else {
+        debugPrint('User signed out');
+      }
+    });
+  } else {
+    // Mobil platformlarda (Android/iOS) Firebase Auth otomatik olarak:
+    // - Android: SharedPreferences'da oturum bilgilerini saklar
+    // - iOS: Keychain'de oturum bilgilerini saklar
+    // Uygulama kapatılıp açıldığında otomatik olarak oturum geri yüklenir
+    final auth = FirebaseAuth.instance;
+    auth.authStateChanges().listen((User? user) {
+      if (user != null) {
+        debugPrint('User signed in (mobile): ${user.uid}');
+      } else {
+        debugPrint('User signed out (mobile)');
+      }
+    });
+  }
 
   // Crashlytics — only on native platforms (NOT supported on web)
   if (!kIsWeb) {

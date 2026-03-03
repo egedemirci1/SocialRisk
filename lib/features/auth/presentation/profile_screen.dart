@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
-import '../../../shared/widgets/buttons/primary_button.dart';
+import '../../../shared/widgets/common/player_avatar.dart';
+import '../../auth/domain/user_entity.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
-import 'package:image_picker/image_picker.dart';
-import '../../../core/utils/image_compressor.dart';
 import '../../economy/providers/economy_provider.dart';
-import '../../../shared/widgets/common/player_avatar.dart';
+import '../../../shared/widgets/buttons/stage_button.dart';
 
-/// Profil ekranı — Avatar yükleme, isim değiştirme.
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
@@ -21,507 +19,494 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  late final TextEditingController _nameController;
-  final ImagePicker _picker = ImagePicker();
-  bool _isSaving = false;
+  int _selectedTabIndex = 0; // 0: Aktör, 1: Gardırop, 2: Performans
   bool _isUploading = false;
-  bool _avatarLoadFailed = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _updateDisplayName() async {
-    final newName = _nameController.text.trim();
-    if (newName.isEmpty) return;
-    setState(() => _isSaving = true);
-    try {
-      await ref.read(currentUserProvider)?.updateDisplayName(newName);
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('İsim güncellendi!')));
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Hata: $e')));
-      }
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
-    }
-  }
-
-  Future<void> _pickAndUploadImage(ImageSource source) async {
-    final user = ref.read(currentUserProvider);
-    if (user == null) return;
-
-    try {
-      final XFile? image = await _picker.pickImage(
-        source: source,
-        maxWidth: 512,
-        maxHeight: 512,
-        imageQuality: 75,
-      );
-
-      if (image == null) return;
-
-      setState(() => _isUploading = true);
-
-      final rawBytes = await image.readAsBytes();
-
-      // Max 10MB dosya boyutu kontrolü
-      const maxUploadSize = 10 * 1024 * 1024; // 10 MB
-      if (rawBytes.lengthInBytes > maxUploadSize) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Dosya boyutu çok büyük (Max: 10MB)')),
-          );
-          setState(() => _isUploading = false);
-        }
-        return;
-      }
-
-      // Sıkıştır: max 256px, max 1MB
-      final bytes = ImageCompressor.compress(rawBytes);
-      debugPrint(
-        'Avatar sıkıştırma: ${rawBytes.lengthInBytes ~/ 1024}KB → ${bytes.lengthInBytes ~/ 1024}KB',
-      );
-
-      final downloadUrl = await ref
-          .read(userControllerProvider.notifier)
-          .uploadAvatar(user.uid, bytes);
-
-      debugPrint('Avatar upload URL: $downloadUrl');
-
-      if (downloadUrl == null) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Fotoğraf yüklenemedi, tekrar deneyin.'),
-            ),
-          );
-        }
-        return;
-      }
-
-      // Force refresh: clear image cache and invalidate user profile provider
-      PaintingBinding.instance.imageCache.clear();
-      PaintingBinding.instance.imageCache.clearLiveImages();
-      _avatarLoadFailed = false;
-      ref.invalidate(watchUserProfileProvider(user.uid));
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profil fotoğrafı güncellendi!')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Hata: $e')));
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isUploading = false);
-      }
-    }
-  }
-
-  void _showImageSourceSheet() {
-    showModalBottomSheet(
+  Future<void> _updateDisplayName(UserEntity user) async {
+    final controller = TextEditingController(text: user.displayName);
+    final newName = await showDialog<String>(
       context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(
-                Icons.photo_library_rounded,
-                color: AppColors.accent,
-              ),
-              title: const Text(
-                'Galeriden Seç',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _pickAndUploadImage(ImageSource.gallery);
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.camera_alt_rounded,
-                color: AppColors.accent,
-              ),
-              title: const Text(
-                'Fotoğraf Çek',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _pickAndUploadImage(ImageSource.camera);
-              },
-            ),
-          ],
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text(
+          'Sahne Adını Güncelle',
+          style: GoogleFonts.playfairDisplay(color: AppColors.accent),
         ),
+        content: TextField(
+          controller: controller,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            labelText: 'Yeni Sahne Adı',
+            labelStyle: TextStyle(color: Colors.white70),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('İPTAL', style: TextStyle(color: Colors.white54)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: const Text('GÜNCELLE'),
+          ),
+        ],
       ),
     );
+
+    if (newName != null && newName.isNotEmpty && mounted) {
+      final updatedUser = user.copyWith(displayName: newName);
+      await ref
+          .read(userControllerProvider.notifier)
+          .updateUserProfile(updatedUser);
+    }
+  }
+
+  Future<void> _pickAndUploadImage(String uid) async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() => _isUploading = true);
+      try {
+        final url = await ref
+            .read(userControllerProvider.notifier)
+            .uploadAvatar(uid, image);
+        if (url != null && mounted) {
+          await ref
+              .read(userControllerProvider.notifier)
+              .updateAvatarUrl(uid, url);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Hata: ${e.toString()}')));
+        }
+      } finally {
+        if (mounted) setState(() => _isUploading = false);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Current user for basic info (auth)
     final user = ref.watch(currentUserProvider);
-    // User profile from firestore for avatar updates
-    final userProfileAsync = user != null
-        ? ref.watch(watchUserProfileProvider(user.uid))
-        : const AsyncValue<dynamic>.loading();
-
-    final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
-    final cosmetics = cosmeticsAsync.value ?? [];
-
-    final displayName = user?.displayName ?? 'Oyuncu';
-    // Only use Firestore avatarUrl (Google photoURL may 429)
-    final avatarUrl = userProfileAsync.value?.avatarUrl;
-    final showImage =
-        avatarUrl != null && avatarUrl.isNotEmpty && !_avatarLoadFailed;
-        
-    final activeTitleItem = userProfileAsync.value?.activeTitle != null
-        ? cosmetics.where((c) => c.id == userProfileAsync.value!.activeTitle).firstOrNull
-        : null;
-
-    // İlk açılışta mevcut ismi doldur
-    if (_nameController.text.isEmpty) {
-      _nameController.text = displayName;
-    }
+    final userProfileAsync = ref.watch(
+      watchUserProfileProvider(user?.uid ?? ''),
+    );
 
     return Scaffold(
-      backgroundColor: const Color(0xFF140D0B),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Profil',
-          style: GoogleFonts.cinzelDecorative(
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFFFDEFC2),
+          'Sahne Arkası',
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.w900,
+            color: AppColors.accent,
+            letterSpacing: 1.5,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded, color: Color(0xFFD4AF37)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
       ),
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        fit: StackFit.expand,
+      body: user == null
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.accent),
+            )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  children: [
+                    _buildTabBar(),
+                    const SizedBox(height: 32),
+                    if (_selectedTabIndex == 0 && userProfileAsync.hasValue)
+                      _buildActorTab(userProfileAsync.value!, userProfileAsync),
+                    if (_selectedTabIndex == 1 && userProfileAsync.hasValue)
+                      _buildWardrobeTab(
+                        userProfileAsync.value!,
+                        userProfileAsync,
+                      ),
+                    if (_selectedTabIndex == 2)
+                      _buildPerformanceTab(userProfileAsync),
+                  ],
+                ),
+              ),
+            ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        gradient: AppColors.surfaceGradient,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
+      ),
+      child: Row(
         children: [
-          Image.asset(
-            'assets/Loading-Screen-Background.png',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                const SizedBox.shrink(),
+          _TabItem(
+            title: 'Aktör',
+            isSelected: _selectedTabIndex == 0,
+            onTap: () => setState(() => _selectedTabIndex = 0),
           ),
-          Container(color: const Color(0xFF140D0B).withValues(alpha: 0.85)),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  // Avatar
-                  GestureDetector(
-                    onTap: _isUploading ? null : _showImageSourceSheet,
-                    child: Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            PlayerAvatar(
-                              displayName: displayName,
-                              avatarUrl: showImage ? avatarUrl : null,
-                              radius: 60,
-                              uid: user?.uid,
-                            ),
-                            if (_isUploading)
-                              const CircularProgressIndicator(
-                                color: AppColors.primary,
-                              ),
-                          ],
-                        ),
-                        if (!_isUploading)
-                          DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: AppColors.background,
-                                width: 3,
-                              ),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Icon(
-                                Icons.camera_alt_rounded,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+          _TabItem(
+            title: 'Gardırop',
+            isSelected: _selectedTabIndex == 1,
+            onTap: () => setState(() => _selectedTabIndex = 1),
+          ),
+          _TabItem(
+            title: 'Performans',
+            isSelected: _selectedTabIndex == 2,
+            onTap: () => setState(() => _selectedTabIndex = 2),
+          ),
+        ],
+      ),
+    );
+  }
 
-                  Text(
-                    displayName,
-                    style: AppTextStyles.displayMedium.copyWith(
-                      color: Colors.white,
-                    ),
+  Widget _buildActorTab(UserEntity user, AsyncValue<dynamic> userProfileAsync) {
+    return Column(
+      children: [
+        Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.accent, width: 2),
+              ),
+              child: PlayerAvatar(
+                uid: user.uid,
+                displayName: user.displayName,
+                radius: 60,
+              ),
+            ),
+            if (_isUploading)
+              const Positioned.fill(
+                child: Center(
+                  child: CircularProgressIndicator(color: AppColors.accent),
+                ),
+              ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: CircleAvatar(
+                backgroundColor: AppColors.primary,
+                radius: 18,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.camera_alt,
+                    color: Colors.white,
+                    size: 18,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    user?.uid ?? '',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: Colors.white24,
-                      fontSize: 11,
-                    ),
-                  ),
+                  onPressed: _isUploading
+                      ? null
+                      : () => _pickAndUploadImage(user.uid),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              user.displayName,
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 28,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.edit, color: AppColors.accent, size: 20),
+              onPressed: () => _updateDisplayName(user),
+            ),
+          ],
+        ),
+        userProfileAsync.when(
+          data: (profile) {
+            final activeTitleId = profile?.activeTitle;
+            if (activeTitleId == null) return const SizedBox.shrink();
 
-                  if (activeTitleItem != null) ...[
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            return Consumer(
+              builder: (context, ref, child) {
+                final ownedItemsAsync = ref.watch(fetchCosmeticsProvider);
+                return ownedItemsAsync.when(
+                  data: (items) {
+                    final activeTitleItem = items.cast<dynamic>().firstWhere(
+                      (item) => item.id == activeTitleId,
+                      orElse: () => null,
+                    );
+                    if (activeTitleItem == null) return const SizedBox.shrink();
+                    return Container(
+                      margin: const EdgeInsets.only(top: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E140F).withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(12),
+                        gradient: AppColors.accentGradient.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: const Color(0xFFD4AF37).withValues(alpha: 0.5),
-                          width: 1.5,
+                          color: AppColors.accent.withValues(alpha: 0.3),
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.4),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
                       ),
                       child: Text(
-                        '${activeTitleItem.imageUrl} ${activeTitleItem.name}',
-                        style: GoogleFonts.cinzel(
-                          color: const Color(0xFFD4AF37),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                        activeTitleItem.name,
+                        style: GoogleFonts.playfairDisplay(
+                          color: AppColors.accent,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2,
                         ),
                       ),
-                    ),
-                  ],
+                    );
+                  },
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, _) => const SizedBox.shrink(),
+                );
+              },
+            );
+          },
+          loading: () => const SizedBox.shrink(),
+          error: (_, _) => const SizedBox.shrink(),
+        ),
+        const SizedBox(height: 48),
+        StageButton(
+          label: 'Mağaza',
+          icon: Icons.confirmation_number_rounded,
+          backgroundColor: AppColors.surface,
+          textColor: AppColors.accent,
+          borderColor: AppColors.accent.withValues(alpha: 0.5),
+          onPressed: () => context.push('/store'),
+        ),
+      ],
+    );
+  }
 
-                  const SizedBox(height: 40),
+  Widget _buildWardrobeTab(
+    UserEntity user,
+    AsyncValue<dynamic> userProfileAsync,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Kostüm Ve Aksesuarlar',
+          style: GoogleFonts.playfairDisplay(
+            color: AppColors.accent,
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+          ),
+        ),
+        const Divider(color: Colors.white10),
+        const SizedBox(height: 16),
+        Consumer(
+          builder: (context, ref, child) {
+            final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
+            return cosmeticsAsync.when(
+              data: (items) {
+                final ownedIds = userProfileAsync.value?.ownedCosmetics ?? [];
+                final ownedItems = items
+                    .where((i) => ownedIds.contains(i.id))
+                    .toList();
 
-                  // İsim değiştirme
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Görünen İsim',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: Colors.white54,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _nameController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'İsminizi girin',
-                      hintStyle: const TextStyle(color: Colors.white24),
-                      filled: true,
-                      fillColor: AppColors.surfaceElevated,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.person_outline_rounded,
-                        color: Colors.white38,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  PrimaryButton(
-                    label: 'Kaydet',
-                    icon: Icons.save_rounded,
-                    onPressed: _updateDisplayName,
-                    isLoading: _isSaving,
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  // İstatistikler (placeholder)
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                if (ownedItems.isEmpty) {
+                  return Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          _StatRow(
-                            icon: Icons.emoji_events_rounded,
-                            label: 'Toplam Puan',
-                            value: '0',
-                          ),
-                          const Divider(color: Colors.white12, height: 24),
-                          _StatRow(
-                            icon: Icons.videogame_asset_rounded,
-                            label: 'Oyun Sayısı',
-                            value: '0',
-                          ),
-                          const Divider(color: Colors.white12, height: 24),
-                          _StatRow(
-                            icon: Icons.star_rounded,
-                            label: 'Seviye',
-                            value: 'Yeni',
-                          ),
-                        ],
+                      padding: const EdgeInsets.all(40.0),
+                      child: Text(
+                        'Henüz bir kostümünüz yok.\nMağazaya göz atmak ister misiniz?',
+                        style: GoogleFonts.libreBaskerville(
+                          color: Colors.white38,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                  ),
+                  );
+                }
 
-                  const SizedBox(height: 32),
-
-                  // Kozmetiklerim Bölümü
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Kozmetiklerim',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: Colors.white54,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Consumer(
-                      builder: (context, ref, child) {
-                        final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
-                        return cosmeticsAsync.when(
-                          data: (items) {
-                            final ownedIds = userProfileAsync.value?.ownedCosmetics ?? [];
-                            final ownedItems = items.where((i) => ownedIds.contains(i.id)).toList();
-
-                            if (ownedItems.isEmpty) {
-                              return const Text(
-                                'Henüz kozmetik ürününüz yok. Mağazaya göz atın!',
-                                style: TextStyle(color: Colors.white38),
-                              );
-                            }
-
-                            return Wrap(
-                              spacing: 12,
-                              runSpacing: 12,
-                              children: ownedItems.map((item) {
-                                final isEquipped = (item.type == 'frame' && userProfileAsync.value?.activeFrame == item.id) ||
-                                                   (item.type == 'title' && userProfileAsync.value?.activeTitle == item.id);
-                                return GestureDetector(
-                                  onTap: () {
-                                    if (user == null) return;
-                                    if (item.type == 'frame') {
-                                      if (userProfileAsync.value?.activeFrame == item.id) {
-                                        ref.read(economyControllerProvider.notifier).setActiveFrame(uid: user.uid, cosmeticId: null);
-                                      } else {
-                                        ref.read(economyControllerProvider.notifier).setActiveFrame(uid: user.uid, cosmeticId: item.id);
-                                      }
-                                    } else {
-                                      if (userProfileAsync.value?.activeTitle == item.id) {
-                                        ref.read(economyControllerProvider.notifier).setActiveTitle(uid: user.uid, cosmeticId: null);
-                                      } else {
-                                        ref.read(economyControllerProvider.notifier).setActiveTitle(uid: user.uid, cosmeticId: item.id);
-                                      }
-                                    }
-                                  },
-                                  child: Container(
-                                    width: 90,
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                                    decoration: BoxDecoration(
-                                      color: isEquipped ? AppColors.accent.withValues(alpha: 0.15) : AppColors.surfaceElevated,
-                                      border: Border.all(color: isEquipped ? AppColors.accent : Colors.white12),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Text(item.imageUrl, style: const TextStyle(fontSize: 28)),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          item.name,
-                                          style: TextStyle(
-                                            color: isEquipped ? Colors.white : Colors.white70,
-                                            fontSize: 10,
-                                            fontWeight: isEquipped ? FontWeight.bold : FontWeight.normal,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        if (isEquipped)
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 4.0),
-                                            child: Text(
-                                              'Kuşanıldı',
-                                              style: TextStyle(
-                                                color: AppColors.accent,
-                                                fontSize: 9,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            );
-                          },
-                          loading: () => const CircularProgressIndicator(color: AppColors.accent),
-                          error: (e, _) => Text('Hata: $e', style: const TextStyle(color: Colors.red)),
+                return Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: ownedItems.map((item) {
+                    final isEquipped =
+                        (item.type == 'frame' &&
+                            userProfileAsync.value?.activeFrame == item.id) ||
+                        (item.type == 'title' &&
+                            userProfileAsync.value?.activeTitle == item.id);
+                    return GestureDetector(
+                      onTap: () {
+                        final notifier = ref.read(
+                          economyControllerProvider.notifier,
                         );
+                        if (item.type == 'frame') {
+                          notifier.setActiveFrame(
+                            uid: user.uid,
+                            cosmeticId: isEquipped ? null : item.id,
+                          );
+                        } else {
+                          notifier.setActiveTitle(
+                            uid: user.uid,
+                            cosmeticId: isEquipped ? null : item.id,
+                          );
+                        }
                       },
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Mağaza Butonu
-                  PrimaryButton(
-                    label: 'Mağaza & Cüzdan',
-                    icon: Icons.storefront_rounded,
-                    onPressed: () => context.push('/store'),
-                  ),
-
-                  const SizedBox(height: 32),
-                ],
+                      child: Container(
+                        width: 100,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: isEquipped
+                              ? AppColors.primary.withValues(alpha: 0.1)
+                              : AppColors.surface,
+                          border: Border.all(
+                            color: isEquipped
+                                ? AppColors.primary
+                                : Colors.white12,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              item.imageUrl,
+                              style: const TextStyle(fontSize: 32),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              item.name,
+                              style: GoogleFonts.libreBaskerville(
+                                color: isEquipped
+                                    ? Colors.white
+                                    : Colors.white70,
+                                fontSize: 10,
+                                fontWeight: isEquipped
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: AppColors.accent),
               ),
+              error: (e, _) =>
+                  Text('Hata: $e', style: const TextStyle(color: Colors.red)),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPerformanceTab(AsyncValue<dynamic> userProfileAsync) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Sahne Kayıtları',
+          style: GoogleFonts.playfairDisplay(
+            color: AppColors.accent,
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+          ),
+        ),
+        const Divider(color: Colors.white10),
+        const SizedBox(height: 16),
+        userProfileAsync.when(
+          data: (profile) => Column(
+            children: [
+              _StatRow(
+                icon: Icons.star_rounded,
+                label: 'Toplam Alkış (Puan)',
+                value: '${profile?.totalScore ?? 0}',
+              ),
+              const SizedBox(height: 12),
+              _StatRow(
+                icon: Icons.theater_comedy_rounded,
+                label: 'Oynanan Gösteri',
+                value: '${profile?.gamesPlayed ?? 0}',
+              ),
+              const SizedBox(height: 12),
+              _StatRow(
+                icon: Icons.trending_up_rounded,
+                label: 'Sanatçı Seviyesi',
+                value: '${profile?.level ?? 1}',
+              ),
+            ],
+          ),
+          loading: () => const Center(
+            child: CircularProgressIndicator(color: AppColors.accent),
+          ),
+          error: (e, _) =>
+              Text('Hata: $e', style: const TextStyle(color: Colors.red)),
+        ),
+      ],
+    );
+  }
+}
+
+class _StatRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _StatRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        gradient: AppColors.surfaceGradient,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.accent, size: 20),
+          const SizedBox(width: 12),
+          Text(
+            label,
+            style: GoogleFonts.libreBaskerville(
+              color: Colors.white54,
+              fontSize: 13,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            value,
+            style: GoogleFonts.playfairDisplay(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],
@@ -530,36 +515,42 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 }
 
-class _StatRow extends StatelessWidget {
-  const _StatRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+class _TabItem extends StatelessWidget {
+  final String title;
+  final bool isSelected;
+  final VoidCallback onTap;
 
-  final IconData icon;
-  final String label;
-  final String value;
+  const _TabItem({
+    required this.title,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, color: AppColors.accent, size: 22),
-        const SizedBox(width: 12),
-        Text(
-          label,
-          style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
-        ),
-        const Spacer(),
-        Text(
-          value,
-          style: AppTextStyles.titleLarge.copyWith(
-            color: Colors.white,
-            fontSize: 16,
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              title,
+              style: GoogleFonts.playfairDisplay(
+                color: isSelected ? Colors.white : Colors.white54,
+                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
+                fontSize: 10,
+                letterSpacing: 1,
+              ),
+            ),
           ),
         ),
-      ],
+      ),
     );
   }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/admin_provider.dart';
 
+/// Yönetmen (Admin) Paneli — Tiyatro Temalı
 class AdminDashboardScreen extends ConsumerWidget {
   const AdminDashboardScreen({super.key});
 
@@ -14,24 +16,34 @@ class AdminDashboardScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Admin Paneli - Görevler'),
+        title: Text(
+          'YÖNETMEN KULİSİ',
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.w900,
+            color: AppColors.accent,
+            letterSpacing: 2,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_rounded),
+            icon: const Icon(Icons.add_rounded, color: AppColors.accent),
             onPressed: () => context.push('/admin/task-editor'),
           ),
           IconButton(
-            icon: const Icon(Icons.download_rounded),
-            tooltip: 'Seed Soruları Yükle',
+            icon: const Icon(Icons.download_rounded, color: AppColors.accent),
+            tooltip: 'Klasik Senaryoları Ekle',
             onPressed: () async {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Seed işlemi başlatıldı...')),
+                const SnackBar(content: Text('Senaryolar ekleniyor...')),
               );
               try {
                 await ref.read(adminControllerProvider.notifier).seedTasks();
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Görevler seed edildi!')),
+                    const SnackBar(content: Text('Repertuar güncellendi!')),
                   );
                 }
               } catch (e) {
@@ -44,11 +56,11 @@ class AdminDashboardScreen extends ConsumerWidget {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.storefront_rounded),
-            tooltip: 'Seed Kozmetikler Yükle',
+            icon: const Icon(Icons.storefront_rounded, color: AppColors.accent),
+            tooltip: 'Gardırobu Doldur',
             onPressed: () async {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Kozmetikler seed ediliyor...')),
+                const SnackBar(content: Text('Eşyalar ekleniyor...')),
               );
               try {
                 await ref
@@ -56,7 +68,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                     .seedCosmetics();
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Seed tamamlandı!')),
+                    const SnackBar(content: Text('Gardırop güncellendi!')),
                   );
                 }
               } catch (e) {
@@ -69,7 +81,7 @@ class AdminDashboardScreen extends ConsumerWidget {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.report_rounded),
+            icon: const Icon(Icons.report_rounded, color: AppColors.primary),
             onPressed: () => context.push('/admin/reports'),
           ),
         ],
@@ -77,37 +89,57 @@ class AdminDashboardScreen extends ConsumerWidget {
       body: tasksAsync.when(
         data: (tasks) {
           if (tasks.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'Hiç görev yok.',
-                style: TextStyle(color: Colors.white54),
+                'Repertuarda senaryo bulunamadı.',
+                style: GoogleFonts.libreBaskerville(
+                  color: Colors.white24,
+                  fontSize: 16,
+                ),
               ),
             );
           }
 
           return ListView.builder(
             itemCount: tasks.length,
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             itemBuilder: (context, index) {
               final task = tasks[index];
-              return Card(
-                color: AppColors.surfaceElevated,
+              return Container(
                 margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.accent.withValues(alpha: 0.1),
+                  ),
+                ),
                 child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   title: Text(
                     task.content,
-                    style: const TextStyle(color: Colors.white),
+                    style: GoogleFonts.playfairDisplay(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
                   ),
                   subtitle: Text(
-                    '${task.category} • ${task.difficulty} • Beğeni: ${task.likes} / Dislike: ${task.dislikes}',
-                    style: const TextStyle(color: Colors.white54),
+                    '${task.category.toUpperCase()} • ${task.difficulty.toUpperCase()} • 👍 ${task.likes} / 👎 ${task.dislikes}',
+                    style: GoogleFonts.libreBaskerville(
+                      color: Colors.white30,
+                      fontSize: 11,
+                    ),
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Switch(
                         value: task.isActive,
-                        activeTrackColor: AppColors.primary,
+                        activeThumbColor: AppColors.accent,
                         onChanged: (val) {
                           ref
                               .read(adminControllerProvider.notifier)
@@ -117,7 +149,8 @@ class AdminDashboardScreen extends ConsumerWidget {
                       IconButton(
                         icon: const Icon(
                           Icons.edit_rounded,
-                          color: Colors.white70,
+                          color: Colors.white54,
+                          size: 20,
                         ),
                         onPressed: () =>
                             context.push('/admin/task-editor', extra: task),
@@ -125,31 +158,37 @@ class AdminDashboardScreen extends ConsumerWidget {
                       IconButton(
                         icon: const Icon(
                           Icons.delete_rounded,
-                          color: AppColors.error,
+                          color: AppColors.primary,
+                          size: 20,
                         ),
                         onPressed: () async {
                           final confirm = await showDialog<bool>(
                             context: context,
                             builder: (ctx) => AlertDialog(
                               backgroundColor: AppColors.surface,
-                              title: const Text(
-                                'Sil?',
-                                style: TextStyle(color: Colors.white),
+                              title: Text(
+                                'SENARYOYU YIRT?',
+                                style: GoogleFonts.playfairDisplay(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                ),
                               ),
-                              content: const Text(
-                                'Bu görev kalıcı olarak silinecek.',
-                                style: TextStyle(color: Colors.white70),
+                              content: Text(
+                                'Bu senaryo repertuardan kalıcı olarak silinecek.',
+                                style: GoogleFonts.libreBaskerville(
+                                  color: Colors.white70,
+                                ),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(ctx, false),
-                                  child: const Text('İptal'),
+                                  child: const Text('İPTAL'),
                                 ),
                                 TextButton(
                                   onPressed: () => Navigator.pop(ctx, true),
                                   child: const Text(
-                                    'Sil',
-                                    style: TextStyle(color: AppColors.error),
+                                    'SİL',
+                                    style: TextStyle(color: AppColors.primary),
                                   ),
                                 ),
                               ],
@@ -169,11 +208,13 @@ class AdminDashboardScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppColors.accent),
+        ),
         error: (e, _) => Center(
           child: Text(
             'Hata: $e',
-            style: const TextStyle(color: AppColors.error),
+            style: const TextStyle(color: AppColors.primary),
           ),
         ),
       ),

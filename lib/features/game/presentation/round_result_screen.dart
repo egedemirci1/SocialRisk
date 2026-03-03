@@ -3,19 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../shared/widgets/buttons/medieval_button.dart';
+import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/models/enums.dart';
 import '../providers/game_provider.dart';
 import '../domain/game_entity.dart';
 import '../../room/providers/room_provider.dart';
 import '../../auth/providers/auth_provider.dart';
-import '../../auth/providers/user_provider.dart';
-import '../../economy/providers/economy_provider.dart';
 import '../../admin/providers/task_provider.dart';
-import '../../../shared/widgets/common/player_avatar.dart';
 import 'package:lottie/lottie.dart';
+import '../../../shared/widgets/common/player_avatar.dart';
+import '../../room/domain/room_entity.dart';
 
-/// Tur sonu ekranı — Oylama sonucu ve kazanılan/kaybedilen puan (Orta Çağ Temalı).
+/// Tur sonu ekranı — Tiyatro Temalı
 class RoundResultScreen extends ConsumerStatefulWidget {
   const RoundResultScreen({
     super.key,
@@ -33,13 +32,6 @@ class RoundResultScreen extends ConsumerStatefulWidget {
 class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _lottieController;
-
-  // Tematik Renkler
-  static const _bgColor = Color(0xFF140D0B); // En arka plan
-  static const _accentGold = Color(0xFFD4AF37); // Altın
-  static const _accentCrimson = Color(0xFF5C1616); // Bordo
-  static const _textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
-  static const _cardColor = Color(0xFF1E140F); // Koyu kahve/Ahşap tonu
 
   @override
   void initState() {
@@ -59,48 +51,48 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
 
     return Scaffold(
-      backgroundColor: _bgColor,
+      backgroundColor: AppColors.background,
       body: gameAsync.when(
         data: (game) {
-          if (game == null)
-            return Center(child: CircularProgressIndicator(color: _accentGold));
+          if (game == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
           final earnedScore = game.lastRoundScore ?? 0;
           final multiplier = game.lastRoundMultiplier ?? 1;
           final isPass = multiplier == 0;
           final isGameOver = game.status == GameStatus.finished;
+          final players = playersAsync.value ?? [];
+          final currentPlayer = players
+              .where((p) => p.id == game.currentPlayerId)
+              .firstOrNull;
+          final playerName = currentPlayer?.name ?? 'Aktör';
 
-          String playerName = game.currentPlayerId;
-          if (playersAsync.value != null) {
-            try {
-              playerName = playersAsync.value!
-                  .firstWhere((p) => p.id == game.currentPlayerId)
-                  .name;
-            } catch (_) {}
-          }
-
-          // Navigate when next round starts
           ref.listen<AsyncValue<GameEntity?>>(
             watchGameProvider(widget.gameId),
             (previous, next) {
               if (!context.mounted) return;
-              final previousStatus = previous?.value?.status;
               final currentStatus = next.value?.status;
               final currentUser = ref.read(currentUserProvider);
 
-              if (previousStatus == GameStatus.results &&
+              if (previous?.value?.status == GameStatus.results &&
                   currentStatus == GameStatus.playing) {
-                // Sırası gelen oyuncu /task'a, diğerleri /waiting'e
                 final nextPlayerId = next.value?.currentPlayerId;
                 if (nextPlayerId == currentUser?.uid) {
                   context.go(
                     '/task',
-                    extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+                    extra: {
+                      'gameId': widget.gameId,
+                      'roomCode': widget.roomCode,
+                    },
                   );
                 } else {
                   context.go(
                     '/waiting',
-                    extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+                    extra: {
+                      'gameId': widget.gameId,
+                      'roomCode': widget.roomCode,
+                    },
                   );
                 }
               } else if (currentStatus == GameStatus.finished) {
@@ -109,422 +101,231 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             },
           );
 
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              // Arka Plan Resmi
-              Image.asset(
-                'assets/Loading-Screen-Background.png',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const SizedBox.shrink(),
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Column(
+                children: [
+                  _buildResultHeader(earnedScore, isPass, playerName),
+                  const SizedBox(height: 24),
+                  _buildScoreCard(earnedScore, multiplier, isPass),
+                  const SizedBox(height: 24),
+                  _buildLeaderboard(players, game),
+                  const SizedBox(height: 24),
+                  if (game.currentTask != null)
+                    _TaskFeedbackSection(
+                      taskId: game.currentTask!.id,
+                      taskContent: game.currentTask!.content,
+                    ),
+                  const SizedBox(height: 32),
+                  _buildActionButtons(isGameOver, game),
+                ],
               ),
-              // Karartma (Overlay)
-              Container(color: _bgColor.withOpacity(0.85)),
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, st) => Center(child: Text('Hata: $e')),
+      ),
+      floatingActionButton: _buildConfetti(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
 
-              SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 16,
-                  ),
-                  child: Column(
-                    children: [
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: earnedScore >= 0
-                              ? AppColors.votePositive.withOpacity(0.2)
-                              : AppColors.voteNegative.withOpacity(0.2),
-                          border: Border.all(
-                            color: earnedScore >= 0
-                                ? AppColors.votePositive
-                                : AppColors.voteNegative,
-                            width: 2,
-                          ),
-                        ),
-                        child: SizedBox(
-                          width: 80,
-                          height: 80,
-                          child: Center(
-                            child: Text(
-                              earnedScore >= 0 ? '🎉' : '💀',
-                              style: const TextStyle(fontSize: 40),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
+  Widget _buildResultHeader(int score, bool isPass, String playerName) {
+    return Column(
+      children: [
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: score >= 0
+                ? Colors.green.withValues(alpha: 0.1)
+                : AppColors.primary.withValues(alpha: 0.1),
+            border: Border.all(
+              color: score >= 0 ? Colors.green : AppColors.primary,
+              width: 2,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              score >= 0 ? '👏' : '🎭',
+              style: const TextStyle(fontSize: 40),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          isPass ? 'ROL REDDEDİLDİ' : 'PERDE KAPANDI',
+          style: GoogleFonts.playfairDisplay(
+            color: Colors.white,
+            fontSize: 32,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 2,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          isPass
+              ? '$playerName rolünü yapmayı reddetti.'
+              : '$playerName performansını tamamladı.',
+          style: GoogleFonts.libreBaskerville(
+            color: Colors.white54,
+            fontSize: 14,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
 
-                      Text(
-                        isPass ? 'Görev Pas Geçildi!' : 'Tur Tamamlandı!',
-                        style: GoogleFonts.cinzelDecorative(
-                          color: _textLight,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '$playerName ${isPass ? 'görevi pas geçti ve ceza aldı.' : 'görevini yaptı.'}',
-                        style: GoogleFonts.cinzel(
-                          color: Colors.white70,
-                          fontSize: 16,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
+  Widget _buildScoreCard(int score, int multiplier, bool isPass) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        children: [
+          if (!isPass) ...[
+            _ScoreRow(
+              label: 'Seyirci Puanı',
+              value: multiplier != 0 ? '${score ~/ multiplier}' : '$score',
+              color: score >= 0 ? Colors.green : AppColors.primary,
+            ),
+            const Divider(color: Colors.white10, height: 24),
+            _ScoreRow(
+              label: 'Zorluk Çarpanı',
+              value: '×$multiplier',
+              color: Colors.white,
+            ),
+            const Divider(color: Colors.white10, height: 24),
+          ],
+          _ScoreRow(
+            label: score >= 0 ? 'Kazanılan Alkış' : 'Kaybedilen Alkış',
+            value: score >= 0 ? '+$score' : '$score',
+            color: AppColors.accent,
+            isBold: true,
+          ),
+        ],
+      ),
+    );
+  }
 
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: _cardColor.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: _accentGold.withOpacity(0.5),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            children: [
-                              // Skor Detayları
-                              if (!isPass) ...[
-                                _ScoreRow(
-                                  label: 'Oylama Skoru',
-                                  value: multiplier != 0
-                                      ? '${earnedScore ~/ multiplier}'
-                                      : '$earnedScore',
-                                  color: earnedScore >= 0
-                                      ? AppColors.votePositive
-                                      : AppColors.voteNegative,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                  ),
-                                  child: Divider(
-                                    color: _accentGold.withOpacity(0.3),
-                                  ),
-                                ),
-                                _ScoreRow(
-                                  label: 'Çarpan',
-                                  value: '×$multiplier',
-                                  color: _textLight,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                  ),
-                                  child: Divider(
-                                    color: _accentGold.withOpacity(0.3),
-                                  ),
-                                ),
-                              ],
-                              _ScoreRow(
-                                label: earnedScore >= 0
-                                    ? 'Kazanılan Puan'
-                                    : 'Kaybedilen Puan',
-                                value: earnedScore >= 0
-                                    ? '+$earnedScore'
-                                    : '$earnedScore',
-                                color: _accentGold,
-                                isBold: true,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
+  Widget _buildLeaderboard(List<PlayerEntity> players, GameEntity game) {
+    final sortedPlayers = List.of(players)
+      ..sort((a, b) => b.score.compareTo(a.score));
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'AKTÖR SIRALAMASI',
+            style: GoogleFonts.playfairDisplay(
+              color: AppColors.accent,
+              fontWeight: FontWeight.w900,
+              fontSize: 14,
+              letterSpacing: 1,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...List.generate(sortedPlayers.length, (index) {
+            final p = sortedPlayers[index];
+            final isMe = p.id == game.currentPlayerId;
+            return _LeaderboardTile(player: p, rank: index + 1, isTarget: isMe);
+          }),
+        ],
+      ),
+    );
+  }
 
-                      // Liderlik Tablosu
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: _cardColor.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: _accentGold.withOpacity(0.3),
-                          ),
-                        ),
-                        child: playersAsync.when(
-                          data: (players) {
-                            final sortedPlayers = List.of(players)
-                              ..sort((a, b) => b.score.compareTo(a.score));
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    12,
-                                    12,
-                                    12,
-                                    4,
-                                  ),
-                                  child: Text(
-                                    '🏆 Liderlik Tablosu',
-                                    style: GoogleFonts.cinzel(
-                                      color: _textLight,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                ...List.generate(sortedPlayers.length, (index) {
-                                  final player = sortedPlayers[index];
-                                  final isMe =
-                                      player.id == game.currentPlayerId;
+  Widget _buildActionButtons(bool isGameOver, GameEntity game) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final room = ref.watch(watchRoomProvider(widget.roomCode)).value;
+        final isHost = room?.hostId == ref.watch(currentUserProvider)?.uid;
 
-                                  Color rankColor;
-                                  if (index == 0) {
-                                    rankColor = const Color(0xFFFFD700);
-                                  } else if (index == 1) {
-                                    rankColor = const Color(0xFFC0C0C0);
-                                  } else if (index == 2) {
-                                    rankColor = const Color(0xFFCD7F32);
-                                  } else {
-                                    rankColor = Colors.white54;
-                                  }
-
-                                  return Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                      12,
-                                      0,
-                                      12,
-                                      8,
-                                    ),
-                                    child: DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        color: isMe
-                                            ? _accentCrimson.withOpacity(0.2)
-                                            : Colors.black.withOpacity(0.3),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: isMe
-                                            ? Border.all(
-                                                color: _accentGold.withOpacity(
-                                                  0.5,
-                                                ),
-                                              )
-                                            : null,
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10),
-                                        child: Row(
-                                          children: [
-                                            SizedBox(
-                                              width: 24,
-                                              child: Text(
-                                                '#${index + 1}',
-                                                style: GoogleFonts.cinzel(
-                                                  color: rankColor,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            PlayerAvatar(
-                                              displayName: player.name,
-                                              avatarUrl: player.avatarUrl,
-                                              score: player.score,
-                                              frameId: player.activeFrame,
-                                              uid: player.id,
-                                              radius: 14,
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    player.name,
-                                                    style: GoogleFonts.cinzel(
-                                                      color: _textLight,
-                                                      fontSize: 16,
-                                                    ),
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                  Builder(
-                                                    builder: (context) {
-                                                      final pProfile = ref.watch(
-                                                        watchUserProfileProvider(player.id),
-                                                      ).value;
-                                                      final cosmeticsList = ref.watch(fetchCosmeticsProvider).value ?? [];
-                                                      final tItem = pProfile?.activeTitle != null
-                                                          ? cosmeticsList.where((c) => c.id == pProfile!.activeTitle).firstOrNull
-                                                          : null;
-                                                      if (tItem == null) return const SizedBox.shrink();
-                                                      return Text(
-                                                        '${tItem.imageUrl} ${tItem.name}',
-                                                        style: GoogleFonts.cinzel(
-                                                          color: _accentGold,
-                                                          fontSize: 9,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Text(
-                                              '${player.score}',
-                                              style: GoogleFonts.cinzel(
-                                                color: _accentGold,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }),
-                                const SizedBox(height: 4),
-                              ],
-                            );
-                          },
-                          loading: () => Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                color: _accentGold,
-                              ),
-                            ),
-                          ),
-                          error: (e, _) => Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Center(
-                              child: Text(
-                                'Skorlar yüklenemedi: $e',
-                                style: GoogleFonts.cinzel(
-                                  color: _accentCrimson,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Görev Feedback Alanı
-                      if (game.currentTask != null)
-                        _TaskFeedbackSection(
-                          taskId: game.currentTask!.id,
-                          taskContent: game.currentTask!.content,
-                          gameId: widget.gameId,
-                        ),
-
-                      const SizedBox(height: 24),
-
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final roomAsync = ref.watch(
-                            watchRoomProvider(widget.roomCode),
-                          );
-                          final user = ref.watch(currentUserProvider);
-                          final isHost = roomAsync.value?.hostId == user?.uid;
-
-                          if (isHost) {
-                            return MedievalButton(
-                              label: isGameOver
-                                  ? 'Sonuçları Gör'
-                                  : 'Sıradaki Tura Geç',
-                              icon: isGameOver
-                                  ? Icons.emoji_events_rounded
-                                  : Icons.arrow_forward_rounded,
-                              backgroundColor: _accentCrimson,
-                              textColor: _textLight,
-                              borderColor: _accentGold,
-                              onPressed: () async {
-                                if (isGameOver) {
-                                  context.go(
-                                    '/game-over',
-                                    extra: widget.roomCode,
-                                  );
-                                } else {
-                                  await ref
-                                      .read(gameControllerProvider.notifier)
-                                      .nextTurn(widget.gameId);
-                                }
-                              },
-                            );
-                          } else {
-                            return Column(
-                              children: [
-                                CircularProgressIndicator(color: _accentGold),
-                                const SizedBox(height: 16),
-                                Text(
-                                  isGameOver
-                                      ? 'Oyun bitti, sonuçlar bekleniyor...'
-                                      : 'Hostun sıradaki tura geçmesi bekleniyor...',
-                                  style: GoogleFonts.cinzel(
-                                    color: Colors.white70,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            );
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
+        if (isHost) {
+          return StageButton(
+            label: isGameOver ? 'FİNAL PERDESİ' : 'SIRADAKİ SAHNE',
+            icon: isGameOver
+                ? Icons.emoji_events_rounded
+                : Icons.arrow_forward_rounded,
+            backgroundColor: AppColors.primary,
+            textColor: Colors.white,
+            borderColor: AppColors.accent.withValues(alpha: 0.3),
+            onPressed: () async {
+              if (isGameOver) {
+                context.go('/game-over', extra: widget.roomCode);
+              } else {
+                await ref
+                    .read(gameControllerProvider.notifier)
+                    .nextTurn(widget.gameId);
+              }
+            },
+          );
+        } else {
+          return Column(
+            children: [
+              const CircularProgressIndicator(color: AppColors.accent),
+              const SizedBox(height: 16),
+              Text(
+                isGameOver
+                    ? 'Final bekleniyor...'
+                    : 'Başaktörün yeni sahneye geçmesi bekleniyor...',
+                style: GoogleFonts.libreBaskerville(
+                  color: Colors.white30,
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
                 ),
+                textAlign: TextAlign.center,
               ),
             ],
           );
-        },
-        loading: () =>
-            Center(child: CircularProgressIndicator(color: _accentGold)),
-        error: (e, st) => Center(
-          child: Text(
-            'Hata: $e',
-            style: GoogleFonts.cinzel(color: _accentCrimson),
-          ),
-        ),
-      ),
+        }
+      },
+    );
+  }
 
-      // Lottie overlay
-      floatingActionButton:
-          gameAsync.value?.lastRoundScore != null &&
-              gameAsync.value!.lastRoundScore! > 0
-          ? IgnorePointer(
-              child: Lottie.asset(
-                'assets/lotties/confetti.json',
-                controller: _lottieController,
-                onLoaded: (composition) {
-                  _lottieController
-                    ..duration = composition.duration
-                    ..forward(from: 0.0);
-                },
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                fit: BoxFit.cover,
-              ),
-            )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+  Widget? _buildConfetti() {
+    final score =
+        ref.watch(watchGameProvider(widget.gameId)).value?.lastRoundScore ?? 0;
+    if (score <= 0) return null;
+    return IgnorePointer(
+      child: Lottie.asset(
+        'assets/lotties/confetti.json',
+        controller: _lottieController,
+        onLoaded: (comp) {
+          _lottieController.duration = comp.duration;
+          _lottieController.forward(from: 0.0);
+        },
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        fit: BoxFit.cover,
+      ),
     );
   }
 }
 
 class _ScoreRow extends StatelessWidget {
+  final String label, value;
+  final Color color;
+  final bool isBold;
   const _ScoreRow({
     required this.label,
     required this.value,
     required this.color,
     this.isBold = false,
   });
-
-  final String label;
-  final String value;
-  final Color color;
-  final bool isBold;
 
   @override
   Widget build(BuildContext context) {
@@ -533,14 +334,18 @@ class _ScoreRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.cinzel(color: Colors.white54, fontSize: 16),
+          style: GoogleFonts.playfairDisplay(
+            color: Colors.white54,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         Text(
           value,
-          style: GoogleFonts.cinzelDecorative(
+          style: GoogleFonts.playfairDisplay(
             color: color,
             fontSize: isBold ? 24 : 18,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            fontWeight: FontWeight.w900,
           ),
         ),
       ],
@@ -548,16 +353,73 @@ class _ScoreRow extends StatelessWidget {
   }
 }
 
-class _TaskFeedbackSection extends ConsumerStatefulWidget {
-  final String taskId;
-  final String taskContent;
-  final String gameId;
-
-  const _TaskFeedbackSection({
-    required this.taskId,
-    required this.taskContent,
-    required this.gameId,
+class _LeaderboardTile extends StatelessWidget {
+  final PlayerEntity player;
+  final int rank;
+  final bool isTarget;
+  const _LeaderboardTile({
+    required this.player,
+    required this.rank,
+    required this.isTarget,
   });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: isTarget
+            ? AppColors.accent.withValues(alpha: 0.05)
+            : Colors.black12,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isTarget
+              ? AppColors.accent.withValues(alpha: 0.3)
+              : Colors.transparent,
+        ),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 24,
+            child: Text(
+              '#$rank',
+              style: GoogleFonts.playfairDisplay(
+                color: AppColors.accent,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          PlayerAvatar(uid: player.id, displayName: player.name, radius: 15),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              player.name,
+              style: GoogleFonts.playfairDisplay(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          Text(
+            '${player.score}',
+            style: GoogleFonts.playfairDisplay(
+              color: AppColors.accent,
+              fontWeight: FontWeight.w900,
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TaskFeedbackSection extends ConsumerStatefulWidget {
+  final String taskId, taskContent;
+  const _TaskFeedbackSection({required this.taskId, required this.taskContent});
 
   @override
   ConsumerState<_TaskFeedbackSection> createState() =>
@@ -565,84 +427,64 @@ class _TaskFeedbackSection extends ConsumerStatefulWidget {
 }
 
 class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
-  bool? _givenFeedback; // true = like, false = dislike, null = none
-
-  // Tematik Renkler for Feedback Box
-  static const _accentGold = Color(0xFFD4AF37); // Altın
-  static const _cardColor = Color(0xFF1E140F); // Koyu kahve/Ahşap tonu
-
-  Future<void> _submitFeedback(bool isLike) async {
-    if (_givenFeedback != null) return;
-
-    final user = ref.read(currentUserProvider);
-    if (user == null) return;
-
-    setState(() => _givenFeedback = isLike);
-
-    await ref
-        .read(taskControllerProvider.notifier)
-        .submitFeedback(
-          taskId: widget.taskId,
-          userId: user.uid,
-          isLike: isLike,
-        );
-  }
+  bool? _givenFeedback;
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
+    return Container(
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _cardColor.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _accentGold.withOpacity(0.3)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.05)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Text(
-              'Görevi Değerlendir',
-              style: GoogleFonts.cinzel(
-                color: const Color(0xFFFDEFC2),
-                fontSize: 16,
+      child: Column(
+        children: [
+          Text(
+            'SENARYOYU DEĞERLENDİR',
+            style: GoogleFonts.playfairDisplay(
+              color: Colors.white54,
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              StageButton(
+                label: 'GİŞEYE GİT',
+                backgroundColor: AppColors.primary,
+                textColor: Colors.white,
+                borderColor: AppColors.accent,
+                onPressed: () => context.go('/store'),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '"${widget.taskContent}"',
-              style: GoogleFonts.cinzel(
-                color: Colors.white,
-                fontStyle: FontStyle.italic,
+              const SizedBox(width: 16),
+              _FeedbackButton(
+                icon: Icons.thumb_down_rounded,
+                label: 'KÖTÜ',
+                isActive: _givenFeedback == false,
+                color: AppColors.primary,
+                onTap: () => _submit(false),
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _FeedbackButton(
-                  icon: Icons.thumb_up_rounded,
-                  label: 'İyiydi',
-                  isActive: _givenFeedback == true,
-                  isDisabled: _givenFeedback != null && _givenFeedback != true,
-                  activeColor: AppColors.votePositive,
-                  onTap: () => _submitFeedback(true),
-                ),
-                const SizedBox(width: 16),
-                _FeedbackButton(
-                  icon: Icons.thumb_down_rounded,
-                  label: 'Kötü',
-                  isActive: _givenFeedback == false,
-                  isDisabled: _givenFeedback != null && _givenFeedback != false,
-                  activeColor: AppColors.voteNegative,
-                  onTap: () => _submitFeedback(false),
-                ),
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
+  }
+
+  void _submit(bool like) {
+    if (_givenFeedback != null) return;
+    setState(() => _givenFeedback = like);
+    ref
+        .read(taskControllerProvider.notifier)
+        .submitFeedback(
+          taskId: widget.taskId,
+          userId: ref.read(currentUserProvider)!.uid,
+          isLike: like,
+        );
   }
 }
 
@@ -650,49 +492,37 @@ class _FeedbackButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isActive;
-  final bool isDisabled;
-  final Color activeColor;
+  final Color color;
   final VoidCallback onTap;
-
   const _FeedbackButton({
     required this.icon,
     required this.label,
     required this.isActive,
-    required this.isDisabled,
-    required this.activeColor,
+    required this.color,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive
-        ? activeColor
-        : isDisabled
-        ? Colors.white24
-        : Colors.white54;
-
     return InkWell(
-      onTap: isDisabled || isActive ? null : onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      onTap: isActive ? null : onTap,
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive
-              ? activeColor.withOpacity(0.15)
-              : Colors.black.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isActive ? activeColor : Colors.white12),
+          color: isActive ? color.withValues(alpha: 0.1) : Colors.black26,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: isActive ? color : Colors.white10),
         ),
         child: Row(
           children: [
-            Icon(icon, color: color, size: 20),
+            Icon(icon, color: isActive ? color : Colors.white38, size: 16),
             const SizedBox(width: 8),
             Text(
               label,
-              style: GoogleFonts.cinzel(
-                color: color,
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.playfairDisplay(
+                color: isActive ? color : Colors.white38,
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
               ),
             ),
           ],

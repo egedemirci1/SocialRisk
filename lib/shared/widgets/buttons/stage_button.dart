@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../core/constants/app_colors.dart';
+
 /// Etkileşimli buton (tıklandığında küçülme animasyonu)
 class InteractiveButton extends StatefulWidget {
   const InteractiveButton({
@@ -54,9 +56,9 @@ class _InteractiveButtonState extends State<InteractiveButton>
   }
 }
 
-/// Orta Çağ Temalı Etkileşimli Buton (Ortak Kullanım)
-class MedievalButton extends StatelessWidget {
-  const MedievalButton({
+/// Tiyatro Temalı Buton (Bilet / Sahne Tasarımı)
+class StageButton extends StatelessWidget {
+  const StageButton({
     super.key,
     required this.label,
     this.icon,
@@ -83,50 +85,64 @@ class MedievalButton extends StatelessWidget {
       onTap: isLoading ? () {} : onPressed,
       child: Semantics(
         button: true,
-        label: label.isNotEmpty ? label : 'Button',
+        label: label.isNotEmpty ? label : 'Buton',
         child: Container(
           height: 60,
           decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: borderColor, width: 1.5),
+            gradient: AppColors.primaryGradient,
+            borderRadius: BorderRadius.circular(12), // Modern rounded corners
+            border: Border.all(
+              color: AppColors.accent.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.5),
-                blurRadius: 8,
+                color: Colors.black.withValues(alpha: 0.6),
+                blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: Center(
-            child: isLoading
-                ? SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(textColor),
-                    ),
-                  )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      iconWidget ?? const SizedBox.shrink(),
-                      if (icon != null) Icon(icon, color: textColor, size: 28),
-                      if (label.isNotEmpty) ...[
-                        const SizedBox(width: 12),
-                        Text(
-                          label,
-                          style: GoogleFonts.cinzel(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                            color: textColor,
-                            letterSpacing: 1.0,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(2),
+            child: Stack(
+              children: [
+                // Subtle ticket notches / theater decorative pattern could go here
+                Center(
+                  child: isLoading
+                      ? SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              textColor,
+                            ),
                           ),
+                        )
+                      : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            iconWidget ?? const SizedBox.shrink(),
+                            if (icon != null)
+                              Icon(icon, color: textColor, size: 24),
+                            if (label.isNotEmpty) ...[
+                              const SizedBox(width: 12),
+                              Text(
+                                label,
+                                style: GoogleFonts.playfairDisplay(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                  color: textColor,
+                                  letterSpacing: 2.0,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
-                      ],
-                    ],
-                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

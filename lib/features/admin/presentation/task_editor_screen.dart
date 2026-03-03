@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../domain/task_item_entity.dart';
 import '../providers/admin_provider.dart';
 import '../../../shared/models/enums.dart';
+import '../../../core/constants/app_colors.dart';
 
+/// Senaryo Editörü — Tiyatro Temalı
 class TaskEditorScreen extends ConsumerStatefulWidget {
   final TaskItemEntity? taskToEdit;
-
   const TaskEditorScreen({super.key, this.taskToEdit});
 
   @override
@@ -15,13 +17,10 @@ class TaskEditorScreen extends ConsumerStatefulWidget {
 
 class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
   final _formKey = GlobalKey<FormState>();
-  late String _content;
-  late String _category;
-  late String _difficulty;
+  late String _content, _category, _difficulty;
   late TaskType _type;
   late List<String> _tags;
   bool _isSaving = false;
-
   final List<String> _allTags = ['classic', 'family', 'couple', 'adult'];
 
   @override
@@ -38,7 +37,6 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
-
     setState(() => _isSaving = true);
     try {
       final task = TaskItemEntity(
@@ -53,14 +51,12 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
         isActive: widget.taskToEdit?.isActive ?? true,
         createdAt: widget.taskToEdit?.createdAt ?? DateTime.now(),
       );
-
       final notifier = ref.read(adminControllerProvider.notifier);
       if (widget.taskToEdit == null) {
         await notifier.addTask(task);
       } else {
         await notifier.updateTask(task);
       }
-
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
@@ -76,112 +72,106 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(widget.taskToEdit == null ? 'Görev Ekle' : 'Görev Düzenle'),
+        title: Text(
+          widget.taskToEdit == null ? 'YENİ SENARYO' : 'SENARYOYU DÜZENLE',
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.w900,
+            color: AppColors.accent,
+            letterSpacing: 1.5,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _buildLabel('SENARYO REPLİĞİ'),
               TextFormField(
                 initialValue: _content,
-                decoration: const InputDecoration(
-                  labelText: 'Görev Metni',
+                maxLines: 4,
+                decoration: InputDecoration(
+                  fillColor: AppColors.surface,
                   filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
-                style: const TextStyle(color: Colors.white),
+                style: GoogleFonts.libreBaskerville(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Boş bırakılamaz' : null,
                 onSaved: (v) => _content = v!,
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: _category,
-                decoration: const InputDecoration(
-                  labelText: 'Kategori',
-                  filled: true,
-                ),
-                dropdownColor: Colors.grey[800],
-                items:
-                    [
-                          'Cesaret',
-                          'İtiraf',
-                          'Taklit',
-                          'Sosyal Medya',
-                          'Fiziksel',
-                          'Bilgi',
-                        ]
-                        .map(
-                          (c) => DropdownMenuItem(
-                            value: c,
-                            child: Text(
-                              c,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                onChanged: (v) => setState(() => _category = v!),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: _difficulty,
-                decoration: const InputDecoration(
-                  labelText: 'Zorluk',
-                  filled: true,
-                ),
-                dropdownColor: Colors.grey[800],
-                items: ['easy', 'medium', 'hard']
-                    .map(
-                      (d) => DropdownMenuItem(
-                        value: d,
-                        child: Text(
-                          d,
-                          style: const TextStyle(color: Colors.white),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildLabel('TÜR'),
+                        _buildDropdown(
+                          [
+                            'Cesaret',
+                            'İtiraf',
+                            'Taklit',
+                            'Sosyal Medya',
+                            'Fiziksel',
+                            'Bilgi',
+                          ],
+                          _category,
+                          (v) => setState(() => _category = v!),
                         ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (v) => setState(() => _difficulty = v!),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<TaskType>(
-                initialValue: _type,
-                decoration: const InputDecoration(
-                  labelText: 'Görev Tipi',
-                  filled: true,
-                ),
-                dropdownColor: Colors.grey[800],
-                items: TaskType.values
-                    .map(
-                      (t) => DropdownMenuItem(
-                        value: t,
-                        child: Text(
-                          t.name,
-                          style: const TextStyle(color: Colors.white),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildLabel('ZORLUK'),
+                        _buildDropdown(
+                          ['easy', 'medium', 'hard'],
+                          _difficulty,
+                          (v) => setState(() => _difficulty = v!),
                         ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (v) => setState(() => _type = v!),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Hangi Etiketlerde Çıksın?',
-                  style: TextStyle(color: Colors.white70),
-                ),
-              ),
+              const SizedBox(height: 24),
+              _buildLabel('ETİKETLER'),
               Wrap(
                 spacing: 8,
                 children: _allTags
                     .map(
                       (p) => ChoiceChip(
-                        label: Text(p),
+                        label: Text(
+                          p.toUpperCase(),
+                          style: GoogleFonts.playfairDisplay(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            color: _tags.contains(p)
+                                ? Colors.white
+                                : Colors.white54,
+                          ),
+                        ),
                         selected: _tags.contains(p),
+                        selectedColor: AppColors.primary,
+                        backgroundColor: AppColors.surface,
                         onSelected: (selected) {
                           setState(() {
                             if (selected) {
@@ -195,15 +185,83 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                     )
                     .toList(),
               ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _isSaving ? null : _save,
-                child: _isSaving
-                    ? const CircularProgressIndicator()
-                    : const Text('Kaydet'),
+              const SizedBox(height: 48),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _isSaving ? null : _save,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.accent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: _isSaving
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          'REPERTUARA EKLE',
+                          style: GoogleFonts.playfairDisplay(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(
+        text,
+        style: GoogleFonts.playfairDisplay(
+          color: AppColors.accent,
+          fontSize: 13,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdown(
+    List<String> items,
+    String value,
+    ValueChanged<String?> onChanged,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value,
+          isExpanded: true,
+          dropdownColor: AppColors.surface,
+          items: items
+              .map(
+                (i) => DropdownMenuItem(
+                  value: i,
+                  child: Text(
+                    i.toUpperCase(),
+                    style: GoogleFonts.playfairDisplay(
+                      color: Colors.white,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+          onChanged: onChanged,
         ),
       ),
     );

@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../shared/widgets/buttons/medieval_button.dart';
+import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/models/enums.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
+import '../../../core/constants/app_colors.dart';
 
-/// Oda oluşturma ekranı — Orta Çağ Temalı
+/// Sahne Kurma Ekranı — Tiyatro Temalı
 class CreateRoomScreen extends ConsumerStatefulWidget {
   const CreateRoomScreen({super.key});
 
@@ -19,21 +20,13 @@ class CreateRoomScreen extends ConsumerStatefulWidget {
 class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   int _maxPlayers = 4;
   bool _isScoreMode = true; // true = Puan Hedefi, false = Tur Sayısı
-  double _scoreTarget = 500; // Yeni default
-  double _roundTarget = 5; // Yeni default
+  double _scoreTarget = 500;
+  double _roundTarget = 5;
   bool _isCreating = false;
   bool _isOpenMode = true;
-  GamePreset _preset = GamePreset.classic; // Yeni alan
+  final GamePreset _preset = GamePreset.classic;
   GameMode _selectedMode = GameMode.classic;
-
   bool _useCustomDeck = false;
-
-  // Tematik Renkler
-  static const _bgColor = Color(0xFF140D0B); // En arka plan
-  static const _cardColor = Color(0xFF1E140F); // Kart arka plan
-  static const _accentGold = Color(0xFFD4AF37); // Altın
-  static const _accentCrimson = Color(0xFF5C1616); // Bordo / Koyu kırmızı
-  static const _textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
 
   Future<void> _createRoom() async {
     setState(() => _isCreating = true);
@@ -51,11 +44,11 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       final userProfile = await ref
           .read(userRepositoryProvider)
           .getUserProfile(user.uid);
-
       final repo = ref.read(roomRepositoryProvider);
+
       final roomCode = await repo.createRoom(
         hostId: user.uid,
-        hostName: user.displayName ?? 'Host',
+        hostName: user.displayName ?? 'Yönetmen',
         endConditionType: endType,
         endConditionValue: endValue,
         visibility: _isOpenMode ? RoomVisibility.open : RoomVisibility.closed,
@@ -82,101 +75,95 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgColor,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Oda Oluştur',
-          style: GoogleFonts.cinzelDecorative(
-            fontWeight: FontWeight.w700,
-            color: _textLight,
+          'Yeni Sahne Kur',
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.w900,
+            color: AppColors.accent,
+            letterSpacing: 1.5,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded, color: _accentGold),
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            color: AppColors.accent,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Arka Plan Resmi
-          Image.asset(
-            'assets/Loading-Screen-Background.png',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                const SizedBox.shrink(),
-          ),
-          // Karartma (Overlay)
-          Container(color: _bgColor.withOpacity(0.85)),
-
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 16),
-
-                  // Oyuncu Kapasitesi
-                  _buildSection(
-                    title: 'Oyuncu Kapasitesi',
-                    icon: Icons.people_outline_rounded,
-                    child: _buildPlayerSlider(),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Bitiş Koşulu
-                  _buildSection(
-                    title: 'Bitiş Koşulu',
-                    icon: Icons.flag_outlined,
-                    child: _buildEndCondition(),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Oyun Modu
-                  _buildSection(
-                    title: 'Oyun Modu',
-                    icon: Icons.casino_outlined,
-                    child: _buildGameMode(),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Görünürlük Modu
-                  _buildSection(
-                    title: 'Görünürlük Modu',
-                    icon: Icons.visibility_outlined,
-                    child: _buildVisibilityMode(),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // İçerik Modu (Preset)
-                  _buildSection(
-                    title: 'İçerik Modu',
-                    icon: Icons.auto_awesome_mosaic_rounded,
-                    child: _buildPresetMode(),
-                  ),
-                  const SizedBox(height: 40),
-
-                  // Oluştur Butonu
-                  MedievalButton(
-                    label: 'Odayı Oluştur',
-                    icon: Icons.rocket_launch_rounded,
-                    backgroundColor: _accentCrimson,
-                    textColor: _textLight,
-                    borderColor: _accentGold.withOpacity(0.6),
-                    onPressed: _createRoom,
-                    isLoading: _isCreating,
-                  ),
-                  const SizedBox(height: 32),
-                ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              IntrinsicHeight(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildSection(
+                        title: 'Koltuk Sayısı',
+                        icon: Icons.chair_rounded,
+                        child: _buildPlayerSlider(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildSection(
+                        title: 'Gösteri Türü',
+                        icon: Icons.theater_comedy_rounded,
+                        child: _buildGameMode(),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+              const SizedBox(height: 12),
+              IntrinsicHeight(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildSection(
+                        title: 'Perde Kapanışı',
+                        icon: Icons.curtains_closed_rounded,
+                        child: _buildEndCondition(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildSection(
+                        title: 'Sahne Durumu',
+                        icon: Icons.visibility_rounded,
+                        child: _buildVisibilityMode(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildSection(
+                title: 'İçerik Seçimi',
+                icon: Icons.menu_book_rounded,
+                child: _buildContentSelector(),
+              ),
+              const SizedBox(height: 32),
+              StageButton(
+                label: 'Perdeyi Aç',
+                icon: Icons.play_arrow_rounded,
+                backgroundColor: AppColors.primary,
+                textColor: Colors.white,
+                borderColor: AppColors.accent,
+                onPressed: _createRoom,
+                isLoading: _isCreating,
+              ),
+              const SizedBox(height: 40),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -187,38 +174,43 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
     required Widget child,
   }) {
     return Container(
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: _cardColor,
+        gradient: AppColors.surfaceGradient,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _accentGold.withOpacity(0.2)),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: _accentGold, size: 20),
+              Icon(icon, color: AppColors.accent, size: 18),
               const SizedBox(width: 8),
-              Text(
-                title,
-                style: GoogleFonts.cinzel(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: _textLight,
-                  letterSpacing: 0.5,
+              Flexible(
+                child: Text(
+                  title,
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.accent,
+                    letterSpacing: 0.5,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           child,
         ],
       ),
@@ -227,56 +219,59 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
 
   Widget _buildPlayerSlider() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '$_maxPlayers',
-              style: GoogleFonts.cinzelDecorative(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: _accentCrimson,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'oyuncu',
-              style: GoogleFonts.cinzel(color: Colors.white54, fontSize: 14),
-            ),
-          ],
-        ),
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: _accentCrimson,
-            inactiveTrackColor: Colors.black38,
-            thumbColor: _accentCrimson,
-            overlayColor: _accentCrimson.withOpacity(0.2),
-            trackHeight: 4,
-          ),
-          child: Slider(
-            value: _maxPlayers.toDouble(),
-            min: 2,
-            max: 8,
-            divisions: 6,
-            label: '$_maxPlayers',
-            onChanged: (value) {
-              setState(() => _maxPlayers = value.toInt());
-            },
+        Text(
+          '$_maxPlayers Aktör',
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
+            color: AppColors.accent,
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '2',
-              style: GoogleFonts.cinzel(color: Colors.white38, fontSize: 12),
+        Transform.translate(
+          offset: const Offset(0, 8),
+          child: SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: AppColors.primary,
+              inactiveTrackColor: Colors.black38,
+              thumbColor: AppColors.primary,
+              overlayColor: AppColors.primary.withValues(alpha: 0.2),
+              trackHeight: 4,
             ),
-            Text(
-              '8',
-              style: GoogleFonts.cinzel(color: Colors.white38, fontSize: 12),
+            child: Slider(
+              value: _maxPlayers.toDouble(),
+              min: 2,
+              max: 8,
+              divisions: 6,
+              onChanged: (value) => setState(() => _maxPlayers = value.toInt()),
             ),
-          ],
+          ),
+        ),
+        Transform.translate(
+          offset: const Offset(0, -8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '2',
+                  style: GoogleFonts.libreBaskerville(
+                    color: Colors.white38,
+                    fontSize: 10,
+                  ),
+                ),
+                Text(
+                  '8',
+                  style: GoogleFonts.libreBaskerville(
+                    color: Colors.white38,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );
@@ -289,68 +284,124 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           children: [
             Expanded(
               child: _ToggleChip(
-                label: 'Puan Hedefi',
+                label: 'Puan',
                 isSelected: _isScoreMode,
                 onTap: () => setState(() => _isScoreMode = true),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Expanded(
               child: _ToggleChip(
-                label: 'Tur Sayısı',
+                label: 'Tur',
                 isSelected: !_isScoreMode,
                 onTap: () => setState(() => _isScoreMode = false),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         if (_isScoreMode) ...[
           Text(
-            '${_scoreTarget.toInt()} puan',
-            style: GoogleFonts.cinzel(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: _accentGold,
+            '${_scoreTarget.toInt()} Puan',
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: AppColors.accent,
             ),
           ),
-          SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              activeTrackColor: _accentGold,
-              inactiveTrackColor: Colors.black38,
-              thumbColor: _accentGold,
-              overlayColor: _accentGold.withOpacity(0.2),
+          Transform.translate(
+            offset: const Offset(0, 8),
+            child: SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: AppColors.accent,
+                inactiveTrackColor: Colors.black38,
+                thumbColor: AppColors.accent,
+                overlayColor: AppColors.accent.withValues(alpha: 0.2),
+              ),
+              child: Slider(
+                value: _scoreTarget,
+                min: 50,
+                max: 500,
+                divisions: 9,
+                onChanged: (value) => setState(() => _scoreTarget = value),
+              ),
             ),
-            child: Slider(
-              value: _scoreTarget,
-              min: 50,
-              max: 500,
-              divisions: 9,
-              onChanged: (value) => setState(() => _scoreTarget = value),
+          ),
+          Transform.translate(
+            offset: const Offset(0, -8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '50',
+                    style: GoogleFonts.libreBaskerville(
+                      color: Colors.white38,
+                      fontSize: 10,
+                    ),
+                  ),
+                  Text(
+                    '500',
+                    style: GoogleFonts.libreBaskerville(
+                      color: Colors.white38,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ] else ...[
           Text(
-            '${_roundTarget.toInt()} tur',
-            style: GoogleFonts.cinzel(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: _accentGold,
+            '${_roundTarget.toInt()} Tur',
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: AppColors.accent,
             ),
           ),
-          SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              activeTrackColor: _accentGold,
-              inactiveTrackColor: Colors.black38,
-              thumbColor: _accentGold,
-              overlayColor: _accentGold.withOpacity(0.2),
+          Transform.translate(
+            offset: const Offset(0, 8),
+            child: SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: AppColors.accent,
+                inactiveTrackColor: Colors.black38,
+                thumbColor: AppColors.accent,
+                overlayColor: AppColors.accent.withValues(alpha: 0.2),
+              ),
+              child: Slider(
+                value: _roundTarget,
+                min: 3,
+                max: 20,
+                divisions: 17,
+                onChanged: (value) => setState(() => _roundTarget = value),
+              ),
             ),
-            child: Slider(
-              value: _roundTarget,
-              min: 3,
-              max: 20,
-              divisions: 17,
-              onChanged: (value) => setState(() => _roundTarget = value),
+          ),
+          Transform.translate(
+            offset: const Offset(0, -8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '3',
+                    style: GoogleFonts.libreBaskerville(
+                      color: Colors.white38,
+                      fontSize: 10,
+                    ),
+                  ),
+                  Text(
+                    '20',
+                    style: GoogleFonts.libreBaskerville(
+                      color: Colors.white38,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -365,27 +416,30 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           children: [
             Expanded(
               child: _ToggleChip(
-                label: '🎡 Klasik',
+                label: 'Klasik',
                 isSelected: _selectedMode == GameMode.classic,
                 onTap: () => setState(() => _selectedMode = GameMode.classic),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Expanded(
               child: _ToggleChip(
-                label: '🏦 Ekonomi',
+                label: 'Eko',
                 isSelected: _selectedMode == GameMode.economy,
                 onTap: () => setState(() => _selectedMode = GameMode.economy),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         Text(
           _selectedMode == GameMode.classic
-              ? 'Şans ve kaos — çarkı çevir, hangi kategori gelirse o!'
-              : 'Strateji — puan lideri önce seçer, pazar daralır!',
-          style: GoogleFonts.cinzel(color: Colors.white54, fontSize: 13),
+              ? 'Tüm aktörlerle klasik tiyatro deneyimi.'
+              : 'Ekonomi ve kaynak yönetimi odaklı performans.',
+          style: GoogleFonts.libreBaskerville(
+            color: Colors.white54,
+            fontSize: 10,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -399,161 +453,96 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           children: [
             Expanded(
               child: _ToggleChip(
-                label: '👁️ Açık',
+                label: 'Açık',
                 isSelected: _isOpenMode,
                 onTap: () => setState(() => _isOpenMode = true),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Expanded(
               child: _ToggleChip(
-                label: '🔒 Kapalı',
+                label: 'Gizli',
                 isSelected: !_isOpenMode,
                 onTap: () => setState(() => _isOpenMode = false),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         Text(
           _isOpenMode
-              ? 'Herkes görev içeriğini önceden görebilir.'
-              : 'Sadece kategori ve çarpan görünür. İçerik gizli!',
-          style: GoogleFonts.cinzel(color: Colors.white54, fontSize: 13),
+              ? 'Sahne tüm izleyicilere (oyunculara) açık.'
+              : 'Sadece davetli aktörler sahneye çıkabilir.',
+          style: GoogleFonts.libreBaskerville(
+            color: Colors.white54,
+            fontSize: 10,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
     );
   }
 
-  Widget _buildPresetMode() {
-    return Column(
+  Widget _buildContentSelector() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: _ToggleChip(
-                label: 'Klasik',
-                isSelected: _preset == GamePreset.classic,
-                onTap: () => setState(() => _preset = GamePreset.classic),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _ToggleChip(
-                label: 'Aile',
-                isSelected: _preset == GamePreset.family,
-                onTap: () => setState(() => _preset = GamePreset.family),
-              ),
-            ),
-          ],
+        Expanded(
+          child: _ToggleChip(
+            label: 'Klasik İçerik',
+            isSelected: !_useCustomDeck,
+            onTap: () => setState(() => _useCustomDeck = false),
+          ),
         ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _ToggleChip(
-                label: 'Sevgili',
-                isSelected: _preset == GamePreset.couple,
-                onTap: () => setState(() => _preset = GamePreset.couple),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _ToggleChip(
-                label: 'Yetişkin',
-                isSelected: _preset == GamePreset.adult,
-                onTap: () => setState(() => _preset = GamePreset.adult),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Text(
-          _preset == GamePreset.classic
-              ? 'Tüm kategoriler devrede, genel kitleye uygun.'
-              : _preset == GamePreset.family
-              ? 'Çocuklara ve ailelere uygun, risksiz görevler.'
-              : _preset == GamePreset.couple
-              ? 'Çiftlere özel, daha flörtöz ve itiraf dolu.'
-              : 'Sınırların aşıldığı, her türlü 18+ içerikli görevler.',
-          style: GoogleFonts.cinzel(color: Colors.white54, fontSize: 13),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _ToggleChip(
-                label: 'Destemi Kullan',
-                isSelected: _useCustomDeck,
-                onTap: () => setState(() => _useCustomDeck = !_useCustomDeck),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Profilinde oluşturduğun özel sorular oyuna dahil edilir (Zorluk ve kategori uyarsa).',
-          style: GoogleFonts.cinzel(color: Colors.white38, fontSize: 11),
-          textAlign: TextAlign.center,
+        const SizedBox(width: 12),
+        Expanded(
+          child: _ToggleChip(
+            label: 'Özel Senaryo',
+            isSelected: _useCustomDeck,
+            onTap: () => setState(() => _useCustomDeck = true),
+          ),
         ),
       ],
     );
   }
 }
 
-/// Medieval style toggle chip
 class _ToggleChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
   const _ToggleChip({
     required this.label,
     required this.isSelected,
     required this.onTap,
   });
 
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
   @override
   Widget build(BuildContext context) {
-    const activeBg = Color(0xFF5C1616); // Crimson
-    const activeBorder = Color(0xFFD4AF37); // Gold
-    const inactiveBg = Color(0xFF140D0B); // Koyu kahve/siyah
-    const inactiveText = Colors.white54;
-
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? activeBg : inactiveBg,
+          gradient: isSelected ? AppColors.primaryGradient : null,
+          color: isSelected ? null : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected
-                ? activeBorder.withOpacity(0.8)
-                : Colors.transparent,
+                ? AppColors.accent.withOpacity(0.3)
+                : Colors.white10,
             width: 1.5,
           ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: activeBorder.withOpacity(0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
         ),
         child: Center(
           child: Text(
             label,
-            style: GoogleFonts.cinzel(
-              color: isSelected ? const Color(0xFFFDEFC2) : inactiveText,
-              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-              fontSize: 14,
+            style: GoogleFonts.playfairDisplay(
+              color: isSelected ? Colors.white : Colors.white54,
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
             ),
           ),
         ),

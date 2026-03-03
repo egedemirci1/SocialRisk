@@ -38,7 +38,10 @@ class _CustomDeckEditorScreenState
               backgroundColor: _cardColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: _accentGold.withOpacity(0.5), width: 2),
+                side: BorderSide(
+                  color: _accentGold.withValues(alpha: 0.5),
+                  width: 2,
+                ),
               ),
               title: Text(
                 'Kendi Sorunu Ekle',
@@ -57,11 +60,11 @@ class _CustomDeckEditorScreenState
                       labelText: 'Görev Metni',
                       labelStyle: GoogleFonts.cinzel(color: _accentGold),
                       filled: true,
-                      fillColor: Colors.black.withOpacity(0.4),
+                      fillColor: Colors.black.withValues(alpha: 0.4),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: _accentGold.withOpacity(0.5),
+                          color: _accentGold.withValues(alpha: 0.5),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -73,17 +76,17 @@ class _CustomDeckEditorScreenState
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: selectedCategory,
+                    initialValue: selectedCategory,
                     dropdownColor: _cardColor,
                     decoration: InputDecoration(
                       labelText: 'Kategori',
                       labelStyle: GoogleFonts.cinzel(color: _accentGold),
                       filled: true,
-                      fillColor: Colors.black.withOpacity(0.4),
+                      fillColor: Colors.black.withValues(alpha: 0.4),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: _accentGold.withOpacity(0.5),
+                          color: _accentGold.withValues(alpha: 0.5),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -107,17 +110,17 @@ class _CustomDeckEditorScreenState
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: selectedDifficulty,
+                    initialValue: selectedDifficulty,
                     dropdownColor: _cardColor,
                     decoration: InputDecoration(
                       labelText: 'Zorluk',
                       labelStyle: GoogleFonts.cinzel(color: _accentGold),
                       filled: true,
-                      fillColor: Colors.black.withOpacity(0.4),
+                      fillColor: Colors.black.withValues(alpha: 0.4),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: _accentGold.withOpacity(0.5),
+                          color: _accentGold.withValues(alpha: 0.5),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -159,7 +162,9 @@ class _CustomDeckEditorScreenState
                     foregroundColor: _textLight,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(color: _accentGold.withOpacity(0.5)),
+                      side: BorderSide(
+                        color: _accentGold.withValues(alpha: 0.5),
+                      ),
                     ),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -207,6 +212,7 @@ class _CustomDeckEditorScreenState
       );
     }
 
+    final isAnonymous = user.isAnonymous;
     final customTasksAsync = ref.watch(watchCustomTasksProvider(user.uid));
 
     return Scaffold(
@@ -228,13 +234,15 @@ class _CustomDeckEditorScreenState
         ),
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.add_circle_outline_rounded,
-              color: _accentGold,
+            icon: Icon(
+              isAnonymous
+                  ? Icons.lock_outline_rounded
+                  : Icons.add_circle_outline_rounded,
+              color: isAnonymous ? Colors.grey.shade600 : _accentGold,
               size: 28,
             ),
-            onPressed: () => _showAddTaskDialog(user.uid),
-            tooltip: 'Soru Ekle',
+            onPressed: isAnonymous ? null : () => _showAddTaskDialog(user.uid),
+            tooltip: isAnonymous ? 'Hesap gerekli' : 'Soru Ekle',
           ),
         ],
       ),
@@ -250,169 +258,252 @@ class _CustomDeckEditorScreenState
                 const SizedBox.shrink(),
           ),
           // Karartma (Overlay)
-          Container(color: _bgColor.withOpacity(0.85)),
+          Container(color: _bgColor.withValues(alpha: 0.85)),
 
           SafeArea(
-            child: customTasksAsync.when(
-              loading: () => const Center(
-                child: CircularProgressIndicator(color: _accentGold),
-              ),
-              error: (err, stack) => Center(
-                child: Text(
-                  'Bir hata oluştu: $err',
-                  style: GoogleFonts.cinzel(color: _accentCrimson),
-                ),
-              ),
-              data: (tasks) {
-                if (tasks.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                      child: Text(
-                        'Henüz efsanelere konu olacak sorular girmedin.\nSağ üstten yeni soru ekle!',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.cinzel(
-                          color: _textLight.withOpacity(0.7),
-                          fontSize: 18,
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  padding: const EdgeInsets.only(
-                    top: 16,
-                    left: 16,
-                    right: 16,
-                    bottom: 80,
+            child: Stack(
+              children: [
+                customTasksAsync.when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(color: _accentGold),
                   ),
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    final task = tasks[index];
-
-                    return Card(
-                      color: _cardColor.withOpacity(0.9),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: _accentGold.withOpacity(0.3),
-                          width: 1.5,
-                        ),
-                      ),
-                      elevation: 4,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Kalem / Tüy İkonu
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: _accentGold.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: _accentGold.withOpacity(0.5),
+                  error: (err, stack) => Center(
+                    child: Text(
+                      'Bir hata oluştu: $err',
+                      style: GoogleFonts.cinzel(color: _accentCrimson),
+                    ),
+                  ),
+                  data: (tasks) {
+                    if (tasks.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (isAnonymous)
+                                Icon(
+                                  Icons.lock_outline_rounded,
+                                  size: 64,
+                                  color: _accentGold.withValues(alpha: 0.8),
+                                ),
+                              if (isAnonymous) const SizedBox(height: 16),
+                              Text(
+                                isAnonymous
+                                    ? 'Custom deck kullanmak için\nhesap oluşturmalısın'
+                                    : 'Henüz efsanelere konu olacak sorular girmedin.\nSağ üstten yeni soru ekle!',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.cinzel(
+                                  color: _textLight.withValues(alpha: 0.7),
+                                  fontSize: 18,
+                                  height: 1.5,
                                 ),
                               ),
-                              child: const Icon(
-                                Icons.history_edu_rounded,
-                                color: _accentGold,
-                                size: 24,
+                              if (isAnonymous) const SizedBox(height: 8),
+                              if (isAnonymous)
+                                Text(
+                                  'Google veya Apple ile giriş yap',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.cinzel(
+                                    color: _textLight.withValues(alpha: 0.5),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.only(
+                        top: 16,
+                        left: 16,
+                        right: 16,
+                        bottom: 80,
+                      ),
+                      itemCount: tasks.length,
+                      itemBuilder: (context, index) {
+                        final task = tasks[index];
+
+                        return Stack(
+                          children: [
+                            Card(
+                              color: _cardColor.withValues(alpha: 0.9),
+                              margin: const EdgeInsets.only(bottom: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(
+                                  color: _accentGold.withValues(alpha: 0.3),
+                                  width: 1.5,
+                                ),
+                              ),
+                              elevation: 4,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Kalem / Tüy İkonu
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: _accentGold.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: _accentGold.withValues(
+                                            alpha: 0.5,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Icon(
+                                        Icons.history_edu_rounded,
+                                        color: isAnonymous
+                                            ? Colors.grey.shade600
+                                            : _accentGold,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            task.content,
+                                            style: GoogleFonts.cinzel(
+                                              color: isAnonymous
+                                                  ? _textLight.withValues(
+                                                      alpha: 0.5,
+                                                    )
+                                                  : _textLight,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              height: 1.4,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 2,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black45,
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  border: Border.all(
+                                                    color: _accentGold
+                                                        .withValues(alpha: 0.3),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  task.category,
+                                                  style: GoogleFonts.cinzel(
+                                                    color: isAnonymous
+                                                        ? Colors.grey.shade600
+                                                        : _accentGold,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 2,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black45,
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  border: Border.all(
+                                                    color: Colors.grey
+                                                        .withValues(alpha: 0.3),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  task.difficulty.toUpperCase(),
+                                                  style: GoogleFonts.cinzel(
+                                                    color: Colors.grey.shade400,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.delete_outline_rounded,
+                                        color: isAnonymous
+                                            ? Colors.grey.shade600
+                                            : _accentCrimson,
+                                      ),
+                                      onPressed: isAnonymous
+                                          ? null
+                                          : () {
+                                              ref
+                                                  .read(
+                                                    customTaskControllerProvider
+                                                        .notifier,
+                                                  )
+                                                  .deleteTask(
+                                                    uid: user.uid,
+                                                    taskId: task.id,
+                                                  );
+                                            },
+                                      tooltip: isAnonymous ? 'Kilitli' : 'Sil',
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    task.content,
-                                    style: GoogleFonts.cinzel(
-                                      color: _textLight,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.4,
+                            // Kilit overlay (anonim kullanıcılar için)
+                            if (isAnonymous)
+                              Positioned.fill(
+                                child: Container(
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Colors.black.withValues(alpha: 0.3),
+                                  ),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.lock_outline_rounded,
+                                      color: Colors.grey.shade400,
+                                      size: 32,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.black45,
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
-                                          border: Border.all(
-                                            color: _accentGold.withOpacity(0.3),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          task.category,
-                                          style: GoogleFonts.cinzel(
-                                            color: _accentGold,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.black45,
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
-                                          border: Border.all(
-                                            color: Colors.grey.withOpacity(0.3),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          task.difficulty.toUpperCase(),
-                                          style: GoogleFonts.cinzel(
-                                            color: Colors.grey.shade400,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.delete_outline_rounded,
-                                color: _accentCrimson,
-                              ),
-                              onPressed: () {
-                                ref
-                                    .read(customTaskControllerProvider.notifier)
-                                    .deleteTask(uid: user.uid, taskId: task.id);
-                              },
-                              tooltip: 'Sil',
-                            ),
                           ],
-                        ),
-                      ),
+                        );
+                      },
                     );
                   },
-                );
-              },
+                ),
+                // Üst overlay (anonim kullanıcılar için)
+                if (isAnonymous)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      ignoring: true,
+                      child: Container(color: Colors.transparent),
+                    ),
+                  ),
+              ],
             ),
           ),
         ],

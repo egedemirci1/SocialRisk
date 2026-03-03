@@ -3,12 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../shared/widgets/buttons/medieval_button.dart';
+import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
+import '../../../core/constants/app_colors.dart';
 
-/// Odaya katılma ekranı — Orta Çağ Temalı
+/// Sahneye Katılma Ekranı — Tiyatro Temalı
 class JoinRoomScreen extends ConsumerStatefulWidget {
   const JoinRoomScreen({super.key});
 
@@ -28,14 +29,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
   );
   bool _isJoining = false;
 
-  // Tematik Renkler
-  static const _bgColor = Color(0xFF140D0B); // En arka plan
-  static const _accentGold = Color(0xFFD4AF37); // Altın
-  static const _accentCrimson = Color(0xFF5C1616); // Bordo
-  static const _textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
-
   String get _roomCode => _controllers.map((c) => c.text).join().toUpperCase();
-
   bool get _isCodeComplete => _roomCode.length == _codeLength;
 
   @override
@@ -66,15 +60,9 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
 
   Future<void> _joinRoom() async {
     if (!_isCodeComplete) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Lütfen 6 haneli kodu gir',
-            style: GoogleFonts.cinzel(fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: _accentCrimson,
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Lütfen 6 haneli kodu gir')));
       return;
     }
 
@@ -86,12 +74,12 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
       final userProfile = await ref
           .read(userRepositoryProvider)
           .getUserProfile(user.uid);
-
       final repo = ref.read(roomRepositoryProvider);
+
       await repo.joinRoom(
         roomCode: _roomCode,
         playerId: user.uid,
-        playerName: user.displayName ?? 'Oyuncu',
+        playerName: user.displayName ?? 'Aktör',
         playerAvatarUrl: userProfile?.avatarUrl,
       );
 
@@ -99,13 +87,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Oda bulunamadı: ${e.toString()}',
-              style: GoogleFonts.cinzel(fontWeight: FontWeight.bold),
-            ),
-            backgroundColor: _accentCrimson,
-          ),
+          SnackBar(content: Text('Sahne bulunamadı: ${e.toString()}')),
         );
       }
     } finally {
@@ -116,129 +98,87 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgColor,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Odaya Katıl',
-          style: GoogleFonts.cinzelDecorative(
-            fontWeight: FontWeight.w700,
-            color: _textLight,
+          'Gösteriye Katıl',
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.w900,
+            color: AppColors.accent,
+            letterSpacing: 1.5,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded, color: _accentGold),
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            color: AppColors.accent,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Arka Plan Resmi
-          Image.asset(
-            'assets/Loading-Screen-Background.png',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                const SizedBox.shrink(),
-          ),
-          // Karartma (Overlay)
-          Container(color: _bgColor.withOpacity(0.85)),
-
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight:
-                      MediaQuery.of(context).size.height -
-                      MediaQuery.of(context).padding.top -
-                      kToolbarHeight,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          children: [
+            const SizedBox(height: 60),
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.surface,
+                border: Border.all(
+                  color: AppColors.accent.withValues(alpha: 0.2),
                 ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    children: [
-                      const Spacer(flex: 2),
-
-                      // İkon (Orta Çağ stilize parşömen/mühür ikonuna benzetme)
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _accentGold.withOpacity(0.1),
-                          border: Border.all(
-                            color: _accentGold.withOpacity(0.3),
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: _accentGold.withOpacity(0.2),
-                              blurRadius: 20,
-                              spreadRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: const SizedBox(
-                          width: 80,
-                          height: 80,
-                          child: Center(
-                            child: Icon(
-                              Icons
-                                  .key_rounded, // Anahtar ikonu odaya katılmaya daha uygun
-                              color: _accentGold,
-                              size: 40,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      Text(
-                        'Oda Kodunu Gir',
-                        style: GoogleFonts.cinzel(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: _textLight,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Arkadaşının paylaştığı 6 haneli kodu gir',
-                        style: GoogleFonts.cinzel(
-                          color: Colors.white54,
-                          fontSize: 14,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-
-                      const SizedBox(height: 48),
-
-                      // Kod giriş alanları
-                      _buildCodeInputs(),
-
-                      const SizedBox(height: 48),
-
-                      // Katıl butonu
-                      MedievalButton(
-                        label: 'Odaya Katıl',
-                        icon: Icons.login_rounded,
-                        backgroundColor: _accentCrimson,
-                        textColor: _textLight,
-                        borderColor: _accentGold.withOpacity(0.6),
-                        onPressed: _isCodeComplete ? _joinRoom : () {},
-                        isLoading: _isJoining,
-                      ),
-
-                      const Spacer(flex: 3),
-                    ],
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.accent.withValues(alpha: 0.1),
+                    blurRadius: 40,
+                    spreadRadius: 5,
                   ),
-                ),
+                ],
+              ),
+              child: const Icon(
+                Icons.key_rounded,
+                color: AppColors.accent,
+                size: 48,
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 32),
+            Text(
+              'Sahne Kodunu Gir',
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 28,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: 1,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Yönetmenin paylaştığı 6 haneli kodu girerek\nperformansa dahil ol.',
+              style: GoogleFonts.libreBaskerville(
+                color: Colors.white54,
+                fontSize: 13,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 48),
+            _buildCodeInputs(),
+            const SizedBox(height: 60),
+            StageButton(
+              label: 'Gösteriye Katıl',
+              icon: Icons.login_rounded,
+              backgroundColor: AppColors.primary,
+              textColor: Colors.white,
+              borderColor: AppColors.accent,
+              onPressed: _isCodeComplete ? _joinRoom : () {},
+              isLoading: _isJoining,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -248,15 +188,11 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(_codeLength, (index) {
         final hasValue = _controllers[index].text.isNotEmpty;
-
         return Padding(
-          padding: EdgeInsets.only(
-            left: index == 0 ? 0 : 8,
-            right: index == 2 ? 16 : 0, // 3 + 3 gruplandırma
-          ),
+          padding: EdgeInsets.symmetric(horizontal: index == 3 ? 8 : 2),
           child: SizedBox(
-            width: 44,
-            height: 60,
+            width: 40, // Reduced from 44
+            height: 56, // Reduced from 60
             child: KeyboardListener(
               focusNode: FocusNode(),
               onKeyEvent: (event) {
@@ -270,10 +206,10 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
                 focusNode: _focusNodes[index],
                 textAlign: TextAlign.center,
                 maxLength: 1,
-                style: GoogleFonts.cinzel(
+                style: GoogleFonts.playfairDisplay(
                   fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: _textLight,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.accent,
                 ),
                 textCapitalization: TextCapitalization.characters,
                 inputFormatters: [
@@ -282,31 +218,21 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
                 decoration: InputDecoration(
                   counterText: '',
                   filled: true,
-                  fillColor: hasValue
-                      ? _accentGold.withOpacity(0.15)
-                      : Colors.black.withOpacity(0.4),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: hasValue ? _accentGold : Colors.transparent,
-                      width: 1.5,
-                    ),
-                  ),
+                  fillColor: AppColors.surface,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
                       color: hasValue
-                          ? _accentGold.withOpacity(0.5)
-                          : _accentGold.withOpacity(0.2),
-                      width: 1.5,
+                          ? AppColors.accent.withValues(alpha: 0.5)
+                          : Colors.white12,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                     borderSide: const BorderSide(
-                      color: _accentGold,
-                      width: 2.5,
+                      color: AppColors.accent,
+                      width: 2,
                     ),
                   ),
                 ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/constants/app_colors.dart'; // Still used for votePositive/Neutral/Negative
+import '../../../core/constants/app_colors.dart';
 
-/// Oylama paneli — Beğen / Nötr / Beğenme butonları + geri sayım (Orta Çağ Temalı).
+/// Oylama paneli — Alkış / Eleştiri butonları (Tiyatro Temalı).
 class VotingPanel extends StatefulWidget {
   const VotingPanel({
     super.key,
@@ -23,14 +23,6 @@ class _VotingPanelState extends State<VotingPanel>
     with TickerProviderStateMixin {
   String? _selectedVote;
   late final AnimationController _timerController;
-  late final AnimationController _fadeController;
-  late final Animation<double> _fadeAnimation;
-
-  // Tematik Renkler
-  static const _accentGold = Color(0xFFD4AF37); // Altın
-  static const _textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
-  static const _cardColor = Color(0xFF1E140F); // Koyu kahve/Ahşap tonu
-  static const _accentCrimson = Color(0xFF5C1616); // Bordo
 
   @override
   void initState() {
@@ -42,25 +34,14 @@ class _VotingPanelState extends State<VotingPanel>
 
     _timerController.addStatusListener((status) {
       if (status == AnimationStatus.completed && _selectedVote == null) {
-        // Süre doldu, nötr oy
         _castVote('neutral');
       }
     });
-
-    _fadeController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    )..forward();
-    _fadeAnimation = CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeOut,
-    );
   }
 
   @override
   void dispose() {
     _timerController.dispose();
-    _fadeController.dispose();
     super.dispose();
   }
 
@@ -72,98 +53,95 @@ class _VotingPanelState extends State<VotingPanel>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: _cardColor.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: _accentGold.withOpacity(0.5)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'PERFORMANS NASILDI?',
+            style: GoogleFonts.playfairDisplay(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Başaktörün sergilediği rolü değerlendirin',
+            style: GoogleFonts.libreBaskerville(
+              color: Colors.white54,
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Geri sayım çubuğu (Spotlight ışığı gibi sarıdan kırmızıya)
+          AnimatedBuilder(
+            animation: _timerController,
+            builder: (context, child) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: LinearProgressIndicator(
+                  value: 1 - _timerController.value,
+                  backgroundColor: Colors.white12,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    _timerController.value > 0.8
+                        ? AppColors.primary
+                        : AppColors.accent,
+                  ),
+                  minHeight: 4,
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 24),
+
+          Row(
             children: [
-              Text(
-                'Nasıl buldun?',
-                style: GoogleFonts.cinzelDecorative(
-                  color: _textLight,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: _VoteButton(
+                  emoji: '👏',
+                  label: 'ALKIŞLA',
+                  color: Colors.green,
+                  isSelected: _selectedVote == 'like',
+                  isDisabled: _selectedVote != null && _selectedVote != 'like',
+                  onTap: () => _castVote('like'),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Oyuncunun performansını oyla',
-                style: GoogleFonts.cinzel(color: Colors.white70, fontSize: 14),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _VoteButton(
+                  emoji: '😶',
+                  label: 'KARARSIZ',
+                  color: Colors.orange,
+                  isSelected: _selectedVote == 'neutral',
+                  isDisabled:
+                      _selectedVote != null && _selectedVote != 'neutral',
+                  onTap: () => _castVote('neutral'),
+                ),
               ),
-              const SizedBox(height: 20),
-
-              // Geri sayım çubuğu
-              AnimatedBuilder(
-                animation: _timerController,
-                builder: (context, child) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: 1 - _timerController.value,
-                      backgroundColor: Colors.black.withOpacity(0.5),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        _timerController.value > 0.7
-                            ? _accentCrimson
-                            : _accentGold,
-                      ),
-                      minHeight: 6,
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-
-              // Oylama butonları
-              Row(
-                children: [
-                  Expanded(
-                    child: _VoteButton(
-                      emoji: '👍',
-                      label: 'Beğendim',
-                      color: AppColors.votePositive,
-                      isSelected: _selectedVote == 'like',
-                      isDisabled:
-                          _selectedVote != null && _selectedVote != 'like',
-                      onTap: () => _castVote('like'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _VoteButton(
-                      emoji: '😐',
-                      label: 'Nötr',
-                      color: AppColors.voteNeutral,
-                      isSelected: _selectedVote == 'neutral',
-                      isDisabled:
-                          _selectedVote != null && _selectedVote != 'neutral',
-                      onTap: () => _castVote('neutral'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _VoteButton(
-                      emoji: '👎',
-                      label: 'Beğenmedim',
-                      color: AppColors.voteNegative,
-                      isSelected: _selectedVote == 'dislike',
-                      isDisabled:
-                          _selectedVote != null && _selectedVote != 'dislike',
-                      onTap: () => _castVote('dislike'),
-                    ),
-                  ),
-                ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: _VoteButton(
+                  emoji: '🎭',
+                  label: 'ELEŞTİR',
+                  color: AppColors.primary,
+                  isSelected: _selectedVote == 'dislike',
+                  isDisabled:
+                      _selectedVote != null && _selectedVote != 'dislike',
+                  onTap: () => _castVote('dislike'),
+                ),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -188,42 +166,36 @@ class _VoteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: label,
-      child: GestureDetector(
-        onTap: isDisabled ? null : onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? color.withOpacity(0.2)
-                : Colors.black.withOpacity(0.4),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isSelected ? color : Colors.white12,
-              width: 1.5,
-            ),
+    return GestureDetector(
+      onTap: isDisabled ? null : onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.black26,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSelected ? color : Colors.white12,
+            width: 1.5,
           ),
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 200),
-            opacity: isDisabled ? 0.4 : 1.0,
-            child: Column(
-              children: [
-                Text(emoji, style: TextStyle(fontSize: isSelected ? 32 : 28)),
-                const SizedBox(height: 6),
-                Text(
-                  label,
-                  style: GoogleFonts.cinzel(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: isSelected ? color : Colors.white70,
-                  ),
-                  textAlign: TextAlign.center,
+        ),
+        child: Opacity(
+          opacity: isDisabled ? 0.4 : 1.0,
+          child: Column(
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 24)),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  color: isSelected ? color : Colors.white54,
+                  letterSpacing: 1,
                 ),
-              ],
-            ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
         ),
       ),

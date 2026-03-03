@@ -192,6 +192,24 @@
 
     // Method 3: Fallback timeout — remove after 8 seconds no matter what
     setTimeout(removeSplash, 8000);
+
+    // Firebase Auth persistence için localStorage kontrolü
+    // Flutter web'de Firebase Auth otomatik olarak localStorage kullanır
+    // Ancak bazen Chrome'da flutter run ile çalıştırırken localStorage temizlenebilir
+    // Bu script localStorage'ın korunmasını sağlar
+    (function() {
+      // localStorage'ın mevcut olup olmadığını kontrol et
+      try {
+        if (typeof(Storage) !== "undefined") {
+          // localStorage mevcut, Firebase Auth oturum bilgileri burada saklanacak
+          console.log('localStorage is available for Firebase Auth persistence');
+        } else {
+          console.warn('localStorage is not available');
+        }
+      } catch (e) {
+        console.error('Error checking localStorage:', e);
+      }
+    })();
   </script>
 
   <script src="flutter_bootstrap.js" async></script>

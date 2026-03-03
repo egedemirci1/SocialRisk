@@ -2,20 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 
-class StoreScreen extends ConsumerWidget {
+/// Gişe ve Kulis (Mağaza) Ekranı — Tiyatro Temalı
+class StoreScreen extends ConsumerStatefulWidget {
   const StoreScreen({super.key});
 
-  // Tematik Renkler
-  static const _bgColor = Color(0xFF140D0B); // En arka plan
-  static const _accentGold = Color(0xFFD4AF37); // Altın
-  static const _accentCrimson = Color(0xFF5C1616); // Bordo
-  static const _textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
-  static const _cardColor = Color(0xFF1E140F); // Koyu kahve/Ahşap tonu
+  @override
+  ConsumerState<StoreScreen> createState() => _StoreScreenState();
+}
+
+class _StoreScreenState extends ConsumerState<StoreScreen> {
+  int _selectedTab = 0; // 0: Roller, 1: Maskeler, 2: Senaryolar
 
   Future<void> _buyItem(
     BuildContext context,
@@ -27,13 +30,12 @@ class StoreScreen extends ConsumerWidget {
       await ref
           .read(economyControllerProvider.notifier)
           .buyCosmetic(uid: uid, cosmeticId: item.id, price: item.price);
-
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '${item.name} satın alındı!',
-            style: GoogleFonts.cinzel(fontWeight: FontWeight.bold),
+            '${item.name} artık gardırobunuzda!',
+            style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold),
           ),
           backgroundColor: Colors.green.shade800,
         ),
@@ -44,388 +46,479 @@ class StoreScreen extends ConsumerWidget {
         SnackBar(
           content: Text(
             'Hata: ${e.toString().replaceAll('Exception: ', '')}',
-            style: GoogleFonts.cinzel(fontWeight: FontWeight.bold),
+            style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold),
           ),
-          backgroundColor: _accentCrimson,
+          backgroundColor: AppColors.primary,
         ),
       );
     }
-  }
-
-  void _equipItem(
-    BuildContext context,
-    WidgetRef ref,
-    String uid,
-    CosmeticItemEntity item,
-  ) {
-    if (item.type == 'frame') {
-      ref
-          .read(economyControllerProvider.notifier)
-          .setActiveFrame(uid: uid, cosmeticId: item.id);
-    } else {
-      ref
-          .read(economyControllerProvider.notifier)
-          .setActiveTitle(uid: uid, cosmeticId: item.id);
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '${item.name} kuşandın.',
-          style: GoogleFonts.cinzel(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.blueGrey.shade800,
-      ),
-    );
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
     if (user == null) {
-      return Scaffold(
-        backgroundColor: _bgColor,
-        body: Center(child: CircularProgressIndicator(color: _accentGold)),
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
+    final isAnonymous = user.isAnonymous;
     final userProfileAsync = ref.watch(watchUserProfileProvider(user.uid));
     final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
 
     return Scaffold(
-      backgroundColor: _bgColor,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           'Mağaza',
-          style: GoogleFonts.cinzelDecorative(
-            fontWeight: FontWeight.w700,
-            color: _textLight,
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.w900,
+            color: AppColors.accent,
+            letterSpacing: 2,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded, color: _accentGold),
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            color: AppColors.accent,
+          ),
           onPressed: () => context.pop(),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Row(
-              children: [
-                // Testing amaçlı para ekleme butonu
-                IconButton(
-                  icon: const Icon(Icons.add_circle, color: Colors.green),
-                  tooltip: 'Test Parası Ekle',
-                  onPressed: () async {
-                    try {
-                      await ref
-                          .read(economyControllerProvider.notifier)
-                          .addPointsToWallet(uid: user.uid, points: 10000);
+          _buildWalletIndicator(userProfileAsync),
+          const SizedBox(width: 16),
+        ],
+      ),
+      body: Stack(
+        children: [
+          cosmeticsAsync.when(
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: AppColors.accent),
+            ),
+            error: (err, stack) => Center(
+              child: Text(
+                'Hata: $err',
+                style: GoogleFonts.playfairDisplay(color: AppColors.primary),
+              ),
+            ),
+            data: (items) {
+              final profile = userProfileAsync.value;
+              final owned = profile?.ownedCosmetics ?? [];
+              final roleItems = items.where((i) => i.type == 'title').toList();
+              final maskItems = items.where((i) => i.type == 'frame').toList();
 
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Test parası eklendi! (+10,000)',
-                            style: GoogleFonts.cinzel(
-                              fontWeight: FontWeight.bold,
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                    child: _buildTabSelector(),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 24,
+                      ),
+                      child: _buildTabContent(
+                        context: context,
+                        ref: ref,
+                        uid: user.uid,
+                        owned: owned,
+                        roleItems: roleItems,
+                        maskItems: maskItems,
+                        isAnonymous: isAnonymous,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          if (isAnonymous) _buildLockedOverlay(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWalletIndicator(AsyncValue<dynamic> userProfileAsync) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        gradient: AppColors.surfaceGradient,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.confirmation_number_rounded,
+            color: AppColors.accent,
+            size: 16,
+          ),
+          const SizedBox(width: 8),
+          userProfileAsync.when(
+            data: (profile) => Text(
+              '${profile?.walletPoints ?? 0}',
+              style: GoogleFonts.playfairDisplay(
+                color: AppColors.accent,
+                fontWeight: FontWeight.w900,
+                fontSize: 14,
+              ),
+            ),
+            loading: () => const SizedBox(
+              width: 12,
+              height: 12,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.accent,
+              ),
+            ),
+            error: (_, _) =>
+                const Text('0', style: TextStyle(color: AppColors.accent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabSelector() {
+    final tabs = ['Roller', 'Maskeler', 'Senaryolar'];
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        gradient: AppColors.surfaceGradient,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: List.generate(tabs.length, (index) {
+          final isSelected = _selectedTab == index;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedTab = index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    tabs[index],
+                    style: GoogleFonts.playfairDisplay(
+                      color: isSelected ? Colors.white : Colors.white54,
+                      fontWeight: isSelected
+                          ? FontWeight.w900
+                          : FontWeight.w500,
+                      fontSize: 10,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildTabContent({
+    required BuildContext context,
+    required WidgetRef ref,
+    required String uid,
+    required List<String> owned,
+    required List<CosmeticItemEntity> roleItems,
+    required List<CosmeticItemEntity> maskItems,
+    required bool isAnonymous,
+  }) {
+    List<CosmeticItemEntity> displayItems;
+    String title;
+    IconData icon;
+
+    switch (_selectedTab) {
+      case 0:
+        displayItems = roleItems;
+        title = 'Repertuar Rolleri';
+        icon = Icons.theater_comedy_rounded;
+        break;
+      case 1:
+        displayItems = maskItems;
+        title = 'Antik Maskeler';
+        icon = Icons.face_retouching_natural_rounded;
+        break;
+      default:
+        displayItems = [
+          const CosmeticItemEntity(
+            id: 'scenario_18',
+            name: 'Kapalı Gişe (+18)',
+            description: 'Sadece yetişkin aktörler için dramatik bir senaryo.',
+            imageUrl: '🔞',
+            price: 1500,
+            type: 'category',
+          ),
+          const CosmeticItemEntity(
+            id: 'scenario_comedy',
+            name: 'Fars Komedisi',
+            description: 'Kahkaha garantili, hafif ve eğlenceli içerikler.',
+            imageUrl: '🎭',
+            price: 800,
+            type: 'preset',
+          ),
+          const CosmeticItemEntity(
+            id: 'scenario_tragedy',
+            name: 'Antik Trajedi',
+            description: 'Derin, karanlık ve sarsıcı bir performans içeriği.',
+            imageUrl: '💀',
+            price: 1200,
+            type: 'category',
+          ),
+          const CosmeticItemEntity(
+            id: 'scenario_romance',
+            name: 'Aşkın Sahnesi',
+            description: 'Romantik ve duygu dolu repliklerle dolu bir içerik.',
+            imageUrl: '❤️',
+            price: 900,
+            type: 'preset',
+          ),
+          const CosmeticItemEntity(
+            id: 'scenario_mystery',
+            name: 'Gizemli Perde',
+            description:
+                'Gerilim ve gizem dolu, seyirciyi ekrana kitleyen sorular.',
+            imageUrl: '🔍',
+            price: 1100,
+            type: 'category',
+          ),
+          const CosmeticItemEntity(
+            id: 'scenario_sci_fi',
+            name: 'Geleceğin Rolü',
+            description: 'Fütüristik ve bilimkurgu temalı ilginç senaryolar.',
+            imageUrl: '🚀',
+            price: 1300,
+            type: 'preset',
+          ),
+        ];
+        title = 'Özel Senaryolar';
+        icon = Icons.menu_book_rounded;
+    }
+
+    if (displayItems.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 80),
+          child: Column(
+            children: [
+              const Icon(
+                Icons.inventory_2_outlined,
+                color: Colors.white10,
+                size: 64,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Henüz sergilenecek ürün yok.',
+                style: GoogleFonts.libreBaskerville(
+                  color: Colors.white24,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: AppColors.accent, size: 20),
+            const SizedBox(width: 12),
+            Text(
+              title,
+              style: GoogleFonts.playfairDisplay(
+                color: AppColors.accent,
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ],
+        ),
+        const Divider(color: Colors.white10, height: 32),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 0.75,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+          ),
+          itemCount: displayItems.length,
+          itemBuilder: (context, index) {
+            final item = displayItems[index];
+            final isOwned = owned.contains(item.id);
+            return _buildItemCard(context, ref, uid, item, isOwned);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildItemCard(
+    BuildContext context,
+    WidgetRef ref,
+    String uid,
+    CosmeticItemEntity item,
+    bool isOwned,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: AppColors.surfaceGradient,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.15)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: Text(item.imageUrl, style: const TextStyle(fontSize: 48)),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                Text(
+                  item.name,
+                  style: GoogleFonts.playfairDisplay(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  item.description,
+                  style: GoogleFonts.libreBaskerville(
+                    color: Colors.white54,
+                    fontSize: 10,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 12),
+                if (isOwned)
+                  Text(
+                    'Gardırupta',
+                    style: GoogleFonts.playfairDisplay(
+                      color: AppColors.accent,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 11,
+                      letterSpacing: 1,
+                    ),
+                  )
+                else
+                  GestureDetector(
+                    onTap: () => _buyItem(context, ref, uid, item),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 6,
+                        horizontal: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: AppColors.primary),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.confirmation_number_rounded,
+                            color: Colors.white,
+                            size: 10,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${item.price}',
+                            style: GoogleFonts.playfairDisplay(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 11,
                             ),
                           ),
-                          backgroundColor: Colors.green.shade800,
-                        ),
-                      );
-                    } catch (e) {
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Hata: $e',
-                            style: GoogleFonts.cinzel(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          backgroundColor: _accentCrimson,
-                        ),
-                      );
-                    }
-                  },
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _cardColor.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: _accentGold.withOpacity(0.5)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.monetization_on_rounded,
-                        color: _accentGold,
-                        size: 16,
+                        ],
                       ),
-                      const SizedBox(width: 4),
-                      userProfileAsync.when(
-                        data: (profile) => Text(
-                          profile?.walletPoints.toString() ?? '0',
-                          style: GoogleFonts.cinzel(
-                            color: _accentGold,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        loading: () => const SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: _accentGold,
-                          ),
-                        ),
-                        error: (e, stack) => Text(
-                          '0',
-                          style: GoogleFonts.cinzel(
-                            color: _accentGold,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
               ],
             ),
           ),
         ],
       ),
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Arka Plan Resmi
-          Image.asset(
-            'assets/Loading-Screen-Background.png',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                const SizedBox.shrink(),
-          ),
-          // Karartma (Overlay)
-          Container(color: _bgColor.withOpacity(0.85)),
-
-          SafeArea(
-            child: cosmeticsAsync.when(
-              loading: () => const Center(
-                child: CircularProgressIndicator(color: _accentGold),
-              ),
-              error: (err, stack) => Center(
-                child: Text(
-                  'Mağaza yüklenemedi: $err',
-                  style: GoogleFonts.cinzel(
-                    color: _accentCrimson,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              data: (items) {
-                final profile = userProfileAsync.value;
-                final owned = profile?.ownedCosmetics ?? [];
-                final titleItems = items.where((i) => i.type == 'title').toList();
-                final frameItems = items.where((i) => i.type == 'frame').toList();
-
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // ── Ünvanlar Bölümü ──
-                      _sectionHeader('Ünvanlar', Icons.military_tech_rounded),
-                      const SizedBox(height: 10),
-                      for (final item in titleItems)
-                        _itemCard(context, ref, user.uid, item, owned, profile),
-
-                      const SizedBox(height: 24),
-
-                      // ── Çerçeveler Bölümü ──
-                      _sectionHeader('Çerçeveler', Icons.filter_frames_rounded),
-                      const SizedBox(height: 10),
-                      for (final item in frameItems)
-                        _itemCard(context, ref, user.uid, item, owned, profile),
-
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
     );
   }
 
-  // ── Bölüm Başlığı ──
-  Widget _sectionHeader(String title, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Row(
-        children: [
-          Icon(icon, color: _accentGold, size: 20),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: GoogleFonts.cinzelDecorative(
-              color: _accentGold,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+  Widget _buildLockedOverlay() {
+    return Container(
+      color: Colors.black87,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.lock_rounded, color: AppColors.accent, size: 64),
+              const SizedBox(height: 24),
+              Text(
+                'Sahne Arkasına Geçin',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.playfairDisplay(
+                  color: AppColors.accent,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Kostüm ve rolleri seçmek için bir aktör hesabı oluşturmalısınız.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.libreBaskerville(
+                  color: Colors.white70,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 40),
+              StageButton(
+                label: 'Giriş Yap',
+                backgroundColor: AppColors.primary,
+                textColor: Colors.white,
+                borderColor: AppColors.accent,
+                onPressed: () => context.go('/login'),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Container(
-              height: 1,
-              color: _accentGold.withValues(alpha: 0.2),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── Kompakt Satır Kartı ──
-  Widget _itemCard(
-    BuildContext context,
-    WidgetRef ref,
-    String uid,
-    CosmeticItemEntity item,
-    List<String> owned,
-    dynamic profile,
-  ) {
-    final isOwned = owned.contains(item.id);
-    final itemColor = item.type == 'frame'
-        ? const Color(0xFFC44536)
-        : _accentGold;
-    final isEquipped = profile != null &&
-        ((item.type == 'frame' && profile.activeFrame == item.id) ||
-            (item.type == 'title' && profile.activeTitle == item.id));
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isEquipped
-              ? _accentGold.withValues(alpha: 0.12)
-              : _cardColor.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isEquipped
-                ? _accentGold
-                : itemColor.withValues(alpha: 0.2),
-            width: isEquipped ? 1.5 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.35),
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Row(
-          children: [
-            // Emoji İkon
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: itemColor.withValues(alpha: 0.08),
-                border: Border.all(
-                  color: itemColor.withValues(alpha: 0.3),
-                  width: 1.5,
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  item.imageUrl,
-                  style: const TextStyle(fontSize: 22),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            // İsim
-            Expanded(
-              child: Text(
-                item.name,
-                style: GoogleFonts.cinzel(
-                  color: _textLight,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(width: 8),
-
-            // Buton
-            if (isOwned)
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isEquipped ? Colors.black38 : _accentCrimson,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  minimumSize: const Size(0, 32),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    side: BorderSide(color: _accentGold.withValues(alpha: 0.4)),
-                  ),
-                  elevation: 0,
-                ),
-                onPressed: () => _equipItem(context, ref, uid, item),
-                child: Text(
-                  isEquipped ? 'Kuşanıldı' : 'Kuşan',
-                  style: GoogleFonts.cinzel(
-                    color: isEquipped ? Colors.white38 : _textLight,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 11,
-                  ),
-                ),
-              )
-            else
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _cardColor,
-                  foregroundColor: _accentGold,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  minimumSize: const Size(0, 32),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    side: BorderSide(color: _accentGold.withValues(alpha: 0.4)),
-                  ),
-                  elevation: 0,
-                ),
-                onPressed: () => _buyItem(context, ref, uid, item),
-                icon: const Icon(
-                  Icons.monetization_on_rounded,
-                  size: 14,
-                  color: _accentGold,
-                ),
-                label: Text(
-                  item.price.toString(),
-                  style: GoogleFonts.cinzel(
-                    color: _textLight,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-          ],
         ),
       ),
     );

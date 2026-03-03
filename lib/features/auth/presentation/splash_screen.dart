@@ -58,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
 
           // 2. Koyu Katman (Taverna atmosferi)
-          Container(color: overlayColor.withOpacity(0.5)),
+          Container(color: overlayColor.withValues(alpha: 0.5)),
 
           // 3. İçerik (Glow efekti, Başlık, Yükleniyor ikonu)
           Center(
@@ -77,12 +77,16 @@ class _SplashScreenState extends State<SplashScreen> {
                         borderRadius: BorderRadius.circular(40),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFD4AF37).withOpacity(0.4),
+                            color: const Color(
+                              0xFFD4AF37,
+                            ).withValues(alpha: 0.4),
                             blurRadius: 70,
                             spreadRadius: 20,
                           ),
                           BoxShadow(
-                            color: const Color(0xFF8B0000).withOpacity(0.35),
+                            color: const Color(
+                              0xFF8B0000,
+                            ).withValues(alpha: 0.35),
                             blurRadius: 100,
                             spreadRadius: 40,
                           ),

@@ -1,12 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:social_risk/features/store/presentation/store_screen.dart';
-import 'package:social_risk/features/economy/domain/cosmetic_item_entity.dart';
-import 'package:social_risk/features/auth/domain/user_entity.dart';
-import 'package:social_risk/features/economy/providers/economy_provider.dart';
-import 'package:social_risk/features/auth/providers/user_provider.dart';
-import 'package:social_risk/features/auth/providers/auth_provider.dart';
 
 // Create a dummy mock for firebase user if needed, or avoid it by overriding currentUserProvider.
 // Wait, currentUserProvider might return firebase_auth.User? or UserEntity?

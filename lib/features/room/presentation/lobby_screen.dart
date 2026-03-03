@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../shared/widgets/buttons/medieval_button.dart';
+import 'package:firebase_auth/firebase_auth.dart' show User;
+import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../../shared/widgets/common/report_dialog.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -14,8 +15,9 @@ import '../../../shared/models/enums.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
+import '../../../core/constants/app_colors.dart';
 
-/// Lobi ekranı — Oyuncu listesi, hazır/değil durumu, ve Başla butonu (Orta Çağ Temalı).
+/// Fuaye (Lobi) Ekranı — Tiyatro Temalı
 class LobbyScreen extends ConsumerStatefulWidget {
   const LobbyScreen({super.key, required this.roomCode});
 
@@ -26,19 +28,10 @@ class LobbyScreen extends ConsumerStatefulWidget {
 }
 
 class _LobbyScreenState extends ConsumerState<LobbyScreen> {
-  // Tematik Renkler
-  static const _bgColor = Color(0xFF140D0B); // En arka plan
-  static const _accentGold = Color(0xFFD4AF37); // Altın
-  static const _accentCrimson = Color(0xFF5C1616); // Bordo
-  static const _textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
-  static const _cardColor = Color(0xFF1E140F); // Koyu kahve/Ahşap tonu
-
   @override
   Widget build(BuildContext context) {
-    // Navigate non-hosts automatically when game starts using listen
     ref.listen(watchRoomProvider(widget.roomCode), (previous, next) {
       if (!mounted) return;
-
       final room = next.value;
       if (room == null) return;
 
@@ -67,20 +60,24 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     final cosmetics = cosmeticsAsync.value ?? [];
 
     return Scaffold(
-      backgroundColor: _bgColor,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Lobi',
-          style: GoogleFonts.cinzelDecorative(
-            fontWeight: FontWeight.w700,
-            color: _textLight,
+          'Sahne Arkası / Fuaye',
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.w900,
+            color: AppColors.accent,
+            letterSpacing: 1.5,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded, color: _accentGold),
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            color: AppColors.accent,
+          ),
           onPressed: () async {
             if (user != null) {
               await ref
@@ -91,197 +88,65 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
           },
         ),
       ),
-      extendBodyBehindAppBar: true,
       body: Stack(
-        fit: StackFit.expand,
         children: [
-          // Arka Plan Resmi
-          Image.asset(
-            'assets/Loading-Screen-Background.png',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                const SizedBox.shrink(),
-          ),
-          // Karartma (Overlay)
-          Container(color: _bgColor.withOpacity(0.85)),
-
           SafeArea(
             child: Column(
               children: [
-                // Oda kodu banner
                 _buildRoomCodeBanner(context),
-
                 const SizedBox(height: 16),
                 const _RotatingTooltips(),
-                const SizedBox(height: 8),
-
-                // Oyuncu listesi
+                const SizedBox(height: 16),
                 Expanded(
                   child: playersAsync.when(
-                    data: (players) => ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      itemCount: players.length,
-                      itemBuilder: (context, index) {
-                        final player = players[index];
-                        final isMe = player.id == user?.uid;
-                        return _PlayerTile(
-                          playerId: player.id,
-                          name: player.name,
-                          avatarUrl: player.avatarUrl,
-                          isReady: player.isReady,
-                          isCurrentPlayer: isMe,
-                          score: player.score,
-                          cosmetics: cosmetics,
-                          onLongPress: isMe
-                              ? null
-                              : () {
-                                  ReportDialog.show(
-                                    context,
-                                    ref,
-                                    targetUserId: player.id,
-                                    targetUserName: player.name,
-                                    targetUserAvatar: player.avatarUrl ?? '',
-                                  );
-                                },
-                        );
-                      },
-                    ),
+                    data: (players) {
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        itemCount: players.length,
+                        itemBuilder: (context, index) {
+                          final player = players[index];
+                          final isMe = player.id == user?.uid;
+                          return _PlayerTile(
+                            playerId: player.id,
+                            name: player.name,
+                            avatarUrl: player.avatarUrl,
+                            isReady: player.isReady,
+                            isCurrentPlayer: isMe,
+                            cosmetics: cosmetics,
+                            onLongPress: isMe
+                                ? null
+                                : () {
+                                    ReportDialog.show(
+                                      context,
+                                      ref,
+                                      targetUserId: player.id,
+                                      targetUserName: player.name,
+                                      targetUserAvatar: player.avatarUrl ?? '',
+                                    );
+                                  },
+                          );
+                        },
+                      );
+                    },
                     loading: () => const Center(
-                      child: CircularProgressIndicator(color: _accentGold),
+                      child: CircularProgressIndicator(color: AppColors.accent),
                     ),
                     error: (e, _) => Center(
                       child: Text(
                         'Hata: $e',
-                        style: GoogleFonts.cinzel(color: _accentCrimson),
+                        style: GoogleFonts.playfairDisplay(
+                          color: AppColors.primary,
+                        ),
                       ),
                     ),
                   ),
                 ),
-
-                // Alt butonlar
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                  child: roomAsync.when(
-                    data: (room) {
-                      final isHost = room?.hostId == user?.uid;
-                      final players = playersAsync.value ?? [];
-                      final allReady =
-                          players.isNotEmpty &&
-                          players.every(
-                            (p) => p.id == room?.hostId || p.isReady,
-                          );
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          if (!isHost) ...[
-                            // Hazır butonu — host değil
-                            _ReadyToggleButton(
-                              roomCode: widget.roomCode,
-                              playerId: user?.uid ?? '',
-                            ),
-                            const SizedBox(height: 12),
-                          ],
-                          if (isHost) ...[
-                            // Başla butonu — sadece host
-                            MedievalButton(
-                              label: 'Oyunu Başlat',
-                              icon: Icons.play_arrow_rounded,
-                              backgroundColor: (allReady && players.length >= 2)
-                                  ? _accentCrimson
-                                  : _cardColor,
-                              textColor: (allReady && players.length >= 2)
-                                  ? _textLight
-                                  : Colors.white38,
-                              borderColor: (allReady && players.length >= 2)
-                                  ? _accentGold.withOpacity(0.6)
-                                  : Colors.transparent,
-                              onPressed: (allReady && players.length >= 2)
-                                  ? () async {
-                                      try {
-                                        final playerIds = players
-                                            .map((p) => p.id)
-                                            .toList();
-
-                                        // Repository'leri async gap öncesi yakala
-                                        final roomRepo = ref.read(
-                                          roomRepositoryProvider,
-                                        );
-                                        final gameRepo = ref.read(
-                                          gameRepositoryProvider,
-                                        );
-
-                                        await roomRepo.updateRoomStatus(
-                                          roomCode: widget.roomCode,
-                                          status: GameStatus.playing,
-                                        );
-                                        final gameId = await gameRepo.startGame(
-                                          roomId: widget.roomCode,
-                                          playerIds: playerIds,
-                                          mode: room?.mode ?? GameMode.classic,
-                                        );
-
-                                        // gameId'yi room belgesine yaz
-                                        await FirebaseFirestore.instance
-                                            .collection('rooms')
-                                            .doc(widget.roomCode)
-                                            .update({'gameId': gameId});
-
-                                        if (context.mounted) {
-                                          context.go(
-                                            '/task',
-                                            extra: {
-                                              'gameId': gameId,
-                                              'roomCode': widget.roomCode,
-                                            },
-                                          );
-                                        }
-                                      } catch (e) {
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                'Hata: ${e.toString()}',
-                                                style: GoogleFonts.cinzel(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              backgroundColor: _accentCrimson,
-                                            ),
-                                          );
-                                        }
-                                      }
-                                    }
-                                  : () {}, // Boş fonksiyon disabled durumu MedievalButton'da handle edilir
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              allReady
-                                  ? 'Tüm oyuncular hazır!'
-                                  : 'Herkesin hazır olmasını bekle...',
-                              style: GoogleFonts.cinzel(
-                                color: allReady
-                                    ? Colors.green.shade400
-                                    : Colors.white54,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ],
-                      );
-                    },
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(color: _accentGold),
-                    ),
-                    error: (e, _) => Text(
-                      'Hata: $e',
-                      style: GoogleFonts.cinzel(color: _accentCrimson),
-                    ),
-                  ),
+                _buildActionSection(
+                  context,
+                  ref,
+                  user,
+                  roomAsync,
+                  playersAsync,
                 ),
               ],
             ),
@@ -293,67 +158,152 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
 
   Widget _buildRoomCodeBanner(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-      child: DecoratedBox(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Container(
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: _cardColor.withOpacity(0.9),
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: _accentGold.withOpacity(0.4), width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.4),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+          border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'SAHNE KODU',
+                  style: GoogleFonts.playfairDisplay(
+                    color: Colors.white54,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1,
+                  ),
+                ),
+                Text(
+                  widget.roomCode,
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.accent,
+                    letterSpacing: 4,
+                  ),
+                ),
+              ],
+            ),
+            IconButton(
+              icon: const Icon(Icons.copy_rounded, color: AppColors.accent),
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: widget.roomCode));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Kod kopyalandı!')),
+                );
+              },
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      ),
+    );
+  }
+
+  Widget _buildActionSection(
+    BuildContext context,
+    WidgetRef ref,
+    User? user,
+    AsyncValue<dynamic> roomAsync,
+    AsyncValue<List<dynamic>> playersAsync,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+      child: roomAsync.when(
+        data: (room) {
+          final isHost = room?.hostId == user?.uid;
+          final players = playersAsync.value ?? [];
+          final allReady =
+              players.isNotEmpty &&
+              players.every((p) => p.id == room?.hostId || p.isReady);
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Oda Kodu',
-                    style: GoogleFonts.cinzel(
-                      color: Colors.white54,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
+              if (!isHost)
+                _ReadyToggleButton(
+                  roomCode: widget.roomCode,
+                  playerId: user?.uid ?? '',
+                ),
+              if (isHost) ...[
+                StageButton(
+                  label: 'PERDEYİ AÇ',
+                  icon: Icons.play_arrow_rounded,
+                  backgroundColor: (allReady && players.length >= 2)
+                      ? AppColors.primary
+                      : AppColors.surface,
+                  textColor: (allReady && players.length >= 2)
+                      ? Colors.white
+                      : Colors.white30,
+                  borderColor: (allReady && players.length >= 2)
+                      ? AppColors.accent
+                      : Colors.white10,
+                  onPressed: (allReady && players.length >= 2)
+                      ? () async {
+                          try {
+                            final playerIds = players
+                                .map((p) => p.id as String)
+                                .toList();
+                            await ref
+                                .read(roomRepositoryProvider)
+                                .updateRoomStatus(
+                                  roomCode: widget.roomCode,
+                                  status: GameStatus.playing,
+                                );
+                            final gameId = await ref
+                                .read(gameRepositoryProvider)
+                                .startGame(
+                                  roomId: widget.roomCode,
+                                  playerIds: playerIds,
+                                  mode: room?.mode ?? GameMode.classic,
+                                );
+                            await FirebaseFirestore.instance
+                                .collection('rooms')
+                                .doc(widget.roomCode)
+                                .update({'gameId': gameId});
+                            if (context.mounted) {
+                              context.go(
+                                '/task',
+                                extra: {
+                                  'gameId': gameId,
+                                  'roomCode': widget.roomCode,
+                                },
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Hata: $e')),
+                              );
+                            }
+                          }
+                        }
+                      : () {},
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  allReady
+                      ? 'Tüm aktörler sahneye hazır!'
+                      : 'Tüm aktörlerin hazırlanmasını bekleyin...',
+                  style: GoogleFonts.libreBaskerville(
+                    color: allReady ? Colors.green : Colors.white30,
+                    fontSize: 12,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    widget.roomCode,
-                    style: GoogleFonts.cinzel(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                      color: _accentCrimson,
-                      letterSpacing: 4,
-                    ),
-                  ),
-                ],
-              ),
-              IconButton(
-                icon: const Icon(Icons.copy_rounded, color: _textLight),
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: widget.roomCode));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Kod kopyalandı!',
-                        style: GoogleFonts.cinzel(fontWeight: FontWeight.bold),
-                      ),
-                      backgroundColor: Colors.blueGrey.shade800,
-                    ),
-                  );
-                },
-                tooltip: 'Kopyala',
-              ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ],
-          ),
-        ),
+          );
+        },
+        loading: () => const SizedBox.shrink(),
+        error: (_, _) => const SizedBox.shrink(),
       ),
     );
   }
@@ -366,7 +316,6 @@ class _PlayerTile extends ConsumerWidget {
     this.avatarUrl,
     required this.isReady,
     required this.isCurrentPlayer,
-    this.score = 0,
     this.cosmetics = const [],
     this.onLongPress,
   });
@@ -376,22 +325,13 @@ class _PlayerTile extends ConsumerWidget {
   final String? avatarUrl;
   final bool isReady;
   final bool isCurrentPlayer;
-  final int score;
   final List<CosmeticItemEntity> cosmetics;
   final VoidCallback? onLongPress;
 
-  // Tematik Renkler
-  static const _accentGold = Color(0xFFD4AF37); // Altın
-  static const _textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
-  static const _cardColor = Color(0xFF1E140F); // Koyu kahve/Ahşap tonu
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Oyuncunun canlı profilini izle — çerçeve ve ünvan her zaman güncel
     final profileAsync = ref.watch(watchUserProfileProvider(playerId));
     final profile = profileAsync.value;
-
-    final liveFrame = profile?.activeFrame;
     final activeTitleItem = profile?.activeTitle != null
         ? cosmetics.where((c) => c.id == profile!.activeTitle).firstOrNull
         : null;
@@ -400,90 +340,62 @@ class _PlayerTile extends ConsumerWidget {
       onLongPress: onLongPress,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
-        child: DecoratedBox(
+        child: Container(
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: isCurrentPlayer
-                ? _accentGold.withOpacity(0.15)
-                : _cardColor.withOpacity(0.9),
-            borderRadius: BorderRadius.circular(12),
+                ? AppColors.accent.withValues(alpha: 0.1)
+                : AppColors.surface,
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isCurrentPlayer
-                  ? _accentGold.withOpacity(0.5)
-                  : Colors.transparent,
-              width: 1.5,
+              color: isCurrentPlayer ? AppColors.accent : Colors.white10,
             ),
-            boxShadow: isCurrentPlayer
-                ? [
-                    BoxShadow(
-                      color: _accentGold.withOpacity(0.1),
-                      blurRadius: 8,
-                      spreadRadius: 2,
-                    ),
-                  ]
-                : [],
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Row(
-              children: [
-                PlayerAvatar(
-                  displayName: name,
-                  avatarUrl: avatarUrl,
-                  score: score,
-                  radius: 20,
-                  frameId: liveFrame,
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+          child: Row(
+            children: [
+              PlayerAvatar(uid: playerId, displayName: name, radius: 20),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name + (isCurrentPlayer ? ' (Sen)' : ''),
+                    style: GoogleFonts.playfairDisplay(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
+                    ),
+                  ),
+                  if (activeTitleItem != null)
                     Text(
-                      name + (isCurrentPlayer ? ' (Sen)' : ''),
-                      style: GoogleFonts.cinzel(
-                        color: isCurrentPlayer ? _textLight : Colors.white,
-                        fontWeight: isCurrentPlayer
-                            ? FontWeight.bold
-                            : FontWeight.w500,
-                        fontSize: 16,
+                      activeTitleItem.name.toUpperCase(),
+                      style: GoogleFonts.playfairDisplay(
+                        color: AppColors.accent,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
-                    if (activeTitleItem != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 2.0),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _accentGold.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(
-                              color: _accentGold.withOpacity(0.5),
-                            ),
-                          ),
-                          child: Text(
-                            '${activeTitleItem.imageUrl} ${activeTitleItem.name}',
-                            style: GoogleFonts.cinzel(
-                              color: _accentGold,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
+                ],
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isReady
+                      ? Colors.green.withValues(alpha: 0.2)
+                      : Colors.orange.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(4),
                 ),
-                const Spacer(),
-                Icon(
-                  isReady
-                      ? Icons.check_circle_rounded
-                      : Icons.radio_button_unchecked_rounded,
-                  color: isReady ? Colors.green.shade400 : Colors.white38,
+                child: Text(
+                  isReady ? 'HAZIR' : 'KULİSTE',
+                  style: GoogleFonts.playfairDisplay(
+                    color: isReady ? Colors.green : Colors.orange,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -499,48 +411,26 @@ class _ReadyToggleButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Tematik Renkler
-    const accentGold = Color(0xFFD4AF37); // Altın
-    const accentCrimson = Color(0xFF5C1616); // Bordo
-    const textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
-
     final playersAsync = ref.watch(watchPlayersProvider(roomCode));
-    final players = playersAsync.value ?? [];
-    final me = players.cast<dynamic>().firstWhere(
-      (p) => p.id == playerId,
-      orElse: () => null,
-    );
+    final me = (playersAsync.value ?? [])
+        .where((p) => p.id == playerId)
+        .firstOrNull;
     final isReady = me?.isReady ?? false;
 
-    return isReady
-        ? MedievalButton(
-            label: 'Hazır Değilim',
-            icon: Icons.close_rounded,
-            backgroundColor: Colors.black.withOpacity(0.6),
-            textColor: Colors.white70,
-            borderColor: Colors.redAccent.withOpacity(0.4),
-            onPressed: () => ref
-                .read(roomControllerProvider.notifier)
-                .toggleReady(
-                  roomCode: roomCode,
-                  playerId: playerId,
-                  isReady: false,
-                ),
-          )
-        : MedievalButton(
-            label: 'Hazırım!',
-            icon: Icons.check_circle_outline_rounded,
-            backgroundColor: accentCrimson,
-            textColor: textLight,
-            borderColor: accentGold.withOpacity(0.8),
-            onPressed: () => ref
-                .read(roomControllerProvider.notifier)
-                .toggleReady(
-                  roomCode: roomCode,
-                  playerId: playerId,
-                  isReady: true,
-                ),
-          );
+    return StageButton(
+      label: isReady ? 'HENÜZ HAZIR DEĞİLİM' : 'SAHNEYE HAZIRIM!',
+      icon: isReady ? Icons.close_rounded : Icons.check_circle_outline_rounded,
+      backgroundColor: isReady ? Colors.black26 : AppColors.primary,
+      textColor: isReady ? Colors.white54 : Colors.white,
+      borderColor: isReady ? Colors.white12 : AppColors.accent,
+      onPressed: () => ref
+          .read(roomControllerProvider.notifier)
+          .toggleReady(
+            roomCode: roomCode,
+            playerId: playerId,
+            isReady: !isReady,
+          ),
+    );
   }
 }
 
@@ -554,10 +444,10 @@ class _RotatingTooltips extends StatefulWidget {
 class _RotatingTooltipsState extends State<_RotatingTooltips> {
   int _currentIndex = 0;
   final List<String> _tips = [
-    '💡 İpucu: Pas geçmek sırayı bitirir ve puanını düşürür!',
-    '💡 İpucu: Oylamada dürüst ol, arkadaşının kaderi sende.',
-    '💡 İpucu: Çok fazla pas dersen eksi puanlara düşersin.',
-    '💡 İpucu: Soru türüne göre puan kazancı değişir.',
+    '🎭 Sahne tozunu yutmaya hazır mısın?',
+    '🎭 Unutma, her büyük aktör bir zamanlar sadece bir izleyiciydi.',
+    '🎭 Performansın alkışları puanlarını belirleyecek.',
+    '🎭 Doğaçlama yaparken dürüstlükten ayrılma.',
   ];
 
   @override
@@ -576,32 +466,17 @@ class _RotatingTooltipsState extends State<_RotatingTooltips> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 600),
-        transitionBuilder: (child, animation) {
-          return FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0.0, 0.2),
-                end: Offset.zero,
-              ).animate(animation),
-              child: child,
-            ),
-          );
-        },
-        child: Text(
-          _tips[_currentIndex],
-          key: ValueKey<int>(_currentIndex),
-          style: GoogleFonts.cinzel(
-            color: Colors.redAccent.shade100,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 600),
+      child: Text(
+        _tips[_currentIndex],
+        key: ValueKey<int>(_currentIndex),
+        style: GoogleFonts.libreBaskerville(
+          color: AppColors.accent,
+          fontSize: 12,
+          fontStyle: FontStyle.italic,
         ),
+        textAlign: TextAlign.center,
       ),
     );
   }

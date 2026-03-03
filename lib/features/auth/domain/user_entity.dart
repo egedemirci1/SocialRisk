@@ -18,4 +18,26 @@ class UserEntity {
     this.activeFrame,
     this.activeTitle,
   });
+
+  UserEntity copyWith({
+    String? uid,
+    String? displayName,
+    String? avatarUrl,
+    int? walletPoints,
+    String? rank,
+    List<String>? ownedCosmetics,
+    String? activeFrame,
+    String? activeTitle,
+  }) {
+    return UserEntity(
+      uid: uid ?? this.uid,
+      displayName: displayName ?? this.displayName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      walletPoints: walletPoints ?? this.walletPoints,
+      rank: rank ?? this.rank,
+      ownedCosmetics: ownedCosmetics ?? this.ownedCosmetics,
+      activeFrame: activeFrame ?? this.activeFrame,
+      activeTitle: activeTitle ?? this.activeTitle,
+    );
+  }
 }
