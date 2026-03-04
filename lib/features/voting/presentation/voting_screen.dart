@@ -6,12 +6,14 @@ import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/voting/voting_panel.dart';
 import '../../../shared/models/enums.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/providers/user_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../../game/providers/game_provider.dart';
 import '../providers/vote_provider.dart';
 import '../../game/domain/game_entity.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
+import '../../economy/providers/economy_provider.dart';
 
 /// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor (Tiyatro Temalı).
 class VotingScreen extends ConsumerStatefulWidget {
@@ -180,6 +182,27 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                       fontWeight: FontWeight.w900,
                       letterSpacing: 2,
                     ),
+                  ),
+                  // Ünvan gösterimi
+                  Builder(
+                    builder: (context) {
+                      final profile = ref.watch(watchUserProfileProvider(game.currentPlayerId)).value;
+                      if (profile?.activeTitle == null) return const SizedBox.shrink();
+                      final cosmetics = ref.watch(fetchCosmeticsProvider).value ?? [];
+                      final titleItem = cosmetics.where((c) => c.id == profile!.activeTitle).firstOrNull;
+                      if (titleItem == null) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          '${titleItem.imageUrl} ${titleItem.name}',
+                          style: GoogleFonts.playfairDisplay(
+                            color: AppColors.accent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 8),
                   Text(

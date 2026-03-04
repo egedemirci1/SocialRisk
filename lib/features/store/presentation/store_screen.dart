@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../shared/widgets/buttons/stage_button.dart';
+
 import '../../economy/providers/economy_provider.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -18,7 +18,7 @@ class StoreScreen extends ConsumerStatefulWidget {
 }
 
 class _StoreScreenState extends ConsumerState<StoreScreen> {
-  int _selectedTab = 0; // 0: Roller, 1: Maskeler, 2: Senaryolar
+  int _selectedTab = 0; // 0: Ünvanlar, 1: Çerçeveler, 2: Senaryolar
 
   Future<void> _buyItem(
     BuildContext context,
@@ -90,7 +90,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           onPressed: () => context.pop(),
         ),
         actions: [
-          _buildWalletIndicator(userProfileAsync),
+          _buildWalletIndicator(userProfileAsync, user.uid),
           const SizedBox(width: 16),
         ],
       ),
@@ -139,56 +139,93 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               );
             },
           ),
-          if (isAnonymous) _buildLockedOverlay(),
+
         ],
       ),
     );
   }
 
-  Widget _buildWalletIndicator(AsyncValue<dynamic> userProfileAsync) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        gradient: AppColors.surfaceGradient,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.confirmation_number_rounded,
-            color: AppColors.accent,
-            size: 16,
-          ),
-          const SizedBox(width: 8),
-          userProfileAsync.when(
-            data: (profile) => Text(
-              '${profile?.walletPoints ?? 0}',
-              style: GoogleFonts.playfairDisplay(
-                color: AppColors.accent,
-                fontWeight: FontWeight.w900,
-                fontSize: 14,
-              ),
+  Widget _buildWalletIndicator(AsyncValue<dynamic> userProfileAsync, String uid) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Test para ekleme butonu
+        GestureDetector(
+          onTap: () async {
+            await ref
+                .read(economyControllerProvider.notifier)
+                .addPointsToWallet(uid: uid, points: 500);
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '+500 bilet eklendi!',
+                    style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold),
+                  ),
+                  backgroundColor: Colors.green.shade800,
+                  duration: const Duration(seconds: 1),
+                ),
+              );
+            }
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
             ),
-            loading: () => const SizedBox(
-              width: 12,
-              height: 12,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.accent,
-              ),
-            ),
-            error: (_, _) =>
-                const Text('0', style: TextStyle(color: AppColors.accent)),
+            child: const Icon(Icons.add, color: Colors.greenAccent, size: 16),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 6),
+        // Cüzdan göstergesi
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            gradient: AppColors.surfaceGradient,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.confirmation_number_rounded,
+                color: AppColors.accent,
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              userProfileAsync.when(
+                data: (profile) => Text(
+                  '${profile?.walletPoints ?? 0}',
+                  style: GoogleFonts.playfairDisplay(
+                    color: AppColors.accent,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  ),
+                ),
+                loading: () => const SizedBox(
+                  width: 12,
+                  height: 12,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.accent,
+                  ),
+                ),
+                error: (_, _) =>
+                    const Text('0', style: TextStyle(color: AppColors.accent)),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildTabSelector() {
-    final tabs = ['Roller', 'Maskeler', 'Senaryolar'];
+    final tabs = ['Ünvanlar', 'Çerçeveler', 'Senaryolar'];
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -241,17 +278,20 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
   }) {
     List<CosmeticItemEntity> displayItems;
     String title;
+    String subtitle;
     IconData icon;
 
     switch (_selectedTab) {
       case 0:
         displayItems = roleItems;
-        title = 'Repertuar Rolleri';
+        title = 'Ünvanlar';
+        subtitle = 'Oyun içinde adınızın altında görünen özel etiketler.';
         icon = Icons.theater_comedy_rounded;
         break;
       case 1:
         displayItems = maskItems;
-        title = 'Antik Maskeler';
+        title = 'Çerçeveler';
+        subtitle = 'Profil fotoğrafınızın etrafında parlayan özel efektler.';
         icon = Icons.face_retouching_natural_rounded;
         break;
       default:
@@ -259,7 +299,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           const CosmeticItemEntity(
             id: 'scenario_18',
             name: 'Kapalı Gişe (+18)',
-            description: 'Sadece yetişkin aktörler için dramatik bir senaryo.',
+            description: 'Yetişkinlere özel görevler çıkar. Oda ayarından aktif edilir.',
             imageUrl: '🔞',
             price: 1500,
             type: 'category',
@@ -267,7 +307,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           const CosmeticItemEntity(
             id: 'scenario_comedy',
             name: 'Fars Komedisi',
-            description: 'Kahkaha garantili, hafif ve eğlenceli içerikler.',
+            description: 'Komik ve eğlenceli görevler ağırlıklı olarak çıkar.',
             imageUrl: '🎭',
             price: 800,
             type: 'preset',
@@ -275,7 +315,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           const CosmeticItemEntity(
             id: 'scenario_tragedy',
             name: 'Antik Trajedi',
-            description: 'Derin, karanlık ve sarsıcı bir performans içeriği.',
+            description: 'Dramatik ve cesur görevler ağırlıklı olarak çıkar.',
             imageUrl: '💀',
             price: 1200,
             type: 'category',
@@ -283,7 +323,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           const CosmeticItemEntity(
             id: 'scenario_romance',
             name: 'Aşkın Sahnesi',
-            description: 'Romantik ve duygu dolu repliklerle dolu bir içerik.',
+            description: 'Romantik ve duygusal görevler ağırlıklı olarak çıkar.',
             imageUrl: '❤️',
             price: 900,
             type: 'preset',
@@ -291,8 +331,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           const CosmeticItemEntity(
             id: 'scenario_mystery',
             name: 'Gizemli Perde',
-            description:
-                'Gerilim ve gizem dolu, seyirciyi ekrana kitleyen sorular.',
+            description: 'Gerilim ve gizem temalı görevler ağırlıklı olarak çıkar.',
             imageUrl: '🔍',
             price: 1100,
             type: 'category',
@@ -300,13 +339,14 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           const CosmeticItemEntity(
             id: 'scenario_sci_fi',
             name: 'Geleceğin Rolü',
-            description: 'Fütüristik ve bilimkurgu temalı ilginç senaryolar.',
+            description: 'Bilimkurgu temalı görevler ağırlıklı olarak çıkar.',
             imageUrl: '🚀',
             price: 1300,
             type: 'preset',
           ),
         ];
         title = 'Özel Senaryolar';
+        subtitle = 'Oyundaki görev havuzunu belirleyen tema paketleri.';
         icon = Icons.menu_book_rounded;
     }
 
@@ -342,39 +382,42 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           children: [
             Icon(icon, color: AppColors.accent, size: 20),
             const SizedBox(width: 12),
-            Text(
-              title,
-              style: GoogleFonts.playfairDisplay(
-                color: AppColors.accent,
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.5,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.playfairDisplay(
+                      color: AppColors.accent,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.libreBaskerville(
+                      color: Colors.white30,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-        const Divider(color: Colors.white10, height: 32),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.75,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-          ),
-          itemCount: displayItems.length,
-          itemBuilder: (context, index) {
-            final item = displayItems[index];
-            final isOwned = owned.contains(item.id);
-            return _buildItemCard(context, ref, uid, item, isOwned);
-          },
-        ),
+        const Divider(color: Colors.white10, height: 24),
+        ...displayItems.map((item) {
+          final isOwned = owned.contains(item.id);
+          return _buildCompactItem(context, ref, uid, item, isOwned);
+        }),
       ],
     );
   }
 
-  Widget _buildItemCard(
+  Widget _buildCompactItem(
     BuildContext context,
     WidgetRef ref,
     String uid,
@@ -382,28 +425,35 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     bool isOwned,
   ) {
     return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         gradient: AppColors.surfaceGradient,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.accent.withValues(alpha: 0.15)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isOwned
+              ? AppColors.accent.withValues(alpha: 0.3)
+              : AppColors.accent.withValues(alpha: 0.1),
+        ),
       ),
-      child: Column(
+      child: Row(
         children: [
-          Expanded(
-            child: Center(
-              child: Text(item.imageUrl, style: const TextStyle(fontSize: 48)),
+          // Emoji
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.black26,
+              borderRadius: BorderRadius.circular(10),
             ),
+            alignment: Alignment.center,
+            child: Text(item.imageUrl, style: const TextStyle(fontSize: 24)),
           ),
-          Padding(
-            padding: const EdgeInsets.all(12),
+          const SizedBox(width: 14),
+          // İsim + Açıklama
+          Expanded(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   item.name,
@@ -412,115 +462,77 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                     fontWeight: FontWeight.w900,
                     fontSize: 13,
                   ),
-                  textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   item.description,
                   style: GoogleFonts.libreBaskerville(
-                    color: Colors.white54,
+                    color: Colors.white38,
                     fontSize: 10,
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 12),
-                if (isOwned)
-                  Text(
-                    'Gardırupta',
-                    style: GoogleFonts.playfairDisplay(
-                      color: AppColors.accent,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 11,
-                      letterSpacing: 1,
-                    ),
-                  )
-                else
-                  GestureDetector(
-                    onTap: () => _buyItem(context, ref, uid, item),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 6,
-                        horizontal: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: AppColors.primary),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.confirmation_number_rounded,
-                            color: Colors.white,
-                            size: 10,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '${item.price}',
-                            style: GoogleFonts.playfairDisplay(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),
+          const SizedBox(width: 10),
+          // Fiyat veya Sahiplik durumu
+          if (isOwned)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.accent.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
+              ),
+              child: Text(
+                'Sahip',
+                style: GoogleFonts.playfairDisplay(
+                  color: AppColors.accent,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 10,
+                  letterSpacing: 1,
+                ),
+              ),
+            )
+          else
+            GestureDetector(
+              onTap: () => _buyItem(context, ref, uid, item),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.primary),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.confirmation_number_rounded,
+                      color: Colors.white70,
+                      size: 10,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${item.price}',
+                      style: GoogleFonts.playfairDisplay(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildLockedOverlay() {
-    return Container(
-      color: Colors.black87,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.lock_rounded, color: AppColors.accent, size: 64),
-              const SizedBox(height: 24),
-              Text(
-                'Sahne Arkasına Geçin',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.playfairDisplay(
-                  color: AppColors.accent,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Kostüm ve rolleri seçmek için bir aktör hesabı oluşturmalısınız.',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.libreBaskerville(
-                  color: Colors.white70,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 40),
-              StageButton(
-                label: 'Giriş Yap',
-                backgroundColor: AppColors.primary,
-                textColor: Colors.white,
-                borderColor: AppColors.accent,
-                onPressed: () => context.go('/login'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+
 }

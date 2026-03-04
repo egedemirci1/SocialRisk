@@ -64,13 +64,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> _pickAndUploadImage(String uid) async {
     final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.gallery);
+    // Web ve mobil'de yerleşik olarak (native) resmi sıkıştırmak/küçültmek en performanslı ve güvenli yoldur.
+    final image = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512, // Native yeniden boyutlandırma (512x512 max)
+      maxHeight: 512,
+      imageQuality: 70, // %70 kalite (JPEG için yerleşik sıkıştırma)
+    );
+
     if (image != null) {
+      if (!mounted) return;
       setState(() => _isUploading = true);
+      
       try {
+        // Zaten ImagePicker tarafından küçültüldüğü için doğrudan byteları alıp yükleyebiliriz
+        // Ağır çalışan pure-dart ImageCompressor'ı devreden çıkardık
+        final rawBytes = await image.readAsBytes();
+        
         final url = await ref
             .read(userControllerProvider.notifier)
-            .uploadAvatar(uid, image);
+            .uploadAvatar(uid, rawBytes);
+            
         if (url != null && mounted) {
           await ref
               .read(userControllerProvider.notifier)
@@ -78,9 +92,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Hata: ${e.toString()}')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Hata: ${e.toString()}'),
+              backgroundColor: AppColors.primary,
+            ),
+          );
         }
       } finally {
         if (mounted) setState(() => _isUploading = false);
@@ -114,25 +131,48 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ? const Center(
               child: CircularProgressIndicator(color: AppColors.accent),
             )
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    _buildTabBar(),
-                    const SizedBox(height: 32),
-                    if (_selectedTabIndex == 0 && userProfileAsync.hasValue)
-                      _buildActorTab(userProfileAsync.value!, userProfileAsync),
-                    if (_selectedTabIndex == 1 && userProfileAsync.hasValue)
-                      _buildWardrobeTab(
-                        userProfileAsync.value!,
-                        userProfileAsync,
-                      ),
-                    if (_selectedTabIndex == 2)
-                      _buildPerformanceTab(userProfileAsync),
-                  ],
-                ),
+          : userProfileAsync.when(
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: AppColors.accent),
               ),
+              error: (err, stack) => Center(
+                child: Text('Hata: $err', style: const TextStyle(color: Colors.white)),
+              ),
+              data: (userProfile) {
+                // Auth'tan gelen ismi tercih et (Firestore'da 'Misafir' olabilir)
+                final authName = user.displayName ?? 'Anonim Aktör';
+                UserEntity profile;
+                if (userProfile == null) {
+                  profile = UserEntity(
+                    uid: user.uid,
+                    displayName: authName,
+                    avatarUrl: user.photoURL,
+                  );
+                } else {
+                  // Firestore'daki isim 'Misafir' ise Auth ismini kullan
+                  final effectiveName = (userProfile.displayName == 'Misafir')
+                      ? authName
+                      : userProfile.displayName;
+                  profile = userProfile.copyWith(displayName: effectiveName);
+                }
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      children: [
+                        _buildTabBar(),
+                        const SizedBox(height: 32),
+                        if (_selectedTabIndex == 0)
+                          _buildActorTab(profile, userProfileAsync),
+                        if (_selectedTabIndex == 1)
+                          _buildWardrobeTab(profile, userProfileAsync),
+                        if (_selectedTabIndex == 2)
+                          _buildPerformanceTab(userProfileAsync),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
     );
   }
@@ -182,6 +222,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               child: PlayerAvatar(
                 uid: user.uid,
                 displayName: user.displayName,
+                avatarUrl: user.avatarUrl,
                 radius: 60,
               ),
             ),
@@ -294,123 +335,174 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     UserEntity user,
     AsyncValue<dynamic> userProfileAsync,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Kostüm Ve Aksesuarlar',
-          style: GoogleFonts.playfairDisplay(
-            color: AppColors.accent,
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.5,
-          ),
-        ),
-        const Divider(color: Colors.white10),
-        const SizedBox(height: 16),
-        Consumer(
-          builder: (context, ref, child) {
-            final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
-            return cosmeticsAsync.when(
-              data: (items) {
-                final ownedIds = userProfileAsync.value?.ownedCosmetics ?? [];
-                final ownedItems = items
-                    .where((i) => ownedIds.contains(i.id))
-                    .toList();
+    return Consumer(
+      builder: (context, ref, child) {
+        final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
+        return cosmeticsAsync.when(
+          data: (items) {
+            final ownedIds = userProfileAsync.value?.ownedCosmetics ?? [];
+            final ownedItems = items.where((i) => ownedIds.contains(i.id)).toList();
+            final frameItems = ownedItems.where((i) => i.type == 'frame').toList();
+            final titleItems = ownedItems.where((i) => i.type == 'title').toList();
 
-                if (ownedItems.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(40.0),
-                      child: Text(
-                        'Henüz bir kostümünüz yok.\nMağazaya göz atmak ister misiniz?',
-                        style: GoogleFonts.libreBaskerville(
-                          color: Colors.white38,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                }
+            if (ownedItems.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(40.0),
+                  child: Text(
+                    'Henüz bir kostümünüz yok.\nMağazaya göz atmak ister misiniz?',
+                    style: GoogleFonts.libreBaskerville(color: Colors.white38),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
+            }
 
-                return Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: ownedItems.map((item) {
-                    final isEquipped =
-                        (item.type == 'frame' &&
-                            userProfileAsync.value?.activeFrame == item.id) ||
-                        (item.type == 'title' &&
-                            userProfileAsync.value?.activeTitle == item.id);
-                    return GestureDetector(
-                      onTap: () {
-                        final notifier = ref.read(
-                          economyControllerProvider.notifier,
-                        );
-                        if (item.type == 'frame') {
-                          notifier.setActiveFrame(
-                            uid: user.uid,
-                            cosmeticId: isEquipped ? null : item.id,
-                          );
-                        } else {
-                          notifier.setActiveTitle(
-                            uid: user.uid,
-                            cosmeticId: isEquipped ? null : item.id,
-                          );
-                        }
-                      },
-                      child: Container(
-                        width: 100,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: isEquipped
-                              ? AppColors.primary.withValues(alpha: 0.1)
-                              : AppColors.surface,
-                          border: Border.all(
-                            color: isEquipped
-                                ? AppColors.primary
-                                : Colors.white12,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              item.imageUrl,
-                              style: const TextStyle(fontSize: 32),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              item.name,
-                              style: GoogleFonts.libreBaskerville(
-                                color: isEquipped
-                                    ? Colors.white
-                                    : Colors.white70,
-                                fontSize: 10,
-                                fontWeight: isEquipped
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                              ),
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                            ),
-                          ],
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Çerçeveler bölümü
+                if (frameItems.isNotEmpty) ...[
+                  Row(
+                    children: [
+                      const Icon(Icons.face_retouching_natural_rounded,
+                          color: AppColors.accent, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Çerçeveler',
+                        style: GoogleFonts.playfairDisplay(
+                          color: AppColors.accent,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
                         ),
                       ),
-                    );
-                  }).toList(),
-                );
-              },
-              loading: () => const Center(
-                child: CircularProgressIndicator(color: AppColors.accent),
-              ),
-              error: (e, _) =>
-                  Text('Hata: $e', style: const TextStyle(color: Colors.red)),
+                    ],
+                  ),
+                  const Divider(color: Colors.white10, height: 20),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: frameItems.map((item) {
+                      final isEquipped =
+                          userProfileAsync.value?.activeFrame == item.id;
+                      return _buildCosmeticChip(item, isEquipped, user.uid, ref);
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 28),
+                ],
+                // Ünvanlar bölümü
+                if (titleItems.isNotEmpty) ...[
+                  Row(
+                    children: [
+                      const Icon(Icons.theater_comedy_rounded,
+                          color: AppColors.accent, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Ünvanlar',
+                        style: GoogleFonts.playfairDisplay(
+                          color: AppColors.accent,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(color: Colors.white10, height: 20),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: titleItems.map((item) {
+                      final isEquipped =
+                          userProfileAsync.value?.activeTitle == item.id;
+                      return _buildCosmeticChip(item, isEquipped, user.uid, ref);
+                    }).toList(),
+                  ),
+                ],
+              ],
             );
           },
+          loading: () => const Center(
+            child: CircularProgressIndicator(color: AppColors.accent),
+          ),
+          error: (e, _) =>
+              Text('Hata: $e', style: const TextStyle(color: Colors.red)),
+        );
+      },
+    );
+  }
+
+  Widget _buildCosmeticChip(
+    dynamic item,
+    bool isEquipped,
+    String uid,
+    WidgetRef ref,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        final notifier = ref.read(economyControllerProvider.notifier);
+        if (item.type == 'frame') {
+          notifier.setActiveFrame(
+            uid: uid,
+            cosmeticId: isEquipped ? null : item.id,
+          );
+        } else {
+          notifier.setActiveTitle(
+            uid: uid,
+            cosmeticId: isEquipped ? null : item.id,
+          );
+        }
+      },
+      child: Container(
+        width: 100,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isEquipped
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : AppColors.surface,
+          border: Border.all(
+            color: isEquipped ? AppColors.primary : Colors.white12,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(4),
         ),
-      ],
+        child: Column(
+          children: [
+            Text(item.imageUrl, style: const TextStyle(fontSize: 32)),
+            const SizedBox(height: 8),
+            Text(
+              item.name,
+              style: GoogleFonts.libreBaskerville(
+                color: isEquipped ? Colors.white : Colors.white70,
+                fontSize: 10,
+                fontWeight: isEquipped ? FontWeight.bold : FontWeight.normal,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+            ),
+            if (isEquipped)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'Aktif',
+                    style: GoogleFonts.playfairDisplay(
+                      color: AppColors.accent,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -430,27 +522,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         const Divider(color: Colors.white10),
         const SizedBox(height: 16),
         userProfileAsync.when(
-          data: (profile) => Column(
-            children: [
-              _StatRow(
-                icon: Icons.star_rounded,
-                label: 'Toplam Alkış (Puan)',
-                value: '${profile?.totalScore ?? 0}',
-              ),
-              const SizedBox(height: 12),
-              _StatRow(
-                icon: Icons.theater_comedy_rounded,
-                label: 'Oynanan Gösteri',
-                value: '${profile?.gamesPlayed ?? 0}',
-              ),
-              const SizedBox(height: 12),
-              _StatRow(
-                icon: Icons.trending_up_rounded,
-                label: 'Sanatçı Seviyesi',
-                value: '${profile?.level ?? 1}',
-              ),
-            ],
-          ),
+          data: (profile) {
+            final UserEntity? p = profile;
+            return Column(
+              children: [
+                _StatRow(
+                  icon: Icons.confirmation_number_rounded,
+                  label: 'Bilet Bakiye',
+                  value: '${p?.walletPoints ?? 0}',
+                ),
+                const SizedBox(height: 12),
+                _StatRow(
+                  icon: Icons.workspace_premium_rounded,
+                  label: 'Rütbe',
+                  value: p?.rank ?? 'Newbie',
+                ),
+                const SizedBox(height: 12),
+                _StatRow(
+                  icon: Icons.style_rounded,
+                  label: 'Koleksiyon',
+                  value: '${p?.ownedCosmetics.length ?? 0} ürün',
+                ),
+              ],
+            );
+          },
           loading: () => const Center(
             child: CircularProgressIndicator(color: AppColors.accent),
           ),

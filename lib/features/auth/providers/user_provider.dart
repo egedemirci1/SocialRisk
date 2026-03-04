@@ -48,6 +48,10 @@ class UserController extends _$UserController {
     state = await AsyncValue.guard(() async {
       downloadUrl = await ref.read(userRepositoryProvider).uploadAvatar(uid, file);
     });
+    // Eğer hata alındıysa, sessizce geçiştirmek yerine UI'a hatayı fırlat
+    if (state.hasError) {
+      throw state.error!;
+    }
     return downloadUrl;
   }
 

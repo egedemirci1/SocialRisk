@@ -9,7 +9,9 @@ import '../providers/game_provider.dart';
 import '../domain/game_entity.dart';
 import '../../room/providers/room_provider.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/providers/user_provider.dart';
 import '../../admin/providers/task_provider.dart';
+import '../../economy/providers/economy_provider.dart';
 import 'package:lottie/lottie.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../room/domain/room_entity.dart';
@@ -353,7 +355,7 @@ class _ScoreRow extends StatelessWidget {
   }
 }
 
-class _LeaderboardTile extends StatelessWidget {
+class _LeaderboardTile extends ConsumerWidget {
   final PlayerEntity player;
   final int rank;
   final bool isTarget;
@@ -364,7 +366,13 @@ class _LeaderboardTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profile = ref.watch(watchUserProfileProvider(player.id)).value;
+    final cosmetics = ref.watch(fetchCosmeticsProvider).value ?? [];
+    final titleItem = profile?.activeTitle != null
+        ? cosmetics.where((c) => c.id == profile!.activeTitle).firstOrNull
+        : null;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(8),
@@ -395,12 +403,26 @@ class _LeaderboardTile extends StatelessWidget {
           PlayerAvatar(uid: player.id, displayName: player.name, radius: 15),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              player.name,
-              style: GoogleFonts.playfairDisplay(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  player.name,
+                  style: GoogleFonts.playfairDisplay(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (titleItem != null)
+                  Text(
+                    '${titleItem.imageUrl} ${titleItem.name}',
+                    style: GoogleFonts.playfairDisplay(
+                      color: AppColors.accent,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+              ],
             ),
           ),
           Text(

@@ -179,11 +179,14 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/round-result',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final extra = state.extra as Map<String, dynamic>? ?? {};
-        return RoundResultScreen(
-          gameId: extra['gameId'] as String? ?? '',
-          roomCode: extra['roomCode'] as String? ?? '',
+        return _buildPageWithTransition(
+          child: RoundResultScreen(
+            gameId: extra['gameId'] as String? ?? '',
+            roomCode: extra['roomCode'] as String? ?? '',
+          ),
+          state: state,
         );
       },
     ),
@@ -199,12 +202,14 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/difficulty',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
         final gameId = extra?['gameId'] as String? ?? '';
         final roomCode = extra?['roomCode'] as String? ?? '';
-
-        return DifficultyChoiceScreen(gameId: gameId, roomCode: roomCode);
+        return _buildPageWithTransition(
+          child: DifficultyChoiceScreen(gameId: gameId, roomCode: roomCode),
+          state: state,
+        );
       },
     ),
     GoRoute(
@@ -255,15 +260,20 @@ CustomTransitionPage<void> _buildPageWithTransition({
   return CustomTransitionPage<void>(
     key: state.pageKey,
     child: child,
-    transitionDuration: const Duration(milliseconds: 300),
+    transitionDuration: const Duration(milliseconds: 250),
+    reverseTransitionDuration: const Duration(milliseconds: 200),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeInOutCubic,
+      );
       return FadeTransition(
-        opacity: animation,
+        opacity: curvedAnimation,
         child: SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(0.0, 0.05),
+            begin: const Offset(0.0, 0.03),
             end: Offset.zero,
-          ).animate(CurveTween(curve: Curves.easeOut).animate(animation)),
+          ).animate(curvedAnimation),
           child: child,
         ),
       );

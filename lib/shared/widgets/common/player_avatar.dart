@@ -43,43 +43,72 @@ class PlayerAvatar extends ConsumerWidget {
     return Colors.transparent;
   }
 
-  /// Emojilerle avatarın etrafında taç/çerçeve efekti yaratan yardımcı fonksiyon
-  Widget _buildEmojiRing(String emoji, double r) {
+  /// Çerçeve ID'sine göre uygun emoji ring'i oluşturur ve avatarın tam merkezine yerleştirir.
+  Widget _buildCenteredEmojiRing(String frameId, double r) {
+    final Map<String, String> frameEmojis = {
+      'frame_flower': '🌸',
+      'frame_ice': '❄️',
+      'frame_fire': '🔥',
+      'frame_shield': '🛡️',
+      'frame_ivy': '🌿',
+      'frame_neon': '⚡',
+      'frame_stars': '⭐',
+      'frame_lightning': '🌩️',
+    };
+    final emoji = frameEmojis[frameId];
+    if (emoji == null) return const SizedBox.shrink();
+
     const int count = 10;
-    final distance = r + 2; 
-    final ringSize = (distance + r * 0.4) * 2;
-    
-    return IgnorePointer(
-      child: SizedBox(
-        width: ringSize,
-        height: ringSize,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            const SizedBox.shrink(),
-            ...List.generate(count, (index) {
+    final distance = r + 2;
+    final emojiSize = r * 0.7;
+    final ringSize = (distance + emojiSize / 2) * 2;
+    final center = ringSize / 2;
+    final avatarDiameter = r * 2;
+    final offset = -(ringSize - avatarDiameter) / 2;
+
+    return Positioned(
+      left: offset,
+      top: offset,
+      child: IgnorePointer(
+        child: SizedBox(
+          width: ringSize,
+          height: ringSize,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: List.generate(count, (index) {
               final angle = (index * 2 * math.pi) / count;
               final x = math.cos(angle) * distance;
               final y = math.sin(angle) * distance;
-              
+
               return Positioned(
-                left: r + x - (r * 0.4),
-                top: r + y - (r * 0.4),
-                child: Transform.rotate(
-                  angle: angle + math.pi / 2,
-                  child: Text(
-                    emoji,
-                    style: TextStyle(
-                      fontSize: r * 0.7,
-                      shadows: [
-                        Shadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 4),
-                      ],
+                left: center + x - emojiSize / 2,
+                top: center + y - emojiSize / 2,
+                child: SizedBox(
+                  width: emojiSize,
+                  height: emojiSize,
+                  child: Center(
+                    child: Transform.rotate(
+                      angle: angle + math.pi / 2,
+                      child: Text(
+                        emoji,
+                        style: TextStyle(
+                          fontSize: emojiSize * 0.85,
+                          height: 1.0,
+                          shadows: [
+                            Shadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 4),
+                          ],
+                        ),
+                        textHeightBehavior: const TextHeightBehavior(
+                          applyHeightToFirstAscent: false,
+                          applyHeightToLastDescent: false,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               );
             }),
-          ],
+          ),
         ),
       ),
     );
@@ -88,11 +117,17 @@ class PlayerAvatar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String? currentFrameId = frameId;
+    String? currentAvatarUrl = avatarUrl;
 
     if (uid != null) {
       final userAsync = ref.watch(watchUserProfileProvider(uid!));
-      if (userAsync.value != null && userAsync.value!.activeFrame != null) {
-        currentFrameId = userAsync.value!.activeFrame;
+      if (userAsync.value != null) {
+        if (userAsync.value!.activeFrame != null) {
+          currentFrameId = userAsync.value!.activeFrame;
+        }
+        if (userAsync.value!.avatarUrl != null && userAsync.value!.avatarUrl!.isNotEmpty) {
+          currentAvatarUrl = userAsync.value!.avatarUrl;
+        }
       }
     }
 
@@ -144,10 +179,10 @@ class PlayerAvatar extends ConsumerWidget {
           child: CircleAvatar(
             radius: radius,
             backgroundColor: AppColors.surfaceElevated,
-            backgroundImage: avatarUrl != null
-                ? NetworkImage(avatarUrl!)
+            backgroundImage: currentAvatarUrl != null
+                ? NetworkImage(currentAvatarUrl)
                 : null,
-            child: avatarUrl == null
+            child: currentAvatarUrl == null
                 ? Text(
                     displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
                     style: GoogleFonts.inter(
@@ -161,51 +196,40 @@ class PlayerAvatar extends ConsumerWidget {
         ),
 
         // Satın Alınan Kozmetik Çerçeve (Frame) - Görsel Efekt
-        if (currentFrameId != null)
+        if (currentFrameId != null) ...[
+          // Renkli aura / glow border
           Positioned.fill(
             child: IgnorePointer(
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  // Arka plandaki renkli aura / glow
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: currentFrameId == 'frame_fire'
-                            ? AppColors.fire.withValues(alpha: 0.8)
-                            : currentFrameId == 'frame_ice'
-                            ? AppColors.ice.withValues(alpha: 0.8)
-                            : currentFrameId == 'frame_flower'
-                            ? Colors.pinkAccent.withValues(alpha: 0.8)
-                            : currentFrameId == 'frame_shield'
-                            ? Colors.indigoAccent.withValues(alpha: 0.8)
-                            : currentFrameId == 'frame_ivy'
-                            ? Colors.green.withValues(alpha: 0.8)
-                            : currentFrameId == 'frame_neon'
-                            ? Colors.cyanAccent.withValues(alpha: 0.8)
-                            : currentFrameId == 'frame_stars'
-                            ? const Color(0xFFD4AF37).withValues(alpha: 0.8)
-                            : currentFrameId == 'frame_lightning'
-                            ? Colors.lightBlueAccent.withValues(alpha: 0.8)
-                            : AppColors.primary,
-                        width: 2.5,
-                      ),
-                    ),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: currentFrameId == 'frame_fire'
+                        ? AppColors.fire.withValues(alpha: 0.8)
+                        : currentFrameId == 'frame_ice'
+                        ? AppColors.ice.withValues(alpha: 0.8)
+                        : currentFrameId == 'frame_flower'
+                        ? Colors.pinkAccent.withValues(alpha: 0.8)
+                        : currentFrameId == 'frame_shield'
+                        ? Colors.indigoAccent.withValues(alpha: 0.8)
+                        : currentFrameId == 'frame_ivy'
+                        ? Colors.green.withValues(alpha: 0.8)
+                        : currentFrameId == 'frame_neon'
+                        ? Colors.cyanAccent.withValues(alpha: 0.8)
+                        : currentFrameId == 'frame_stars'
+                        ? const Color(0xFFD4AF37).withValues(alpha: 0.8)
+                        : currentFrameId == 'frame_lightning'
+                        ? Colors.lightBlueAccent.withValues(alpha: 0.8)
+                        : AppColors.primary,
+                    width: 2.5,
                   ),
-                  // Üstteki emojiler (çiçek, kalkan vs)
-                  if (currentFrameId == 'frame_flower') _buildEmojiRing('🌸', radius),
-                  if (currentFrameId == 'frame_ice') _buildEmojiRing('❄️', radius),
-                  if (currentFrameId == 'frame_fire') _buildEmojiRing('🔥', radius),
-                  if (currentFrameId == 'frame_shield') _buildEmojiRing('🛡️', radius),
-                  if (currentFrameId == 'frame_ivy') _buildEmojiRing('🌿', radius),
-                  if (currentFrameId == 'frame_neon') _buildEmojiRing('⚡', radius),
-                  if (currentFrameId == 'frame_stars') _buildEmojiRing('⭐', radius),
-                  if (currentFrameId == 'frame_lightning') _buildEmojiRing('🌩️', radius),
-                ],
+                ),
               ),
             ),
           ),
+          // Emoji ring — merkezlenmiş
+          _buildCenteredEmojiRing(currentFrameId, radius),
+        ],
 
         // Efekt emojisi
         if (_effect != null)

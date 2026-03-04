@@ -212,7 +212,6 @@ class _CustomDeckEditorScreenState
       );
     }
 
-    final isAnonymous = user.isAnonymous;
     final customTasksAsync = ref.watch(watchCustomTasksProvider(user.uid));
 
     return Scaffold(
@@ -234,15 +233,13 @@ class _CustomDeckEditorScreenState
         ),
         actions: [
           IconButton(
-            icon: Icon(
-              isAnonymous
-                  ? Icons.lock_outline_rounded
-                  : Icons.add_circle_outline_rounded,
-              color: isAnonymous ? Colors.grey.shade600 : _accentGold,
+            icon: const Icon(
+              Icons.add_circle_outline_rounded,
+              color: _accentGold,
               size: 28,
             ),
-            onPressed: isAnonymous ? null : () => _showAddTaskDialog(user.uid),
-            tooltip: isAnonymous ? 'Hesap gerekli' : 'Soru Ekle',
+            onPressed: () => _showAddTaskDialog(user.uid),
+            tooltip: 'Soru Ekle',
           ),
         ],
       ),
@@ -281,17 +278,8 @@ class _CustomDeckEditorScreenState
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              if (isAnonymous)
-                                Icon(
-                                  Icons.lock_outline_rounded,
-                                  size: 64,
-                                  color: _accentGold.withValues(alpha: 0.8),
-                                ),
-                              if (isAnonymous) const SizedBox(height: 16),
                               Text(
-                                isAnonymous
-                                    ? 'Custom deck kullanmak için\nhesap oluşturmalısın'
-                                    : 'Henüz efsanelere konu olacak sorular girmedin.\nSağ üstten yeni soru ekle!',
+                                'Henüz efsanelere konu olacak sorular girmedin.\nSağ üstten yeni soru ekle!',
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.cinzel(
                                   color: _textLight.withValues(alpha: 0.7),
@@ -299,16 +287,6 @@ class _CustomDeckEditorScreenState
                                   height: 1.5,
                                 ),
                               ),
-                              if (isAnonymous) const SizedBox(height: 8),
-                              if (isAnonymous)
-                                Text(
-                                  'Google veya Apple ile giriş yap',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.cinzel(
-                                    color: _textLight.withValues(alpha: 0.5),
-                                    fontSize: 14,
-                                  ),
-                                ),
                             ],
                           ),
                         ),
@@ -358,11 +336,9 @@ class _CustomDeckEditorScreenState
                                           ),
                                         ),
                                       ),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.history_edu_rounded,
-                                        color: isAnonymous
-                                            ? Colors.grey.shade600
-                                            : _accentGold,
+                                        color: _accentGold,
                                         size: 24,
                                       ),
                                     ),
@@ -375,11 +351,7 @@ class _CustomDeckEditorScreenState
                                           Text(
                                             task.content,
                                             style: GoogleFonts.cinzel(
-                                              color: isAnonymous
-                                                  ? _textLight.withValues(
-                                                      alpha: 0.5,
-                                                    )
-                                                  : _textLight,
+                                              color: _textLight,
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                               height: 1.4,
@@ -406,9 +378,7 @@ class _CustomDeckEditorScreenState
                                                 child: Text(
                                                   task.category,
                                                   style: GoogleFonts.cinzel(
-                                                    color: isAnonymous
-                                                        ? Colors.grey.shade600
-                                                        : _accentGold,
+                                                    color: _accentGold,
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.bold,
                                                   ),
@@ -446,15 +416,11 @@ class _CustomDeckEditorScreenState
                                     ),
                                     const SizedBox(width: 8),
                                     IconButton(
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.delete_outline_rounded,
-                                        color: isAnonymous
-                                            ? Colors.grey.shade600
-                                            : _accentCrimson,
+                                        color: _accentCrimson,
                                       ),
-                                      onPressed: isAnonymous
-                                          ? null
-                                          : () {
+                                      onPressed: () {
                                               ref
                                                   .read(
                                                     customTaskControllerProvider
@@ -465,44 +431,18 @@ class _CustomDeckEditorScreenState
                                                     taskId: task.id,
                                                   );
                                             },
-                                      tooltip: isAnonymous ? 'Kilitli' : 'Sil',
+                                      tooltip: 'Sil',
                                     ),
                                   ],
                                 ),
                               ),
                             ),
-                            // Kilit overlay (anonim kullanıcılar için)
-                            if (isAnonymous)
-                              Positioned.fill(
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: Colors.black.withValues(alpha: 0.3),
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.lock_outline_rounded,
-                                      color: Colors.grey.shade400,
-                                      size: 32,
-                                    ),
-                                  ),
-                                ),
-                              ),
                           ],
                         );
                       },
                     );
                   },
                 ),
-                // Üst overlay (anonim kullanıcılar için)
-                if (isAnonymous)
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      ignoring: true,
-                      child: Container(color: Colors.transparent),
-                    ),
-                  ),
               ],
             ),
           ),
