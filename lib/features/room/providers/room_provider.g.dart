@@ -67,7 +67,7 @@ final class WatchRoomProvider
   }) : super(
          retry: null,
          name: r'watchRoomProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -105,7 +105,7 @@ final class WatchRoomProvider
   }
 }
 
-String _$watchRoomHash() => r'f5270c220fb186ad597b8698439da133a7c20d10';
+String _$watchRoomHash() => r'f91e9642d5e21113030ff86b8f406eb059ba30b9';
 
 final class WatchRoomFamily extends $Family
     with $FunctionalFamilyOverride<Stream<RoomEntity?>, String> {
@@ -115,7 +115,7 @@ final class WatchRoomFamily extends $Family
         name: r'watchRoomProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   WatchRoomProvider call(String roomCode) =>
@@ -144,7 +144,7 @@ final class WatchPlayersProvider
   }) : super(
          retry: null,
          name: r'watchPlayersProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -182,7 +182,7 @@ final class WatchPlayersProvider
   }
 }
 
-String _$watchPlayersHash() => r'8147f08a2ec4bc23d602016d794d05cb527d8e33';
+String _$watchPlayersHash() => r'c7f84aa9432776769485f7f3642bd93a8e5d436e';
 
 final class WatchPlayersFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<PlayerEntity>>, String> {
@@ -192,7 +192,7 @@ final class WatchPlayersFamily extends $Family
         name: r'watchPlayersProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   WatchPlayersProvider call(String roomCode) =>
@@ -226,7 +226,7 @@ final class RoomControllerProvider
   RoomController create() => RoomController();
 }
 
-String _$roomControllerHash() => r'45907df3090aa3aec50edc2092c6cb9e29716bc4';
+String _$roomControllerHash() => r'daf0f32c448e5e2749a581ac19d07d534246af1b';
 
 abstract class _$RoomController extends $AsyncNotifier<String?> {
   FutureOr<String?> build();

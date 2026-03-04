@@ -24,13 +24,14 @@ class TaskController extends _$TaskController {
     required String userId,
     required bool isLike,
   }) async {
+    if (!ref.mounted) return;
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      await ref.read(taskSourceProvider).submitFeedback(
-        taskId: taskId,
-        userId: userId,
-        isLike: isLike,
-      );
+    final result = await AsyncValue.guard(() async {
+      await ref
+          .read(taskSourceProvider)
+          .submitFeedback(taskId: taskId, userId: userId, isLike: isLike);
     });
+    if (!ref.mounted) return;
+    state = result;
   }
 }

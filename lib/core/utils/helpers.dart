@@ -1,11 +1,13 @@
 import 'dart:math';
 
 class AppHelpers {
+  static final Random _rng = Random();
+
   static String generateRoomCode() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     return List.generate(
       6,
-      (index) => chars[Random().nextInt(chars.length)],
+      (index) => chars[_rng.nextInt(chars.length)],
     ).join();
   }
 

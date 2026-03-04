@@ -2,10 +2,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../data/firebase_game_source.dart';
 import '../domain/game_entity.dart';
 import '../domain/game_repository.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/constants/game_constants.dart';
 import '../../../shared/models/enums.dart';
-import '../../economy/providers/economy_provider.dart';
 
 part 'game_provider.g.dart';
 
@@ -14,7 +12,7 @@ GameRepository gameRepository(Ref ref) {
   return FirebaseGameSource();
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 Stream<GameEntity?> watchGame(Ref ref, String gameId) {
   return ref.watch(gameRepositoryProvider).watchGame(gameId);
 }
@@ -22,27 +20,7 @@ Stream<GameEntity?> watchGame(Ref ref, String gameId) {
 @Riverpod(keepAlive: true)
 class GameController extends _$GameController {
   @override
-  FutureOr<String?> build() => null;
-
-  Future<String> startGame({
-    required String roomId,
-    required List<String> playerIds,
-    required GameMode mode,
-    List<String> categories = const [],
-  }) async {
-    state = const AsyncLoading();
-    final repo = ref.read(gameRepositoryProvider);
-    final result = await AsyncValue.guard(
-      () => repo.startGame(
-        roomId: roomId,
-        playerIds: playerIds,
-        mode: mode,
-        categories: categories,
-      ),
-    );
-    state = result;
-    return result.value ?? '';
-  }
+  FutureOr<void> build() {}
 
   Future<void> acceptTask(String gameId) async {
     await ref.read(gameRepositoryProvider).acceptTask(gameId);
@@ -72,16 +50,11 @@ class GameController extends _$GameController {
 
   Future<void> chooseDifficulty({
     required String gameId,
-    required String roomId,
     required String difficulty,
   }) async {
     await ref
         .read(gameRepositoryProvider)
-        .chooseDifficulty(
-          gameId: gameId,
-          roomId: roomId,
-          difficulty: difficulty,
-        );
+        .chooseDifficulty(gameId: gameId, difficulty: difficulty);
   }
 
   Future<void> passTask({
@@ -121,52 +94,17 @@ class GameController extends _$GameController {
     // Bitiş koşulunu kontrol et
     bool shouldEnd = false;
     if (endConditionType == EndConditionType.rounds) {
-      // Tur bazlı bitiş
       shouldEnd = currentRound >= endConditionValue;
     } else if (endConditionType == EndConditionType.score) {
-      // Skor bazlı bitiş: E12. Fetch the player list to check their scores
-      final playersSnap = await FirebaseFirestore.instance
-          .collection('rooms')
-          .doc(roomId)
-          .collection('players')
-          .get();
-
-      for (final doc in playersSnap.docs) {
-        final score = doc.data()['score'] as int? ?? 0;
-        // Check condition: Any player's score >= required score
-        if (score >= endConditionValue) {
-          shouldEnd = true;
-          break;
-        }
-      }
+      // Skor bazlı bitiş: repository üzerinden kontrol et
+      shouldEnd = await repo.checkScoreEndCondition(
+        roomId: roomId,
+        targetScore: endConditionValue,
+      );
     }
 
-    if (shouldEnd) {
-      // Oyun sonu - E23: İlgili tüm oyuncuların kazançlarını hesaplarına yatır.
-      try {
-        final updatedPlayersSnap = await FirebaseFirestore.instance
-            .collection('rooms')
-            .doc(roomId)
-            .collection('players')
-            .get();
-
-        final Map<String, int> playerRewards = {};
-        for (final doc in updatedPlayersSnap.docs) {
-          final score = doc.data()['score'] as int? ?? 0;
-          if (score > 0) {
-            playerRewards[doc.id] = score;
-          }
-        }
-
-        if (playerRewards.isNotEmpty) {
-          await ref
-              .read(economyRepositoryProvider)
-              .distributeRewards(playerRewards);
-        }
-      } catch (_) {
-        // Hata loglanabilir veya sessizce geçilebilir
-      }
-    }
+    // NOT: Ödül dağıtımı Cloud Function (onGameFinished) tarafından yapılır.
+    // Client-side duplike dağıtım kaldırıldı.
 
     // Her durumda RoundResultScreen'e gitmek için sonuçları ayarla
     await repo.setRoundResult(
@@ -176,7 +114,6 @@ class GameController extends _$GameController {
     );
 
     if (shouldEnd) {
-      // Oyun bittiğini belirt
       await repo.endGame(gameId);
     }
   }

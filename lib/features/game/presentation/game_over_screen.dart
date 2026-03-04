@@ -178,37 +178,29 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                         children: [
                           Expanded(
                             child: StageButton(
-                              label: 'GİŞEYE GİT',
-                              icon: Icons.storefront_rounded,
+                              label: 'FUAYEYE DÖN',
+                              icon: Icons.home_rounded,
                               backgroundColor: AppColors.surface,
                               textColor: Colors.white,
                               borderColor: AppColors.accent.withValues(
                                 alpha: 0.3,
                               ),
-                              onPressed: () => context.push('/store'),
+                              onPressed: () => context.go('/home'),
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: StageButton(
-                              label: 'FUAYEYE DÖN',
-                              icon: Icons.home_rounded,
+                              label: 'TEKRAR OYNA',
+                              icon: Icons.replay_rounded,
                               backgroundColor: AppColors.primary,
                               textColor: Colors.white,
-                              borderColor:
-                                  AppColors.accent, // Added borderColor
-                              onPressed: () => context.go('/home'),
+                              borderColor: AppColors.accent,
+                              onPressed: () =>
+                                  context.go('/lobby', extra: widget.roomCode),
                             ),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 12), // Added SizedBox for spacing
-                      StageButton(
-                        label: 'TEKRAR OYNA',
-                        backgroundColor: AppColors.primary,
-                        textColor: Colors.white,
-                        borderColor: AppColors.accent,
-                        onPressed: () => context.go('/lobby'),
                       ),
                     ],
                   ),

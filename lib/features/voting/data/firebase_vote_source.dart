@@ -32,7 +32,10 @@ class FirebaseVoteSource implements VoteRepository {
   }
 
   @override
-  Future<int> calculateVoteResult(String gameId, {int taskMultiplier = 1}) async {
+  Future<int> calculateVoteResult(
+    String gameId, {
+    int taskMultiplier = 1,
+  }) async {
     final snapshot = await _votesRef(gameId).get();
     int totalScore = 0;
 
@@ -59,8 +62,11 @@ class FirebaseVoteSource implements VoteRepository {
   @override
   Future<void> clearVotes(String gameId) async {
     final snapshot = await _votesRef(gameId).get();
+    if (snapshot.docs.isEmpty) return;
+    final batch = _firestore.batch();
     for (final doc in snapshot.docs) {
-      await doc.reference.delete();
+      batch.delete(doc.reference);
     }
+    await batch.commit();
   }
 }

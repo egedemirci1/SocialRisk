@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/models/enums.dart';
-import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../domain/game_entity.dart';
 import '../providers/game_provider.dart';
@@ -90,9 +89,10 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                 '/round-result',
                 extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
               );
-            } else if (nextGame.status == GameStatus.playing &&
-                nextGame.currentPlayerId ==
-                    ref.read(currentUserProvider)?.uid) {
+            } else if (nextGame.status == GameStatus.playing ||
+                nextGame.status == GameStatus.choosingDifficulty ||
+                nextGame.status == GameStatus.performing) {
+              // Tüm oyuncular task ekranına yönlendirilir
               context.replace(
                 '/task',
                 extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},

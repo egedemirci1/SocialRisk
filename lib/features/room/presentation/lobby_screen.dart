@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,7 +41,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 content: Text('Ev sahibi odadan ayrıldığı için oda kapatıldı.'),
               ),
             );
-            context.go('/menu');
+            context.go('/home');
           }
         });
         return;
@@ -453,6 +454,7 @@ class _RotatingTooltips extends StatefulWidget {
 
 class _RotatingTooltipsState extends State<_RotatingTooltips> {
   int _currentIndex = 0;
+  late final Timer _timer;
   final List<String> _tips = [
     '🎭 Sahne tozunu yutmaya hazır mısın?',
     '🎭 Unutma, her büyük aktör bir zamanlar sadece bir izleyiciydi.',
@@ -463,15 +465,17 @@ class _RotatingTooltipsState extends State<_RotatingTooltips> {
   @override
   void initState() {
     super.initState();
-    _startTimer();
+    _timer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (mounted) {
+        setState(() => _currentIndex = (_currentIndex + 1) % _tips.length);
+      }
+    });
   }
 
-  void _startTimer() {
-    Future.delayed(const Duration(seconds: 5), () {
-      if (!mounted) return;
-      setState(() => _currentIndex = (_currentIndex + 1) % _tips.length);
-      _startTimer();
-    });
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   @override

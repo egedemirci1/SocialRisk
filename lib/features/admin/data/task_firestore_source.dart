@@ -1,11 +1,14 @@
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/task_item_entity.dart';
 import '../../../shared/models/enums.dart';
+import '../../../core/constants/game_constants.dart';
 
 /// Firestore'daki görevleri yöneten data source.
 /// CRUD + oyun içi görev çekme + feedback.
 class TaskFirestoreSource {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final Random _random = Random();
 
   CollectionReference<Map<String, dynamic>> get _tasksRef =>
       _firestore.collection('tasks');
@@ -63,9 +66,9 @@ class TaskFirestoreSource {
     allAvailableDocs.addAll(available);
 
     // 3. Akıllı Harmanlama: Özel görevlere öncelik ver (%40 şansla sadece özelleri seçer)
-    if (customAvailable.isNotEmpty && DateTime.now().millisecond % 100 < 40) {
+    if (customAvailable.isNotEmpty && _random.nextInt(100) < 40) {
       final randomDoc =
-          customAvailable[DateTime.now().millisecond % customAvailable.length];
+          customAvailable[_random.nextInt(customAvailable.length)];
       return _docToEntity(randomDoc);
     }
 
@@ -73,17 +76,88 @@ class TaskFirestoreSource {
     if (allAvailableDocs.isEmpty) {
       // Fallback: Kullanılmışları da dahil et
       if (snap.docs.isNotEmpty) {
-        final randomDoc =
-            snap.docs[DateTime.now().millisecond % snap.docs.length];
+        final randomDoc = snap.docs[_random.nextInt(snap.docs.length)];
         return _docToEntity(randomDoc);
       }
-      // ... lines 71-96 ...
       return null;
     }
 
     final randomDoc =
-        allAvailableDocs[DateTime.now().millisecond % allAvailableDocs.length];
+        allAvailableDocs[_random.nextInt(allAvailableDocs.length)];
     return _docToEntity(randomDoc);
+  }
+
+  // ── Görev Ön-Yükleme Havuzu (İyileştirme) ────────────────────
+
+  /// Oyun başında tüm kategori×zorluk kombinasyonları için görevleri
+  /// tek seferde çeker. Sonuç game doc'a yazılır.
+  Future<Map<String, List<Map<String, dynamic>>>> fetchTaskPool({
+    required String preset,
+    bool includeCustomDeck = false,
+    String? hostId,
+    List<String>? categories,
+  }) async {
+    final cats = categories ?? GameConstants.defaultCategories;
+    final diffs = GameConstants.defaultDifficulties;
+    final poolSize = GameConstants.taskPoolSizePerCombo;
+    final pool = <String, List<Map<String, dynamic>>>{};
+
+    for (final category in cats) {
+      for (final difficulty in diffs) {
+        final poolKey = '${category}_$difficulty';
+        final List<Map<String, dynamic>> tasksForCombo = [];
+
+        // 1. Normal görevleri çek
+        final snap = await _tasksRef
+            .where('category', isEqualTo: category)
+            .where('difficulty', isEqualTo: difficulty)
+            .where('isActive', isEqualTo: true)
+            .where('tags', arrayContains: preset)
+            .limit(poolSize)
+            .get();
+
+        for (final doc in snap.docs) {
+          final data = doc.data();
+          tasksForCombo.add({
+            'id': doc.id,
+            'category': data['category'] ?? category,
+            'content': data['content'] ?? '',
+            'difficulty': data['difficulty'] ?? difficulty,
+          });
+        }
+
+        // 2. Özel görevleri ekle
+        if (includeCustomDeck && hostId != null) {
+          final customSnap = await _firestore
+              .collection('users')
+              .doc(hostId)
+              .collection('custom_tasks')
+              .where('category', isEqualTo: category)
+              .where('difficulty', isEqualTo: difficulty)
+              .limit(poolSize)
+              .get();
+
+          for (final doc in customSnap.docs) {
+            final data = doc.data();
+            tasksForCombo.add({
+              'id': 'custom_${doc.id}',
+              'category': data['category'] ?? category,
+              'content': data['content'] ?? '',
+              'difficulty': data['difficulty'] ?? difficulty,
+            });
+          }
+        }
+
+        // 3. Karıştır
+        tasksForCombo.shuffle(_random);
+
+        if (tasksForCombo.isNotEmpty) {
+          pool[poolKey] = tasksForCombo;
+        }
+      }
+    }
+
+    return pool;
   }
 
   // ── CRUD (Admin Paneli) ──────────────────────────────
@@ -198,21 +272,24 @@ class TaskFirestoreSource {
       return newTasks.length;
     }
 
-    // Eğer clearAllFirst yapıldıysa sıfırdan doldur:
-    final batch = _firestore.batch();
+    // Eğer clearAllFirst yapıldıysa sıfırdan doldur (batch 500 limiti ile):
     int count = 0;
-    for (final task in tasks) {
-      final docRef = _tasksRef.doc();
-      batch.set(docRef, {
-        ...task,
-        'likes': 0,
-        'dislikes': 0,
-        'isActive': true,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-      count++;
+    for (var i = 0; i < tasks.length; i += 500) {
+      final batch = _firestore.batch();
+      final chunk = tasks.skip(i).take(500);
+      for (final task in chunk) {
+        final docRef = _tasksRef.doc();
+        batch.set(docRef, {
+          ...task,
+          'likes': 0,
+          'dislikes': 0,
+          'isActive': true,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+        count++;
+      }
+      await batch.commit();
     }
-    await batch.commit();
     return count;
   }
 

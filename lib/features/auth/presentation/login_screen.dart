@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../providers/auth_provider.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../core/constants/app_colors.dart';
+import '../data/firebase_user_source.dart';
+import '../domain/user_entity.dart';
 
 /// Login ekranı — Tiyatro Temalı
 class LoginScreen extends ConsumerStatefulWidget {
@@ -70,20 +72,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       if (name == 'apple') _isAppleLoading = true;
     });
     try {
-      // Sosyal girişler için de AuthController üzerinden geçebiliriz
-      // Veya direkt repository metodunu çağırabiliriz.
-      // Şimdilik AuthController'da sadece signIn(name) var.
-      // Sosyal girişler için AuthController'a yeni metodlar eklenebilir.
-      // Ancak şu aşamada en azından anonim girişi standardize ettik.
       final cred = await method();
       if (cred.user != null) {
+        final displayName = cred.user!.displayName ?? 'Aktör';
         if (cred.user!.displayName == null) {
-          await cred.user!.updateDisplayName('Aktör');
+          await cred.user!.updateDisplayName(displayName);
         }
-        // Manuel tetikleme (Geçici) - İdealde repository içinde olmalı
-        await ref
-            .read(authRepositoryProvider)
-            .signInAnonymously(cred.user!.displayName ?? 'Aktör');
+        // Kullanıcı profilini Firestore'da oluştur (anonim hesap oluşturmadan)
+        final userSource = FirebaseUserSource();
+        await userSource.createUserProfile(
+          UserEntity(uid: cred.user!.uid, displayName: displayName),
+        );
       }
     } catch (e) {
       if (mounted) _showError('Giriş başarısız: $e');

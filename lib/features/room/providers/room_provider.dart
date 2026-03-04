@@ -13,12 +13,12 @@ RoomRepository roomRepository(Ref ref) {
   return FirebaseRoomSource();
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 Stream<RoomEntity?> watchRoom(Ref ref, String roomCode) {
   return ref.watch(roomRepositoryProvider).watchRoom(roomCode);
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 Stream<List<PlayerEntity>> watchPlayers(Ref ref, String roomCode) {
   return ref.watch(roomRepositoryProvider).watchPlayers(roomCode);
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +33,7 @@ class _AuthRefreshNotifier extends ChangeNotifier {
     });
   }
 
-  late final dynamic _sub;
+  late final StreamSubscription<User?> _sub;
 
   @override
   void dispose() {
@@ -68,24 +69,18 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        child: const LoginScreen(),
-        state: state,
-      ),
+      pageBuilder: (context, state) =>
+          _buildPageWithTransition(child: const LoginScreen(), state: state),
     ),
     GoRoute(
       path: '/home',
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        child: const HomeScreen(),
-        state: state,
-      ),
+      pageBuilder: (context, state) =>
+          _buildPageWithTransition(child: const HomeScreen(), state: state),
     ),
     GoRoute(
       path: '/profile',
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        child: const ProfileScreen(),
-        state: state,
-      ),
+      pageBuilder: (context, state) =>
+          _buildPageWithTransition(child: const ProfileScreen(), state: state),
     ),
     GoRoute(
       path: '/custom-deck',
@@ -96,10 +91,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/store',
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        child: const StoreScreen(),
-        state: state,
-      ),
+      pageBuilder: (context, state) =>
+          _buildPageWithTransition(child: const StoreScreen(), state: state),
     ),
     GoRoute(
       path: '/create-room',
@@ -110,10 +103,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/join-room',
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        child: const JoinRoomScreen(),
-        state: state,
-      ),
+      pageBuilder: (context, state) =>
+          _buildPageWithTransition(child: const JoinRoomScreen(), state: state),
     ),
     GoRoute(
       path: '/lobby',

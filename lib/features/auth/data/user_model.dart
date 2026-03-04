@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/user_entity.dart';
+import '../../../core/constants/game_constants.dart';
 
 class UserModel {
   final String uid;
@@ -20,14 +21,7 @@ class UserModel {
     this.walletPoints = 0,
     this.rank = 'Newbie',
     this.ownedCosmetics = const [],
-    this.ownedCategories = const [
-      'Cesaret',
-      'İtiraf',
-      'Taklit',
-      'Sosyal Medya',
-      'Fiziksel',
-      'Bilgi',
-    ],
+    this.ownedCategories = GameConstants.defaultCategories,
     this.activeFrame,
     this.activeTitle,
     required this.updatedAt,
@@ -49,14 +43,7 @@ class UserModel {
           (json['ownedCategories'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
-          const [
-            'Cesaret',
-            'İtiraf',
-            'Taklit',
-            'Sosyal Medya',
-            'Fiziksel',
-            'Bilgi',
-          ],
+          GameConstants.defaultCategories,
       activeFrame: json['activeFrame'] as String?,
       activeTitle: json['activeTitle'] as String?,
       updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),

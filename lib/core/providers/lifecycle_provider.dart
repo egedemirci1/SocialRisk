@@ -21,6 +21,7 @@ final currentRoomTrackerProvider =
 final appLifecycleManagerProvider = Provider<AppLifecycleManager>((ref) {
   final manager = AppLifecycleManager(ref);
   manager.init();
+  ref.onDispose(() => manager.dispose());
   return manager;
 });
 

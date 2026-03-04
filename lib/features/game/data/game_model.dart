@@ -25,6 +25,8 @@ class GameModel {
   final List<String> lockedCategories;
   final List<String> categoryPickOrder;
   final int currentPickIndex;
+  // Görev ön-yükleme havuzu: key = "category_difficulty", value = list of task maps
+  final Map<String, List<Map<String, dynamic>>> taskPool;
 
   const GameModel({
     required this.gameId,
@@ -47,6 +49,7 @@ class GameModel {
     this.lockedCategories = const [],
     this.categoryPickOrder = const [],
     this.currentPickIndex = 0,
+    this.taskPool = const {},
   });
 
   factory GameModel.fromJson(Map<String, dynamic> json, String docId) {
@@ -73,7 +76,24 @@ class GameModel {
       lockedCategories: List<String>.from(json['lockedCategories'] ?? []),
       categoryPickOrder: List<String>.from(json['categoryPickOrder'] ?? []),
       currentPickIndex: json['currentPickIndex'] as int? ?? 0,
+      taskPool: _parseTaskPool(json['taskPool']),
     );
+  }
+
+  /// taskPool alanını Firestore'dan güvenle parse eder
+  static Map<String, List<Map<String, dynamic>>> _parseTaskPool(dynamic raw) {
+    if (raw == null || raw is! Map) return {};
+    final result = <String, List<Map<String, dynamic>>>{};
+    for (final entry in raw.entries) {
+      final key = entry.key.toString();
+      if (entry.value is List) {
+        result[key] = (entry.value as List)
+            .whereType<Map>()
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList();
+      }
+    }
+    return result;
   }
 
   Map<String, dynamic> toJson() {
@@ -98,6 +118,7 @@ class GameModel {
       'lockedCategories': lockedCategories,
       'categoryPickOrder': categoryPickOrder,
       'currentPickIndex': currentPickIndex,
+      'taskPool': taskPool,
       'createdAt': FieldValue.serverTimestamp(),
     };
   }

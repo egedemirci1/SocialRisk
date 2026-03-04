@@ -126,16 +126,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         final user = ref.read(currentUserProvider);
         final isMyTurn = game.currentPlayerId == user?.uid;
 
-        if (!isMyTurn && game.status == GameStatus.playing) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              context.replace(
-                '/waiting',
-                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-              );
-            }
-          });
-        }
+        // Seyirciler artık bekleme ekranına yönlendirilmiyor.
+        // task_screen zaten isMyTurn ile spectator görünümü sunuyor.
 
         final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
         final players = playersAsync.value ?? [];
@@ -252,14 +244,14 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                 '/difficulty',
                 extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
               );
+            } else if (nextG.status == GameStatus.performing) {
+              context.replace(
+                '/performing',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
             } else if (nextG.status == GameStatus.voting) {
               context.replace(
                 '/voting',
-                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-              );
-            } else if (nextG.status == GameStatus.performing && !isMyTurn) {
-              context.replace(
-                '/waiting',
                 extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
               );
             } else if (nextG.status == GameStatus.results) {

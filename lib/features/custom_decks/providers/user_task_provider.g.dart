@@ -158,7 +158,7 @@ final class CustomTaskControllerProvider
 }
 
 String _$customTaskControllerHash() =>
-    r'641a77d99b15597024ecda4d6d2327c795d711c4';
+    r'f14131ff5323ec17dabc3c580acc393d3e6c33dd';
 
 abstract class _$CustomTaskController extends $AsyncNotifier<void> {
   FutureOr<void> build();

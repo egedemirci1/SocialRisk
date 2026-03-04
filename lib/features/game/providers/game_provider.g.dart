@@ -67,7 +67,7 @@ final class WatchGameProvider
   }) : super(
          retry: null,
          name: r'watchGameProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -105,7 +105,7 @@ final class WatchGameProvider
   }
 }
 
-String _$watchGameHash() => r'4c1fb882a71e9347dd9b2313eb45a3c4aef1e731';
+String _$watchGameHash() => r'150035e49c5711b1fd547df760a11cebe32ec9fa';
 
 final class WatchGameFamily extends $Family
     with $FunctionalFamilyOverride<Stream<GameEntity?>, String> {
@@ -115,7 +115,7 @@ final class WatchGameFamily extends $Family
         name: r'watchGameProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   WatchGameProvider call(String gameId) =>
@@ -129,7 +129,7 @@ final class WatchGameFamily extends $Family
 final gameControllerProvider = GameControllerProvider._();
 
 final class GameControllerProvider
-    extends $AsyncNotifierProvider<GameController, String?> {
+    extends $AsyncNotifierProvider<GameController, void> {
   GameControllerProvider._()
     : super(
         from: null,
@@ -149,19 +149,19 @@ final class GameControllerProvider
   GameController create() => GameController();
 }
 
-String _$gameControllerHash() => r'e89845157929c0a9daf5d93bfc04b003e4669093';
+String _$gameControllerHash() => r'ca6bd7c32c058ab91979fc13bcd5494f54d5c137';
 
-abstract class _$GameController extends $AsyncNotifier<String?> {
-  FutureOr<String?> build();
+abstract class _$GameController extends $AsyncNotifier<void> {
+  FutureOr<void> build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<String?>, String?>;
+    final ref = this.ref as $Ref<AsyncValue<void>, void>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<String?>, String?>,
-              AsyncValue<String?>,
+              AnyNotifier<AsyncValue<void>, void>,
+              AsyncValue<void>,
               Object?,
               Object?
             >;

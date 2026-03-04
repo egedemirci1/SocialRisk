@@ -67,7 +67,7 @@ final class WatchUserProfileProvider
   }) : super(
          retry: null,
          name: r'watchUserProfileProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -105,7 +105,7 @@ final class WatchUserProfileProvider
   }
 }
 
-String _$watchUserProfileHash() => r'40d6e3a74453a67f8b4aa12a4dc615495058aa89';
+String _$watchUserProfileHash() => r'53590544492866eb4b60a6c1da8632084f4c8c2e';
 
 final class WatchUserProfileFamily extends $Family
     with $FunctionalFamilyOverride<Stream<UserEntity?>, String> {
@@ -115,7 +115,7 @@ final class WatchUserProfileFamily extends $Family
         name: r'watchUserProfileProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   WatchUserProfileProvider call(String uid) =>
@@ -149,7 +149,7 @@ final class UserControllerProvider
   UserController create() => UserController();
 }
 
-String _$userControllerHash() => r'c2ff83bbe83e570e4d56b246671b533b42893100';
+String _$userControllerHash() => r'43a9f4795438be3e6c4c6d0904145484fe768c01';
 
 abstract class _$UserController extends $AsyncNotifier<void> {
   FutureOr<void> build();

@@ -1,3 +1,11 @@
+import '../../../core/constants/game_constants.dart';
+
+/// Sentinel class to distinguish between "not passed" and "explicitly null".
+class Nullable<T> {
+  final T? value;
+  const Nullable(this.value);
+}
+
 class UserEntity {
   final String uid;
   final String displayName;
@@ -16,14 +24,7 @@ class UserEntity {
     this.walletPoints = 0,
     this.rank = 'Newbie',
     this.ownedCosmetics = const [],
-    this.ownedCategories = const [
-      'Cesaret',
-      'İtiraf',
-      'Taklit',
-      'Sosyal Medya',
-      'Fiziksel',
-      'Bilgi',
-    ],
+    this.ownedCategories = GameConstants.defaultCategories,
     this.activeFrame,
     this.activeTitle,
   });
@@ -31,24 +32,24 @@ class UserEntity {
   UserEntity copyWith({
     String? uid,
     String? displayName,
-    String? avatarUrl,
+    Nullable<String>? avatarUrl,
     int? walletPoints,
     String? rank,
     List<String>? ownedCosmetics,
     List<String>? ownedCategories,
-    String? activeFrame,
-    String? activeTitle,
+    Nullable<String>? activeFrame,
+    Nullable<String>? activeTitle,
   }) {
     return UserEntity(
       uid: uid ?? this.uid,
       displayName: displayName ?? this.displayName,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
+      avatarUrl: avatarUrl != null ? avatarUrl.value : this.avatarUrl,
       walletPoints: walletPoints ?? this.walletPoints,
       rank: rank ?? this.rank,
       ownedCosmetics: ownedCosmetics ?? this.ownedCosmetics,
       ownedCategories: ownedCategories ?? this.ownedCategories,
-      activeFrame: activeFrame ?? this.activeFrame,
-      activeTitle: activeTitle ?? this.activeTitle,
+      activeFrame: activeFrame != null ? activeFrame.value : this.activeFrame,
+      activeTitle: activeTitle != null ? activeTitle.value : this.activeTitle,
     );
   }
 }

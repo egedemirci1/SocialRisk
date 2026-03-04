@@ -10,6 +10,22 @@ class GameConstants {
   static const Duration voteDuration = Duration(seconds: 15);
   static const Duration lobbyRefreshRate = Duration(seconds: 2);
 
+  /// Varsayılan kategoriler — tek kaynak (SSoT)
+  static const List<String> defaultCategories = [
+    'Cesaret',
+    'İtiraf',
+    'Taklit',
+    'Sosyal Medya',
+    'Fiziksel',
+    'Bilgi',
+  ];
+
+  /// Zorluk seviyeleri
+  static const List<String> defaultDifficulties = ['easy', 'medium', 'hard'];
+
+  /// Her kategori×zorluk kombinasyonu için ön-yüklenen görev sayısı
+  static const int taskPoolSizePerCombo = 5;
+
   // Faz 10: Ekonomi Modu sabitleri
   static const Map<String, int> defaultMarketValues = {
     'Cesaret': 3,

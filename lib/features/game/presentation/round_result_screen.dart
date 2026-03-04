@@ -77,28 +77,14 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             (previous, next) {
               if (!context.mounted) return;
               final currentStatus = next.value?.status;
-              final currentUser = ref.read(currentUserProvider);
 
-              if (previous?.value?.status == GameStatus.results &&
-                  currentStatus == GameStatus.playing) {
-                final nextPlayerId = next.value?.currentPlayerId;
-                if (nextPlayerId == currentUser?.uid) {
-                  context.go(
-                    '/task',
-                    extra: {
-                      'gameId': widget.gameId,
-                      'roomCode': widget.roomCode,
-                    },
-                  );
-                } else {
-                  context.go(
-                    '/waiting',
-                    extra: {
-                      'gameId': widget.gameId,
-                      'roomCode': widget.roomCode,
-                    },
-                  );
-                }
+              if (currentStatus == GameStatus.playing ||
+                  currentStatus == GameStatus.choosingDifficulty) {
+                // nextTurn çağrıldı — tüm oyuncular task ekranına
+                context.go(
+                  '/task',
+                  extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+                );
               } else if (currentStatus == GameStatus.finished) {
                 context.go('/game-over', extra: widget.roomCode);
               }
@@ -477,14 +463,6 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              StageButton(
-                label: 'GİŞEYE GİT',
-                backgroundColor: AppColors.primary,
-                textColor: Colors.white,
-                borderColor: AppColors.accent,
-                onPressed: () => context.go('/store'),
-              ),
-              const SizedBox(width: 16),
               _FeedbackButton(
                 icon: Icons.thumb_up_rounded,
                 label: 'İYİ',

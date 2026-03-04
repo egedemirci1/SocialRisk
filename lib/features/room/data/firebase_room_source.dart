@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../domain/room_entity.dart';
 import '../domain/room_repository.dart';
 import 'room_model.dart';
+import '../../admin/data/task_firestore_source.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../core/constants/game_constants.dart';
 import '../../../shared/models/enums.dart';
@@ -131,17 +132,21 @@ class FirebaseRoomSource implements RoomRepository {
       if (isHost) {
         // Eğer ayrılan kişi host ise, odayı ve içindekileri tamamen temizle
         final gameId = roomData['gameId'];
+
+        final batch = _firestore.batch();
+
         if (gameId != null && gameId.toString().isNotEmpty) {
-          await _firestore.collection('games').doc(gameId).delete();
+          batch.delete(_firestore.collection('games').doc(gameId));
         }
 
-        // Oyuncular alt koleksiyonunu temizle
+        // Oyuncular alt koleksiyonunu batch ile temizle
         final playersSnap = await _playersRef(roomCode).get();
         for (var doc in playersSnap.docs) {
-          await doc.reference.delete();
+          batch.delete(doc.reference);
         }
 
-        await _roomDoc(roomCode).delete();
+        batch.delete(_roomDoc(roomCode));
+        await batch.commit();
         return;
       }
 
@@ -241,22 +246,35 @@ class FirebaseRoomSource implements RoomRepository {
     try {
       final roomRef = _roomDoc(roomCode);
 
-      // Atomic Transaction: Update room status, create game, save gameId
-      return await _firestore.runTransaction((transaction) async {
-        final roomSnap = await transaction.get(roomRef);
-        if (!roomSnap.exists) throw Exception('Oda bulunamadı!');
+      // ─── Görev havuzunu önceden yükle (transaction dışında) ───
+      final roomSnap = await roomRef.get();
+      if (!roomSnap.exists) throw Exception('Oda bulunamadı!');
+      final roomData = roomSnap.data()!;
+      final preset = roomData['preset'] as String? ?? 'classic';
+      final useCustomDeck = roomData['useCustomDeck'] as bool? ?? false;
+      final hostId = roomData['hostId'] as String?;
 
-        // 1. Start Game document
+      final activeCategories = categories.isNotEmpty
+          ? categories
+          : GameConstants.defaultMarketValues.keys.toList();
+
+      final taskSource = TaskFirestoreSource();
+      final taskPool = await taskSource.fetchTaskPool(
+        preset: preset,
+        includeCustomDeck: useCustomDeck,
+        hostId: hostId,
+        categories: activeCategories,
+      );
+
+      // ─── Atomik Transaction: Oda güncelle + Oyun oluştur ───
+      return await _firestore.runTransaction((transaction) async {
+        final freshRoomSnap = await transaction.get(roomRef);
+        if (!freshRoomSnap.exists) throw Exception('Oda bulunamadı!');
+
         final gameRef = _firestore.collection('games').doc();
         final gameId = gameRef.id;
 
-        // Shuffle player turn order
         final playersList = List<String>.from(playerIds)..shuffle();
-
-        // Faz 10: Ekonomi Modu ve Dinamik Kategoriler
-        final activeCategories = categories.isNotEmpty
-            ? categories
-            : GameConstants.defaultMarketValues.keys.toList();
 
         final marketValues = mode == GameMode.economy
             ? {
@@ -278,13 +296,12 @@ class FirebaseRoomSource implements RoomRepository {
           'lockedCategories': [],
           'categoryPickOrder': mode == GameMode.economy ? playersList : [],
           'currentPickIndex': 0,
+          'taskPool': taskPool,
           'createdAt': FieldValue.serverTimestamp(),
         };
 
-        // 2. Add game doc via transaction
         transaction.set(gameRef, gameModel);
 
-        // 3. Update room doc via transaction
         transaction.update(roomRef, {
           'status': GameStatus.playing.name,
           'gameId': gameId,

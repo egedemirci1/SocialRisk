@@ -121,7 +121,7 @@ final class EconomyControllerProvider
   EconomyController create() => EconomyController();
 }
 
-String _$economyControllerHash() => r'44e1e1cfaa6fe3e45acb940871844d62c574161b';
+String _$economyControllerHash() => r'4d17bfcccae5485c890e3d149bdaa5ed6d4228db';
 
 abstract class _$EconomyController extends $AsyncNotifier<void> {
   FutureOr<void> build();

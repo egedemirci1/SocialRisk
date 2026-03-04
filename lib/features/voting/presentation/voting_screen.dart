@@ -99,6 +99,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             .firstOrNull;
         final performerName = performer?.name ?? 'Aktör';
 
+        // Game durumu listener'ı (Riverpod bunu otomatik yönetir, koşulsuz çağrılmalı)
         ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
           previous,
           next,
@@ -186,11 +187,20 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                   // Ünvan gösterimi
                   Builder(
                     builder: (context) {
-                      final profile = ref.watch(watchUserProfileProvider(game.currentPlayerId)).value;
-                      if (profile?.activeTitle == null) return const SizedBox.shrink();
-                      final cosmetics = ref.watch(fetchCosmeticsProvider).value ?? [];
-                      final titleItem = cosmetics.where((c) => c.id == profile!.activeTitle).firstOrNull;
-                      if (titleItem == null) return const SizedBox.shrink();
+                      final profile = ref
+                          .watch(watchUserProfileProvider(game.currentPlayerId))
+                          .value;
+                      if (profile?.activeTitle == null) {
+                        return const SizedBox.shrink();
+                      }
+                      final cosmetics =
+                          ref.watch(fetchCosmeticsProvider).value ?? [];
+                      final titleItem = cosmetics
+                          .where((c) => c.id == profile!.activeTitle)
+                          .firstOrNull;
+                      if (titleItem == null) {
+                        return const SizedBox.shrink();
+                      }
                       return Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(

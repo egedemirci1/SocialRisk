@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import '../domain/user_entity.dart';
 import '../domain/user_repository.dart';
 import 'user_model.dart';
@@ -82,10 +82,8 @@ class FirebaseUserSource implements UserRepository {
           fileData,
           SettableMetadata(contentType: 'image/jpeg'),
         );
-      } else if (fileData is File) {
-        uploadTask = storageRef.putFile(fileData);
       } else {
-        throw Exception('Geçersiz dosya formatı (Uint8List veya File olmalı)');
+        throw Exception('Geçersiz dosya formatı (Uint8List olmalı)');
       }
 
       final snapshot = await uploadTask;

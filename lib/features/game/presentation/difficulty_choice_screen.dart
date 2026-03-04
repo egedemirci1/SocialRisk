@@ -34,11 +34,7 @@ class _DifficultyChoiceScreenState
     try {
       await ref
           .read(gameControllerProvider.notifier)
-          .chooseDifficulty(
-            gameId: widget.gameId,
-            roomId: widget.roomCode,
-            difficulty: difficulty,
-          );
+          .chooseDifficulty(gameId: widget.gameId, difficulty: difficulty);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(

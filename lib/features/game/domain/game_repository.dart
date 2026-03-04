@@ -1,14 +1,6 @@
 import '../domain/game_entity.dart';
-import '../../../shared/models/enums.dart';
 
 abstract class GameRepository {
-  Future<String> startGame({
-    required String roomId,
-    required List<String> playerIds,
-    required GameMode mode,
-    List<String> categories = const [],
-  });
-
   Stream<GameEntity?> watchGame(String gameId);
 
   Future<void> setSpinningTarget({
@@ -26,10 +18,9 @@ abstract class GameRepository {
     required String category,
   });
 
-  /// Zorluk seçildiğinde Firestore'dan görevi çekip atar.
+  /// Zorluk seçildiğinde game doc'taki taskPool'dan görevi atar.
   Future<void> chooseDifficulty({
     required String gameId,
-    required String roomId,
     required String difficulty,
   });
 
@@ -61,6 +52,12 @@ abstract class GameRepository {
   });
 
   Future<void> endGame(String gameId);
+
+  /// Skor bazlı bitiş koşulunu kontrol et.
+  Future<bool> checkScoreEndCondition({
+    required String roomId,
+    required int targetScore,
+  });
 
   // Faz 10: Ekonomi Modu
   Future<void> initEconomyRound({

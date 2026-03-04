@@ -11,6 +11,14 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
 
+    function isAdmin() {
+      return isAuthenticated() && request.auth.uid in [
+        'y51M7E6YXZT5I04M9YFqGzSgZ7Y2',
+        'hW42qgzVJIXr6sOLO0q1zPOdv6w1',
+        'd7sLOX946mRfrmkYMRUOJXNa44l2' // Reze
+      ];
+    }
+
     // ─── Rooms ────────────────────────────────────────────
     match /rooms/{roomId} {
       // Herkes oda bilgilerini okuyabilir (lobi katılım için gerekli)
@@ -36,9 +44,10 @@ service cloud.firestore {
         allow create: if isAuthenticated()
           && isOwner(playerId);
 
-        // Güncelleme: sadece kendi verisi (isReady, score vb.)
-        // VEYA oyun mantığı güncellerse (sunucu taraflı — E28 ile taşınacak)
-        allow update: if isAuthenticated();
+        // Güncelleme: kendi verisi VEYA host (skor güncellemesi için)
+        allow update: if isAuthenticated()
+          && (isOwner(playerId)
+            || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid);
 
         // Silme (odadan çıkma): kendi belgesi veya host
         allow delete: if isAuthenticated()
@@ -56,16 +65,25 @@ service cloud.firestore {
       allow create: if isAuthenticated();
 
       // Güncelleme: giriş yapmış kullanıcı (oyun akışı için gerekli)
-      // NOT: İdeal olarak Cloud Functions (E28) ile sunucu taraflı yapılmalı
+      // NOT: İdeal olarak Cloud Functions ile sunucu taraflı yapılmalı
       allow update: if isAuthenticated();
 
-      // Silme: yok (oyunlar silinmez)
+      // Silme: yok (oyunlar silinmez, Cloud Function temizler)
       allow delete: if false;
 
       // ─── Votes alt koleksiyonu ──────────────────────
       match /votes/{voterId} {
-        // Okuma ve yazma: giriş yapmış her oyuncu
-        allow read, write: if isAuthenticated();
+        // Okuma: tüm oyuncular (oy sayma için)
+        allow read: if isAuthenticated();
+
+        // Yazma: sadece kendi oyunu yazabilir
+        allow create: if isAuthenticated()
+          && isOwner(voterId);
+        allow update: if isAuthenticated()
+          && isOwner(voterId);
+
+        // Silme: oyun mantığı tarafından (host veya kendi)
+        allow delete: if isAuthenticated();
       }
     }
 
@@ -79,7 +97,8 @@ service cloud.firestore {
         && isOwner(userId);
 
       // Güncelleme: kendi belgesini
-      // walletPoints: Client-side güncelleme izinli (E28 Cloud Functions ile kısıtlanacak)
+      // NOT: walletPoints güvenliği Cloud Function (onGameFinished) ile sağlanır.
+      // Client-side güncellemeler: sadece profil, avatar, cosmetics vs.
       allow update: if isAuthenticated()
         && isOwner(userId);
 
@@ -99,14 +118,6 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    function isAdmin() {
-      return isAuthenticated() && request.auth.uid in [
-        'y51M7E6YXZT5I04M9YFqGzSgZ7Y2',
-        'hW42qgzVJIXr6sOLO0q1zPOdv6w1',
-        'd7sLOX946mRfrmkYMRUOJXNa44l2' // Reze
-      ];
-    }
-
     // ─── Tasks (Görevler ve Admin) ────────────────────────
     match /tasks/{taskId} {
       allow read: if isAuthenticated();
@@ -118,7 +129,7 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       // Herkes feedback verebilir.
       allow create: if isAuthenticated();
-      // Feedback güncellenemez/silinemez (veya isterseniz kısıtlayın)
+      // Feedback güncellenemez/silinemez
       allow update, delete: if false;
     }
     

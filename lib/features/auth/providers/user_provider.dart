@@ -11,7 +11,7 @@ UserRepository userRepository(Ref ref) {
   return FirebaseUserSource();
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 Stream<UserEntity?> watchUserProfile(Ref ref, String uid) {
   return ref.watch(userRepositoryProvider).watchUserProfile(uid);
 }
@@ -23,22 +23,22 @@ class UserController extends _$UserController {
 
   Future<void> createUserProfile(UserEntity user) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() =>
-      ref.read(userRepositoryProvider).createUserProfile(user)
+    state = await AsyncValue.guard(
+      () => ref.read(userRepositoryProvider).createUserProfile(user),
     );
   }
 
   Future<void> updateUserProfile(UserEntity user) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() =>
-      ref.read(userRepositoryProvider).updateUserProfile(user)
+    state = await AsyncValue.guard(
+      () => ref.read(userRepositoryProvider).updateUserProfile(user),
     );
   }
 
   Future<void> updateAvatarUrl(String uid, String avatarUrl) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() =>
-      ref.read(userRepositoryProvider).updateAvatarUrl(uid, avatarUrl)
+    state = await AsyncValue.guard(
+      () => ref.read(userRepositoryProvider).updateAvatarUrl(uid, avatarUrl),
     );
   }
 
@@ -46,7 +46,9 @@ class UserController extends _$UserController {
     state = const AsyncLoading();
     String? downloadUrl;
     state = await AsyncValue.guard(() async {
-      downloadUrl = await ref.read(userRepositoryProvider).uploadAvatar(uid, file);
+      downloadUrl = await ref
+          .read(userRepositoryProvider)
+          .uploadAvatar(uid, file);
     });
     // Eğer hata alındıysa, sessizce geçiştirmek yerine UI'a hatayı fırlat
     if (state.hasError) {
@@ -63,16 +65,18 @@ class UserController extends _$UserController {
   }) async {
     final user = ref.read(currentUserProvider);
     if (user == null) return;
-    
+
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() =>
-      ref.read(userRepositoryProvider).reportUser(
-        reporterId: user.uid,
-        targetUserId: targetUserId,
-        targetUserName: targetUserName,
-        targetUserAvatar: targetUserAvatar,
-        reason: reason,
-      )
+    state = await AsyncValue.guard(
+      () => ref
+          .read(userRepositoryProvider)
+          .reportUser(
+            reporterId: user.uid,
+            targetUserId: targetUserId,
+            targetUserName: targetUserName,
+            targetUserAvatar: targetUserAvatar,
+            reason: reason,
+          ),
     );
   }
 }
