@@ -27,6 +27,8 @@ class TaskFirestoreSource {
   }) async {
     List<DocumentSnapshot<Map<String, dynamic>>> allAvailableDocs = [];
 
+    List<DocumentSnapshot<Map<String, dynamic>>> customAvailable = [];
+
     // 1. Özel görevleri çek
     if (includeCustomDeck && hostId != null) {
       final customSnap = await _firestore
@@ -37,7 +39,7 @@ class TaskFirestoreSource {
           .where('difficulty', isEqualTo: difficulty)
           .get();
 
-      final customAvailable = customSnap.docs
+      customAvailable = customSnap.docs
           .where((doc) => !usedTaskIds.contains(doc.id))
           .toList();
 
@@ -60,6 +62,14 @@ class TaskFirestoreSource {
 
     allAvailableDocs.addAll(available);
 
+    // 3. Akıllı Harmanlama: Özel görevlere öncelik ver (%40 şansla sadece özelleri seçer)
+    if (customAvailable.isNotEmpty && DateTime.now().millisecond % 100 < 40) {
+      final randomDoc =
+          customAvailable[DateTime.now().millisecond % customAvailable.length];
+      return _docToEntity(randomDoc);
+    }
+
+    // 4. Normal havuzdan rastgele birini seç (Özeller de dahil)
     if (allAvailableDocs.isEmpty) {
       // Fallback: Kullanılmışları da dahil et
       if (snap.docs.isNotEmpty) {
@@ -67,35 +77,10 @@ class TaskFirestoreSource {
             snap.docs[DateTime.now().millisecond % snap.docs.length];
         return _docToEntity(randomDoc);
       }
-
-      // Zorluk filtresi olmadan dene
-      final fallbackSnap = await _tasksRef
-          .where('category', isEqualTo: category)
-          .where('isActive', isEqualTo: true)
-          .where('tags', arrayContains: preset)
-          .get();
-
-      final fallbackAvailable = fallbackSnap.docs
-          .where((doc) => !usedTaskIds.contains(doc.id))
-          .toList();
-
-      if (fallbackAvailable.isNotEmpty) {
-        final randomDoc =
-            fallbackAvailable[DateTime.now().millisecond %
-                fallbackAvailable.length];
-        return _docToEntity(randomDoc);
-      }
-
-      if (fallbackSnap.docs.isNotEmpty) {
-        final randomDoc = fallbackSnap
-            .docs[DateTime.now().millisecond % fallbackSnap.docs.length];
-        return _docToEntity(randomDoc);
-      }
-
-      return null; // Hiç görev yok
+      // ... lines 71-96 ...
+      return null;
     }
 
-    // Rastgele birini seç
     final randomDoc =
         allAvailableDocs[DateTime.now().millisecond % allAvailableDocs.length];
     return _docToEntity(randomDoc);

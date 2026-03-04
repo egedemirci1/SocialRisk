@@ -75,16 +75,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (image != null) {
       if (!mounted) return;
       setState(() => _isUploading = true);
-      
+
       try {
         // Zaten ImagePicker tarafından küçültüldüğü için doğrudan byteları alıp yükleyebiliriz
         // Ağır çalışan pure-dart ImageCompressor'ı devreden çıkardık
         final rawBytes = await image.readAsBytes();
-        
+
         final url = await ref
             .read(userControllerProvider.notifier)
             .uploadAvatar(uid, rawBytes);
-            
+
         if (url != null && mounted) {
           await ref
               .read(userControllerProvider.notifier)
@@ -136,7 +136,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 child: CircularProgressIndicator(color: AppColors.accent),
               ),
               error: (err, stack) => Center(
-                child: Text('Hata: $err', style: const TextStyle(color: Colors.white)),
+                child: Text(
+                  'Hata: $err',
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
               data: (userProfile) {
                 // Auth'tan gelen ismi tercih et (Firestore'da 'Misafir' olabilir)
@@ -341,9 +344,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         return cosmeticsAsync.when(
           data: (items) {
             final ownedIds = userProfileAsync.value?.ownedCosmetics ?? [];
-            final ownedItems = items.where((i) => ownedIds.contains(i.id)).toList();
-            final frameItems = ownedItems.where((i) => i.type == 'frame').toList();
-            final titleItems = ownedItems.where((i) => i.type == 'title').toList();
+            final ownedItems = items
+                .where((i) => ownedIds.contains(i.id))
+                .toList();
+            final frameItems = ownedItems
+                .where((i) => i.type == 'frame')
+                .toList();
+            final titleItems = ownedItems
+                .where((i) => i.type == 'title')
+                .toList();
 
             if (ownedItems.isEmpty) {
               return Center(
@@ -365,8 +374,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 if (frameItems.isNotEmpty) ...[
                   Row(
                     children: [
-                      const Icon(Icons.face_retouching_natural_rounded,
-                          color: AppColors.accent, size: 18),
+                      const Icon(
+                        Icons.face_retouching_natural_rounded,
+                        color: AppColors.accent,
+                        size: 18,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Çerçeveler',
@@ -386,7 +398,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     children: frameItems.map((item) {
                       final isEquipped =
                           userProfileAsync.value?.activeFrame == item.id;
-                      return _buildCosmeticChip(item, isEquipped, user.uid, ref);
+                      return _buildCosmeticChip(
+                        item,
+                        isEquipped,
+                        user.uid,
+                        ref,
+                      );
                     }).toList(),
                   ),
                   const SizedBox(height: 28),
@@ -395,8 +412,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 if (titleItems.isNotEmpty) ...[
                   Row(
                     children: [
-                      const Icon(Icons.theater_comedy_rounded,
-                          color: AppColors.accent, size: 18),
+                      const Icon(
+                        Icons.theater_comedy_rounded,
+                        color: AppColors.accent,
+                        size: 18,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Ünvanlar',
@@ -416,7 +436,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     children: titleItems.map((item) {
                       final isEquipped =
                           userProfileAsync.value?.activeTitle == item.id;
-                      return _buildCosmeticChip(item, isEquipped, user.uid, ref);
+                      return _buildCosmeticChip(
+                        item,
+                        isEquipped,
+                        user.uid,
+                        ref,
+                      );
                     }).toList(),
                   ),
                 ],
@@ -485,7 +510,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(4),
@@ -543,6 +571,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   label: 'Koleksiyon',
                   value: '${p?.ownedCosmetics.length ?? 0} ürün',
                 ),
+                const SizedBox(height: 32),
+                StageButton(
+                  label: 'Sahneden İn (Çıkış Yap)',
+                  icon: Icons.logout_rounded,
+                  backgroundColor: AppColors.error.withValues(alpha: 0.1),
+                  textColor: AppColors.error,
+                  borderColor: AppColors.error.withValues(alpha: 0.5),
+                  onPressed: () => _handleSignOut(context, ref),
+                ),
               ],
             );
           },
@@ -554,6 +591,74 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ],
     );
+  }
+
+  Future<void> _handleSignOut(BuildContext context, WidgetRef ref) async {
+    final user = ref.read(currentUserProvider);
+    final isAnonymous = user?.isAnonymous ?? false;
+
+    if (isAnonymous) {
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: AppColors.error),
+              const SizedBox(width: 8),
+              Text(
+                'DİKKAT!',
+                style: GoogleFonts.playfairDisplay(
+                  color: AppColors.error,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            'Şu anda Misafir olarak oynuyorsunuz. Çıkış yaparsanız puanlarınız, '
+            'rütbeniz ve tüm kozmetikleriniz KALICI OLARAK silinecektir '
+            've bir daha geri döndürülemez!\n\nYine de çıkış yapmak istiyor musunuz?',
+            style: const TextStyle(color: Colors.white),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text(
+                'İPTAL',
+                style: TextStyle(color: Colors.white54),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text(
+                'EVET, SİLİNSİN',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      if (confirm != true) return;
+    }
+
+    try {
+      await ref.read(authControllerProvider.notifier).logout();
+      if (context.mounted) {
+        context.go('/login');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Çıkış yapılamadı: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 }
 

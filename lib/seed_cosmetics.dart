@@ -82,6 +82,33 @@ void main() async {
       'price': 200,
       'isActive': true,
     },
+    'scenario_18': {
+      'name': 'Kapalı Gişe (18+)',
+      'description': 'Daha cesur ve yetişkinlere yönelik hikayeler.',
+      'type': 'category',
+      'categoryName': 'Kapalı Gişe',
+      'imageUrl': '🔞',
+      'price': 1500,
+      'isActive': true,
+    },
+    'scenario_romance': {
+      'name': 'Aşkın Sahnesi',
+      'description': 'Romantik ve duygusal temalı hikayeler.',
+      'type': 'category',
+      'categoryName': 'Aşkın Sahnesi',
+      'imageUrl': '❤️',
+      'price': 1000,
+      'isActive': true,
+    },
+    'scenario_mystery': {
+      'name': 'Gizemli Perde',
+      'description': 'Gerilim ve gizem dolu hikayeler.',
+      'type': 'category',
+      'categoryName': 'Gizemli Perde',
+      'imageUrl': '🔍',
+      'price': 1200,
+      'isActive': true,
+    },
   };
 
   for (var entry in items.entries) {

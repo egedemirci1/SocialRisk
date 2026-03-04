@@ -48,4 +48,14 @@ abstract class RoomRepository {
   });
 
   Future<bool> doesRoomExist(String roomCode);
+
+  /// Odayı başlatır, oyunu oluşturur ve gameId'yi odaya kaydeder (Atomik işlem).
+  Future<String> startGameInRoom({
+    required String roomCode,
+    required List<String> playerIds,
+    required GameMode mode,
+    List<String> categories = const [],
+  });
+
+  Future<void> cleanupZombieRoomsAndGames();
 }

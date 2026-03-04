@@ -4,6 +4,9 @@ abstract class EconomyRepository {
   /// Oyun sonunda oyuncunun cüzdanına puan ekler (veya ceza varsa çıkarır).
   Future<void> addPointsToWallet({required String uid, required int points});
 
+  /// Oyun bitiminde tüm oyuncuların ödüllerini atomik (batch) olarak dağıtır.
+  Future<void> distributeRewards(Map<String, int> playerRewards);
+
   /// Oyuncu kozmetik bir eşya (çerçeve vb.) satın aldığında cüzdanından puan düşer ve envantere ekler.
   Future<void> buyCosmetic({
     required String uid,

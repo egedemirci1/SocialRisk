@@ -67,16 +67,21 @@ class FirebaseUserSource implements UserRepository {
   Future<String?> uploadAvatar(String uid, dynamic fileData) async {
     try {
       // 1. Eski profil URL'sini al
-      final oldProfile = await getUserProfile(uid);
+      final oldProfile = await getUserProfile(uid).catchError((_) => null);
       final oldAvatarUrl = oldProfile?.avatarUrl;
 
       // 2. Yeni resim için benzersiz isim oluştur (Cache Buster)
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final storageRef = FirebaseStorage.instance.ref().child('avatars/${uid}_$timestamp.jpg');
-      
+      final storageRef = FirebaseStorage.instance.ref().child(
+        'avatars/${uid}_$timestamp.jpg',
+      );
+
       UploadTask uploadTask;
       if (fileData is Uint8List) {
-        uploadTask = storageRef.putData(fileData, SettableMetadata(contentType: 'image/jpeg'));
+        uploadTask = storageRef.putData(
+          fileData,
+          SettableMetadata(contentType: 'image/jpeg'),
+        );
       } else if (fileData is File) {
         uploadTask = storageRef.putFile(fileData);
       } else {
@@ -85,13 +90,13 @@ class FirebaseUserSource implements UserRepository {
 
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
-      
+
       // Update the user's document as well
       await updateAvatarUrl(uid, downloadUrl);
-      
+
       // 3. Eski resmi Storage'dan sil
-      if (oldAvatarUrl != null && 
-          oldAvatarUrl.isNotEmpty && 
+      if (oldAvatarUrl != null &&
+          oldAvatarUrl.isNotEmpty &&
           oldAvatarUrl.startsWith('https://firebasestorage.googleapis.com')) {
         try {
           final oldRef = FirebaseStorage.instance.refFromURL(oldAvatarUrl);
@@ -100,7 +105,7 @@ class FirebaseUserSource implements UserRepository {
           // Eski resim silinirken hata olsa bile, yeni resim yüklendiği için işlemi kesme
         }
       }
-      
+
       return downloadUrl;
     } catch (e) {
       throw Exception('Profil fotoğrafı yüklenirken hata oluştu: $e');

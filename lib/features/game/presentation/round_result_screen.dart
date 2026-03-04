@@ -66,7 +66,9 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           final isGameOver = game.status == GameStatus.finished;
           final players = playersAsync.value ?? [];
           final currentPlayer = players
-              .where((p) => p.id == game.currentPlayerId)
+              .where(
+                (p) => p.id == (game.lastRoundPlayerId ?? game.currentPlayerId),
+              )
               .firstOrNull;
           final playerName = currentPlayer?.name ?? 'Aktör';
 
@@ -483,6 +485,14 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
                 onPressed: () => context.go('/store'),
               ),
               const SizedBox(width: 16),
+              _FeedbackButton(
+                icon: Icons.thumb_up_rounded,
+                label: 'İYİ',
+                isActive: _givenFeedback == true,
+                color: Colors.green,
+                onTap: () => _submit(true),
+              ),
+              const SizedBox(width: 12),
               _FeedbackButton(
                 icon: Icons.thumb_down_rounded,
                 label: 'KÖTÜ',

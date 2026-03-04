@@ -22,7 +22,24 @@ class HomeScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     final userProfileAsync = user != null
         ? ref.watch(watchUserProfileProvider(user.uid))
-        : const AsyncValue.loading();
+        : const AsyncValue<UserEntity?>.loading();
+
+    // ─── PROFILE RESTORATION: Check if user exists in Auth but missing in Firestore ───
+    if (user != null) {
+      ref.listen(watchUserProfileProvider(user.uid), (prev, next) {
+        if (next.hasValue && next.value == null && !next.isLoading) {
+          // Profile is missing! Let's restore it.
+          ref
+              .read(userControllerProvider.notifier)
+              .createUserProfile(
+                UserEntity(
+                  uid: user.uid,
+                  displayName: user.displayName ?? 'Aktör',
+                ),
+              );
+        }
+      });
+    }
     final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
 
     final displayName = user?.displayName ?? 'Aktör';
@@ -206,8 +223,72 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildFooter(BuildContext context, WidgetRef ref) {
     return TextButton.icon(
       onPressed: () async {
-        await ref.read(authControllerProvider.notifier).logout();
-        if (context.mounted) context.go('/');
+        final user = ref.read(currentUserProvider);
+        if (user?.isAnonymous == true) {
+          final confirm = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: AppColors.surface,
+              title: Row(
+                children: [
+                  const Icon(
+                    Icons.warning_amber_rounded,
+                    color: AppColors.error,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'DİKKAT!',
+                    style: GoogleFonts.playfairDisplay(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              content: const Text(
+                'Şu anda Misafir olarak oynuyorsunuz. Çıkış yaparsanız puanlarınız, '
+                'rütbeniz ve tüm kozmetikleriniz KALICI OLARAK silinecektir '
+                've bir daha geri döndürülemez!\n\nYine de çıkış yapmak istiyor musunuz?',
+                style: TextStyle(color: Colors.white),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text(
+                    'İPTAL',
+                    style: TextStyle(color: Colors.white54),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.error,
+                  ),
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text(
+                    'EVET, SİLİNSİN',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          );
+
+          if (confirm != true) return;
+        }
+
+        try {
+          await ref.read(authControllerProvider.notifier).logout();
+          if (context.mounted) context.go('/login');
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Çıkış yapılamadı: $e'),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
+        }
       },
       icon: const Icon(Icons.logout_rounded, color: AppColors.accent, size: 20),
       label: Text(

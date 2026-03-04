@@ -15,6 +15,7 @@ class GameModel {
   final String difficulty;
   final int? lastRoundScore;
   final int? lastRoundMultiplier;
+  final String? lastRoundPlayerId;
   // Tur içi zorluk seçimi
   final String? selectedCategory;
   final String? selectedDifficulty;
@@ -38,6 +39,7 @@ class GameModel {
     this.difficulty = 'mixed',
     this.lastRoundScore,
     this.lastRoundMultiplier,
+    this.lastRoundPlayerId,
     this.selectedCategory,
     this.selectedDifficulty,
     this.mode = 'classic',
@@ -61,10 +63,13 @@ class GameModel {
       difficulty: json['difficulty'] as String? ?? 'mixed',
       lastRoundScore: json['lastRoundScore'] as int?,
       lastRoundMultiplier: json['lastRoundMultiplier'] as int?,
+      lastRoundPlayerId: json['lastRoundPlayerId'] as String?,
       selectedCategory: json['selectedCategory'] as String?,
       selectedDifficulty: json['selectedDifficulty'] as String?,
       mode: json['mode'] as String? ?? 'classic',
-      categoryMarketValues: Map<String, int>.from(json['categoryMarketValues'] ?? {}),
+      categoryMarketValues: Map<String, int>.from(
+        json['categoryMarketValues'] ?? {},
+      ),
       lockedCategories: List<String>.from(json['lockedCategories'] ?? []),
       categoryPickOrder: List<String>.from(json['categoryPickOrder'] ?? []),
       currentPickIndex: json['currentPickIndex'] as int? ?? 0,
@@ -84,7 +89,9 @@ class GameModel {
       'mode': mode,
       if (spinningTarget != null) 'spinningTarget': spinningTarget,
       if (lastRoundScore != null) 'lastRoundScore': lastRoundScore,
-      if (lastRoundMultiplier != null) 'lastRoundMultiplier': lastRoundMultiplier,
+      if (lastRoundMultiplier != null)
+        'lastRoundMultiplier': lastRoundMultiplier,
+      if (lastRoundPlayerId != null) 'lastRoundPlayerId': lastRoundPlayerId,
       if (selectedCategory != null) 'selectedCategory': selectedCategory,
       if (selectedDifficulty != null) 'selectedDifficulty': selectedDifficulty,
       'categoryMarketValues': categoryMarketValues,
@@ -120,6 +127,7 @@ class GameModel {
       spinningTarget: spinningTarget,
       lastRoundScore: lastRoundScore,
       lastRoundMultiplier: lastRoundMultiplier,
+      lastRoundPlayerId: lastRoundPlayerId,
       selectedCategory: selectedCategory,
       selectedDifficulty: selectedDifficulty,
       mode: GameMode.values.firstWhere(
@@ -138,12 +146,14 @@ class TaskModel {
   final String id;
   final String category;
   final String content;
+  final String difficulty;
   final int multiplier;
 
   const TaskModel({
     required this.id,
     required this.category,
     required this.content,
+    required this.difficulty,
     this.multiplier = 1,
   });
 
@@ -152,6 +162,7 @@ class TaskModel {
       id: json['id'] as String? ?? '',
       category: json['category'] as String? ?? '',
       content: json['content'] as String? ?? '',
+      difficulty: json['difficulty'] as String? ?? 'easy',
       multiplier: json['multiplier'] as int? ?? 1,
     );
   }
@@ -161,6 +172,7 @@ class TaskModel {
       'id': id,
       'category': category,
       'content': content,
+      'difficulty': difficulty,
       'multiplier': multiplier,
     };
   }
@@ -170,6 +182,7 @@ class TaskModel {
       id: id,
       category: category,
       content: content,
+      difficulty: difficulty,
       multiplier: multiplier,
     );
   }

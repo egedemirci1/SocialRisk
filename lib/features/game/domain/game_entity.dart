@@ -14,6 +14,7 @@ class GameEntity {
   final GameDifficulty difficulty;
   final int? lastRoundScore;
   final int? lastRoundMultiplier;
+  final String? lastRoundPlayerId;
   // Tur içi zorluk seçimi (Risk/Ödül)
   final String? selectedCategory;
   final String? selectedDifficulty; // easy, medium, hard
@@ -38,6 +39,7 @@ class GameEntity {
     this.difficulty = GameDifficulty.mixed,
     this.lastRoundScore,
     this.lastRoundMultiplier,
+    this.lastRoundPlayerId,
     this.selectedCategory,
     this.selectedDifficulty,
     this.mode = GameMode.classic,
@@ -52,12 +54,14 @@ class TaskEntity {
   final String id;
   final String category;
   final String content;
+  final String difficulty; // easy, medium, hard
   final int multiplier;
 
   const TaskEntity({
     required this.id,
     required this.category,
     required this.content,
+    required this.difficulty,
     this.multiplier = 1,
   });
 }

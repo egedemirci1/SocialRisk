@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../auth/providers/user_provider.dart';
+import 'package:social_risk/core/providers/lifecycle_provider.dart';
 import '../data/firebase_room_source.dart';
 import '../domain/room_entity.dart';
 import '../domain/room_repository.dart';
@@ -62,6 +63,9 @@ class RoomController extends _$RoomController {
           ),
     );
     state = result;
+    if (result.hasValue && result.value!.isNotEmpty) {
+      ref.read(currentRoomTrackerProvider.notifier).updateRoom(result.value);
+    }
     return result.value ?? '';
   }
 
@@ -85,6 +89,7 @@ class RoomController extends _$RoomController {
             activeFrame: userProfile?.activeFrame,
             activeTitle: userProfile?.activeTitle,
           );
+      ref.read(currentRoomTrackerProvider.notifier).updateRoom(roomCode);
       return roomCode;
     });
   }
@@ -96,6 +101,7 @@ class RoomController extends _$RoomController {
     await ref
         .read(roomRepositoryProvider)
         .leaveRoom(roomCode: roomCode, playerId: playerId);
+    ref.read(currentRoomTrackerProvider.notifier).updateRoom(null);
     state = const AsyncData(null);
   }
 
@@ -122,5 +128,9 @@ class RoomController extends _$RoomController {
     await ref
         .read(roomRepositoryProvider)
         .updateRoomStatus(roomCode: roomCode, status: GameStatus.playing);
+  }
+
+  Future<void> cleanupZombies() async {
+    await ref.read(roomRepositoryProvider).cleanupZombieRoomsAndGames();
   }
 }

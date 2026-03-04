@@ -6,6 +6,7 @@ abstract class GameRepository {
     required String roomId,
     required List<String> playerIds,
     required GameMode mode,
+    List<String> categories = const [],
   });
 
   Stream<GameEntity?> watchGame(String gameId);
@@ -73,4 +74,3 @@ abstract class GameRepository {
     required String category,
   });
 }
-

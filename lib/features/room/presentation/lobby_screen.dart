@@ -10,9 +10,7 @@ import '../../../shared/widgets/common/report_dialog.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
-import '../../game/providers/game_provider.dart';
 import '../../../shared/models/enums.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../../core/constants/app_colors.dart';
@@ -33,7 +31,20 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     ref.listen(watchRoomProvider(widget.roomCode), (previous, next) {
       if (!mounted) return;
       final room = next.value;
-      if (room == null) return;
+      if (room == null) {
+        // Oda silinmiş (Muhtemelen host çıktığı için)
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Ev sahibi odadan ayrıldığı için oda kapatıldı.'),
+              ),
+            );
+            context.go('/menu');
+          }
+        });
+        return;
+      }
 
       final user = ref.read(currentUserProvider);
       final isHost = room.hostId == user?.uid;
@@ -251,23 +262,22 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                             final playerIds = players
                                 .map((p) => p.id as String)
                                 .toList();
-                            await ref
-                                .read(roomRepositoryProvider)
-                                .updateRoomStatus(
-                                  roomCode: widget.roomCode,
-                                  status: GameStatus.playing,
-                                );
+
+                            final hostProfile = ref
+                                .read(watchUserProfileProvider(user?.uid ?? ''))
+                                .value;
+                            final hostCategories =
+                                hostProfile?.ownedCategories ?? [];
+
                             final gameId = await ref
-                                .read(gameRepositoryProvider)
-                                .startGame(
-                                  roomId: widget.roomCode,
+                                .read(roomRepositoryProvider)
+                                .startGameInRoom(
+                                  roomCode: widget.roomCode,
                                   playerIds: playerIds,
                                   mode: room?.mode ?? GameMode.classic,
+                                  categories: hostCategories,
                                 );
-                            await FirebaseFirestore.instance
-                                .collection('rooms')
-                                .doc(widget.roomCode)
-                                .update({'gameId': gameId});
+
                             if (context.mounted) {
                               context.go(
                                 '/task',

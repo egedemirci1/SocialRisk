@@ -58,6 +58,22 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
       next,
     ) {
       if (!mounted) return;
+
+      if (next.hasError || (next.hasValue && next.value == null)) {
+        // Oyun silinmiş veya hata oluşmuş (Muhtemelen host çıktığı için)
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Oyun sona erdi veya ev sahibi ayrıldı.'),
+              ),
+            );
+            context.go('/menu');
+          }
+        });
+        return;
+      }
+
       final nextGame = next.value;
       if (nextGame != null && previous?.value?.status != nextGame.status) {
         WidgetsBinding.instance.addPostFrameCallback((_) {

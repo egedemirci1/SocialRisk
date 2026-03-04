@@ -28,11 +28,17 @@ class GameController extends _$GameController {
     required String roomId,
     required List<String> playerIds,
     required GameMode mode,
+    List<String> categories = const [],
   }) async {
     state = const AsyncLoading();
     final repo = ref.read(gameRepositoryProvider);
     final result = await AsyncValue.guard(
-      () => repo.startGame(roomId: roomId, playerIds: playerIds, mode: mode),
+      () => repo.startGame(
+        roomId: roomId,
+        playerIds: playerIds,
+        mode: mode,
+        categories: categories,
+      ),
     );
     state = result;
     return result.value ?? '';
@@ -144,16 +150,21 @@ class GameController extends _$GameController {
             .collection('players')
             .get();
 
-        final economyNotifier = ref.read(economyControllerProvider.notifier);
-
+        final Map<String, int> playerRewards = {};
         for (final doc in updatedPlayersSnap.docs) {
           final score = doc.data()['score'] as int? ?? 0;
           if (score > 0) {
-            await economyNotifier.addPointsToWallet(uid: doc.id, points: score);
+            playerRewards[doc.id] = score;
           }
         }
+
+        if (playerRewards.isNotEmpty) {
+          await ref
+              .read(economyRepositoryProvider)
+              .distributeRewards(playerRewards);
+        }
       } catch (_) {
-        // Provider dispose olmuş olabilir, wallet işlemi game-over ekranında da yapılabilir
+        // Hata loglanabilir veya sessizce geçilebilir
       }
     }
 

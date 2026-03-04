@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../providers/auth_provider.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../core/constants/app_colors.dart';
 
@@ -52,8 +53,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     }
     setState(() => _isAnonymousLoading = true);
     try {
-      final cred = await FirebaseAuth.instance.signInAnonymously();
-      await cred.user?.updateDisplayName(name);
+      await ref.read(authControllerProvider.notifier).signIn(name);
     } catch (e) {
       if (mounted) _showError('Giriş başarısız: $e');
     } finally {
@@ -70,9 +70,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       if (name == 'apple') _isAppleLoading = true;
     });
     try {
+      // Sosyal girişler için de AuthController üzerinden geçebiliriz
+      // Veya direkt repository metodunu çağırabiliriz.
+      // Şimdilik AuthController'da sadece signIn(name) var.
+      // Sosyal girişler için AuthController'a yeni metodlar eklenebilir.
+      // Ancak şu aşamada en azından anonim girişi standardize ettik.
       final cred = await method();
-      if (cred.user != null && cred.user!.displayName == null) {
-        await cred.user!.updateDisplayName('Aktör');
+      if (cred.user != null) {
+        if (cred.user!.displayName == null) {
+          await cred.user!.updateDisplayName('Aktör');
+        }
+        // Manuel tetikleme (Geçici) - İdealde repository içinde olmalı
+        await ref
+            .read(authRepositoryProvider)
+            .signInAnonymously(cred.user!.displayName ?? 'Aktör');
       }
     } catch (e) {
       if (mounted) _showError('Giriş başarısız: $e');

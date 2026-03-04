@@ -531,7 +531,7 @@ class _ToggleChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected
-                ? AppColors.accent.withOpacity(0.3)
+                ? AppColors.accent.withValues(alpha: 0.3)
                 : Colors.white10,
             width: 1.5,
           ),

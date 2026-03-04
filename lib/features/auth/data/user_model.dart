@@ -8,6 +8,7 @@ class UserModel {
   final int walletPoints;
   final String rank;
   final List<String> ownedCosmetics;
+  final List<String> ownedCategories;
   final String? activeFrame;
   final String? activeTitle;
   final DateTime updatedAt;
@@ -19,6 +20,14 @@ class UserModel {
     this.walletPoints = 0,
     this.rank = 'Newbie',
     this.ownedCosmetics = const [],
+    this.ownedCategories = const [
+      'Cesaret',
+      'İtiraf',
+      'Taklit',
+      'Sosyal Medya',
+      'Fiziksel',
+      'Bilgi',
+    ],
     this.activeFrame,
     this.activeTitle,
     required this.updatedAt,
@@ -36,6 +45,18 @@ class UserModel {
               ?.map((e) => e.toString())
               .toList() ??
           const [],
+      ownedCategories:
+          (json['ownedCategories'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [
+            'Cesaret',
+            'İtiraf',
+            'Taklit',
+            'Sosyal Medya',
+            'Fiziksel',
+            'Bilgi',
+          ],
       activeFrame: json['activeFrame'] as String?,
       activeTitle: json['activeTitle'] as String?,
       updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -49,6 +70,7 @@ class UserModel {
       'walletPoints': walletPoints,
       'rank': rank,
       'ownedCosmetics': ownedCosmetics,
+      'ownedCategories': ownedCategories,
       'activeFrame': activeFrame,
       'activeTitle': activeTitle,
       'updatedAt': FieldValue.serverTimestamp(),
@@ -63,6 +85,7 @@ class UserModel {
       walletPoints: walletPoints,
       rank: rank,
       ownedCosmetics: ownedCosmetics,
+      ownedCategories: ownedCategories,
       activeFrame: activeFrame,
       activeTitle: activeTitle,
     );

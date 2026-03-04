@@ -5,6 +5,7 @@ class UserEntity {
   final int walletPoints;
   final String rank;
   final List<String> ownedCosmetics;
+  final List<String> ownedCategories;
   final String? activeFrame;
   final String? activeTitle;
 
@@ -15,6 +16,14 @@ class UserEntity {
     this.walletPoints = 0,
     this.rank = 'Newbie',
     this.ownedCosmetics = const [],
+    this.ownedCategories = const [
+      'Cesaret',
+      'İtiraf',
+      'Taklit',
+      'Sosyal Medya',
+      'Fiziksel',
+      'Bilgi',
+    ],
     this.activeFrame,
     this.activeTitle,
   });
@@ -26,6 +35,7 @@ class UserEntity {
     int? walletPoints,
     String? rank,
     List<String>? ownedCosmetics,
+    List<String>? ownedCategories,
     String? activeFrame,
     String? activeTitle,
   }) {
@@ -36,6 +46,7 @@ class UserEntity {
       walletPoints: walletPoints ?? this.walletPoints,
       rank: rank ?? this.rank,
       ownedCosmetics: ownedCosmetics ?? this.ownedCosmetics,
+      ownedCategories: ownedCategories ?? this.ownedCategories,
       activeFrame: activeFrame ?? this.activeFrame,
       activeTitle: activeTitle ?? this.activeTitle,
     );

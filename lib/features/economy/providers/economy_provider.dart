@@ -30,7 +30,8 @@ class EconomyController extends _$EconomyController {
     state = await AsyncValue.guard(
       () => repo.addPointsToWallet(uid: uid, points: points),
     );
-    if (state.hasError) throw state.error!;
+    // Not: Hata durumunda UI'da AsyncValue.when veya state.hasError ile yakalanmalı.
+    // throw state.error! kaldırılarak UI çökmesi önlendi.
   }
 
   /// Yeni ürün al
@@ -44,7 +45,7 @@ class EconomyController extends _$EconomyController {
     state = await AsyncValue.guard(
       () => repo.buyCosmetic(uid: uid, cosmeticId: cosmeticId, price: price),
     );
-    if (state.hasError) throw state.error!;
+    // Not: throw state.error! kaldırılarak UI çökmesi önlendi.
   }
 
   /// Aktif eşyayı değiştir

@@ -202,11 +202,9 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
                       childAspectRatio: 1.1,
-                      children: GameConstants.defaultMarketValues.keys.map((
-                        cat,
-                      ) {
+                      children: marketValues.keys.map((cat) {
                         final defaultVal =
-                            GameConstants.defaultMarketValues[cat] ?? 1;
+                            GameConstants.defaultMarketValues[cat] ?? 2;
                         final currentVal = marketValues[cat] ?? defaultVal;
                         final isLocked = lockedCats.contains(cat);
                         return _CategoryCard(

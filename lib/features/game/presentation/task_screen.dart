@@ -356,7 +356,11 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             border: Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
           ),
           child: Text(
-            'Kategori: ${task.category}',
+            'Kategori: ${task.category} • ${task.difficulty == 'easy'
+                ? 'KOLAY'
+                : task.difficulty == 'medium'
+                ? 'ORTA'
+                : 'ZOR'}',
             style: GoogleFonts.playfairDisplay(
               color: AppColors.accent,
               fontSize: 12,
@@ -365,6 +369,35 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             ),
           ),
         ),
+        if (task.id.length >
+            15) // UserTask ID'leri timestamp olduğu için genelde uzundur, veya tags kontrolü yapılabilir
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
+                  const SizedBox(width: 4),
+                  Text(
+                    'SAHNEYE ÖZEL',
+                    style: GoogleFonts.cinzel(
+                      color: Colors.amber,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         const SizedBox(height: 24),
         Text(
           isClosed

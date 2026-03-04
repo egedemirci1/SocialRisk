@@ -5,6 +5,7 @@ class CosmeticItemEntity {
   final String imageUrl;
   final int price;
   final String type; // 'frame', 'badge', etc.
+  final String? categoryName; // Eğer bu bir kategoriyse, oyundaki adı
 
   const CosmeticItemEntity({
     required this.id,
@@ -13,5 +14,6 @@ class CosmeticItemEntity {
     required this.imageUrl,
     required this.price,
     required this.type,
+    this.categoryName,
   });
 }
