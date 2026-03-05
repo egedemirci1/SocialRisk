@@ -31,7 +31,7 @@ class FirebaseRoomSource implements RoomRepository {
     required EndConditionType endConditionType,
     required int endConditionValue,
     required RoomVisibility visibility,
-    required GamePreset preset,
+    required List<String> categories,
     required GameMode mode,
     required bool useCustomDeck,
   }) async {
@@ -51,7 +51,7 @@ class FirebaseRoomSource implements RoomRepository {
         endConditionType: endConditionType.name,
         endConditionValue: endConditionValue,
         visibility: visibility.name,
-        preset: preset.name,
+        categories: categories,
         useCustomDeck: useCustomDeck,
         createdAt: DateTime.now(),
       );
@@ -250,17 +250,18 @@ class FirebaseRoomSource implements RoomRepository {
       final roomSnap = await roomRef.get();
       if (!roomSnap.exists) throw Exception('Oda bulunamadı!');
       final roomData = roomSnap.data()!;
-      final preset = roomData['preset'] as String? ?? 'classic';
+      final categoriesList = List<String>.from(roomData['categories'] ?? []);
       final useCustomDeck = roomData['useCustomDeck'] as bool? ?? false;
       final hostId = roomData['hostId'] as String?;
 
       final activeCategories = categories.isNotEmpty
           ? categories
-          : GameConstants.defaultMarketValues.keys.toList();
+          : (categoriesList.isNotEmpty
+                ? categoriesList
+                : GameConstants.defaultMarketValues.keys.toList());
 
       final taskSource = TaskFirestoreSource();
       final taskPool = await taskSource.fetchTaskPool(
-        preset: preset,
         includeCustomDeck: useCustomDeck,
         hostId: hostId,
         categories: activeCategories,

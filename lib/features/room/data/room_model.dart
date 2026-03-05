@@ -11,7 +11,7 @@ class RoomModel {
   final int endConditionValue;
   final String visibility;
   final String? gameId;
-  final String preset;
+  final List<String> categories;
   final bool useCustomDeck;
   final DateTime createdAt;
 
@@ -23,7 +23,7 @@ class RoomModel {
     required this.endConditionType,
     required this.endConditionValue,
     this.visibility = 'open',
-    this.preset = 'classic',
+    this.categories = const [],
     this.useCustomDeck = false,
     this.gameId,
     required this.createdAt,
@@ -38,7 +38,7 @@ class RoomModel {
       endConditionType: json['endConditionType'] as String? ?? 'score',
       endConditionValue: json['endConditionValue'] as int? ?? 500,
       visibility: json['visibility'] as String? ?? 'open',
-      preset: json['preset'] as String? ?? 'classic',
+      categories: List<String>.from(json['categories'] ?? []),
       useCustomDeck: json['useCustomDeck'] as bool? ?? false,
       gameId: json['gameId'] as String?,
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -54,7 +54,7 @@ class RoomModel {
       'endConditionType': endConditionType,
       'endConditionValue': endConditionValue,
       'visibility': visibility,
-      'preset': preset,
+      'categories': categories,
       'useCustomDeck': useCustomDeck,
       'gameId': gameId,
       'createdAt': FieldValue.serverTimestamp(),
@@ -82,10 +82,7 @@ class RoomModel {
         (e) => e.name == visibility,
         orElse: () => RoomVisibility.open,
       ),
-      preset: GamePreset.values.firstWhere(
-        (e) => e.name == preset,
-        orElse: () => GamePreset.classic,
-      ),
+      categories: categories,
       useCustomDeck: useCustomDeck,
       players: players,
       gameId: gameId,

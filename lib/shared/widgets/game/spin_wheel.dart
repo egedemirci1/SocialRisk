@@ -26,6 +26,7 @@ class SpinWheel extends StatefulWidget {
     this.onSpinRequest,
     required this.onSpinComplete,
     this.playerName,
+    required this.categories,
   });
 
   final String? spinningTarget;
@@ -33,6 +34,7 @@ class SpinWheel extends StatefulWidget {
   final VoidCallback? onSpinRequest;
   final ValueChanged<String> onSpinComplete;
   final String? playerName;
+  final List<String> categories;
 
   @override
   State<SpinWheel> createState() => _SpinWheelState();
@@ -40,38 +42,56 @@ class SpinWheel extends StatefulWidget {
 
 class _SpinWheelState extends State<SpinWheel>
     with SingleTickerProviderStateMixin {
-  static const _categories = [
-    WheelCategory(
-      name: 'Cesaret',
-      color: AppColors.fire,
-      icon: Icons.local_fire_department_rounded,
-    ),
-    WheelCategory(
-      name: 'İtiraf',
-      color: AppColors.glow,
-      icon: Icons.psychology_rounded,
-    ),
-    WheelCategory(
-      name: 'Taklit',
-      color: AppColors.ice,
-      icon: Icons.theater_comedy_rounded,
-    ),
-    WheelCategory(
-      name: 'Sosyal Medya',
-      color: AppColors.primary,
-      icon: Icons.phone_android_rounded,
-    ),
-    WheelCategory(
-      name: 'Fiziksel',
-      color: AppColors.votePositive,
-      icon: Icons.fitness_center_rounded,
-    ),
-    WheelCategory(
-      name: 'Bilgi',
-      color: AppColors.accent,
-      icon: Icons.lightbulb_outline_rounded,
-    ),
-  ];
+  List<WheelCategory> get _activeCategories {
+    final Map<String, WheelCategory> allCats = {
+      'Cesaret': const WheelCategory(
+        name: 'Cesaret',
+        color: AppColors.fire,
+        icon: Icons.local_fire_department_rounded,
+      ),
+      'İtiraf': const WheelCategory(
+        name: 'İtiraf',
+        color: AppColors.glow,
+        icon: Icons.psychology_rounded,
+      ),
+      'Taklit': const WheelCategory(
+        name: 'Taklit',
+        color: AppColors.ice,
+        icon: Icons.theater_comedy_rounded,
+      ),
+      'Sosyal Medya': const WheelCategory(
+        name: 'Sosyal Medya',
+        color: AppColors.primary,
+        icon: Icons.phone_android_rounded,
+      ),
+      'Fiziksel': const WheelCategory(
+        name: 'Fiziksel',
+        color: AppColors.votePositive,
+        icon: Icons.fitness_center_rounded,
+      ),
+      'Bilgi': const WheelCategory(
+        name: 'Bilgi',
+        color: AppColors.accent,
+        icon: Icons.lightbulb_outline_rounded,
+      ),
+    };
+
+    if (widget.categories.isEmpty) {
+      return allCats.values.toList();
+    }
+
+    return widget.categories
+        .map(
+          (c) =>
+              allCats[c] ??
+              WheelCategory(
+                name: c,
+                color: AppColors.primary,
+                icon: Icons.category_rounded,
+              ),
+        )
+        .toList();
+  }
 
   late final AnimationController _controller;
   late Animation<double> _animation;
@@ -113,19 +133,21 @@ class _SpinWheelState extends State<SpinWheel>
       _hasResult = false;
     });
 
-    final targetIndex = _categories.indexWhere((c) => c.name == targetCategory);
+    final activeCats = _activeCategories;
+    final targetIndex = activeCats.indexWhere((c) => c.name == targetCategory);
     if (targetIndex == -1) return;
 
     final extraTurns = 3 + _random.nextInt(3); // 3-5 tur
-    final sliceAngle = 2 * pi / _categories.length;
-    
+    final sliceAngle = 2 * pi / activeCats.length;
+
     // Rastgele bir sapma (dilimin içinde rastgele bir yer)
-    final offset = (_random.nextDouble() * 0.8 + 0.1) * sliceAngle; // %10-%90 arası
-    
+    final offset =
+        (_random.nextDouble() * 0.8 + 0.1) * sliceAngle; // %10-%90 arası
+
     // Hedef açı (Ok her zaman en üstte yani 3π/2 (270 derece))
     // Formül: (Hedef index * sliceAngle) + offset açısı saat yönünün TERSİNE (çünkü çark saat yönünde dönüyor)
     final targetBaseAngle = (2 * pi) - (targetIndex * sliceAngle) - offset;
-    
+
     final currentMod = _currentAngle % (2 * pi);
     double distance = targetBaseAngle - currentMod;
     if (distance <= 0) distance += 2 * pi;
@@ -135,10 +157,7 @@ class _SpinWheelState extends State<SpinWheel>
     _animation = Tween<double>(
       begin: _currentAngle,
       end: _currentAngle + totalAngle,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _controller.reset();
     _controller.forward().then((_) {
@@ -175,14 +194,11 @@ class _SpinWheelState extends State<SpinWheel>
               final angle = _animation.isCompleted || !_isSpinning
                   ? _currentAngle
                   : _animation.value;
-              return Transform.rotate(
-                angle: angle,
-                child: child,
-              );
+              return Transform.rotate(angle: angle, child: child);
             },
             child: CustomPaint(
               size: const Size(280, 280),
-              painter: _WheelPainter(categories: _categories),
+              painter: _WheelPainter(categories: _activeCategories),
             ),
           ),
         ),

@@ -264,19 +264,13 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                                 .map((p) => p.id as String)
                                 .toList();
 
-                            final hostProfile = ref
-                                .read(watchUserProfileProvider(user?.uid ?? ''))
-                                .value;
-                            final hostCategories =
-                                hostProfile?.ownedCategories ?? [];
-
                             final gameId = await ref
                                 .read(roomRepositoryProvider)
                                 .startGameInRoom(
                                   roomCode: widget.roomCode,
                                   playerIds: playerIds,
                                   mode: room?.mode ?? GameMode.classic,
-                                  categories: hostCategories,
+                                  categories: room?.categories ?? [],
                                 );
 
                             if (context.mounted) {

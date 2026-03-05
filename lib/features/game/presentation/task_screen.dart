@@ -40,14 +40,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   late final AnimationController _cardController;
   late final Animation<double> _cardAnimation;
   final Random _random = Random();
-  final List<String> _categories = const [
-    'Cesaret',
-    'İtiraf',
-    'Taklit',
-    'Sosyal Medya',
-    'Fiziksel',
-    'Bilgi',
-  ];
 
   @override
   void initState() {
@@ -207,6 +199,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                                 isMyTurn,
                                 playerName,
                                 currentPlayer,
+                                roomAsync.value?.categories ?? [],
                               )),
                 ),
               ),
@@ -277,6 +270,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     bool isMyTurn,
     String playerName,
     PlayerEntity? currentPlayer,
+    List<String> categories,
   ) {
     return Column(
       children: [
@@ -309,8 +303,10 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
               ?.spinningTarget,
           canSpin: isMyTurn,
           playerName: playerName,
+          categories: categories,
           onSpinRequest: () {
-            final randomCat = _categories[_random.nextInt(_categories.length)];
+            if (categories.isEmpty) return;
+            final randomCat = categories[_random.nextInt(categories.length)];
             ref
                 .read(gameControllerProvider.notifier)
                 .setSpinningTarget(gameId: widget.gameId, target: randomCat);

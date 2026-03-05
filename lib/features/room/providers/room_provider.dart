@@ -34,7 +34,7 @@ class RoomController extends _$RoomController {
     required EndConditionType endConditionType,
     required int endConditionValue,
     required RoomVisibility visibility,
-    required GamePreset preset,
+    required List<String> categories,
     required GameMode mode,
     required bool useCustomDeck,
   }) async {
@@ -57,7 +57,7 @@ class RoomController extends _$RoomController {
             endConditionType: endConditionType,
             endConditionValue: endConditionValue,
             visibility: visibility,
-            preset: preset,
+            categories: categories,
             mode: mode,
             useCustomDeck: useCustomDeck,
           ),

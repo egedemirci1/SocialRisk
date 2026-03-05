@@ -5,14 +5,6 @@ enum GameMode {
   custom, // Gelecek planı
 }
 
-/// İçerik preset'i — odadaki görev havuzunu belirler.
-enum GamePreset {
-  classic, // Tüm kategoriler, genel içerik
-  family, // Aile dostu (PG)
-  couple, // Sevgili modu
-  adult, // Yetişkin (18+)
-}
-
 enum GameDifficulty {
   easy, // Kolay - multiplier 1
   medium, // Orta - multiplier 2

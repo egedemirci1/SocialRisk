@@ -11,7 +11,7 @@ abstract class RoomRepository {
     required EndConditionType endConditionType,
     required int endConditionValue,
     required RoomVisibility visibility,
-    required GamePreset preset,
+    required List<String> categories,
     required GameMode mode,
     required bool useCustomDeck,
   });

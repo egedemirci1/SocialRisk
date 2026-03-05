@@ -139,13 +139,15 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               );
             },
           ),
-
         ],
       ),
     );
   }
 
-  Widget _buildWalletIndicator(AsyncValue<dynamic> userProfileAsync, String uid) {
+  Widget _buildWalletIndicator(
+    AsyncValue<dynamic> userProfileAsync,
+    String uid,
+  ) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -160,7 +162,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 SnackBar(
                   content: Text(
                     '+500 bilet eklendi!',
-                    style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold),
+                    style: GoogleFonts.playfairDisplay(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   backgroundColor: Colors.green.shade800,
                   duration: const Duration(seconds: 1),
@@ -299,7 +303,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           const CosmeticItemEntity(
             id: 'scenario_18',
             name: 'Kapalı Gişe (+18)',
-            description: 'Yetişkinlere özel görevler çıkar. Oda ayarından aktif edilir.',
+            description:
+                'Yetişkinlere özel görevler çıkar. Oda ayarından aktif edilir.',
             imageUrl: '🔞',
             price: 1500,
             type: 'category',
@@ -310,7 +315,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             description: 'Komik ve eğlenceli görevler ağırlıklı olarak çıkar.',
             imageUrl: '🎭',
             price: 800,
-            type: 'preset',
+            type: 'category',
           ),
           const CosmeticItemEntity(
             id: 'scenario_tragedy',
@@ -323,15 +328,17 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           const CosmeticItemEntity(
             id: 'scenario_romance',
             name: 'Aşkın Sahnesi',
-            description: 'Romantik ve duygusal görevler ağırlıklı olarak çıkar.',
+            description:
+                'Romantik ve duygusal görevler ağırlıklı olarak çıkar.',
             imageUrl: '❤️',
             price: 900,
-            type: 'preset',
+            type: 'category',
           ),
           const CosmeticItemEntity(
             id: 'scenario_mystery',
             name: 'Gizemli Perde',
-            description: 'Gerilim ve gizem temalı görevler ağırlıklı olarak çıkar.',
+            description:
+                'Gerilim ve gizem temalı görevler ağırlıklı olarak çıkar.',
             imageUrl: '🔍',
             price: 1100,
             type: 'category',
@@ -342,7 +349,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             description: 'Bilimkurgu temalı görevler ağırlıklı olarak çıkar.',
             imageUrl: '🚀',
             price: 1300,
-            type: 'preset',
+            type: 'category',
           ),
         ];
         title = 'Özel Senaryolar';
@@ -486,7 +493,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               decoration: BoxDecoration(
                 color: AppColors.accent.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppColors.accent.withValues(alpha: 0.3),
+                ),
               ),
               child: Text(
                 'Sahip',
@@ -502,7 +511,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             GestureDetector(
               onTap: () => _buyItem(context, ref, uid, item),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
@@ -533,6 +545,4 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
       ),
     );
   }
-
-
 }

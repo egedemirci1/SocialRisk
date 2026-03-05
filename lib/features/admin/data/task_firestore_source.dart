@@ -23,7 +23,6 @@ class TaskFirestoreSource {
   Future<TaskItemEntity?> getRandomTask({
     required String category,
     required String difficulty,
-    required String preset,
     List<String> usedTaskIds = const [],
     bool includeCustomDeck = false,
     String? hostId,
@@ -53,8 +52,7 @@ class TaskFirestoreSource {
     Query<Map<String, dynamic>> query = _tasksRef
         .where('category', isEqualTo: category)
         .where('difficulty', isEqualTo: difficulty)
-        .where('isActive', isEqualTo: true)
-        .where('tags', arrayContains: preset);
+        .where('isActive', isEqualTo: true);
 
     final snap = await query.get();
 
@@ -92,7 +90,6 @@ class TaskFirestoreSource {
   /// Oyun başında tüm kategori×zorluk kombinasyonları için görevleri
   /// tek seferde çeker. Sonuç game doc'a yazılır.
   Future<Map<String, List<Map<String, dynamic>>>> fetchTaskPool({
-    required String preset,
     bool includeCustomDeck = false,
     String? hostId,
     List<String>? categories,
@@ -112,7 +109,6 @@ class TaskFirestoreSource {
             .where('category', isEqualTo: category)
             .where('difficulty', isEqualTo: difficulty)
             .where('isActive', isEqualTo: true)
-            .where('tags', arrayContains: preset)
             .limit(poolSize)
             .get();
 

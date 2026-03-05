@@ -8,6 +8,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/game_constants.dart';
 
 /// Sahne Kurma Ekranı — Tiyatro Temalı
 class CreateRoomScreen extends ConsumerStatefulWidget {
@@ -24,7 +25,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   double _roundTarget = 5;
   bool _isCreating = false;
   bool _isOpenMode = true;
-  final GamePreset _preset = GamePreset.classic;
+  List<String> _selectedCategories = GameConstants.defaultCategories.toList();
   GameMode _selectedMode = GameMode.classic;
   bool _useCustomDeck = false;
 
@@ -52,7 +53,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         endConditionType: endType,
         endConditionValue: endValue,
         visibility: _isOpenMode ? RoomVisibility.open : RoomVisibility.closed,
-        preset: _preset,
+        categories: _selectedCategories,
         hostAvatarUrl: userProfile?.avatarUrl,
         mode: _selectedMode,
         useCustomDeck: _useCustomDeck,
@@ -146,9 +147,15 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               ),
               const SizedBox(height: 12),
               _buildSection(
-                title: 'İçerik Seçimi',
+                title: 'İçerik Stili',
                 icon: Icons.menu_book_rounded,
                 child: _buildContentSelector(),
+              ),
+              const SizedBox(height: 12),
+              _buildSection(
+                title: 'Kategoriler',
+                icon: Icons.category_rounded,
+                child: _buildCategorySelector(),
               ),
               const SizedBox(height: 32),
               StageButton(
@@ -489,7 +496,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       children: [
         Expanded(
           child: _ToggleChip(
-            label: 'Klasik İçerik',
+            label: 'Varsayılan İçerik',
             isSelected: !_useCustomDeck,
             onTap: () => setState(() => _useCustomDeck = false),
           ),
@@ -503,6 +510,58 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildCategorySelector() {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: GameConstants.defaultCategories.map((category) {
+        final isSelected = _selectedCategories.contains(category);
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              if (isSelected) {
+                if (_selectedCategories.length > 2) {
+                  _selectedCategories.remove(category);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('En az 2 kategori seçmelisiniz.'),
+                    ),
+                  );
+                }
+              } else {
+                _selectedCategories.add(category);
+              }
+            });
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              gradient: isSelected ? AppColors.primaryGradient : null,
+              color: isSelected ? null : Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isSelected
+                    ? AppColors.accent.withValues(alpha: 0.3)
+                    : Colors.white10,
+                width: 1.5,
+              ),
+            ),
+            child: Text(
+              category,
+              style: GoogleFonts.playfairDisplay(
+                color: isSelected ? Colors.white : Colors.white54,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

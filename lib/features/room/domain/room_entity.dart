@@ -10,7 +10,7 @@ class RoomEntity {
   final RoomVisibility visibility;
   final List<PlayerEntity> players;
   final String? gameId;
-  final GamePreset preset;
+  final List<String> categories;
   final bool useCustomDeck;
   final DateTime createdAt;
 
@@ -23,7 +23,7 @@ class RoomEntity {
     this.endConditionValue = 5000,
     this.visibility = RoomVisibility.open,
     this.players = const [],
-    this.preset = GamePreset.classic,
+    this.categories = const [],
     this.useCustomDeck = false,
     this.gameId,
     required this.createdAt,
