@@ -35,7 +35,7 @@ Bu liste Ata ve Ege'nin paralel çalışabilmesi için fazlara ayrılmıştır.
 - [x] Genel arayüz cilalaması (Smooth geçişler ve mikro etkileşimler).
 
 ### 🧑‍💻 Ege (Mantık & DB)
-- [x] **Mağaza İçerikleri:** Eksik olan tüm kozmetiklerin (çerçeve, ünvan vb.) Firestore'a girilmesi.
+- [x] **Soru İçerikleri:** "Varsayılan İçerik" ve "Özel Senaryo" ayrımı kaldırıldı. Custom (Özel) seçeneği kategoriler listesine eklendi ve seçildiğinde kullanıcının kendi görevleri oyuna dahil edilecek.lmesi.
 
 ---
 

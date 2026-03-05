@@ -27,7 +27,6 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   bool _isOpenMode = true;
   List<String> _selectedCategories = GameConstants.defaultCategories.toList();
   GameMode _selectedMode = GameMode.classic;
-  bool _useCustomDeck = false;
 
   Future<void> _createRoom() async {
     setState(() => _isCreating = true);
@@ -56,7 +55,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         categories: _selectedCategories,
         hostAvatarUrl: userProfile?.avatarUrl,
         mode: _selectedMode,
-        useCustomDeck: _useCustomDeck,
+        useCustomDeck: _selectedCategories.contains('Özel'),
       );
 
       if (mounted && roomCode.isNotEmpty) {
@@ -144,12 +143,6 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 12),
-              _buildSection(
-                title: 'İçerik Stili',
-                icon: Icons.menu_book_rounded,
-                child: _buildContentSelector(),
               ),
               const SizedBox(height: 12),
               _buildSection(
@@ -485,29 +478,6 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             fontSize: 10,
           ),
           textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildContentSelector() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: _ToggleChip(
-            label: 'Varsayılan İçerik',
-            isSelected: !_useCustomDeck,
-            onTap: () => setState(() => _useCustomDeck = false),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _ToggleChip(
-            label: 'Özel Senaryo',
-            isSelected: _useCustomDeck,
-            onTap: () => setState(() => _useCustomDeck = true),
-          ),
         ),
       ],
     );
