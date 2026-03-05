@@ -232,6 +232,24 @@ class FirebaseGameSource implements GameRepository {
         return;
       }
 
+      // Oyun bitiş kontrolü (Tur sayısına göre)
+      if (isNewRound) {
+        final roomSnap = await _firestore
+            .collection('rooms')
+            .doc(game.roomId)
+            .get();
+        if (roomSnap.exists) {
+          final roomData = roomSnap.data()!;
+          final endType = roomData['endConditionType'] as String?;
+          final endVal = roomData['endConditionValue'] as int? ?? 10;
+
+          if (endType == 'rounds' && game.currentRound >= endVal) {
+            await _gameDoc(gameId).update({'status': 'finished'});
+            return;
+          }
+        }
+      }
+
       final updates = <String, dynamic>{
         'currentPlayerId': nextPlayerId,
         'currentTask': null,

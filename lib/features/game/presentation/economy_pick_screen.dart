@@ -8,6 +8,7 @@ import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../../../shared/models/enums.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
+import '../../../shared/widgets/buttons/leave_room_button.dart';
 import '../providers/game_provider.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
 
@@ -109,6 +110,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
+            leading: LeaveRoomButton(roomCode: widget.roomCode),
             actions: [
               IconButton(
                 icon: const Icon(

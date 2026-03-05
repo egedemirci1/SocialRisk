@@ -10,6 +10,7 @@ import '../providers/game_provider.dart';
 import 'widgets/player_spotlight.dart';
 import 'widgets/spectator_strip.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/buttons/leave_room_button.dart';
 
 /// Gösteri (Performing) Ekranı — Tiyatro Temalı
 class PerformingScreen extends ConsumerStatefulWidget {
@@ -89,6 +90,7 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
+        leading: LeaveRoomButton(roomCode: widget.roomCode),
       ),
       body: gameAsync.when(
         data: (game) {

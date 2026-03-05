@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'firebase_options.dart';
 
 // Assuming firebase options are initialized in main.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final firestore = FirebaseFirestore.instance;
   final cosmeticsRef = firestore.collection('cosmetics');
@@ -107,6 +108,34 @@ void main() async {
       'categoryName': 'Gizemli Perde',
       'imageUrl': '🔍',
       'price': 1200,
+      'isActive': true,
+    },
+    'frame_ivy': {
+      'name': 'Doğa Çerçevesi',
+      'type': 'frame',
+      'imageUrl': '🌿',
+      'price': 400,
+      'isActive': true,
+    },
+    'frame_neon': {
+      'name': 'Neon Çerçeve',
+      'type': 'frame',
+      'imageUrl': '⚡',
+      'price': 700,
+      'isActive': true,
+    },
+    'frame_stars': {
+      'name': 'Yıldız Çerçevesi',
+      'type': 'frame',
+      'imageUrl': '⭐',
+      'price': 800,
+      'isActive': true,
+    },
+    'frame_lightning': {
+      'name': 'Şimşek Çerçevesi',
+      'type': 'frame',
+      'imageUrl': '🌩️',
+      'price': 600,
       'isActive': true,
     },
   };

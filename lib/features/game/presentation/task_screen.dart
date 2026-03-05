@@ -11,11 +11,12 @@ import '../providers/game_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/models/enums.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/buttons/leave_room_button.dart';
 import '../domain/game_entity.dart';
 import '../../room/domain/room_entity.dart';
 import 'widgets/player_spotlight.dart';
 import 'widgets/spectator_strip.dart';
-import '../../../core/constants/app_colors.dart';
 
 /// Senaryo (Görev) Ekranı — Tiyatro Temalı
 class TaskScreen extends ConsumerStatefulWidget {
@@ -172,6 +173,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             elevation: 0,
             centerTitle: true,
             automaticallyImplyLeading: false,
+            leading: LeaveRoomButton(roomCode: widget.roomCode),
             actions: [
               IconButton(
                 icon: const Icon(

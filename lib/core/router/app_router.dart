@@ -23,6 +23,7 @@ import '../../features/admin/presentation/task_editor_screen.dart';
 import '../../features/admin/presentation/reported_photos_screen.dart';
 import '../../features/admin/providers/admin_provider.dart';
 import '../../features/admin/domain/task_item_entity.dart';
+import '../../shared/widgets/guards/active_game_guard.dart';
 
 /// Listens to Firebase auth state so GoRouter re-evaluates redirect
 /// automatically when the user signs in or out.
@@ -120,10 +121,14 @@ final appRouter = GoRouter(
       path: '/task',
       pageBuilder: (context, state) {
         final extra = state.extra as Map<String, String>? ?? {};
+        final roomCode = extra['roomCode'] ?? '';
         return _buildPageWithTransition(
-          child: TaskScreen(
-            gameId: extra['gameId'] ?? '',
-            roomCode: extra['roomCode'] ?? '',
+          child: ActiveGameGuard(
+            roomCode: roomCode,
+            child: TaskScreen(
+              gameId: extra['gameId'] ?? '',
+              roomCode: roomCode,
+            ),
           ),
           state: state,
         );
@@ -133,10 +138,14 @@ final appRouter = GoRouter(
       path: '/performing',
       pageBuilder: (context, state) {
         final extra = state.extra as Map<String, String>? ?? {};
+        final roomCode = extra['roomCode'] ?? '';
         return _buildPageWithTransition(
-          child: PerformingScreen(
-            gameId: extra['gameId'] ?? '',
-            roomCode: extra['roomCode'] ?? '',
+          child: ActiveGameGuard(
+            roomCode: roomCode,
+            child: PerformingScreen(
+              gameId: extra['gameId'] ?? '',
+              roomCode: roomCode,
+            ),
           ),
           state: state,
         );
@@ -146,10 +155,14 @@ final appRouter = GoRouter(
       path: '/voting',
       pageBuilder: (context, state) {
         final extra = state.extra as Map<String, String>? ?? {};
+        final roomCode = extra['roomCode'] ?? '';
         return _buildPageWithTransition(
-          child: VotingScreen(
-            gameId: extra['gameId'] ?? '',
-            roomCode: extra['roomCode'] ?? '',
+          child: ActiveGameGuard(
+            roomCode: roomCode,
+            child: VotingScreen(
+              gameId: extra['gameId'] ?? '',
+              roomCode: roomCode,
+            ),
           ),
           state: state,
         );
@@ -159,10 +172,14 @@ final appRouter = GoRouter(
       path: '/waiting',
       pageBuilder: (context, state) {
         final extra = state.extra as Map<String, String>? ?? {};
+        final roomCode = extra['roomCode'] ?? '';
         return _buildPageWithTransition(
-          child: WaitingScreen(
-            gameId: extra['gameId'] ?? '',
-            roomCode: extra['roomCode'] ?? '',
+          child: ActiveGameGuard(
+            roomCode: roomCode,
+            child: WaitingScreen(
+              gameId: extra['gameId'] ?? '',
+              roomCode: roomCode,
+            ),
           ),
           state: state,
         );
@@ -172,10 +189,14 @@ final appRouter = GoRouter(
       path: '/round-result',
       pageBuilder: (context, state) {
         final extra = state.extra as Map<String, dynamic>? ?? {};
+        final roomCode = extra['roomCode'] as String? ?? '';
         return _buildPageWithTransition(
-          child: RoundResultScreen(
-            gameId: extra['gameId'] as String? ?? '',
-            roomCode: extra['roomCode'] as String? ?? '',
+          child: ActiveGameGuard(
+            roomCode: roomCode,
+            child: RoundResultScreen(
+              gameId: extra['gameId'] as String? ?? '',
+              roomCode: roomCode,
+            ),
           ),
           state: state,
         );
@@ -186,6 +207,8 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) {
         final extra = state.extra as String? ?? '';
         return _buildPageWithTransition(
+          // GameOver is an end state, so we don't necessarily need the guard,
+          // but if we want it to redirect or not redirect, we can just leave it as is.
           child: GameOverScreen(roomCode: extra),
           state: state,
         );
@@ -198,7 +221,10 @@ final appRouter = GoRouter(
         final gameId = extra?['gameId'] as String? ?? '';
         final roomCode = extra?['roomCode'] as String? ?? '';
         return _buildPageWithTransition(
-          child: DifficultyChoiceScreen(gameId: gameId, roomCode: roomCode),
+          child: ActiveGameGuard(
+            roomCode: roomCode,
+            child: DifficultyChoiceScreen(gameId: gameId, roomCode: roomCode),
+          ),
           state: state,
         );
       },
@@ -207,10 +233,14 @@ final appRouter = GoRouter(
       path: '/economy-pick',
       pageBuilder: (context, state) {
         final extra = state.extra as Map<String, dynamic>? ?? {};
+        final roomCode = extra['roomCode'] as String? ?? '';
         return _buildPageWithTransition(
-          child: EconomyPickScreen(
-            gameId: extra['gameId'] as String? ?? '',
-            roomCode: extra['roomCode'] as String? ?? '',
+          child: ActiveGameGuard(
+            roomCode: roomCode,
+            child: EconomyPickScreen(
+              gameId: extra['gameId'] as String? ?? '',
+              roomCode: roomCode,
+            ),
           ),
           state: state,
         );

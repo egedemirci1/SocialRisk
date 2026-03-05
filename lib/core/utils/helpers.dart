@@ -13,8 +13,8 @@ class AppHelpers {
 
   static int calculatePenalty(int basePenalty, int passStreak) {
     if (passStreak <= 0) return 0;
-    // penalty = basePenalty * (3^passStreak) (eksponansiyel artış)
-    return (basePenalty * pow(3, passStreak)).toInt();
+    // penalty = basePenalty * passStreak (lineer artış)
+    return basePenalty * passStreak;
   }
 
   static String formatTimestamp(DateTime dateTime) {

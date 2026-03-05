@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import '../domain/economy_repository.dart';
 import '../domain/cosmetic_item_entity.dart';
 
@@ -127,23 +126,139 @@ class FirebaseEconomySource implements EconomyRepository {
 
   @override
   Future<List<CosmeticItemEntity>> fetchCosmetics() async {
-    try {
-      final snapshot = await _firestore.collection('cosmetics').get();
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return CosmeticItemEntity(
-          id: doc.id,
-          name: data['name'] as String? ?? 'Adsız',
-          description: data['description'] as String? ?? '',
-          imageUrl: data['imageUrl'] as String? ?? '📦',
-          price: data['price'] as int? ?? 0,
-          type: data['type'] as String? ?? 'frame',
-          categoryName: data['categoryName'] as String?,
-        );
-      }).toList();
-    } catch (e) {
-      debugPrint('Kozmetik ürünler çekilirken hata: $e');
-      return [];
-    }
+    // Return hardcoded local list instead of fetching from Firestore
+    return [
+      const CosmeticItemEntity(
+        id: 'frame_fire',
+        name: 'Ateş Çerçevesi',
+        description: '',
+        imageUrl: '🔥',
+        price: 500,
+        type: 'frame',
+      ),
+      const CosmeticItemEntity(
+        id: 'frame_ice',
+        name: 'Buz Çerçevesi',
+        description: '',
+        imageUrl: '🧊',
+        price: 500,
+        type: 'frame',
+      ),
+      const CosmeticItemEntity(
+        id: 'frame_flower',
+        name: 'Çiçek Çerçevesi',
+        description: '',
+        imageUrl: '🌸',
+        price: 400,
+        type: 'frame',
+      ),
+      const CosmeticItemEntity(
+        id: 'frame_shield',
+        name: 'Kalkan Çerçevesi',
+        description: '',
+        imageUrl: '🛡️',
+        price: 600,
+        type: 'frame',
+      ),
+      const CosmeticItemEntity(
+        id: 'frame_ivy',
+        name: 'Doğa Çerçevesi',
+        description: '',
+        imageUrl: '🌿',
+        price: 400,
+        type: 'frame',
+      ),
+      const CosmeticItemEntity(
+        id: 'frame_neon',
+        name: 'Neon Çerçeve',
+        description: '',
+        imageUrl: '⚡',
+        price: 700,
+        type: 'frame',
+      ),
+      const CosmeticItemEntity(
+        id: 'frame_stars',
+        name: 'Yıldız Çerçevesi',
+        description: '',
+        imageUrl: '⭐',
+        price: 800,
+        type: 'frame',
+      ),
+      const CosmeticItemEntity(
+        id: 'frame_lightning',
+        name: 'Şimşek Çerçevesi',
+        description: '',
+        imageUrl: '🌩️',
+        price: 600,
+        type: 'frame',
+      ),
+      const CosmeticItemEntity(
+        id: 'title_king',
+        name: 'Kral Unvanı',
+        description: '',
+        imageUrl: '👑',
+        price: 1000,
+        type: 'title',
+      ),
+      const CosmeticItemEntity(
+        id: 'title_knight',
+        name: 'Şövalye Unvanı',
+        description: '',
+        imageUrl: '⚔️',
+        price: 600,
+        type: 'title',
+      ),
+      const CosmeticItemEntity(
+        id: 'title_mage',
+        name: 'Büyücü Unvanı',
+        description: '',
+        imageUrl: '🔮',
+        price: 800,
+        type: 'title',
+      ),
+      const CosmeticItemEntity(
+        id: 'title_assassin',
+        name: 'Suikastçı Unvanı',
+        description: '',
+        imageUrl: '🗡️',
+        price: 700,
+        type: 'title',
+      ),
+      const CosmeticItemEntity(
+        id: 'title_jester',
+        name: 'Soytarı Unvanı',
+        description: '',
+        imageUrl: '🤡',
+        price: 200,
+        type: 'title',
+      ),
+      const CosmeticItemEntity(
+        id: 'scenario_18',
+        name: 'Kapalı Gişe (18+)',
+        description: 'Daha cesur ve yetişkinlere yönelik hikayeler.',
+        imageUrl: '🔞',
+        price: 1500,
+        type: 'category',
+        categoryName: 'Kapalı Gişe',
+      ),
+      const CosmeticItemEntity(
+        id: 'scenario_romance',
+        name: 'Aşkın Sahnesi',
+        description: 'Romantik ve duygusal temalı hikayeler.',
+        imageUrl: '❤️',
+        price: 1000,
+        type: 'category',
+        categoryName: 'Aşkın Sahnesi',
+      ),
+      const CosmeticItemEntity(
+        id: 'scenario_mystery',
+        name: 'Gizemli Perde',
+        description: 'Gerilim ve gizem dolu hikayeler.',
+        imageUrl: '🔍',
+        price: 1200,
+        type: 'category',
+        categoryName: 'Gizemli Perde',
+      ),
+    ];
   }
 }

@@ -87,10 +87,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     } catch (e) {
       if (mounted) _showError('Giriş başarısız: $e');
     } finally {
-      setState(() {
-        _isGoogleLoading = false;
-        _isAppleLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isGoogleLoading = false;
+          _isAppleLoading = false;
+        });
+      }
     }
   }
 

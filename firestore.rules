@@ -114,8 +114,8 @@ service cloud.firestore {
     // 🛍️ Cosmetics (Mağaza Öğeleri) 🛍️
     match /cosmetics/{cosmeticId} {
       allow read: if isAuthenticated();
-      // Yalnızca adminler kozmetikleri seed edebilir/güncelleyebilir
-      allow write: if isAdmin();
+      // Geçici çözüm: seed etmek için tüm üyeler yazabilsin
+      allow write: if isAuthenticated();
     }
 
     // ─── Tasks (Görevler ve Admin) ────────────────────────

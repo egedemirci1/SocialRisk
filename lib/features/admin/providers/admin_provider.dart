@@ -97,6 +97,7 @@ class AdminController extends _$AdminController {
       }
     } catch (e, st) {
       state = AsyncError(e, st);
+      throw Exception('Görevler eklenirken hata: $e');
     }
   }
 
@@ -104,7 +105,7 @@ class AdminController extends _$AdminController {
     state = const AsyncLoading();
     try {
       final cosmeticsRef = FirebaseFirestore.instance.collection('cosmetics');
-      
+
       final items = {
         'frame_fire': {
           'name': 'Ateş Çerçevesi',
@@ -169,6 +170,61 @@ class AdminController extends _$AdminController {
           'price': 200,
           'isActive': true,
         },
+        'scenario_18': {
+          'name': 'Kapalı Gişe (18+)',
+          'description': 'Daha cesur ve yetişkinlere yönelik hikayeler.',
+          'type': 'category',
+          'categoryName': 'Kapalı Gişe',
+          'imageUrl': '🔞',
+          'price': 1500,
+          'isActive': true,
+        },
+        'scenario_romance': {
+          'name': 'Aşkın Sahnesi',
+          'description': 'Romantik ve duygusal temalı hikayeler.',
+          'type': 'category',
+          'categoryName': 'Aşkın Sahnesi',
+          'imageUrl': '❤️',
+          'price': 1000,
+          'isActive': true,
+        },
+        'scenario_mystery': {
+          'name': 'Gizemli Perde',
+          'description': 'Gerilim ve gizem dolu hikayeler.',
+          'type': 'category',
+          'categoryName': 'Gizemli Perde',
+          'imageUrl': '🔍',
+          'price': 1200,
+          'isActive': true,
+        },
+        'frame_ivy': {
+          'name': 'Doğa Çerçevesi',
+          'type': 'frame',
+          'imageUrl': '🌿',
+          'price': 400,
+          'isActive': true,
+        },
+        'frame_neon': {
+          'name': 'Neon Çerçeve',
+          'type': 'frame',
+          'imageUrl': '⚡',
+          'price': 700,
+          'isActive': true,
+        },
+        'frame_stars': {
+          'name': 'Yıldız Çerçevesi',
+          'type': 'frame',
+          'imageUrl': '⭐',
+          'price': 800,
+          'isActive': true,
+        },
+        'frame_lightning': {
+          'name': 'Şimşek Çerçevesi',
+          'type': 'frame',
+          'imageUrl': '🌩️',
+          'price': 600,
+          'isActive': true,
+        },
       };
 
       final batch = FirebaseFirestore.instance.batch();
@@ -179,6 +235,7 @@ class AdminController extends _$AdminController {
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);
+      throw Exception('Kozmetikler eklenirken hata: $e');
     }
   }
 

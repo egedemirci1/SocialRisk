@@ -8,6 +8,7 @@ import '../domain/game_entity.dart';
 import '../providers/game_provider.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/buttons/leave_room_button.dart';
 
 /// Bekleme ekranı — Tiyatro Temalı
 class WaitingScreen extends ConsumerStatefulWidget {
@@ -67,7 +68,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                 content: Text('Oyun sona erdi veya ev sahibi ayrıldı.'),
               ),
             );
-            context.go('/menu');
+            context.go('/home');
           }
         });
         return;
@@ -124,6 +125,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
             automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             elevation: 0,
+            leading: LeaveRoomButton(roomCode: widget.roomCode),
             actions: [
               IconButton(
                 icon: const Icon(

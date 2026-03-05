@@ -7,6 +7,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../providers/game_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../../../shared/models/enums.dart';
+import '../../../shared/widgets/buttons/leave_room_button.dart';
 
 /// Kategori belirlendikten sonra oyuncunun zorluk seçtiği ekran — Tiyatro Temalı
 class DifficultyChoiceScreen extends ConsumerStatefulWidget {
@@ -91,6 +92,7 @@ class _DifficultyChoiceScreenState
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
+            leading: LeaveRoomButton(roomCode: widget.roomCode),
           ),
           body: SafeArea(
             child: Padding(

@@ -12,6 +12,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../admin/providers/task_provider.dart';
 import '../../economy/providers/economy_provider.dart';
+import '../../../shared/widgets/buttons/leave_room_button.dart';
 import 'package:lottie/lottie.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../room/domain/room_entity.dart';
@@ -54,6 +55,12 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: LeaveRoomButton(roomCode: widget.roomCode),
+      ),
       body: gameAsync.when(
         data: (game) {
           if (game == null) {

@@ -12,6 +12,7 @@ import '../../game/providers/game_provider.dart';
 import '../providers/vote_provider.dart';
 import '../../game/domain/game_entity.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
+import '../../../shared/widgets/buttons/leave_room_button.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../economy/providers/economy_provider.dart';
 
@@ -152,6 +153,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             elevation: 0,
             centerTitle: true,
             automaticallyImplyLeading: false,
+            leading: LeaveRoomButton(roomCode: widget.roomCode),
             actions: [
               IconButton(
                 icon: const Icon(
