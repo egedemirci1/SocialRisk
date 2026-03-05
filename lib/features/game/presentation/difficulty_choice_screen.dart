@@ -7,7 +7,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../providers/game_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../../../shared/models/enums.dart';
-import '../../../shared/widgets/buttons/leave_room_button.dart';
+import '../../../shared/widgets/buttons/exit_room_button.dart';
 
 /// Kategori belirlendikten sonra oyuncunun zorluk seçtiği ekran — Tiyatro Temalı
 class DifficultyChoiceScreen extends ConsumerStatefulWidget {
@@ -88,97 +88,101 @@ class _DifficultyChoiceScreenState
                 letterSpacing: 2,
               ),
             ),
-            automaticallyImplyLeading: false,
+            leading: ExitRoomButton(roomCode: widget.roomCode),
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
-            leading: LeaveRoomButton(roomCode: widget.roomCode),
           ),
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.accent.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: AppColors.accent.withValues(alpha: 0.3),
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 24),
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.accent.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: AppColors.accent.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Text(
+                          'KATEGORİ: ${game.selectedCategory?.toUpperCase() ?? "?"}',
+                          style: GoogleFonts.playfairDisplay(
+                            color: AppColors.accent,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 13,
+                            letterSpacing: 1,
+                          ),
+                        ),
                       ),
                     ),
-                    child: Text(
-                      'KATEGORİ: ${game.selectedCategory?.toUpperCase() ?? "?"}',
-                      style: GoogleFonts.playfairDisplay(
-                        color: AppColors.accent,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 13,
-                        letterSpacing: 1,
+                    const Spacer(),
+                    if (isMyTurn) ...[
+                      Text(
+                        'RİSK VE ÖDÜL DENGESİ',
+                        style: GoogleFonts.playfairDisplay(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  ),
-                  const Spacer(),
-                  if (isMyTurn) ...[
-                    Text(
-                      'RİSK VE ÖDÜL DENGESİ',
-                      style: GoogleFonts.playfairDisplay(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1,
+                      const SizedBox(height: 8),
+                      Text(
+                        'Performansının zorluğunu sen belirle...',
+                        style: GoogleFonts.libreBaskerville(
+                          color: Colors.white54,
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Performansının zorluğunu sen belirle...',
-                      style: GoogleFonts.libreBaskerville(
-                        color: Colors.white54,
-                        fontSize: 14,
+                      const SizedBox(height: 48),
+                      _buildDifficultyCard(
+                        title: 'AMATÖR',
+                        multiplier: '1x',
+                        color: Colors.green,
+                        onTap: () => _selectDifficulty('easy'),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 48),
-                    _buildDifficultyCard(
-                      title: 'AMATÖR',
-                      multiplier: '1x',
-                      color: Colors.green,
-                      onTap: () => _selectDifficulty('easy'),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildDifficultyCard(
-                      title: 'PROFESYONEL',
-                      multiplier: '2x',
-                      color: Colors.orange,
-                      onTap: () => _selectDifficulty('medium'),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildDifficultyCard(
-                      title: 'DUAYEN',
-                      multiplier: '3x',
-                      color: AppColors.primary,
-                      onTap: () => _selectDifficulty('hard'),
-                    ),
-                  ] else ...[
-                    const CircularProgressIndicator(color: AppColors.accent),
-                    const SizedBox(height: 32),
-                    Text(
-                      '$playerName zorluk seviyesini seçiyor...',
-                      style: GoogleFonts.playfairDisplay(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
+                      const SizedBox(height: 16),
+                      _buildDifficultyCard(
+                        title: 'PROFESYONEL',
+                        multiplier: '2x',
+                        color: Colors.orange,
+                        onTap: () => _selectDifficulty('medium'),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
+                      const SizedBox(height: 16),
+                      _buildDifficultyCard(
+                        title: 'DUAYEN',
+                        multiplier: '3x',
+                        color: AppColors.primary,
+                        onTap: () => _selectDifficulty('hard'),
+                      ),
+                    ] else ...[
+                      const CircularProgressIndicator(color: AppColors.accent),
+                      const SizedBox(height: 32),
+                      Text(
+                        '$playerName zorluk seviyesini seçiyor...',
+                        style: GoogleFonts.playfairDisplay(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                    const Spacer(flex: 2),
                   ],
-                  const Spacer(flex: 2),
-                ],
+                ),
               ),
             ),
           ),

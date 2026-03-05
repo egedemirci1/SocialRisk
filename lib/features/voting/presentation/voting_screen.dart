@@ -11,10 +11,12 @@ import '../../room/providers/room_provider.dart';
 import '../../game/providers/game_provider.dart';
 import '../providers/vote_provider.dart';
 import '../../game/domain/game_entity.dart';
+import '../../game/presentation/widgets/turn_counter_badge.dart';
+import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
-import '../../../shared/widgets/buttons/leave_room_button.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../economy/providers/economy_provider.dart';
+import '../../../shared/widgets/buttons/exit_room_button.dart';
 
 /// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor (Tiyatro Temalı).
 class VotingScreen extends ConsumerStatefulWidget {
@@ -84,6 +86,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
     final user = ref.watch(currentUserProvider);
     final votesAsync = ref.watch(watchVotesProvider(widget.gameId));
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
+    final roomAsync = ref.watch(watchRoomProvider(widget.roomCode));
 
     return gameAsync.when(
       data: (game) {
@@ -119,14 +122,17 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
         final activePlayerIds = activePlayers.map((p) => p.id).toList();
         final allVoted =
             votesAsync.value != null &&
+            activePlayerIds.isNotEmpty &&
             activePlayerIds.every(
               (id) =>
                   id == game.currentPlayerId ||
                   votesAsync.value!.containsKey(id),
             );
+
+        final isHost = roomAsync.value?.hostId == user?.uid;
         final isMyTurn = game.currentPlayerId == user?.uid;
 
-        if (allVoted && !_isProcessing && !_hasProcessed && isMyTurn) {
+        if (allVoted && !_isProcessing && !_hasProcessed && isHost) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted && !_isProcessing && !_hasProcessed) {
               _processResults(
@@ -152,9 +158,14 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
-            automaticallyImplyLeading: false,
-            leading: LeaveRoomButton(roomCode: widget.roomCode),
+            leading: ExitRoomButton(roomCode: widget.roomCode),
             actions: [
+              if (roomAsync.value != null)
+                TurnCounterBadge(
+                  currentRound: game.currentRound,
+                  endConditionType: roomAsync.value!.endConditionType,
+                  endConditionValue: roomAsync.value!.endConditionValue,
+                ),
               IconButton(
                 icon: const Icon(
                   Icons.leaderboard_rounded,
@@ -166,109 +177,114 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             ],
           ),
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  const Spacer(),
-                  PlayerAvatar(
-                    uid: game.currentPlayerId,
-                    displayName: performerName,
-                    radius: 50,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    performerName.toUpperCase(),
-                    style: GoogleFonts.playfairDisplay(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    const Spacer(),
+                    PlayerAvatar(
+                      uid: game.currentPlayerId,
+                      displayName: performerName,
+                      radius: 50,
                     ),
-                  ),
-                  // Ünvan gösterimi
-                  Builder(
-                    builder: (context) {
-                      final profile = ref
-                          .watch(watchUserProfileProvider(game.currentPlayerId))
-                          .value;
-                      if (profile?.activeTitle == null) {
-                        return const SizedBox.shrink();
-                      }
-                      final cosmetics =
-                          ref.watch(fetchCosmeticsProvider).value ?? [];
-                      final titleItem = cosmetics
-                          .where((c) => c.id == profile!.activeTitle)
-                          .firstOrNull;
-                      if (titleItem == null) {
-                        return const SizedBox.shrink();
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          '${titleItem.imageUrl} ${titleItem.name}',
-                          style: GoogleFonts.playfairDisplay(
-                            color: AppColors.accent,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'performansını sergiledi:',
-                    style: GoogleFonts.libreBaskerville(
-                      color: Colors.white54,
-                      fontSize: 14,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: AppColors.accent.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    child: Text(
-                      '"${game.currentTask?.content ?? ""}"',
+                    const SizedBox(height: 16),
+                    Text(
+                      performerName.toUpperCase(),
                       style: GoogleFonts.playfairDisplay(
                         color: Colors.white,
-                        fontSize: 20,
-                        fontStyle: FontStyle.italic,
-                        height: 1.5,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 2,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  const Spacer(),
-                  if (_isProcessing || _hasProcessed)
-                    _buildProcessingIndicator()
-                  else if (isMyTurn)
-                    _buildWaitingForOthers()
-                  else if (_hasVoted)
-                    _buildVotedStatus()
-                  else
-                    VotingPanel(
-                      onVote: (value) {
-                        if (user == null) return;
-                        setState(() => _hasVoted = true);
-                        ref
-                            .read(voteControllerProvider.notifier)
-                            .castVote(
-                              gameId: widget.gameId,
-                              voterId: user.uid,
-                              value: VoteValue.values.byName(value),
-                            );
+                    // Ünvan gösterimi
+                    Builder(
+                      builder: (context) {
+                        final profile = ref
+                            .watch(
+                              watchUserProfileProvider(game.currentPlayerId),
+                            )
+                            .value;
+                        if (profile?.activeTitle == null) {
+                          return const SizedBox.shrink();
+                        }
+                        final cosmetics =
+                            ref.watch(fetchCosmeticsProvider).value ?? [];
+                        final titleItem = cosmetics
+                            .where((c) => c.id == profile!.activeTitle)
+                            .firstOrNull;
+                        if (titleItem == null) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            '${titleItem.imageUrl} ${titleItem.name}',
+                            style: GoogleFonts.playfairDisplay(
+                              color: AppColors.accent,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        );
                       },
                     ),
-                  const SizedBox(height: 48),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'performansını sergiledi:',
+                      style: GoogleFonts.libreBaskerville(
+                        color: Colors.white54,
+                        fontSize: 14,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.accent.withValues(alpha: 0.1),
+                        ),
+                      ),
+                      child: Text(
+                        '"${game.currentTask?.content ?? ""}"',
+                        style: GoogleFonts.playfairDisplay(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontStyle: FontStyle.italic,
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const Spacer(),
+                    if (_isProcessing || _hasProcessed)
+                      _buildProcessingIndicator()
+                    else if (isMyTurn)
+                      _buildWaitingForOthers()
+                    else if (_hasVoted)
+                      _buildVotedStatus()
+                    else
+                      VotingPanel(
+                        onVote: (value) {
+                          if (user == null) return;
+                          setState(() => _hasVoted = true);
+                          ref
+                              .read(voteControllerProvider.notifier)
+                              .castVote(
+                                gameId: widget.gameId,
+                                voterId: user.uid,
+                                value: VoteValue.values.byName(value),
+                              );
+                        },
+                      ),
+                    const SizedBox(height: 48),
+                  ],
+                ),
               ),
             ),
           ),
@@ -276,7 +292,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
       },
       loading: () => const Scaffold(
         backgroundColor: AppColors.background,
-        body: Center(child: CircularProgressIndicator()),
+        body: TheaterLoadingScreen(message: 'Skor Hesaplanıyor...'),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.background,
@@ -303,21 +319,23 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
   }
 
   Widget _buildWaitingForOthers() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white10),
-      ),
-      child: Text(
-        'Diğer aktörlerin değerlendirmesi bekleniyor...',
-        style: GoogleFonts.libreBaskerville(
-          color: Colors.white38,
-          fontSize: 13,
-          fontStyle: FontStyle.italic,
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.white10),
         ),
-        textAlign: TextAlign.center,
+        child: Text(
+          'Diğer aktörlerin değerlendirmesi bekleniyor...',
+          style: GoogleFonts.libreBaskerville(
+            color: Colors.white38,
+            fontSize: 13,
+            fontStyle: FontStyle.italic,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

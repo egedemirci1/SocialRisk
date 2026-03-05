@@ -13,7 +13,7 @@ class AppHelpers {
 
   static int calculatePenalty(int basePenalty, int passStreak) {
     if (passStreak <= 0) return 0;
-    // penalty = basePenalty * passStreak (lineer artış)
+    // penalty = basePenalty * passStreak
     return basePenalty * passStreak;
   }
 

@@ -91,31 +91,12 @@ class GameController extends _$GameController {
       scoreToAdd: scoreToAdd,
     );
 
-    // Bitiş koşulunu kontrol et
-    bool shouldEnd = false;
-    if (endConditionType == EndConditionType.rounds) {
-      shouldEnd = currentRound >= endConditionValue;
-    } else if (endConditionType == EndConditionType.score) {
-      // Skor bazlı bitiş: repository üzerinden kontrol et
-      shouldEnd = await repo.checkScoreEndCondition(
-        roomId: roomId,
-        targetScore: endConditionValue,
-      );
-    }
-
-    // NOT: Ödül dağıtımı Cloud Function (onGameFinished) tarafından yapılır.
-    // Client-side duplike dağıtım kaldırıldı.
-
-    // Her durumda RoundResultScreen'e gitmek için sonuçları ayarla
+    // Game ends manually by the host on the RoundResultScreen based on condition
     await repo.setRoundResult(
       gameId: gameId,
       score: scoreToAdd,
       multiplier: taskMultiplier,
     );
-
-    if (shouldEnd) {
-      await repo.endGame(gameId);
-    }
   }
 
   Future<void> nextTurn(String gameId) async {
