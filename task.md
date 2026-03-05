@@ -39,24 +39,19 @@ Bu liste Ata ve Ege'nin paralel çalışabilmesi için fazlara ayrılmıştır.
 
 ---
 
-## 🟣 FAZ 4: İçerik, Kategori ve Kimlik Doğrulama Güncellemeleri
+## 🟣 FAZ 4: Kategori ve Kimlik Doğrulama Güncellemeleri
 *Öncelik: Veri yapısının ve giriş yöntemlerinin düzenlenmesi.*
 
-### 🧑‍💻 Ata (UI & Akış)
-- [ ] **Apple ile Giriş:** Ekranda yer alan "Apple ile Bağlan" butonunun arayüzden kaldırılması.
-- [ ] **İçerik Sayfası:** İçerik sayfasının güncellenmesi ve yeni yapıya göre düzenlenmesi.
-
-### 🧑‍💻 Ege (Mantık & DB)
-- [ ] **Custom Deck:** Custom deck'in mevcut kategorilere dahil edilmeyip, ayrı bir kategori yapısına dönüştürülmesi.
-- [ ] **Soru İçerikleri:** Sistemdeki/veritabanındaki mevcut soruların düzenlenmesi.
-- [ ] **Apple Auth:** Altyapıdan Apple giriş yönteminin (gerekirse) kaldırılması.
+### 🧑‍💻 Ata (Genel Görevler)
+- [x] **Apple ile Giriş:** Ekranda yer alan "Apple ile Bağlan" butonunun arayüzden kaldırılması ve altyapıdan (gerekirse) temizlenmesi.
+- [x] **Custom Deck:** Custom deck'in mevcut kategorilere dahil edilmeyip, ayrı bir kategori yapısına dönüştürülmesi.
 
 ---
 
 ## 🟠 FAZ 5: Tasarım Yenilenmesi ve Responsive Yapı
 *Öncelik: Görsel kalitenin ve cihaz uyumluluğunun artırılması.*
 
-### 🧑‍💻 Ata (UI & Deneyim)
+### 🧑‍💻 Ege (Tasarım & UI)
 - [ ] **Kapsamlı Tasarım Revizyonu:** Font, görsel, video, butonlar, renkler ve metin içeriklerinin baştan aşağı yenilenmesi.
 - [ ] **Responsive Kurulum:** Tüm ekran boyutlarına (farklı telefonlar ve tabletler) uygun responsive yapının oturtulması.
 

@@ -284,21 +284,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 isLoading: _isGoogleLoading,
               ),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: StageButton(
-                label: '',
-                icon: Icons.apple_rounded,
-                backgroundColor: AppColors.surface,
-                textColor: Colors.white,
-                borderColor: Colors.white12,
-                onPressed: () => _signInSocial(() {
-                  final provider = OAuthProvider('apple.com');
-                  return FirebaseAuth.instance.signInWithPopup(provider);
-                }, 'apple'),
-                isLoading: _isAppleLoading,
-              ),
-            ),
           ],
         ),
       ],

@@ -25,7 +25,6 @@ class _CustomDeckEditorScreenState
   static const _accentCrimson = Color(0xFF5C1616); // Bordo
   static const _textLight = Color(0xFFFDEFC2); // Parşömen sarısı / açık
   static const _cardColor = Color(0xFF1E140F); // Koyu kahve/Ahşap tonu
-  String? _selectedCategory; // Filtrelemek için seçili kategori (null = Tümü)
 
   void _showTaskDialog(UserEntity user, {UserTaskEntity? editingTask}) {
     final uid = user.uid;
@@ -33,7 +32,6 @@ class _CustomDeckEditorScreenState
     final contentController = TextEditingController(
       text: editingTask?.content ?? '',
     );
-    String selectedCategory = editingTask?.category ?? 'Cesaret';
     String selectedDifficulty = editingTask?.difficulty ?? 'easy';
 
     showDialog(
@@ -88,40 +86,6 @@ class _CustomDeckEditorScreenState
                           borderSide: const BorderSide(color: _accentGold),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      initialValue: selectedCategory,
-                      dropdownColor: _cardColor,
-                      decoration: InputDecoration(
-                        labelText: 'Kategori',
-                        labelStyle: GoogleFonts.cinzel(color: _accentGold),
-                        filled: true,
-                        fillColor: Colors.black.withValues(alpha: 0.4),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: _accentGold.withValues(alpha: 0.5),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: _accentGold),
-                        ),
-                      ),
-                      items: user.ownedCategories
-                          .map(
-                            (c) => DropdownMenuItem(
-                              value: c,
-                              child: Text(
-                                c,
-                                style: GoogleFonts.cinzel(color: _textLight),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (v) =>
-                          setDialogState(() => selectedCategory = v!),
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
@@ -233,7 +197,7 @@ class _CustomDeckEditorScreenState
                                     editingTask?.id ??
                                     DateTime.now().millisecondsSinceEpoch
                                         .toString(),
-                                category: selectedCategory,
+                                category: 'Özel',
                                 content: content,
                                 difficulty: selectedDifficulty,
                                 type: TaskType.action,
@@ -355,32 +319,7 @@ class _CustomDeckEditorScreenState
               SafeArea(
                 child: Column(
                   children: [
-                    // Kategori Filtreleme (Chips)
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Row(
-                        children: [
-                          _FilterChip(
-                            label: 'Tümü',
-                            isSelected: _selectedCategory == null,
-                            onTap: () =>
-                                setState(() => _selectedCategory = null),
-                          ),
-                          ...user.ownedCategories.map(
-                            (cat) => _FilterChip(
-                              label: cat,
-                              isSelected: _selectedCategory == cat,
-                              onTap: () =>
-                                  setState(() => _selectedCategory = cat),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Kategori Filtreleme (Chips) kaldırıldı
                     Expanded(
                       child: customTasksAsync.when(
                         loading: () => const Center(
@@ -393,14 +332,7 @@ class _CustomDeckEditorScreenState
                           ),
                         ),
                         data: (allTasks) {
-                          // Filtreleme Uygula
-                          final tasks = _selectedCategory == null
-                              ? allTasks
-                              : allTasks
-                                    .where(
-                                      (t) => t.category == _selectedCategory,
-                                    )
-                                    .toList();
+                          final tasks = allTasks;
 
                           if (tasks.isEmpty) {
                             return Center(
@@ -418,9 +350,7 @@ class _CustomDeckEditorScreenState
                                     ),
                                     const SizedBox(height: 16),
                                     Text(
-                                      _selectedCategory == null
-                                          ? 'Henüz efsanelere konu olacak sorular girmedin.\nSağ üstten yeni soru ekle!'
-                                          : 'Bu kategoride henüz soru girmedin.',
+                                      'Henüz efsanelere konu olacak sorular girmedin.\nSağ üstten yeni soru ekle!',
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.cinzel(
                                         color: _textLight.withValues(
@@ -638,58 +568,3 @@ class _CustomDeckEditorScreenState
   }
 }
 
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? _CustomDeckEditorScreenState._accentGold
-                : _CustomDeckEditorScreenState._cardColor,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: _CustomDeckEditorScreenState._accentGold,
-              width: 1.5,
-            ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: _CustomDeckEditorScreenState._accentGold
-                          .withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : [],
-          ),
-          child: Text(
-            label,
-            style: GoogleFonts.cinzel(
-              color: isSelected
-                  ? _CustomDeckEditorScreenState._bgColor
-                  : _CustomDeckEditorScreenState._textLight,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
