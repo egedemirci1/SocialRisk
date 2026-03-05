@@ -89,60 +89,48 @@ class StageButton extends StatelessWidget {
         child: Container(
           height: 60,
           decoration: BoxDecoration(
-            gradient: AppColors.primaryGradient,
-            borderRadius: BorderRadius.circular(12), // Modern rounded corners
-            border: Border.all(
-              color: AppColors.accent.withValues(alpha: 0.3),
-              width: 1.5,
-            ),
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.6),
+                color: backgroundColor.withValues(alpha: 0.4),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(2),
-            child: Stack(
-              children: [
-                // Subtle ticket notches / theater decorative pattern could go here
-                Center(
-                  child: isLoading
-                      ? SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              textColor,
-                            ),
+          child: Center(
+            child: isLoading
+                ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        textColor,
+                      ),
+                    ),
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      iconWidget ?? const SizedBox.shrink(),
+                      if (icon != null)
+                        Icon(icon, color: textColor, size: 24),
+                      if (label.isNotEmpty) ...[
+                        const SizedBox(width: 12),
+                        Text(
+                          label,
+                          style: GoogleFonts.nunito(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: textColor,
+                            letterSpacing: 1.0,
                           ),
-                        )
-                      : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            iconWidget ?? const SizedBox.shrink(),
-                            if (icon != null)
-                              Icon(icon, color: textColor, size: 24),
-                            if (label.isNotEmpty) ...[
-                              const SizedBox(width: 12),
-                              Text(
-                                label,
-                                style: GoogleFonts.playfairDisplay(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w900,
-                                  color: textColor,
-                                  letterSpacing: 2.0,
-                                ),
-                              ),
-                            ],
-                          ],
                         ),
-                ),
-              ],
-            ),
+                      ],
+                    ],
+                  ),
           ),
         ),
       ),

@@ -40,93 +40,52 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const overlayColor = Color(0xFF140D0B); // Koyu kahve/siyah tonu
-
     return Scaffold(
-      backgroundColor: overlayColor,
+      backgroundColor: AppColors.background,
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Arka Plan Resmi
-          Image.asset(
-            'assets/Loading-Screen-Background.png',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              // Hata durumunda (resim bulunamazsa) gradient göster
-              return const GradientContainer(child: SizedBox.shrink());
-            },
+          // 1. Arka Plan Işık Efekti
+          Center(
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primary.withValues(alpha: 0.15),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                    blurRadius: 100,
+                    spreadRadius: 50,
+                  ),
+                ],
+              ),
+            ),
           ),
 
-          // 2. Koyu Katman (Taverna atmosferi)
-          Container(color: overlayColor.withValues(alpha: 0.5)),
-
-          // 3. İçerik (Glow efekti, Başlık, Yükleniyor ikonu)
+          // 2. İçerik (Başlık ve Yükleniyor)
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Yazı arkasındaki Glow
-                    Container(
-                      width: 250,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(40),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFFD4AF37,
-                            ).withValues(alpha: 0.4),
-                            blurRadius: 70,
-                            spreadRadius: 20,
-                          ),
-                          BoxShadow(
-                            color: const Color(
-                              0xFF8B0000,
-                            ).withValues(alpha: 0.35),
-                            blurRadius: 100,
-                            spreadRadius: 40,
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Başlık
-                    Text(
-                      'Sosyal Risk',
-                      style: GoogleFonts.cinzelDecorative(
-                        fontSize: 48,
-                        color: const Color(0xFFFDEFC2),
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 2.0,
-                        shadows: [
-                          const Shadow(
-                            color: Colors.black87,
-                            blurRadius: 15,
-                            offset: Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                Text(
+                  'Social Risk',
+                  style: GoogleFonts.nunito(
+                    fontSize: 48,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Maceraya Atılıyor...',
-                  style: GoogleFonts.cinzel(
-                    fontSize: 16,
-                    color: const Color(0xFFD4AF37),
-                    letterSpacing: 1.5,
-                    fontWeight: FontWeight.w700,
-                    shadows: [
-                      const Shadow(
-                        color: Colors.black,
-                        blurRadius: 5,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
+                  'Parti Hazırlanıyor...',
+                  style: GoogleFonts.nunito(
+                    fontSize: 18,
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.0,
                   ),
                 ),
                 const SizedBox(height: 48),
@@ -135,7 +94,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   height: 32,
                   child: CircularProgressIndicator(
                     strokeWidth: 3.0,
-                    color: Color(0xFFD4AF37), // Altın sarısı
+                    color: AppColors.primary,
                   ),
                 ),
               ],

@@ -51,7 +51,7 @@ class HomeScreen extends ConsumerWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Arka plan ışıklandırması (Spotlight efekti gibi)
+          // Arka plan ışıklandırması (Yeni Party konsepti)
           Positioned(
             top: -100,
             left: -100,
@@ -60,17 +60,20 @@ class HomeScreen extends ConsumerWidget {
               height: 400,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primary.withValues(alpha: 0.15),
+                color: AppColors.secondary.withValues(alpha: 0.10), // Turkuaz hafif parlama
               ),
             ),
           ),
 
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                children: [
-                  const Spacer(flex: 2),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(
+                    children: [
+                      const Spacer(flex: 2),
                   _buildWelcome(
                     context,
                     displayName,
@@ -87,9 +90,11 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           ),
-        ],
+        ),
       ),
-    );
+    ],
+  ),
+);
   }
 
   Widget _buildWelcome(
@@ -124,11 +129,18 @@ class HomeScreen extends ConsumerWidget {
         const SizedBox(height: 4),
         Text(
           playerName,
-          style: GoogleFonts.playfairDisplay(
+          style: GoogleFonts.poppins(
             color: Colors.white,
-            fontSize: 32,
+            fontSize: 36,
             fontWeight: FontWeight.w900,
-            letterSpacing: 2,
+            letterSpacing: 0.5,
+            shadows: const [
+              Shadow(offset: Offset(-1.5, -1.5), color: Colors.black87),
+              Shadow(offset: Offset(1.5, -1.5), color: Colors.black87),
+              Shadow(offset: Offset(1.5, 1.5), color: Colors.black87),
+              Shadow(offset: Offset(-1.5, 1.5), color: Colors.black87),
+              Shadow(offset: Offset(0, 6), color: Colors.black54, blurRadius: 8),
+            ],
           ),
           textAlign: TextAlign.center,
         ),
@@ -145,11 +157,11 @@ class HomeScreen extends ConsumerWidget {
             ),
             child: Text(
               activeTitleItem.name,
-              style: GoogleFonts.playfairDisplay(
+              style: GoogleFonts.nunito(
                 color: AppColors.accent,
                 fontSize: 12,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 2,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.5,
               ),
             ),
           ),
@@ -165,18 +177,18 @@ class HomeScreen extends ConsumerWidget {
         StageButton(
           label: 'Yeni Sahne Kur',
           icon: Icons.add_circle_outline_rounded,
-          backgroundColor: AppColors.primary,
-          textColor: Colors.white,
-          borderColor: AppColors.accent,
+          backgroundColor: AppColors.primary, // Mango Sarı
+          textColor: AppColors.background, // İç metin siyah/koyu (Kontrast)
+          borderColor: Colors.transparent,
           onPressed: () => context.push('/create-room'),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         StageButton(
           label: 'Gösteriye Katıl',
           icon: Icons.theater_comedy_rounded,
-          backgroundColor: AppColors.surface,
-          textColor: AppColors.accent,
-          borderColor: AppColors.accent.withValues(alpha: 0.5),
+          backgroundColor: AppColors.secondary, // Turkuaz
+          textColor: Colors.white,
+          borderColor: Colors.transparent,
           onPressed: () => context.push('/join-room'),
         ),
         const SizedBox(height: 24),
@@ -293,11 +305,11 @@ class HomeScreen extends ConsumerWidget {
       icon: const Icon(Icons.logout_rounded, color: AppColors.accent, size: 20),
       label: Text(
         'Perdeyi Kapat',
-        style: GoogleFonts.playfairDisplay(
-          color: AppColors.accent,
+        style: GoogleFonts.nunito(
+          color: AppColors.error,
           fontSize: 14,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 2,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 1.0,
         ),
       ),
     );

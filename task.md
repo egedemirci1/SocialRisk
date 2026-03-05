@@ -48,12 +48,20 @@ Bu liste Ata ve Ege'nin paralel çalışabilmesi için fazlara ayrılmıştır.
 
 ---
 
-## 🟠 FAZ 5: Tasarım Yenilenmesi ve Responsive Yapı
-*Öncelik: Görsel kalitenin ve cihaz uyumluluğunun artırılması.*
+## 🟠 FAZ 5: "Clean Party Energy" Tasarım Yenilenmesi
+*Öncelik: Görsel kalitenin, eğlence hissiyatının ve responsive yapının artırılması.*
 
-### 🧑‍💻 Ege (Tasarım & UI)
-- [ ] **Kapsamlı Tasarım Revizyonu:** Font, görsel, video, butonlar, renkler ve metin içeriklerinin baştan aşağı yenilenmesi.
-- [ ] **Responsive Kurulum:** Tüm ekran boyutlarına (farklı telefonlar ve tabletler) uygun responsive yapının oturtulması.
+### 🎨 Tasarım Sistemi ve Çekirdek Yapı
+- [x] **Renk Paleti Revizyonu:** `AppColors` dosyasının İndigo-Mango-Turkuaz paletine güncellenmesi.
+- [/] **Buton Redesign:** `StageButton` widget'ının oval "hap" şekline ve Nunito fontuna geçirilmesi.
+- [x] **Web Splash:** `index.html` üzerinden web yükleme ekranının indigo temaya uyarlanması.
+
+### 📱 Ekran Bazlı Güncellemeler
+- [x] **Karşılama Ekranı (Splash):** Dart tarafındaki yükleme ekranının temizlenmesi.
+- [x] **Giriş (Login) & Ana Menü (Home):** Tiyatro fontlarının kaldırılması, Poppins fontlu "pop" başlıkların ve geniş ekran sınırlamalarının eklenmesi.
+- [x] **Oda Kurma (Create Room):** Silik cyan başlıkların belirginleştirilmesi, tiyatro terimlerinin (Perde vs.) parti terimleriyle değiştirilmesi, tüm çiplerin ovalleştirilmesi.
+- [ ] **Lobi & Oyun Ekranları:** Kalan tüm ekranlardaki eski tırnaklı fontların ve kahverengi tonların temizlenmesi.
+- [ ] **Responsive İnce Ayar:** Tablet ve web görünümünde içeriklerin çok yayılmaması için `ConstrainedBox` kontrollerinin yaygınlaştırılması.
 
 ---
 

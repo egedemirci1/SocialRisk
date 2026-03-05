@@ -79,11 +79,14 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Yeni Sahne Kur',
-          style: GoogleFonts.playfairDisplay(
+          'Yeni Parti Kur',
+          style: GoogleFonts.poppins(
             fontWeight: FontWeight.w900,
-            color: AppColors.accent,
-            letterSpacing: 1.5,
+            color: Colors.white,
+            letterSpacing: 1.0,
+            shadows: const [
+              Shadow(offset: Offset(0, 4), color: Colors.black26, blurRadius: 4),
+            ],
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -107,16 +110,16 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                   children: [
                     Expanded(
                       child: _buildSection(
-                        title: 'Koltuk Sayısı',
-                        icon: Icons.chair_rounded,
+                        title: 'Oyuncu Sayısı',
+                        icon: Icons.people_alt_rounded,
                         child: _buildPlayerSlider(),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildSection(
-                        title: 'Gösteri Türü',
-                        icon: Icons.theater_comedy_rounded,
+                        title: 'Oyun Modu',
+                        icon: Icons.celebration_rounded,
                         child: _buildGameMode(),
                       ),
                     ),
@@ -129,16 +132,16 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                   children: [
                     Expanded(
                       child: _buildSection(
-                        title: 'Perde Kapanışı',
-                        icon: Icons.curtains_closed_rounded,
+                        title: 'Oyun Sonu',
+                        icon: Icons.flag_rounded,
                         child: _buildEndCondition(),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildSection(
-                        title: 'Sahne Durumu',
-                        icon: Icons.visibility_rounded,
+                        title: 'Görünürlük',
+                        icon: Icons.language_rounded,
                         child: _buildVisibilityMode(),
                       ),
                     ),
@@ -147,8 +150,8 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               ),
               const SizedBox(height: 12),
               _buildSection(
-                title: 'İçerik Stili',
-                icon: Icons.menu_book_rounded,
+                title: 'Kart Paketi',
+                icon: Icons.style_rounded,
                 child: _buildContentSelector(),
               ),
               const SizedBox(height: 12),
@@ -159,11 +162,11 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               ),
               const SizedBox(height: 32),
               StageButton(
-                label: 'Perdeyi Aç',
+                label: 'Partiyi Başlat',
                 icon: Icons.play_arrow_rounded,
                 backgroundColor: AppColors.primary,
-                textColor: Colors.white,
-                borderColor: AppColors.accent,
+                textColor: AppColors.background,
+                borderColor: Colors.transparent,
                 onPressed: _createRoom,
                 isLoading: _isCreating,
               ),
@@ -183,9 +186,9 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        gradient: AppColors.surfaceGradient,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
+        color: AppColors.surfaceElevated,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.4),
@@ -205,11 +208,17 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               Flexible(
                 child: Text(
                   title,
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
                     color: AppColors.accent,
                     letterSpacing: 0.5,
+                    shadows: [
+                      Shadow(
+                        color: AppColors.accent.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -229,11 +238,11 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          '$_maxPlayers Aktör',
-          style: GoogleFonts.playfairDisplay(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            color: AppColors.accent,
+          '$_maxPlayers Oyuncu',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
           ),
         ),
         Transform.translate(
@@ -310,10 +319,10 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         if (_isScoreMode) ...[
           Text(
             '${_scoreTarget.toInt()} Puan',
-            style: GoogleFonts.playfairDisplay(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              color: AppColors.accent,
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
             ),
           ),
           Transform.translate(
@@ -362,10 +371,10 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         ] else ...[
           Text(
             '${_roundTarget.toInt()} Tur',
-            style: GoogleFonts.playfairDisplay(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              color: AppColors.accent,
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
             ),
           ),
           Transform.translate(
@@ -543,7 +552,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             decoration: BoxDecoration(
               gradient: isSelected ? AppColors.primaryGradient : null,
               color: isSelected ? null : Colors.transparent,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(30),
               border: Border.all(
                 color: isSelected
                     ? AppColors.accent.withValues(alpha: 0.3)
@@ -587,7 +596,7 @@ class _ToggleChip extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: isSelected ? AppColors.primaryGradient : null,
           color: isSelected ? null : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: isSelected
                 ? AppColors.accent.withValues(alpha: 0.3)
@@ -598,10 +607,10 @@ class _ToggleChip extends StatelessWidget {
         child: Center(
           child: Text(
             label,
-            style: GoogleFonts.playfairDisplay(
-              color: isSelected ? Colors.white : Colors.white54,
-              fontSize: 12,
-              fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
+            style: GoogleFonts.nunito(
+              color: isSelected ? AppColors.background : Colors.white54,
+              fontSize: 13,
+              fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
             ),
           ),
         ),

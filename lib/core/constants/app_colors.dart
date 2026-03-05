@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Arka plan (Modern Kahverengi / Derin Çikolata)
-  static const background = Color(0xFF0F0805); // Daha kahverengi bir siyah
-  static const surface = Color(0xFF1F0E0A);
-  static const surfaceElevated = Color(0xFF2D1612);
+  // Arka plan (Derin İndigo / Gece Mavisi)
+  static const background = Color(0xFF16103A); // Koyu İndigo
+  static const surface = Color(0xFF231D4D); // Kartlar için biraz daha açık İndigo
+  static const surfaceElevated = Color(0xFF332A6B); // Yüksek surface
 
-  // Vurgu (Mat Altın / Amber)
-  static const primary = Color(0xFF8B2500); // Daha sıcak bir "Burnt Orange/Red"
-  static const secondary = Color(0xFF4A1404);
-  static const accent = Color(0xFFE5B137); // Daha canlı bir Altın
+  // Vurgu (Mango Sarısı ve Genç Cyan)
+  static const primary = Color(0xFFFFB020); // Eğlenceli Mango Sarısı
+  static const secondary = Color(0xFF14B8A6); // Temiz Turkuaz/Teal
+  static const accent = Color(0xFF06B6D4); // Parlak Camgöbeği (Cyan)
 
   // Oyun durumu renkleri
-  static const fire = Color(0xFFFF4500);
-  static const ice = Color(0xFFAEC6CF);
-  static const glow = Color(0xFFFFFDD1);
+  static const fire = Color(0xFFFF5252); // Enerjik Kırmızı
+  static const ice = Color(0xFF4DD0E1); // Ferah Mavi
+  static const glow = Color(0xFFFFF176); // Glow Sarısı
 
   // Oylama renkleri
-  static const votePositive = Color(0xFF4CAF50);
-  static const voteNeutral = Color(0xFFFF9800);
-  static const voteNegative = Color(0xFFF44336);
+  static const votePositive = Color(0xFF10B981); // Zümrüt Yeşili
+  static const voteNeutral = Color(0xFFF59E0B); // Amber
+  static const voteNegative = Color(0xFFEF4444); // Tok Kırmızı
 
   // Ceza / Hata
-  static const error = Color(0xFFE53935);
-  static const penalty = Color(0xFFE53935);
-  static const passWarning = Color(0xFFFFC107);
+  static const error = Color(0xFFEF4444);
+  static const penalty = Color(0xFFEF4444);
+  static const passWarning = Color(0xFFF59E0B);
 
-  // Modern Gradyanlar
+  // Modern Gradyanlar (Aksiyonlar İçin)
   static const primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      Color(0xFF8B2500), // Burnt Red / Mahogany
-      Color(0xFF5A1000), // Deep Brown/Red
+      Color(0xFFFFB020), // Mango Yellow
+      Color(0xFFF59E0B), // Deep Amber
     ],
   );
 
@@ -40,8 +40,8 @@ class AppColors {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [
-      Color(0xFF2D1612), // Deep Mahogany
-      Color(0xFF1F0E0A), // Dark Chocolate
+      Color(0xFF231D4D), // Surface
+      Color(0xFF16103A), // Background
     ],
   );
 
@@ -49,9 +49,9 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      Color(0xFFFFD740), // Bright Gold
-      Color(0xFFE5B137), // Golden
-      Color(0xFFA67C00), // Dark Gold
+      Color(0xFF22D3EE), // Bright Cyan
+      Color(0xFF06B6D4), // Cyan
+      Color(0xFF0891B2), // Deep Cyan
     ],
   );
 }

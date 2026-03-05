@@ -111,7 +111,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         opacity: _fadeAnimation,
         child: Stack(
           children: [
-            // Yumuşak bir üst aydınlatma
+            // Yeni Parti Işıklandırması
             Positioned(
               top: -150,
               left: -50,
@@ -121,7 +121,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 decoration: BoxDecoration(
                   gradient: RadialGradient(
                     colors: [
-                      AppColors.primary.withValues(alpha: 0.2),
+                      AppColors.secondary.withValues(alpha: 0.15),
                       Colors.transparent,
                     ],
                   ),
@@ -130,11 +130,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             ),
             SafeArea(
               child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
                       _buildHeader(),
                       const SizedBox(height: 64),
                       _buildLoginCard(),
@@ -145,10 +147,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildHeader() {
@@ -159,12 +162,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
-              'Sosyal Risk',
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 48,
+              'Social Risk',
+              style: GoogleFonts.poppins(
+                fontSize: 56,
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
-                letterSpacing: 2,
+                letterSpacing: 1.0,
+                shadows: const [
+                  Shadow(offset: Offset(-2, -2), color: Colors.black87),
+                  Shadow(offset: Offset(2, -2), color: Colors.black87),
+                  Shadow(offset: Offset(2, 2), color: Colors.black87),
+                  Shadow(offset: Offset(-2, 2), color: Colors.black87),
+                  Shadow(offset: Offset(0, 8), color: Colors.black54, blurRadius: 10),
+                ],
               ),
             ),
           ),
@@ -193,16 +203,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           TextField(
             controller: _nameController,
             maxLength: 24,
-            style: GoogleFonts.playfairDisplay(
+            style: GoogleFonts.nunito(
               fontSize: 20,
               color: Colors.white,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w800,
             ),
             decoration: InputDecoration(
-              hintText: 'Sahne Adınız...',
-              hintStyle: GoogleFonts.playfairDisplay(
-                color: Colors.white24,
-                fontWeight: FontWeight.w500,
+              hintText: 'Oyuncu Adınız...',
+              hintStyle: GoogleFonts.nunito(
+                color: Colors.white38,
+                fontWeight: FontWeight.w600,
               ),
               counterText: '',
               prefixIcon: const Icon(
@@ -223,21 +233,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           ),
           const SizedBox(height: 24),
           StageButton(
-            label: 'Gösteriye Katıl',
-            icon: Icons.theater_comedy_rounded,
+            label: 'Partiye Katıl',
+            icon: Icons.play_arrow_rounded,
             backgroundColor: AppColors.primary,
-            textColor: Colors.white,
-            borderColor: AppColors.accent,
+            textColor: AppColors.background,
+            borderColor: Colors.transparent,
             onPressed: _signInAnonymously,
             isLoading: _isAnonymousLoading,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
             '* Anonim olarak devam edeceksiniz. İstatistikleriniz bu cihaza kaydedilir.',
-            style: GoogleFonts.playfairDisplay(
+            style: GoogleFonts.nunito(
               color: Colors.white38,
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
           ),
@@ -256,11 +266,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'Veya',
-                style: GoogleFonts.playfairDisplay(
-                  color: Colors.white24,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2,
+                style: GoogleFonts.nunito(
+                  color: Colors.white38,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.5,
                 ),
               ),
             ),
@@ -272,11 +282,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           children: [
             Expanded(
               child: StageButton(
-                label: '',
+                label: 'Google ile Devam Et',
                 icon: Icons.g_mobiledata_rounded,
-                backgroundColor: AppColors.surface,
+                backgroundColor: AppColors.surfaceElevated,
                 textColor: Colors.white,
-                borderColor: Colors.white12,
+                borderColor: Colors.transparent,
                 onPressed: () => _signInSocial(() {
                   final provider = GoogleAuthProvider();
                   return FirebaseAuth.instance.signInWithPopup(provider);

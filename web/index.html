@@ -39,7 +39,8 @@
     body {
       margin: 0;
       padding: 0;
-      background-color: #140D0B;
+      background-color: #16103A;
+      /* AppColors.background */
       overflow: hidden;
     }
 
@@ -51,19 +52,22 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background-color: #140D0B;
-      background-image: url('assets/Loading-Screen-Background.png');
+      background-color: #16103A;
+      /* background-image: url('assets/Loading-Screen-Background.png'); */
       background-size: cover;
       background-position: center;
       transition: opacity 0.4s ease-out;
     }
-    
-    /* Karartma (Overlay) Efekti */
+
+    /* Karartma (Overlay) Efekti - Artık kullanılmıyor ama kalsın */
     #native-splash::before {
       content: "";
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(20, 13, 11, 0.5);
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(22, 16, 58, 0.2);
       z-index: -1;
     }
 
@@ -88,8 +92,8 @@
       height: 80px;
       background: transparent;
       border-radius: 40px;
-      box-shadow: 0 0 70px 20px rgba(212, 175, 55, 0.4),
-                  0 0 100px 40px rgba(139, 0, 0, 0.35);
+      box-shadow: 0 0 70px 20px rgba(255, 176, 32, 0.15),
+        0 0 100px 40px rgba(6, 182, 212, 0.2);
       z-index: 0;
       animation: pulse 2s infinite ease-in-out alternate;
     }
@@ -97,12 +101,11 @@
     #native-splash .title {
       position: relative;
       z-index: 1;
-      font-family: 'Times New Roman', Times, serif; /* Fallback for Cinzel Decorative before fonts load */
+      font-family: 'Nunito', 'Segoe UI', Arial, sans-serif;
       font-size: 48px;
       font-weight: 900;
-      color: #FDEFC2;
-      letter-spacing: 2px;
-      text-shadow: 0px 5px 15px rgba(0, 0, 0, 0.87);
+      color: #FFFFFF;
+      letter-spacing: 1.5px;
       margin: 0;
     }
 
@@ -110,12 +113,11 @@
       position: relative;
       z-index: 1;
       margin-top: 16px;
-      font-family: 'Times New Roman', Times, serif; /* Fallback for Cinzel */
-      font-size: 16px;
-      font-weight: bold;
-      color: #D4AF37;
-      letter-spacing: 1.5px;
-      text-shadow: 0px 2px 5px rgba(0, 0, 0, 1);
+      font-family: 'Nunito', 'Segoe UI', Arial, sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: #FFB020;
+      letter-spacing: 1.0px;
     }
 
     #native-splash .spinner {
@@ -124,8 +126,8 @@
       margin-top: 48px;
       width: 32px;
       height: 32px;
-      border: 3px solid rgba(212, 175, 55, 0.2);
-      border-top-color: #D4AF37;
+      border: 3px solid rgba(255, 176, 32, 0.2);
+      border-top-color: #FFB020;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -138,12 +140,13 @@
 
     @keyframes pulse {
       0% {
-        box-shadow: 0 0 50px 10px rgba(212, 175, 55, 0.3),
-                    0 0 80px 30px rgba(139, 0, 0, 0.25);
+        box-shadow: 0 0 50px 10px rgba(255, 176, 32, 0.1),
+          0 0 80px 30px rgba(6, 182, 212, 0.15);
       }
+
       100% {
-        box-shadow: 0 0 70px 20px rgba(212, 175, 55, 0.5),
-                    0 0 100px 40px rgba(139, 0, 0, 0.45);
+        box-shadow: 0 0 70px 20px rgba(255, 176, 32, 0.2),
+          0 0 100px 40px rgba(6, 182, 212, 0.25);
       }
     }
   </style>
@@ -154,9 +157,9 @@
   <div id="native-splash">
     <div class="glow-container">
       <div class="glow-bg"></div>
-      <div class="title">Sosyal Risk</div>
+      <div class="title">Social Risk</div>
     </div>
-    <div class="subtitle">Maceraya Atılıyor...</div>
+    <div class="subtitle">Parti Hazırlanıyor...</div>
     <div class="spinner"></div>
   </div>
 
@@ -197,10 +200,10 @@
     // Flutter web'de Firebase Auth otomatik olarak localStorage kullanır
     // Ancak bazen Chrome'da flutter run ile çalıştırırken localStorage temizlenebilir
     // Bu script localStorage'ın korunmasını sağlar
-    (function() {
+    (function () {
       // localStorage'ın mevcut olup olmadığını kontrol et
       try {
-        if (typeof(Storage) !== "undefined") {
+        if (typeof (Storage) !== "undefined") {
           // localStorage mevcut, Firebase Auth oturum bilgileri burada saklanacak
           console.log('localStorage is available for Firebase Auth persistence');
         } else {
