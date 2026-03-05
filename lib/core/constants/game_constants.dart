@@ -18,6 +18,7 @@ class GameConstants {
     'Sosyal Medya',
     'Fiziksel',
     'Bilgi',
+    'Özel',
   ];
 
   /// Zorluk seviyeleri
@@ -34,6 +35,7 @@ class GameConstants {
     'Sosyal Medya': 2,
     'Fiziksel': 2,
     'Bilgi': 1,
+    'Özel': 2,
   };
 
   /// Her seçimde çarpan bu kadar düşer
@@ -50,5 +52,6 @@ class GameConstants {
     'Sosyal Medya': 0,
     'Fiziksel': 0,
     'Bilgi': 0,
+    'Özel': 0,
   };
 }
