@@ -169,6 +169,55 @@ class AdminController extends _$AdminController {
           'price': 200,
           'isActive': true,
         },
+        'frame_gold': {
+          'name': 'Altın Çerçeve',
+          'type': 'frame',
+          'imageUrl': '✨',
+          'price': 1500,
+          'isActive': true,
+        },
+        'frame_demon': {
+          'name': 'Şeytani Çerçeve',
+          'type': 'frame',
+          'imageUrl': '👹',
+          'price': 800,
+          'isActive': true,
+        },
+        'frame_neon': {
+          'name': 'Neon Çerçeve',
+          'type': 'frame',
+          'imageUrl': '⚡',
+          'price': 700,
+          'isActive': true,
+        },
+        'title_vampire': {
+          'name': 'Vampir Unvanı',
+          'type': 'title',
+          'imageUrl': '🧛',
+          'price': 900,
+          'isActive': true,
+        },
+        'title_master': {
+          'name': 'Üstat Unvanı',
+          'type': 'title',
+          'imageUrl': '👁️',
+          'price': 1200,
+          'isActive': true,
+        },
+        'title_godfather': {
+          'name': 'Baba Unvanı',
+          'type': 'title',
+          'imageUrl': '🕴️',
+          'price': 1500,
+          'isActive': true,
+        },
+        'title_legend': {
+          'name': 'Efsane Unvanı',
+          'type': 'title',
+          'imageUrl': '🌟',
+          'price': 2000,
+          'isActive': true,
+        },
       };
 
       final batch = FirebaseFirestore.instance.batch();

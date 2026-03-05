@@ -63,7 +63,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           final earnedScore = game.lastRoundScore ?? 0;
           final multiplier = game.lastRoundMultiplier ?? 1;
           final isPass = multiplier == 0;
-          final isGameOver = game.status == GameStatus.finished;
+          bool isGameOver = game.status == GameStatus.finished;
           final players = playersAsync.value ?? [];
           final currentPlayer = players
               .where(
@@ -71,6 +71,19 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
               )
               .firstOrNull;
           final playerName = currentPlayer?.name ?? 'Aktör';
+          final room = ref.watch(watchRoomProvider(widget.roomCode)).value;
+
+          if (room != null && !isGameOver) {
+            if (room.endConditionType == EndConditionType.rounds) {
+              final activePlayerIds = players.map((p) => p.id).toSet();
+              final activeOrder = game.turnOrder.where((id) => activePlayerIds.contains(id)).toList();
+              final currentCheckId = game.lastRoundPlayerId ?? game.currentPlayerId;
+              final isLastActive = activeOrder.isNotEmpty && activeOrder.last == currentCheckId;
+              isGameOver = game.currentRound >= room.endConditionValue && isLastActive;
+            } else {
+              isGameOver = players.any((p) => p.score >= room.endConditionValue);
+            }
+          }
 
           ref.listen<AsyncValue<GameEntity?>>(
             watchGameProvider(widget.gameId),
@@ -255,7 +268,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             borderColor: AppColors.accent.withValues(alpha: 0.3),
             onPressed: () async {
               if (isGameOver) {
-                context.go('/game-over', extra: widget.roomCode);
+                await ref.read(gameControllerProvider.notifier).endGame(widget.gameId);
               } else {
                 await ref
                     .read(gameControllerProvider.notifier)

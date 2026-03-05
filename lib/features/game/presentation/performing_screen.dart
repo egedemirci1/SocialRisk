@@ -9,7 +9,10 @@ import '../../room/providers/room_provider.dart';
 import '../providers/game_provider.dart';
 import 'widgets/player_spotlight.dart';
 import 'widgets/spectator_strip.dart';
+import 'widgets/turn_counter_badge.dart';
+import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/buttons/exit_room_button.dart';
 
 /// Gösteri (Performing) Ekranı — Tiyatro Temalı
 class PerformingScreen extends ConsumerStatefulWidget {
@@ -88,7 +91,15 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        automaticallyImplyLeading: false,
+        leading: ExitRoomButton(roomCode: widget.roomCode),
+        actions: [
+          if (roomAsync.value != null && gameAsync.value != null)
+            TurnCounterBadge(
+              currentRound: gameAsync.value!.currentRound,
+              endConditionType: roomAsync.value!.endConditionType,
+              endConditionValue: roomAsync.value!.endConditionValue,
+            ),
+        ],
       ),
       body: gameAsync.when(
         data: (game) {
@@ -112,7 +123,6 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Spacer(),
                       if (currentPlayer != null)
                         PlayerSpotlight(player: currentPlayer, isMe: isMyTurn),
                       const SizedBox(height: 32),
@@ -189,7 +199,6 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                           textAlign: TextAlign.center,
                         ),
                       ],
-                      const Spacer(flex: 2),
                     ],
                   ),
                 ),
@@ -206,7 +215,10 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Scaffold(
+          backgroundColor: AppColors.background,
+          body: const TheaterLoadingScreen(message: 'Aktör Bekleniyor...'),
+        ),
         error: (e, _) => Center(child: Text('Hata: $e')),
       ),
     );

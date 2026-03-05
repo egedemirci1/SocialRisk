@@ -7,6 +7,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../providers/game_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../../../shared/models/enums.dart';
+import '../../../shared/widgets/buttons/exit_room_button.dart';
 
 /// Kategori belirlendikten sonra oyuncunun zorluk seçtiği ekran — Tiyatro Temalı
 class DifficultyChoiceScreen extends ConsumerStatefulWidget {
@@ -87,36 +88,40 @@ class _DifficultyChoiceScreenState
                 letterSpacing: 2,
               ),
             ),
-            automaticallyImplyLeading: false,
+            leading: ExitRoomButton(roomCode: widget.roomCode),
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
           ),
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
                 children: [
                   const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.accent.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: AppColors.accent.withValues(alpha: 0.3),
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
                       ),
-                    ),
-                    child: Text(
-                      'KATEGORİ: ${game.selectedCategory?.toUpperCase() ?? "?"}',
-                      style: GoogleFonts.playfairDisplay(
-                        color: AppColors.accent,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 13,
-                        letterSpacing: 1,
+                      decoration: BoxDecoration(
+                        color: AppColors.accent.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.accent.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Text(
+                        'KATEGORİ: ${game.selectedCategory?.toUpperCase() ?? "?"}',
+                        style: GoogleFonts.playfairDisplay(
+                          color: AppColors.accent,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 13,
+                          letterSpacing: 1,
+                        ),
                       ),
                     ),
                   ),
@@ -180,8 +185,9 @@ class _DifficultyChoiceScreenState
               ),
             ),
           ),
-        );
-      },
+        ),
+      );
+    },
       loading: () => const Scaffold(
         backgroundColor: AppColors.background,
         body: Center(child: CircularProgressIndicator()),

@@ -15,7 +15,10 @@ import '../domain/game_entity.dart';
 import '../../room/domain/room_entity.dart';
 import 'widgets/player_spotlight.dart';
 import 'widgets/spectator_strip.dart';
+import 'widgets/turn_counter_badge.dart';
+import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/buttons/exit_room_button.dart';
 
 /// Senaryo (Görev) Ekranı — Tiyatro Temalı
 class TaskScreen extends ConsumerStatefulWidget {
@@ -78,12 +81,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     setState(() => _isAccepting = true);
     try {
       await ref.read(gameControllerProvider.notifier).acceptTask(widget.gameId);
-      if (mounted) {
-        context.push(
-          '/performing',
-          extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-        );
-      }
+      await ref.read(gameControllerProvider.notifier).acceptTask(widget.gameId);
+      // Removed context.push to rely purely on the provider listener!
     } finally {
       if (mounted) setState(() => _isAccepting = false);
     }
@@ -171,8 +170,14 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
-            automaticallyImplyLeading: false,
+            leading: ExitRoomButton(roomCode: widget.roomCode),
             actions: [
+              if (roomAsync.value != null)
+                TurnCounterBadge(
+                  currentRound: game.currentRound,
+                  endConditionType: roomAsync.value!.endConditionType,
+                  endConditionValue: roomAsync.value!.endConditionValue,
+                ),
               IconButton(
                 icon: const Icon(
                   Icons.leaderboard_rounded,
@@ -220,7 +225,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
       },
       loading: () => const Scaffold(
         backgroundColor: AppColors.background,
-        body: Center(child: CircularProgressIndicator()),
+        body: TheaterLoadingScreen(message: 'Perde Açılıyor...'),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.background,

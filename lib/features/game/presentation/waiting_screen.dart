@@ -3,11 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/models/enums.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../domain/game_entity.dart';
 import '../providers/game_provider.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
+import 'widgets/turn_counter_badge.dart';
+import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/buttons/exit_room_button.dart';
 
 /// Bekleme ekranı — Tiyatro Temalı
 class WaitingScreen extends ConsumerStatefulWidget {
@@ -51,6 +55,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
   Widget build(BuildContext context) {
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
+    final roomAsync = ref.watch(watchRoomProvider(widget.roomCode));
 
     ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
       previous,
@@ -90,11 +95,15 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                 extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
               );
             } else if (nextGame.status == GameStatus.playing ||
-                nextGame.status == GameStatus.choosingDifficulty ||
-                nextGame.status == GameStatus.performing) {
+                nextGame.status == GameStatus.choosingDifficulty) {
               // Tüm oyuncular task ekranına yönlendirilir
               context.replace(
                 '/task',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
+            } else if (nextGame.status == GameStatus.performing) {
+              context.replace(
+                '/performing',
                 extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
               );
             }
@@ -116,15 +125,31 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
         final currentPlayer = players
             .where((p) => p.id == game.currentPlayerId)
             .firstOrNull;
-        final playerName = currentPlayer?.name ?? 'Aktör';
+
+        final isHost = roomAsync.value?.hostId == ref.read(currentUserProvider)?.uid;
+        if (isHost && currentPlayer == null && game.status != GameStatus.finished) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              ref.read(gameControllerProvider.notifier).nextTurn(widget.gameId);
+            }
+          });
+        }
+
+        final playerName = currentPlayer?.name ?? 'Ayrılan Aktör';
 
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
-            automaticallyImplyLeading: false,
+            leading: ExitRoomButton(roomCode: widget.roomCode),
             backgroundColor: Colors.transparent,
             elevation: 0,
             actions: [
+              if (roomAsync.value != null)
+                TurnCounterBadge(
+                  currentRound: game.currentRound,
+                  endConditionType: roomAsync.value!.endConditionType,
+                  endConditionValue: roomAsync.value!.endConditionValue,
+                ),
               IconButton(
                 icon: const Icon(
                   Icons.leaderboard_rounded,
@@ -219,7 +244,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
       },
       loading: () => const Scaffold(
         backgroundColor: AppColors.background,
-        body: Center(child: CircularProgressIndicator()),
+        body: TheaterLoadingScreen(message: 'Kulis Hazırlanıyor...'),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.background,
