@@ -6,7 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../providers/admin_provider.dart';
 import '../../../shared/utils/toast_utils.dart';
 
-/// Yönetmen (Admin) Paneli — Tiyatro Temalı
+/// Yönetici (Admin) Paneli — Parti Temalı
 class AdminDashboardScreen extends ConsumerWidget {
   const AdminDashboardScreen({super.key});
 
@@ -18,7 +18,7 @@ class AdminDashboardScreen extends ConsumerWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'YÖNETMEN KULİSİ',
+          'YÖNETİCİ PANELİ',
           style: GoogleFonts.playfairDisplay(
             fontWeight: FontWeight.w900,
             color: AppColors.accent,
@@ -75,7 +75,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                 Expanded(
                   child: Center(
                     child: Text(
-                      'Repertuarda senaryo bulunamadı.',
+                      'Sistemde görev bulunamadı.',
                       style: GoogleFonts.libreBaskerville(
                         color: Colors.white24,
                         fontSize: 16,
@@ -152,14 +152,14 @@ class AdminDashboardScreen extends ConsumerWidget {
                             builder: (ctx) => AlertDialog(
                               backgroundColor: AppColors.surface,
                               title: Text(
-                                'SENARYOYU YIRT?',
+                                'GÖREVİ SİL?',
                                 style: GoogleFonts.playfairDisplay(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),
                               content: Text(
-                                'Bu senaryo repertuardan kalıcı olarak silinecek.',
+                                'Bu görev sistemden kalıcı olarak silinecek.',
                                 style: GoogleFonts.libreBaskerville(
                                   color: Colors.white70,
                                 ),

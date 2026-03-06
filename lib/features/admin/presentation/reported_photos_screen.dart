@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/admin_provider.dart';
 
-/// Raporlanan Fotoğraflar — Tiyatro Temalı
+/// Raporlanan Fotoğraflar — Parti Temalı
 class ReportedPhotosScreen extends ConsumerWidget {
   const ReportedPhotosScreen({super.key});
 
@@ -17,7 +17,7 @@ class ReportedPhotosScreen extends ConsumerWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'RAPORLU SAHNE ADLARI',
+          'RAPORLU OYUNCU ADLARI',
           style: GoogleFonts.playfairDisplay(
             fontWeight: FontWeight.w900,
             color: AppColors.accent,
@@ -42,7 +42,7 @@ class ReportedPhotosScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'TÜM SAHNELER TEMİZ 🎉',
+                    'TÜM OYUNCULAR TEMİZ 🎉',
                     style: GoogleFonts.playfairDisplay(
                       color: Colors.white70,
                       fontSize: 18,

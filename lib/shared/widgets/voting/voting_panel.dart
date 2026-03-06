@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 
-/// Oylama paneli — Alkış / Eleştiri butonları (Parti Temalı).
+/// Oylama paneli — Beğeni butonları (Parti Temalı).
 class VotingPanel extends StatefulWidget {
   const VotingPanel({
     super.key,
@@ -106,7 +106,7 @@ class _VotingPanelState extends State<VotingPanel>
               Expanded(
                 child: _VoteButton(
                   emoji: '👏',
-                  label: 'ALKIŞLA',
+                  label: 'BEĞEN',
                   color: Colors.green,
                   isSelected: _selectedVote == 'like',
                   isDisabled: _selectedVote != null && _selectedVote != 'like',
@@ -129,7 +129,7 @@ class _VotingPanelState extends State<VotingPanel>
               Expanded(
                 child: _VoteButton(
                   emoji: '🎭',
-                  label: 'ELEŞTİR',
+                  label: 'BEĞENME',
                   color: AppColors.primary,
                   isSelected: _selectedVote == 'dislike',
                   isDisabled:

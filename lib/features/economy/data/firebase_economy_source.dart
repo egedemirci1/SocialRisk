@@ -213,7 +213,7 @@ class FirebaseEconomySource implements EconomyRepository {
       // ── EĞLENCELİ
       const CosmeticItemEntity(id: 'title_jester', name: 'Soytarı', description: 'Her ortamın neşesi.', imageUrl: '🤡', price: 200, type: 'title'),
       const CosmeticItemEntity(id: 'title_trickster', name: 'Oyunbaz', description: 'Hep bir şeyler çevirir.', imageUrl: '🃏', price: 300, type: 'title'),
-      const CosmeticItemEntity(id: 'title_showman', name: 'Gösterici', description: 'Her sahne onun için.', imageUrl: '🎪', price: 350, type: 'title'),
+      const CosmeticItemEntity(id: 'title_showman', name: 'Parti Canavarı', description: 'Her parti onun için.', imageUrl: '🪩', price: 350, type: 'title'),
       const CosmeticItemEntity(id: 'title_comedian', name: 'Komedyen', description: 'Herkesi güldürür.', imageUrl: '😂', price: 250, type: 'title'),
       const CosmeticItemEntity(id: 'title_chameleon', name: 'Kameleon', description: 'Her role girer.', imageUrl: '🦎', price: 400, type: 'title'),
       // ── HAFİFMEŞREP
@@ -233,12 +233,12 @@ class FirebaseEconomySource implements EconomyRepository {
       ),
       const CosmeticItemEntity(
         id: 'scenario_romance',
-        name: 'Aşkın Sahnesi',
+        name: 'Aşkın Dansı',
         description: 'Romantik ve duygusal temalı hikayeler.',
         imageUrl: '❤️',
         price: 1000,
         type: 'category',
-        categoryName: 'Aşkın Sahnesi',
+        categoryName: 'Aşkın Dansı',
       ),
       const CosmeticItemEntity(
         id: 'scenario_mystery',

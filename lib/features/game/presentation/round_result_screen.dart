@@ -171,7 +171,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
         ),
         const SizedBox(height: 16),
         Text(
-          isPass ? 'GÖREV REDDEDİLDİ' : 'SAHNE BİTTİ',
+          isPass ? 'GÖREV REDDEDİLDİ' : 'TUR BİTTİ',
           style: AppTextStyles.headlineMedium.copyWith(
             color: Colors.white,
             letterSpacing: 2,
@@ -217,7 +217,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             const Divider(color: Colors.white10, height: 24),
           ],
           _ScoreRow(
-            label: score >= 0 ? 'Kazanılan Alkış' : 'Kaybedilen Alkış',
+            label: score >= 0 ? 'Kazanılan Puan' : 'Kaybedilen Puan',
             value: score >= 0 ? '+$score' : '$score',
             color: AppColors.accent,
             isBold: true,
@@ -291,7 +291,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
               Text(
                 isGameOver
                     ? 'Final bekleniyor...'
-                    : 'Yöneticinin yeni sahneye geçmesi bekleniyor...',
+                    : 'Yöneticinin yeni tura geçmesi bekleniyor...',
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: Colors.white30,
                   fontStyle: FontStyle.italic,

@@ -56,7 +56,7 @@ class _InteractiveButtonState extends State<InteractiveButton>
   }
 }
 
-/// Tiyatro Temalı Buton (Bilet / Sahne Tasarımı)
+/// Parti Temalı Buton
 class StageButton extends StatelessWidget {
   const StageButton({
     super.key,

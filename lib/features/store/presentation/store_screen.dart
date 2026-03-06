@@ -267,7 +267,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         displayItems = roleItems;
         title = 'Ünvanlar';
         subtitle = 'Oyun içinde adınızın altında görünen özel etiketler.';
-        icon = Icons.theater_comedy_rounded;
+        icon = Icons.badge_rounded;
         break;
       case 1:
         displayItems = maskItems;

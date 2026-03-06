@@ -186,7 +186,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
           ),
           if (_isStartingGame)
             const Positioned.fill(
-              child: TheaterLoadingScreen(message: 'Sahne Hazırlanıyor...'),
+              child: TheaterLoadingScreen(message: 'Oyun Hazırlanıyor...'),
             ),
         ],
       ),

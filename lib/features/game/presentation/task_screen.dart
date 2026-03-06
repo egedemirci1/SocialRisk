@@ -325,7 +325,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         ),
         const SizedBox(height: 8),
         Text(
-          'Sahne ışıkları altına çıkmadan önce rolünü seç...',
+          'Sıran gelmeden önce görevini seç...',
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white54,
           ),
@@ -413,7 +413,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                   const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
                   const SizedBox(width: 4),
                   Text(
-                    'SAHNEYE ÖZEL',
+                    'GÖREVE ÖZEL',
                     style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.amber,
                       fontWeight: FontWeight.bold,
@@ -427,7 +427,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         const SizedBox(height: 24),
         Text(
           isClosed
-              ? 'Sıradaki Sahne Gizli'
+              ? 'Sıradaki Görev Gizli'
               : (isMyTurn ? 'Senaryon Burada:' : '$playerName\'ın Senaryosu:'),
           style: AppTextStyles.titleLarge.copyWith(
             color: Colors.white,
@@ -468,7 +468,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           TextButton(
             onPressed: _isPassing ? null : _passTask,
             child: Text(
-              'Bu Rolü Reddet (-${50 * (passStreak + 1)} Alkış)',
+              'Görevi Reddet (-${50 * (passStreak + 1)} Puan)',
               style: AppTextStyles.labelSmall.copyWith(
                 color: Colors.white38,
                 fontWeight: FontWeight.w900,

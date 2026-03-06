@@ -88,7 +88,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '${winner?.score ?? 0} ALKIŞ',
+                        '${winner?.score ?? 0} PUAN',
                         style: AppTextStyles.titleLarge.copyWith(
                           color: AppColors.accent,
                           fontWeight: FontWeight.w900,
@@ -158,7 +158,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                             const SizedBox(width: 12),
                             Flexible(
                                 child: Text(
-                                  '+$myScore Alkış Bakiyenize Eklendi',
+                                  '+$myScore Puan Bakiyenize Eklendi',
                                   style: AppTextStyles.titleMedium.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,

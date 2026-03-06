@@ -31,7 +31,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text(
-          'Sahne Adını Güncelle',
+          'Oyuncu Adını Güncelle',
           style: GoogleFonts.playfairDisplay(color: AppColors.accent),
         ),
         content: TextField(
@@ -39,7 +39,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           maxLength: 24,
           style: const TextStyle(color: Colors.white),
           decoration: const InputDecoration(
-            labelText: 'Yeni Sahne Adı',
+            labelText: 'Yeni Oyuncu Adı',
             labelStyle: TextStyle(color: Colors.white70),
             counterStyle: TextStyle(color: Colors.white54),
           ),
@@ -439,7 +439,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Row(
                     children: [
                       const Icon(
-                        Icons.theater_comedy_rounded,
+                        Icons.badge_rounded,
                         color: AppColors.accent,
                         size: 18,
                       ),

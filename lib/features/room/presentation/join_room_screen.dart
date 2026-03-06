@@ -74,7 +74,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
   Widget build(BuildContext context) {
     return LoadingOverlay(
       isLoading: _isJoining,
-      message: 'Sahneye bağlanılıyor...',
+      message: 'Partiye bağlanılıyor...',
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(

@@ -180,10 +180,10 @@ class AdminController extends _$AdminController {
           'isActive': true,
         },
         'scenario_romance': {
-          'name': 'Aşkın Sahnesi',
+          'name': 'Aşkın Dansı',
           'description': 'Romantik ve duygusal temalı hikayeler.',
           'type': 'category',
-          'categoryName': 'Aşkın Sahnesi',
+          'categoryName': 'Aşkın Dansı',
           'imageUrl': '❤️',
           'price': 1000,
           'isActive': true,

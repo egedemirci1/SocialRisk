@@ -17,7 +17,7 @@ import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 
-/// Ana menü ekranı — Tiyatro Temalı
+/// Ana menü ekranı — Parti Temalı
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -316,7 +316,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         const SizedBox(height: 16),
         StageButton(
           label: 'Partiye Katıl',
-          icon: Icons.theater_comedy_rounded,
+          icon: Icons.login_rounded,
           backgroundColor: AppColors.secondary,
           textColor: Colors.white,
           borderColor: Colors.transparent,
@@ -351,7 +351,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         if (isAdmin(user?.uid)) ...[
           const SizedBox(height: 24),
           StageButton(
-            label: 'Yönetmen Paneli',
+            label: 'Yönetici Paneli',
             icon: Icons.admin_panel_settings_rounded,
             backgroundColor: const Color(0xFF1A1A1A),
             textColor: Colors.amber,

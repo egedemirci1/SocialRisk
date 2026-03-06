@@ -184,7 +184,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'SAHNE POPÜLERLİĞİ',
+                        'PARTİ DENEYİMİ',
                         style: AppTextStyles.labelSmall.copyWith(
                           color: Colors.white54,
                           fontWeight: FontWeight.w900,
