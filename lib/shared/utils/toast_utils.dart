@@ -18,7 +18,7 @@ class ToastUtils {
     _showOverlayToast(
       context,
       message,
-      backgroundColor: AppColors.primary,
+      backgroundColor: AppColors.error,
       icon: Icons.error_outline_rounded,
     );
   }

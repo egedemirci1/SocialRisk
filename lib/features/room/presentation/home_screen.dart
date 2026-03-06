@@ -15,6 +15,7 @@ import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
+import '../../../shared/widgets/common/theater_loading_screen.dart';
 
 /// Ana menü ekranı — Tiyatro Temalı
 class HomeScreen extends ConsumerStatefulWidget {
@@ -139,46 +140,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ? ref.watch(watchUserProfileProvider(user.uid))
         : const AsyncValue<UserEntity?>.loading();
 
-    // ─── PROFILE RESTORATION: Check if user exists in Auth but missing in Firestore ───
-    if (user != null) {
-      ref.listen(watchUserProfileProvider(user.uid), (prev, next) {
-        if (next.hasValue && next.value == null && !next.isLoading) {
-          // Profile is missing! Let's restore it.
-          ref
-              .read(userControllerProvider.notifier)
-              .createUserProfile(
-                UserEntity(
-                  uid: user.uid,
-                  displayName: user.displayName ?? 'Aktör',
-                ),
-              );
-        }
-      });
-    }
     final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
 
-    final displayName = user?.displayName ?? 'Aktör';
     final profile = userProfileAsync.value;
+    final displayName = profile?.displayName ?? user?.displayName ?? 'Oyuncu';
     final cosmetics = cosmeticsAsync.value ?? [];
+
+    // Ana menü hazır olana kadar yükleme ekranında kal:
+    // - Auth çözülmemişse (user null) veya
+    // - Profil / kozmetikler hâlâ yükleniyorsa
+    final isInitialLoading = user == null ||
+        userProfileAsync.isLoading ||
+        cosmeticsAsync.isLoading;
+
+    // İlerleme: auth → profil → kozmetik (Firestore gerçek % vermiyor, aşamalara göre simüle)
+    double loadingProgress = 0.0;
+    if (user != null) {
+      loadingProgress = 0.33;
+      if (userProfileAsync.hasValue || userProfileAsync.hasError) loadingProgress = 0.66;
+      if (cosmeticsAsync.hasValue || cosmeticsAsync.hasError) loadingProgress = 1.0;
+    }
+
+    if (isInitialLoading) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: TheaterLoadingScreen(
+          message: 'Ana menü hazırlanıyor...',
+          progress: loadingProgress,
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline_rounded, color: AppColors.accent),
-            onPressed: () => context.push('/profile'),
-            tooltip: 'Profil',
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: AppColors.accent),
-            onPressed: () => _showSettingsSheet(context, ref),
-            tooltip: 'Ayarlar',
-          ),
-          const SizedBox(width: 4),
-        ],
       ),
       body: Stack(
         fit: StackFit.expand,

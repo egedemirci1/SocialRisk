@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/widgets/common/loading_overlay.dart';
 import '../providers/auth_provider.dart';
@@ -8,6 +11,7 @@ import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../core/constants/app_colors.dart';
 import '../data/firebase_user_source.dart';
 import '../domain/user_entity.dart';
+import '../constants/auth_constants.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
@@ -80,6 +84,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     }
   }
 
+  Future<UserCredential> _signInWithGoogle() async {
+    if (kIsWeb) {
+      final provider = GoogleAuthProvider();
+      return FirebaseAuth.instance.signInWithPopup(provider);
+    }
+    // Android / iOS: Firebase Auth için Web Client ID gerekli (Google Cloud Console → Credentials → OAuth 2.0 Web client)
+    final googleSignIn = GoogleSignIn(
+      serverClientId: kGoogleSignInWebClientId,
+    );
+    final googleUser = await googleSignIn.signIn();
+    if (googleUser == null) throw Exception('Google giriş iptal edildi');
+    final googleAuth = await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    return FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
   Future<void> _signInSocial(
     Future<UserCredential> Function() method,
     String name,
@@ -91,7 +114,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     try {
       final cred = await method();
       if (cred.user != null) {
-        final displayName = cred.user!.displayName ?? 'Aktör';
+        final displayName = cred.user!.displayName ?? 'Oyuncu';
         if (cred.user!.displayName == null) {
           await cred.user!.updateDisplayName(displayName);
         }
@@ -104,7 +127,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       }
     } catch (e) {
       PendingToast.instance.consume();
-      if (mounted) _showError('Giriş başarısız: $e');
+      if (mounted) {
+        String msg = 'Giriş başarısız';
+        if (e is PlatformException) {
+          msg = '${e.message ?? e.code}';
+          if (e.code != null && e.code!.isNotEmpty) msg = '${e.code}: $msg';
+        } else if (e.toString().contains('ApiException') || e.toString().contains('sign_in_failed')) {
+          msg = e.toString().replaceFirst(RegExp(r'^Exception:\s*'), '');
+        } else {
+          msg = e.toString();
+        }
+        _showError(msg);
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -233,7 +267,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           ),
           const SizedBox(height: 24),
           StageButton(
-            label: 'Partiye Katıl',
+            label: 'Giriş Yap',
             icon: Icons.play_arrow_rounded,
             backgroundColor: AppColors.primary,
             textColor: AppColors.background,
@@ -287,10 +321,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 backgroundColor: AppColors.surfaceElevated,
                 textColor: Colors.white,
                 borderColor: Colors.transparent,
-                onPressed: () => _signInSocial(() {
-                  final provider = GoogleAuthProvider();
-                  return FirebaseAuth.instance.signInWithPopup(provider);
-                }, 'google'),
+                onPressed: () => _signInSocial(_signInWithGoogle, 'google'),
                 isLoading: _isGoogleLoading,
               ),
             ),

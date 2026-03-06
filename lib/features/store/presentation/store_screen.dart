@@ -36,7 +36,12 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
       ToastUtils.showSuccess(context, '${item.name} artık gardırobunuzda!');
     } catch (e) {
       if (!context.mounted) return;
-      ToastUtils.showError(context, 'Hata: ${e.toString().replaceAll('Exception: ', '')}');
+      final msg = e.toString().replaceAll('Exception: ', '');
+      final isInsufficient = msg.contains('Yetersiz bakiye');
+      ToastUtils.showError(
+        context,
+        isInsufficient ? 'Yetersiz bakiye' : 'Hata: $msg',
+      );
     }
   }
 

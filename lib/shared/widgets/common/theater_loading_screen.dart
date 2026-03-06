@@ -7,9 +7,12 @@ class TheaterLoadingScreen extends StatefulWidget {
   const TheaterLoadingScreen({
     super.key,
     this.message = 'Parti Hazırlanıyor...',
+    /// 0.0–1.0: determinate progress bar; null: indeterminate
+    this.progress,
   });
 
   final String message;
+  final double? progress;
 
   @override
   State<TheaterLoadingScreen> createState() => _TheaterLoadingScreenState();
@@ -65,8 +68,9 @@ class _TheaterLoadingScreenState extends State<TheaterLoadingScreen>
               ),
               const SizedBox(height: 16),
               SizedBox(
-                width: 40,
+                width: 200,
                 child: LinearProgressIndicator(
+                  value: widget.progress,
                   color: AppColors.accent,
                   backgroundColor: AppColors.surface,
                   borderRadius: BorderRadius.circular(4),

@@ -49,6 +49,10 @@ class FirebaseUserSource implements UserRepository {
       avatarUrl: user.avatarUrl,
       walletPoints: user.walletPoints,
       rank: user.rank,
+      ownedCosmetics: user.ownedCosmetics,
+      ownedCategories: user.ownedCategories,
+      activeFrame: user.activeFrame,
+      activeTitle: user.activeTitle,
       updatedAt: DateTime.now(),
     );
 

@@ -21,7 +21,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  int _selectedTabIndex = 0; // 0: Aktör, 1: Gardırop, 2: Performans
+  int _selectedTabIndex = 0; // 0: Profil, 1: Gardırop, 2: Performans
   bool _isUploading = false;
 
   Future<void> _updateDisplayName(UserEntity user) async {
@@ -150,7 +150,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
               data: (userProfile) {
                 // Auth'tan gelen ismi tercih et (Firestore'da 'Misafir' olabilir)
-                final authName = user.displayName ?? 'Anonim Aktör';
+                final authName = user.displayName ?? 'Oyuncu';
                 UserEntity profile;
                 if (userProfile == null) {
                   profile = UserEntity(
@@ -263,22 +263,37 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ],
         ),
         const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              user.displayName,
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 28,
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
+        Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                user.displayName,
+                style: GoogleFonts.poppins(
+                  fontSize: 36,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                  shadows: const [
+                    Shadow(offset: Offset(-1.5, -1.5), color: Colors.black87),
+                    Shadow(offset: Offset(1.5, -1.5), color: Colors.black87),
+                    Shadow(offset: Offset(1.5, 1.5), color: Colors.black87),
+                    Shadow(offset: Offset(-1.5, 1.5), color: Colors.black87),
+                    Shadow(offset: Offset(0, 6), color: Colors.black54, blurRadius: 8),
+                  ],
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.edit, color: AppColors.accent, size: 20),
-              onPressed: () => _updateDisplayName(user),
-            ),
-          ],
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.edit_rounded, color: AppColors.accent, size: 22),
+                onPressed: () => _updateDisplayName(user),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+              ),
+            ],
+          ),
         ),
         userProfileAsync.when(
           data: (profile) {

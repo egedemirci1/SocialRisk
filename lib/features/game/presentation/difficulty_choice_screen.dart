@@ -65,7 +65,7 @@ class _DifficultyChoiceScreenState
         final currentPlayer = players
             .where((p) => p.id == game.currentPlayerId)
             .firstOrNull;
-        final playerName = currentPlayer?.name ?? 'Aktör';
+        final playerName = currentPlayer?.name ?? 'Oyuncu';
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted && game.status != GameStatus.choosingDifficulty) {

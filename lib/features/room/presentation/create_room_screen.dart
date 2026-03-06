@@ -11,6 +11,7 @@ import '../providers/room_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/game_constants.dart';
+import '../../../core/constants/category_constants.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
 
@@ -28,8 +29,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   double _scoreTarget = 500;
   double _roundTarget = 5;
   bool _isCreating = false;
-  bool _isOpenMode = true;
-  List<String> _selectedCategories = GameConstants.defaultCategories.toList();
+  List<String> _selectedCategories = GameConstants.defaultCategoriesConst.toList();
   GameMode _selectedMode = GameMode.classic;
 
   Future<void> _createRoom() async {
@@ -55,7 +55,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         hostName: user.displayName ?? 'Yönetmen',
         endConditionType: endType,
         endConditionValue: endValue,
-        visibility: _isOpenMode ? RoomVisibility.open : RoomVisibility.closed,
+        visibility: RoomVisibility.open,
         categories: _selectedCategories,
         hostAvatarUrl: userProfile?.avatarUrl,
         mode: _selectedMode,
@@ -80,7 +80,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       isLoading: _isCreating,
       message: 'Parti kuruluyor...',
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.background,
         appBar: AppBar(
           title: Text(
           'Yeni Parti Kur',
@@ -111,46 +111,37 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             children: [
               IntrinsicHeight(
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
                       child: _buildSection(
-                        title: 'Oyuncu Sayısı',
+                        title: 'Kişi Sayısı',
                         icon: Icons.people_alt_rounded,
-                        child: _buildPlayerSlider(),
+                        fillHeight: true,
+                        child: Expanded(
+                          child: Center(
+                            child: _buildPlayerSlider(),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildSection(
-                        title: 'Oyun Modu',
-                        icon: Icons.celebration_rounded,
-                        child: _buildGameMode(),
+                        title: 'Oyun Sonu',
+                        icon: Icons.flag_rounded,
+                        fillHeight: true,
+                        child: _buildEndCondition(),
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 12),
-              IntrinsicHeight(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _buildSection(
-                        title: 'Oyun Sonu',
-                        icon: Icons.flag_rounded,
-                        child: _buildEndCondition(),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildSection(
-                        title: 'Görünürlük',
-                        icon: Icons.language_rounded,
-                        child: _buildVisibilityMode(),
-                      ),
-                    ),
-                  ],
-                ),
+              _buildSection(
+                title: 'Oyun Modu',
+                icon: Icons.celebration_rounded,
+                child: _buildGameMode(),
               ),
               const SizedBox(height: 12),
               _buildSection(
@@ -181,6 +172,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
     required String title,
     required IconData icon,
     required Widget child,
+    bool fillHeight = false,
   }) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -191,19 +183,20 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.4),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: fillHeight ? MainAxisSize.max : MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, color: AppColors.accent, size: 18),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Flexible(
                 child: Text(
                   title,
@@ -215,7 +208,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                     shadows: [
                       Shadow(
                         color: AppColors.accent.withValues(alpha: 0.3),
-                        blurRadius: 8,
+                        blurRadius: 6,
                       ),
                     ],
                   ),
@@ -234,56 +227,41 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
 
   Widget _buildPlayerSlider() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '$_maxPlayers Oyuncu',
+          '$_maxPlayers Kişi',
           style: GoogleFonts.poppins(
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.w800,
             color: Colors.white,
           ),
         ),
-        Transform.translate(
-          offset: const Offset(0, 8),
-          child: SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              activeTrackColor: AppColors.primary,
-              inactiveTrackColor: Colors.black38,
-              thumbColor: AppColors.primary,
-              overlayColor: AppColors.primary.withValues(alpha: 0.2),
-              trackHeight: 4,
-            ),
-            child: Slider(
-              value: _maxPlayers.toDouble(),
-              min: 2,
-              max: 8,
-              divisions: 6,
-              onChanged: (value) => setState(() => _maxPlayers = value.toInt()),
-            ),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: AppColors.primary,
+            inactiveTrackColor: Colors.black38,
+            thumbColor: AppColors.primary,
+            overlayColor: AppColors.primary.withValues(alpha: 0.2),
+            trackHeight: 4,
+          ),
+          child: Slider(
+            value: _maxPlayers.toDouble(),
+            min: 2,
+            max: 8,
+            divisions: 6,
+            onChanged: (value) => setState(() => _maxPlayers = value.toInt()),
           ),
         ),
         Transform.translate(
-          offset: const Offset(0, -8),
+          offset: const Offset(0, -16),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '2',
-                  style: AppTextStyles.labelSmall.copyWith(
-                    color: Colors.white38,
-                    fontSize: 10,
-                  ),
-                ),
-                Text(
-                  '8',
-                  style: AppTextStyles.labelSmall.copyWith(
-                    color: Colors.white38,
-                    fontSize: 10,
-                  ),
-                ),
+                Text('2', style: AppTextStyles.labelSmall.copyWith(color: Colors.white38)),
+                Text('8', style: AppTextStyles.labelSmall.copyWith(color: Colors.white38)),
               ],
             ),
           ),
@@ -294,6 +272,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
 
   Widget _buildEndCondition() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           children: [
@@ -314,55 +293,37 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         if (_isScoreMode) ...[
           Text(
             '${_scoreTarget.toInt()} Puan',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white),
+          ),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: AppColors.accent,
+              inactiveTrackColor: Colors.black38,
+              thumbColor: AppColors.accent,
+              overlayColor: AppColors.accent.withValues(alpha: 0.2),
+              trackHeight: 4,
+            ),
+            child: Slider(
+              value: _scoreTarget,
+              min: 50,
+              max: 500,
+              divisions: 9,
+              onChanged: (value) => setState(() => _scoreTarget = value),
             ),
           ),
           Transform.translate(
-            offset: const Offset(0, 8),
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: AppColors.accent,
-                inactiveTrackColor: Colors.black38,
-                thumbColor: AppColors.accent,
-                overlayColor: AppColors.accent.withValues(alpha: 0.2),
-              ),
-              child: Slider(
-                value: _scoreTarget,
-                min: 50,
-                max: 500,
-                divisions: 9,
-                onChanged: (value) => setState(() => _scoreTarget = value),
-              ),
-            ),
-          ),
-          Transform.translate(
-            offset: const Offset(0, -8),
+            offset: const Offset(0, -16),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 6),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '50',
-                    style: AppTextStyles.labelSmall.copyWith(
-                      color: Colors.white38,
-                      fontSize: 10,
-                    ),
-                  ),
-                  Text(
-                    '500',
-                    style: AppTextStyles.labelSmall.copyWith(
-                      color: Colors.white38,
-                      fontSize: 10,
-                    ),
-                  ),
+                  Text('50', style: AppTextStyles.labelSmall.copyWith(color: Colors.white38)),
+                  Text('500', style: AppTextStyles.labelSmall.copyWith(color: Colors.white38)),
                 ],
               ),
             ),
@@ -370,51 +331,33 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         ] else ...[
           Text(
             '${_roundTarget.toInt()} Tur',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white),
+          ),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: AppColors.accent,
+              inactiveTrackColor: Colors.black38,
+              thumbColor: AppColors.accent,
+              overlayColor: AppColors.accent.withValues(alpha: 0.2),
+              trackHeight: 4,
+            ),
+            child: Slider(
+              value: _roundTarget,
+              min: 3,
+              max: 20,
+              divisions: 17,
+              onChanged: (value) => setState(() => _roundTarget = value),
             ),
           ),
           Transform.translate(
-            offset: const Offset(0, 8),
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: AppColors.accent,
-                inactiveTrackColor: Colors.black38,
-                thumbColor: AppColors.accent,
-                overlayColor: AppColors.accent.withValues(alpha: 0.2),
-              ),
-              child: Slider(
-                value: _roundTarget,
-                min: 3,
-                max: 20,
-                divisions: 17,
-                onChanged: (value) => setState(() => _roundTarget = value),
-              ),
-            ),
-          ),
-          Transform.translate(
-            offset: const Offset(0, -8),
+            offset: const Offset(0, -16),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 6),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '3',
-                    style: AppTextStyles.labelSmall.copyWith(
-                      color: Colors.white38,
-                      fontSize: 10,
-                    ),
-                  ),
-                  Text(
-                    '20',
-                    style: AppTextStyles.labelSmall.copyWith(
-                      color: Colors.white38,
-                      fontSize: 10,
-                    ),
-                  ),
+                  Text('3', style: AppTextStyles.labelSmall.copyWith(color: Colors.white38)),
+                  Text('20', style: AppTextStyles.labelSmall.copyWith(color: Colors.white38)),
                 ],
               ),
             ),
@@ -431,7 +374,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           children: [
             Expanded(
               child: _ToggleChip(
-                label: 'Klasik',
+                label: 'Çark',
                 isSelected: _selectedMode == GameMode.classic,
                 onTap: () => setState(() => _selectedMode = GameMode.classic),
               ),
@@ -439,7 +382,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: _ToggleChip(
-                label: 'Eko',
+                label: 'Ekonomi',
                 isSelected: _selectedMode == GameMode.economy,
                 onTap: () => setState(() => _selectedMode = GameMode.economy),
               ),
@@ -449,48 +392,10 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         const SizedBox(height: 8),
         Text(
           _selectedMode == GameMode.classic
-              ? 'Tüm oyuncularla klasik parti deneyimi.'
+              ? 'Kategori çarkla seçilir, klasik parti deneyimi.'
               : 'Ekonomi ve kaynak yönetimi odaklı performans.',
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white54,
-            fontSize: 10,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVisibilityMode() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _ToggleChip(
-                label: 'Açık',
-                isSelected: _isOpenMode,
-                onTap: () => setState(() => _isOpenMode = true),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _ToggleChip(
-                label: 'Gizli',
-                isSelected: !_isOpenMode,
-                onTap: () => setState(() => _isOpenMode = false),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          _isOpenMode
-              ? 'Oda tüm oyunculara açık.'
-              : 'Sadece davetli oyuncular katılabilir.',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white54,
-            fontSize: 10,
           ),
           textAlign: TextAlign.center,
         ),
@@ -499,82 +404,69 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   }
 
   Widget _buildCategorySelector() {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: GameConstants.defaultCategories.map((category) {
-        final isSelected = _selectedCategories.contains(category);
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              if (isSelected) {
-                if (_selectedCategories.length > 2) {
-                  _selectedCategories.remove(category);
-                } else {
-                  ToastUtils.showWarning(context, 'En az 2 kategori seçmelisiniz.');
-                }
-              } else {
-                _selectedCategories.add(category);
-              }
-            });
-          },
-          behavior: HitTestBehavior.opaque,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Base border
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(
-                    color: Colors.white10,
-                    width: 1.5,
-                  ),
-                ),
-                child: Text(
-                  category,
-                  style: AppTextStyles.titleSmall.copyWith(
-                    color: Colors.transparent,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900, // En kalın haliyle yer tutsun
-                  ),
-                ),
-              ),
-              // Animated Selected Background
-              Positioned.fill(
-                child: AnimatedOpacity(
+    final categories = CategoryConstants.allCategoryNames;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 8.0;
+        const runSpacing = 8.0;
+        const minChipWidth = 92.0;
+        final maxW = constraints.maxWidth.isFinite ? constraints.maxWidth : 400.0;
+        final crossCount = (maxW / (minChipWidth + spacing)).floor().clamp(2, 10);
+        final itemWidth = (maxW - (crossCount - 1) * spacing) / crossCount;
+        return Wrap(
+          spacing: spacing,
+          runSpacing: runSpacing,
+          children: categories.map((category) {
+            final isSelected = _selectedCategories.contains(category);
+            return SizedBox(
+              width: itemWidth,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (isSelected) {
+                      if (_selectedCategories.length > 2) {
+                        _selectedCategories.remove(category);
+                      } else {
+                        ToastUtils.showWarning(context, 'En az 2 kategori seçmelisiniz.');
+                      }
+                    } else {
+                      _selectedCategories.add(category);
+                    }
+                  });
+                },
+                child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOut,
-                  opacity: isSelected ? 1.0 : 0.0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                        color: AppColors.accent.withValues(alpha: 0.3),
-                        width: 1.5,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                  decoration: BoxDecoration(
+                    gradient: isSelected ? AppColors.primaryGradient : null,
+                    color: isSelected ? null : Colors.transparent,
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.accent.withValues(alpha: 0.3)
+                          : Colors.white10,
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      category,
+                      style: AppTextStyles.titleSmall.copyWith(
+                        color: isSelected ? Colors.white : Colors.white54,
+                        fontSize: 12,
+                        fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
                       ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),
               ),
-              // Animated Text Color
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOut,
-                style: AppTextStyles.titleSmall.copyWith(
-                  color: isSelected ? Colors.white : Colors.white54,
-                  fontSize: 12,
-                  fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
-                ),
-                child: Text(category),
-              ),
-            ],
-          ),
+            );
+          }).toList(),
         );
-      }).toList(),
+      },
     );
   }
 }

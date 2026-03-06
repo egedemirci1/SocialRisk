@@ -33,6 +33,9 @@ class UserController extends _$UserController {
     state = await AsyncValue.guard(
       () => ref.read(userRepositoryProvider).updateUserProfile(user),
     );
+    if (!state.hasError) {
+      await ref.read(authRepositoryProvider).updateDisplayName(user.displayName);
+    }
   }
 
   Future<void> updateAvatarUrl(String uid, String avatarUrl) async {

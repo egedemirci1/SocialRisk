@@ -15,22 +15,24 @@ class FirebaseAuthSource implements AuthRepository {
   User? get currentUser => _auth.currentUser;
 
   @override
-  Future<UserCredential> signInAnonymously(String displayName) async {
+  Future<UserCredential?> signInAnonymously(String displayName) async {
     try {
       // Eğer halihazırda anonim bir oturum varsa, yeni hesap açmak yerine var olanı güncelle
       if (_auth.currentUser != null && _auth.currentUser!.isAnonymous) {
         await _auth.currentUser!.updateDisplayName(displayName);
+        await _auth.currentUser!.reload();
         final userSource = FirebaseUserSource();
         await userSource.createUserProfile(
           UserEntity(uid: _auth.currentUser!.uid, displayName: displayName),
         );
-        // Mevcut anonim oturumu döndür (yeni hesap oluşturmadan)
-        return await _auth.signInAnonymously();
+        // Mevcut oturum korundu, yeni anonim kullanıcı oluşturulmadı.
+        return null;
       }
 
       final credential = await _auth.signInAnonymously();
       if (credential.user != null) {
         await credential.user!.updateDisplayName(displayName);
+        await credential.user!.reload();
 
         // Sign in başarılı olunca kullanıcı profilini Global User tablosuna da ekle.
         final userSource = FirebaseUserSource();

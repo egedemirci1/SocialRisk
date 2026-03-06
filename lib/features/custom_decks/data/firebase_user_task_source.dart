@@ -54,7 +54,7 @@ class FirebaseUserTaskSource {
     final data = doc.data()!;
     return UserTaskEntity(
       id: doc.id,
-      category: data['category'] as String? ?? 'Custom',
+      category: data['category'] as String? ?? 'Özel',
       content: data['content'] as String? ?? '',
       difficulty: data['difficulty'] as String? ?? 'medium',
       type: TaskType.values.firstWhere(

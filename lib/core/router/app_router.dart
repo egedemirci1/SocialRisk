@@ -53,18 +53,13 @@ final appRouter = GoRouter(
     final isOnLoginPage = state.matchedLocation == '/';
 
     if (user == null) {
-      // Not signed in — send to login if not already there
       return isOnLoginPage ? null : '/';
     }
-
-    // Signed in — don't let them stay on login page
     if (isOnLoginPage) return '/home';
 
-    // Admin pages guard
     if (state.matchedLocation.startsWith('/admin')) {
       if (!isAdmin(user.uid)) return '/home';
     }
-
     return null;
   },
   routes: [

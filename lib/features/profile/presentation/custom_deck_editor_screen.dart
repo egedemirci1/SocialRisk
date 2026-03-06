@@ -78,9 +78,11 @@ class _CustomDeckEditorScreenState
               ),
               content: Form(
                 key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 320),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                     TextFormField(
                       controller: contentController,
                       enabled: !isLoading,
@@ -111,7 +113,7 @@ class _CustomDeckEditorScreenState
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      initialValue: selectedDifficulty,
+                      value: selectedDifficulty,
                       dropdownColor: _cardColor,
                       decoration: InputDecoration(
                         labelText: 'Zorluk',
@@ -162,8 +164,9 @@ class _CustomDeckEditorScreenState
                   ],
                 ),
               ),
-              actionsAlignment: MainAxisAlignment.spaceEvenly,
-              actionsPadding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+            ),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actionsPadding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
               actions: [
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
@@ -177,6 +180,7 @@ class _CustomDeckEditorScreenState
                   onPressed: isLoading ? null : () => Navigator.pop(context),
                   child: Text('İptal', style: GoogleFonts.nunito(fontWeight: FontWeight.w700)),
                 ),
+                const SizedBox(width: 16),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,

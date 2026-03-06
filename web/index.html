@@ -175,16 +175,12 @@
         setTimeout(function () { el.remove(); }, 500);
       }
     }
+    window.removeSplashWhenReady = removeSplash;
 
-    // Delay splash removal so LoginScreen has time to fully paint
     function scheduleSplashRemoval() {
       setTimeout(removeSplash, 600);
     }
-
-    // Method 1: Listen for Flutter's first-frame event
     window.addEventListener('flutter-first-frame', scheduleSplashRemoval);
-
-    // Method 2: MutationObserver — detect when Flutter adds its rendering elements
     var observer = new MutationObserver(function () {
       if (document.querySelector('flt-glass-pane, flutter-view, flt-scene-host')) {
         scheduleSplashRemoval();
@@ -192,19 +188,13 @@
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
-
-    // Method 3: Fallback timeout — remove after 8 seconds no matter what
     setTimeout(removeSplash, 8000);
-
+  </script>
+  <script>
     // Firebase Auth persistence için localStorage kontrolü
-    // Flutter web'de Firebase Auth otomatik olarak localStorage kullanır
-    // Ancak bazen Chrome'da flutter run ile çalıştırırken localStorage temizlenebilir
-    // Bu script localStorage'ın korunmasını sağlar
     (function () {
-      // localStorage'ın mevcut olup olmadığını kontrol et
       try {
         if (typeof (Storage) !== "undefined") {
-          // localStorage mevcut, Firebase Auth oturum bilgileri burada saklanacak
           console.log('localStorage is available for Firebase Auth persistence');
         } else {
           console.warn('localStorage is not available');
