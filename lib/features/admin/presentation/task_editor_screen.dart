@@ -5,6 +5,7 @@ import '../domain/task_item_entity.dart';
 import '../providers/admin_provider.dart';
 import '../../../shared/models/enums.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/category_constants.dart';
 import '../../../shared/utils/toast_utils.dart';
 
 /// Senaryo Editörü — Tiyatro Temalı
@@ -29,7 +30,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
     super.initState();
     final t = widget.taskToEdit;
     _content = t?.content ?? '';
-    _category = t?.category ?? 'Cesaret';
+    _category = t?.category ?? CategoryConstants.defaultCategoryNames.first;
     _difficulty = t?.difficulty ?? 'easy';
     _type = t?.type ?? TaskType.action;
     _tags = t?.tags != null ? List.from(t!.tags) : ['classic', 'adult'];
@@ -126,14 +127,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                       children: [
                         _buildLabel('TÜR'),
                         _buildDropdown(
-                          [
-                            'Cesaret',
-                            'İtiraf',
-                            'Taklit',
-                            'Sosyal Medya',
-                            'Fiziksel',
-                            'Bilgi',
-                          ],
+                          CategoryConstants.allCategoryNames,
                           _category,
                           (v) => setState(() => _category = v!),
                         ),

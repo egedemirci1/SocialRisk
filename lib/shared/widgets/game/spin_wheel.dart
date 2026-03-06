@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/category_constants.dart';
 
 /// Kategori bilgisi — çark dilimi için renk, ikon ve isim.
 class WheelCategory {
@@ -16,8 +17,7 @@ class WheelCategory {
   });
 }
 
-/// 6 kategorili dönen çark widget'ı.
-/// [onResult] callback'i çark durduğunda seçilen kategoriyi döndürür.
+/// Dönen çark widget'ı. Kategori renk/ikon CategoryConstants'tan.
 class SpinWheel extends StatefulWidget {
   const SpinWheel({
     super.key,
@@ -43,53 +43,23 @@ class SpinWheel extends StatefulWidget {
 class _SpinWheelState extends State<SpinWheel>
     with SingleTickerProviderStateMixin {
   List<WheelCategory> get _activeCategories {
-    final Map<String, WheelCategory> allCats = {
-      'Cesaret': const WheelCategory(
-        name: 'Cesaret',
-        color: AppColors.fire,
-        icon: Icons.local_fire_department_rounded,
-      ),
-      'İtiraf': const WheelCategory(
-        name: 'İtiraf',
-        color: AppColors.glow,
-        icon: Icons.psychology_rounded,
-      ),
-      'Taklit': const WheelCategory(
-        name: 'Taklit',
-        color: AppColors.ice,
-        icon: Icons.theater_comedy_rounded,
-      ),
-      'Sosyal Medya': const WheelCategory(
-        name: 'Sosyal Medya',
-        color: AppColors.primary,
-        icon: Icons.phone_android_rounded,
-      ),
-      'Fiziksel': const WheelCategory(
-        name: 'Fiziksel',
-        color: AppColors.votePositive,
-        icon: Icons.fitness_center_rounded,
-      ),
-      'Bilgi': const WheelCategory(
-        name: 'Bilgi',
-        color: AppColors.accent,
-        icon: Icons.lightbulb_outline_rounded,
-      ),
-    };
-
     if (widget.categories.isEmpty) {
-      return allCats.values.toList();
+      return CategoryConstants.defaultCategoriesOnly
+          .map((c) => WheelCategory(name: c.name, color: c.color, icon: c.icon))
+          .toList();
     }
-
     return widget.categories
-        .map(
-          (c) =>
-              allCats[c] ??
-              WheelCategory(
-                name: c,
-                color: AppColors.primary,
-                icon: Icons.category_rounded,
-              ),
-        )
+        .map((c) {
+          final def = CategoryConstants.byId(c);
+          if (def != null) {
+            return WheelCategory(name: def.name, color: def.color, icon: def.icon);
+          }
+          return WheelCategory(
+            name: c,
+            color: AppColors.primary,
+            icon: Icons.category_rounded,
+          );
+        })
         .toList();
   }
 

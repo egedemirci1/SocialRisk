@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/constants/category_constants.dart';
 
-/// Görev kartı — Kategori, görev metni ve puan çarpanı.
+/// Görev kartı — Kategori, görev metni ve puan çarpanı. Renk/ikon CategoryConstants'tan.
 class GameCard extends StatelessWidget {
   const GameCard({
     super.key,
@@ -16,43 +17,11 @@ class GameCard extends StatelessWidget {
   final String content;
   final int multiplier;
 
-  Color get _categoryColor {
-    switch (category) {
-      case 'Cesaret':
-        return AppColors.fire;
-      case 'İtiraf':
-        return AppColors.glow;
-      case 'Taklit':
-        return AppColors.ice;
-      case 'Sosyal Medya':
-        return AppColors.primary;
-      case 'Fiziksel':
-        return AppColors.votePositive;
-      case 'Bilgi':
-        return AppColors.accent;
-      default:
-        return AppColors.primary;
-    }
-  }
+  CategoryDefinition get _categoryDef => CategoryConstants.fallback(category);
 
-  IconData get _categoryIcon {
-    switch (category) {
-      case 'Cesaret':
-        return Icons.local_fire_department_rounded;
-      case 'İtiraf':
-        return Icons.psychology_rounded;
-      case 'Taklit':
-        return Icons.theater_comedy_rounded;
-      case 'Sosyal Medya':
-        return Icons.phone_android_rounded;
-      case 'Fiziksel':
-        return Icons.fitness_center_rounded;
-      case 'Bilgi':
-        return Icons.lightbulb_outline_rounded;
-      default:
-        return Icons.help_outline_rounded;
-    }
-  }
+  Color get _categoryColor => _categoryDef.color;
+
+  IconData get _categoryIcon => _categoryDef.icon;
 
   @override
   Widget build(BuildContext context) {

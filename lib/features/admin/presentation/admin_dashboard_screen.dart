@@ -34,23 +34,6 @@ class AdminDashboardScreen extends ConsumerWidget {
             onPressed: () => context.push('/admin/task-editor'),
           ),
           IconButton(
-            icon: const Icon(Icons.download_rounded, color: AppColors.accent),
-            tooltip: 'Klasik Senaryoları Ekle',
-            onPressed: () async {
-              ToastUtils.showInfo(context, 'Senaryolar ekleniyor...');
-              try {
-                await ref.read(adminControllerProvider.notifier).seedTasks();
-                if (context.mounted) {
-                  ToastUtils.showSuccess(context, 'Repertuar güncellendi!');
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ToastUtils.showError(context, 'Hata: $e');
-                }
-              }
-            },
-          ),
-          IconButton(
             icon: const Icon(Icons.report_rounded, color: AppColors.primary),
             onPressed: () => context.push('/admin/reports'),
           ),
@@ -58,19 +41,51 @@ class AdminDashboardScreen extends ConsumerWidget {
       ),
       body: tasksAsync.when(
         data: (tasks) {
-          if (tasks.isEmpty) {
-            return Center(
-              child: Text(
-                'Repertuarda senaryo bulunamadı.',
-                style: GoogleFonts.libreBaskerville(
-                  color: Colors.white24,
-                  fontSize: 16,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.check_circle_rounded, color: AppColors.accent, size: 28),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Kategoriler sabitlendi. İçerik girişine hazırsınız.',
+                          style: GoogleFonts.playfairDisplay(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            );
-          }
-
-          return ListView.builder(
+              if (tasks.isEmpty)
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      'Repertuarda senaryo bulunamadı.',
+                      style: GoogleFonts.libreBaskerville(
+                        color: Colors.white24,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
             itemCount: tasks.length,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             itemBuilder: (context, index) {
@@ -176,7 +191,10 @@ class AdminDashboardScreen extends ConsumerWidget {
                 ),
               );
             },
-          );
+                  ),
+                ),
+              ],
+            );
         },
         loading: () => const Center(
           child: CircularProgressIndicator(color: AppColors.accent),

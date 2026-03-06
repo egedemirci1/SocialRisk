@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart' show User;
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../../shared/widgets/common/report_dialog.dart';
+import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
@@ -28,6 +29,8 @@ class LobbyScreen extends ConsumerStatefulWidget {
 }
 
 class _LobbyScreenState extends ConsumerState<LobbyScreen> {
+  bool _isStartingGame = false;
+
   @override
   Widget build(BuildContext context) {
     ref.listen(watchRoomProvider(widget.roomCode), (previous, next) {
@@ -156,10 +159,35 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                   user,
                   roomAsync,
                   playersAsync,
+                  onStartGame: () async {
+                    setState(() => _isStartingGame = true);
+                    try {
+                      final room = roomAsync.value;
+                      final players = playersAsync.value ?? [];
+                      final playerIds = players.map((p) => p.id as String).toList();
+                      final gameId = await ref.read(roomRepositoryProvider).startGameInRoom(
+                        roomCode: widget.roomCode,
+                        playerIds: playerIds,
+                        mode: room?.mode ?? GameMode.classic,
+                        categories: room?.categories ?? [],
+                      );
+                      if (mounted) {
+                        context.go('/task', extra: {'gameId': gameId, 'roomCode': widget.roomCode});
+                      }
+                    } catch (e) {
+                      if (mounted) ToastUtils.showError(context, 'Hata: $e');
+                    } finally {
+                      if (mounted) setState(() => _isStartingGame = false);
+                    }
+                  },
                 ),
               ],
             ),
           ),
+          if (_isStartingGame)
+            const Positioned.fill(
+              child: TheaterLoadingScreen(message: 'Sahne Hazırlanıyor...'),
+            ),
         ],
       ),
     );
@@ -219,8 +247,9 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     WidgetRef ref,
     User? user,
     AsyncValue<dynamic> roomAsync,
-    AsyncValue<List<dynamic>> playersAsync,
-  ) {
+    AsyncValue<List<dynamic>> playersAsync, {
+    Future<void> Function()? onStartGame,
+  }) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
       child: roomAsync.when(
@@ -254,34 +283,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                       : Colors.white10,
                   onPressed: (allReady && players.length >= 2)
                       ? () async {
-                          try {
-                            final playerIds = players
-                                .map((p) => p.id as String)
-                                .toList();
-
-                            final gameId = await ref
-                                .read(roomRepositoryProvider)
-                                .startGameInRoom(
-                                  roomCode: widget.roomCode,
-                                  playerIds: playerIds,
-                                  mode: room?.mode ?? GameMode.classic,
-                                  categories: room?.categories ?? [],
-                                );
-
-                            if (context.mounted) {
-                              context.go(
-                                '/task',
-                                extra: {
-                                  'gameId': gameId,
-                                  'roomCode': widget.roomCode,
-                                },
-                              );
-                            }
-                          } catch (e) {
-                            if (context.mounted) {
-                              ToastUtils.showError(context, 'Hata: $e');
-                            }
-                          }
+                          if (onStartGame != null) await onStartGame();
                         }
                       : () {},
                 ),
