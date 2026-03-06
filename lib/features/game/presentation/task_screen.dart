@@ -1,10 +1,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/widgets/cards/game_card.dart';
-import '../../../shared/widgets/game/spin_wheel.dart';
+import '../../../shared/widgets/game/spin_wheel.dart' hide AnimatedBuilder;
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../room/providers/room_provider.dart';
 import '../providers/game_provider.dart';
@@ -465,16 +466,10 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             isLoading: _isAccepting,
           ),
           const SizedBox(height: 12),
-          TextButton(
-            onPressed: _isPassing ? null : _passTask,
-            child: Text(
-              'Görevi Reddet (-${50 * (passStreak + 1)} Puan)',
-              style: AppTextStyles.labelSmall.copyWith(
-                color: Colors.white38,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1,
-              ),
-            ),
+          _AnimatedPassButton(
+            passStreak: passStreak,
+            isPassing: _isPassing,
+            onPass: _passTask,
           ),
         ] else
           Text(
@@ -487,6 +482,97 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           ),
         const SizedBox(height: 32),
       ],
+    );
+  }
+}
+
+class _AnimatedPassButton extends StatefulWidget {
+  final int passStreak;
+  final bool isPassing;
+  final VoidCallback onPass;
+
+  const _AnimatedPassButton({
+    required this.passStreak,
+    required this.isPassing,
+    required this.onPass,
+  });
+
+  @override
+  State<_AnimatedPassButton> createState() => _AnimatedPassButtonState();
+}
+
+class _AnimatedPassButtonState extends State<_AnimatedPassButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _shakeAnimation;
+  bool _isWarningSelected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
+    _shakeAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 8.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 8.0, end: -8.0), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: -8.0, end: 8.0), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: 8.0, end: 0.0), weight: 1),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handlePress() {
+    if (widget.isPassing) return;
+    
+    if (!_isWarningSelected) {
+      HapticFeedback.mediumImpact();
+      setState(() => _isWarningSelected = true);
+      _controller.forward(from: 0.0);
+    } else {
+      HapticFeedback.heavyImpact();
+      widget.onPass();
+      setState(() => _isWarningSelected = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(_shakeAnimation.value, 0),
+          child: child,
+        );
+      },
+      child: OutlinedButton(
+        onPressed: widget.isPassing ? null : _handlePress,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: _isWarningSelected ? Colors.redAccent : Colors.red.withValues(alpha: 0.7),
+          side: BorderSide(
+            color: _isWarningSelected ? Colors.redAccent : Colors.white24,
+            width: _isWarningSelected ? 2 : 1,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          backgroundColor: _isWarningSelected ? Colors.red.withValues(alpha: 0.1) : Colors.transparent,
+        ),
+        child: Text(
+          _isWarningSelected
+              ? 'EMİN MİSİN? (-${50 * (widget.passStreak + 1)} Puan)'
+              : 'Görevi Reddet (-${50 * (widget.passStreak + 1)} Puan)',
+          style: AppTextStyles.labelSmall.copyWith(
+            color: _isWarningSelected ? Colors.redAccent : Colors.white70,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1,
+          ),
+        ),
+      ),
     );
   }
 }

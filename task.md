@@ -16,13 +16,12 @@ Bu liste, analiz raporunda belirlenen "Premium Parti Deneyimi" hedeflerine ulaş
 - [x] **Host İçin "Başlat" Çağrısı:** Odadaki herkes "Hazır" olduğunda, Host'un ekranındaki "Oyunu Başlat" butonu bir neon aura ile parlamaya ve hafifçe sallanmaya (shake) başlayacak: "Haydi, herkes seni bekliyor!" mesajını verecek.
 
 ## 4. Oyun İçi Senaryo ve Görev Anı (Task Screen)
-- [ ] **Riskli Pass Butonu:** Görevi reddetme butonu (`TextButton`'dan `OutlinedButton`'a) daha belirgin ve uyarıcı hale getirilecek. Basıldığında ekran hafifçe sarsılacak ("Emin misin?") ve puan kaybı görsel bir kırmızı efektle vurgulanacak.
-- [ ] **Gizli Görev "Kazıma" Deneyimi:** Kapalı oyunlarda karta dokunup butonla açmak yerine; kartın üstünde gümüş bir katman olacak ve oyuncu parmağıyla (veya uzun basarak) bu katmanı "kazıyarak" görevi görecek. Bu, merak duygusunu fiziksel bir eyleme dönüştürecek.
-
+- [x] **Riskli Pass Butonu:** Görevi reddetme butonu (`TextButton`'dan `OutlinedButton`'a) daha belirgin ve uyarıcı hale getirilecek. Basıldığında ekran hafifçe sarsılacak ("Emin misin?") ve puan kaybı görsel bir kırmızı efektle vurgulanacak.
+-
 ## 5. Oylama ve Gerilimin Zirvesi (Voting Screen)
-- [ ] **Ambiyans Işıklandırması:** Oylama esnasında arka plan rengi, görevin o anki zorluk derecesine göre (Zor: Kırmızı, Kolay: Yeşil) köşelerden hafifçe yanıp sönen bir ışık (glow) verecek. Odadaki gerilim görselleştirilecek.
-- [ ] **Dinamik "Zaman Baskısı" Barı:** Her oylamaya 20 saniyelik bir geri sayım barı eklenecek. Bar kısaldıkça rengi sarıdan kırmızıya dönecek ve son 3 saniyede titreyerek oyuncuyu hızlı karar vermeye itecek.
-- [ ] **Psikolojik Metinler:** "Herkes senin kararını bekliyor...", "Zaman daralıyor!" gibi rastgele seçilen gaz verici metinler ekranın ortasında süzülecek.
+- [x] **Ambiyans Işıklandırması:** Oylama esnasında arka plan rengi, görevin o anki zorluk derecesine göre (Zor: Kırmızı, Kolay: Yeşil) köşelerden hafifçe yanıp sönen bir ışık (glow) verecek. Odadaki gerilim görselleştirilecek.
+- [x] **Dinamik "Zaman Baskısı" Barı:** Her oylamaya 20 saniyelik bir geri sayım barı eklenecek. Bar kısaldıkça rengi sarıdan kırmızıya dönecek ve son 3 saniyede titreyerek oyuncuyu hızlı karar vermeye itecek.
+- [x] **Psikolojik Metinler:** "Herkes senin kararını bekliyor...", "Zaman daralıyor!" gibi rastgele seçilen gaz verici metinler ekranın ortasında süzülecek.
 
 ## 6. Final ve Ödüllendirme (Round Result Screen)
 - [ ] **Skor Patlaması:** Kazanılan puan ekrana geldiğinde sadece text değil, arkasından bir havai fişek/emoji patlaması çıkacak. Puan ne kadar yüksekse patlama o kadar büyük olacak.
