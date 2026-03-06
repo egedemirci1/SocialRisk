@@ -81,9 +81,9 @@ Bu liste Ata ve Ege'nin paralel çalışabilmesi için fazlara ayrılmıştır.
 *Öncelik: Deneyimi bozan pürüzlerin giderilmesi, arayüzün her cihazda kusursuz çalışması ve sistemin içerik girişine hazır hale getirilmesi.*
 
 ### 🎨 Görsel Bütünlük ve Responsive (Ata)
-- [ ] **Tema Bütünlüğü & Eski İçerik Temizliği:** Tüm sayfalarda rastgele karşımıza çıkan eski temanın (kahverengi tonlar, `Libre Baskerville` gibi tırnaklı fontlar, "Perde" gibi eski tiyatro terimleri) tespiti. Hardcoded renk/font kullanılan yerlerin `AppColors` ve `AppTypography` referanslarına geçirilerek yeni "Clean Party Energy" yapısına tam uyum sağlanması.
-- [ ] **Responsive Tasarım & Taşma Kontrolü:** Uygulamanın farklı telefon ve tablet ekranlarında; klavye açıldığında veya dar ekranlarda taşma (`RenderFlex overflow`) yapmaması için `ConstrainedBox`, `Expanded`, `Flexible` ve `LayoutBuilder` yapılarının tüm ana ekranlara (Game, Voting, Room) yedirilmesi.
-- [ ] **Çark (Wheel) Görsel & Metin İyileştirmesi:** Çark dilimlerindeki metinlerin sığmaması/taşması sorununun `AutoSizeText` veya ölçeklendirme mantığıyla çözülmesi. Çark renklerinin yeni canlı palete (İndigo-Mango) uygun dinamik renklerle güncellenmesi.
+- [x] **Tema Bütünlüğü & Eski İçerik Temizliği:** Tüm sayfalarda rastgele karşımıza çıkan eski temanın (kahverengi tonlar, `Libre Baskerville` gibi tırnaklı fontlar, "Perde" gibi eski tiyatro terimleri) tespiti. Hardcoded renk/font kullanılan yerlerin `AppColors` ve `AppTypography` referanslarına geçirilerek yeni "Clean Party Energy" yapısına tam uyum sağlanması.
+- [x] **Responsive Tasarım & Taşma Kontrolü:** Uygulamanın farklı telefon ve tablet ekranlarında; klavye açıldığında veya dar ekranlarda taşma (`RenderFlex overflow`) yapmaması için `ConstrainedBox`, `Expanded`, `Flexible` ve `LayoutBuilder` yapılarının tüm ana ekranlara (Game, Voting, Room) yedirilmesi.
+- [x] **Çark (Wheel) Görsel & Metin İyileştirmesi:** Çark dilimlerindeki metinlerin sığmaması/taşması sorununun `AutoSizeText` veya ölçeklendirme mantığıyla çözülmesi. Çark renklerinin yeni canlı palete (İndigo-Mango) uygun dinamik renklerle güncellenmesi.
 
 ### ⚙️ Akış ve Senkronizasyon (Ege)
 - [ ] **Bekleme (Loading) State Yönetimi:** Firebase/Ağ istekleri sırasında (odaya bağlanırken, soru çekilirken) ekranın donmuş gibi görünmesini engellemek için `isLoading` controller'larının kurulması. Kullanıcıya "Sahne Hazırlanıyor..." veya "Oyuncular Bekleniyor..." tadında tam ekran loading overlay veya animasyon sunulması.

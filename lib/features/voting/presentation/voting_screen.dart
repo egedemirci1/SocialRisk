@@ -18,8 +18,10 @@ import '../../../shared/widgets/common/player_avatar.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../shared/utils/toast_utils.dart';
+import '../../../core/constants/app_text_styles.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
 
-/// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor (Tiyatro Temalı).
+/// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor (Parti Temalı).
 class VotingScreen extends ConsumerStatefulWidget {
   const VotingScreen({super.key, required this.gameId, required this.roomCode});
 
@@ -100,7 +102,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
         final performer = activePlayers
             .where((p) => p.id == game.currentPlayerId)
             .firstOrNull;
-        final performerName = performer?.name ?? 'Aktör';
+        final performerName = performer?.name ?? 'Oyuncu';
 
         // Game durumu listener'ı (Riverpod bunu otomatik yönetir, koşulsuz çağrılmalı)
         ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
@@ -147,9 +149,8 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
           backgroundColor: AppColors.background,
           appBar: AppBar(
             title: Text(
-              'ELEŞTİRİ & ALKIŞ',
-              style: GoogleFonts.playfairDisplay(
-                fontWeight: FontWeight.w900,
+              'ELEŞTİRİ & OYLAMA',
+              style: AppTextStyles.headlineMedium.copyWith(
                 color: AppColors.accent,
                 letterSpacing: 2,
               ),
@@ -176,13 +177,18 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             ],
           ),
           body: SafeArea(
-            child: SizedBox(
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  children: [
-                    const Spacer(),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: IntrinsicHeight(
+                      child: ResponsiveWrapper(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          children: [
+                            const Spacer(),
                     PlayerAvatar(
                       uid: game.currentPlayerId,
                       displayName: performerName,
@@ -191,10 +197,8 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                     const SizedBox(height: 16),
                     Text(
                       performerName.toUpperCase(),
-                      style: GoogleFonts.playfairDisplay(
+                      style: AppTextStyles.displayMedium.copyWith(
                         color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
                         letterSpacing: 2,
                       ),
                     ),
@@ -221,9 +225,8 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
                             '${titleItem.imageUrl} ${titleItem.name}',
-                            style: GoogleFonts.playfairDisplay(
+                            style: AppTextStyles.labelSmall.copyWith(
                               color: AppColors.accent,
-                              fontSize: 12,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -233,9 +236,8 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'performansını sergiledi:',
-                      style: GoogleFonts.libreBaskerville(
+                      style: AppTextStyles.bodyMedium.copyWith(
                         color: Colors.white54,
-                        fontSize: 14,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -251,9 +253,8 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                       ),
                       child: Text(
                         '"${game.currentTask?.content ?? ""}"',
-                        style: GoogleFonts.playfairDisplay(
+                        style: AppTextStyles.titleLarge.copyWith(
                           color: Colors.white,
-                          fontSize: 20,
                           fontStyle: FontStyle.italic,
                           height: 1.5,
                         ),
@@ -281,10 +282,14 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                               );
                         },
                       ),
-                    const SizedBox(height: 48),
-                  ],
-                ),
-              ),
+                            const SizedBox(height: 48),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         );
@@ -306,10 +311,9 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
         const CircularProgressIndicator(color: AppColors.accent),
         const SizedBox(height: 16),
         Text(
-          'Alkışlar sayılıyor...',
-          style: GoogleFonts.playfairDisplay(
+          'Oylar sayılıyor...',
+          style: AppTextStyles.titleMedium.copyWith(
             color: AppColors.accent,
-            fontWeight: FontWeight.w900,
             letterSpacing: 1,
           ),
         ),
@@ -327,10 +331,9 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
           border: Border.all(color: Colors.white10),
         ),
         child: Text(
-          'Diğer aktörlerin değerlendirmesi bekleniyor...',
-          style: GoogleFonts.libreBaskerville(
+          'Diğer oyuncuların değerlendirmesi bekleniyor...',
+          style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white38,
-            fontSize: 13,
             fontStyle: FontStyle.italic,
           ),
           textAlign: TextAlign.center,
@@ -354,10 +357,10 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
           const SizedBox(width: 12),
           Text(
             'DEĞERLENDİRİLDİ',
-            style: GoogleFonts.playfairDisplay(
+            style: AppTextStyles.labelSmall.copyWith(
               color: Colors.green,
-              fontWeight: FontWeight.w900,
               fontSize: 14,
+              fontWeight: FontWeight.w900,
               letterSpacing: 2,
             ),
           ),

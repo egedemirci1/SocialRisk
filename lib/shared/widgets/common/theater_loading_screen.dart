@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_text_styles.dart';
 
 class TheaterLoadingScreen extends StatefulWidget {
   const TheaterLoadingScreen({
     super.key,
-    this.message = 'Sahne Hazırlanıyor...',
+    this.message = 'Parti Hazırlanıyor...',
   });
 
   final String message;
@@ -48,16 +49,15 @@ class _TheaterLoadingScreenState extends State<TheaterLoadingScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(
-                Icons.theater_comedy_rounded,
+                Icons.celebration_rounded,
                 color: AppColors.accent,
                 size: 64,
               ),
               const SizedBox(height: 24),
               Text(
                 widget.message,
-                style: GoogleFonts.playfairDisplay(
+                style: AppTextStyles.titleLarge.copyWith(
                   color: AppColors.accent,
-                  fontSize: 20,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 2,
                 ),

@@ -16,8 +16,10 @@ import '../../../shared/widgets/buttons/leave_room_button.dart';
 import 'package:lottie/lottie.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../room/domain/room_entity.dart';
+import '../../../core/constants/app_text_styles.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
 
-/// Tur sonu ekranı — Tiyatro Temalı
+/// Tur sonu ekranı — Parti Temalı
 class RoundResultScreen extends ConsumerStatefulWidget {
   const RoundResultScreen({
     super.key,
@@ -77,7 +79,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
                 (p) => p.id == (game.lastRoundPlayerId ?? game.currentPlayerId),
               )
               .firstOrNull;
-          final playerName = currentPlayer?.name ?? 'Aktör';
+          final playerName = currentPlayer?.name ?? 'Oyuncu';
           final room = ref.watch(watchRoomProvider(widget.roomCode)).value;
 
           if (room != null && !isGameOver) {
@@ -113,9 +115,10 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
 
           return SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-              child: Column(
-                children: [
+              child: ResponsiveWrapper(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                child: Column(
+                  children: [
                   _buildResultHeader(earnedScore, isPass, playerName),
                   const SizedBox(height: 24),
                   _buildScoreCard(earnedScore, multiplier, isPass),
@@ -132,6 +135,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
                 ],
               ),
             ),
+           ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -167,11 +171,9 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
         ),
         const SizedBox(height: 16),
         Text(
-          isPass ? 'ROL REDDEDİLDİ' : 'PERDE KAPANDI',
-          style: GoogleFonts.playfairDisplay(
+          isPass ? 'GÖREV REDDEDİLDİ' : 'SAHNE BİTTİ',
+          style: AppTextStyles.headlineMedium.copyWith(
             color: Colors.white,
-            fontSize: 32,
-            fontWeight: FontWeight.w900,
             letterSpacing: 2,
           ),
           textAlign: TextAlign.center,
@@ -181,9 +183,8 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           isPass
               ? '$playerName rolünü yapmayı reddetti.'
               : '$playerName performansını tamamladı.',
-          style: GoogleFonts.libreBaskerville(
+          style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white54,
-            fontSize: 14,
           ),
           textAlign: TextAlign.center,
         ),
@@ -239,11 +240,10 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
       child: Column(
         children: [
           Text(
-            'AKTÖR SIRALAMASI',
-            style: GoogleFonts.playfairDisplay(
+            'OYUNCU SIRALAMASI',
+            style: AppTextStyles.labelSmall.copyWith(
               color: AppColors.accent,
               fontWeight: FontWeight.w900,
-              fontSize: 14,
               letterSpacing: 1,
             ),
           ),
@@ -266,7 +266,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
 
         if (isHost) {
           return StageButton(
-            label: isGameOver ? 'FİNAL PERDESİ' : 'SIRADAKİ SAHNE',
+            label: isGameOver ? 'PARTİ BİTTİ' : 'SIRADAKİ GÖREV',
             icon: isGameOver
                 ? Icons.emoji_events_rounded
                 : Icons.arrow_forward_rounded,
@@ -291,10 +291,9 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
               Text(
                 isGameOver
                     ? 'Final bekleniyor...'
-                    : 'Başaktörün yeni sahneye geçmesi bekleniyor...',
-                style: GoogleFonts.libreBaskerville(
+                    : 'Yöneticinin yeni sahneye geçmesi bekleniyor...',
+                style: AppTextStyles.bodyMedium.copyWith(
                   color: Colors.white30,
-                  fontSize: 13,
                   fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.center,
@@ -344,17 +343,15 @@ class _ScoreRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.playfairDisplay(
+          style: AppTextStyles.titleMedium.copyWith(
             color: Colors.white54,
-            fontSize: 14,
             fontWeight: FontWeight.w700,
           ),
         ),
         Text(
           value,
-          style: GoogleFonts.playfairDisplay(
+          style: AppTextStyles.titleLarge.copyWith(
             color: color,
-            fontSize: isBold ? 24 : 18,
             fontWeight: FontWeight.w900,
           ),
         ),
@@ -401,7 +398,7 @@ class _LeaderboardTile extends ConsumerWidget {
             width: 24,
             child: Text(
               '#$rank',
-              style: GoogleFonts.playfairDisplay(
+              style: AppTextStyles.labelSmall.copyWith(
                 color: AppColors.accent,
                 fontWeight: FontWeight.w900,
               ),
@@ -416,7 +413,7 @@ class _LeaderboardTile extends ConsumerWidget {
               children: [
                 Text(
                   player.name,
-                  style: GoogleFonts.playfairDisplay(
+                  style: AppTextStyles.bodyMedium.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
                   ),
@@ -424,9 +421,8 @@ class _LeaderboardTile extends ConsumerWidget {
                 if (titleItem != null)
                   Text(
                     '${titleItem.imageUrl} ${titleItem.name}',
-                    style: GoogleFonts.playfairDisplay(
+                    style: AppTextStyles.labelSmall.copyWith(
                       color: AppColors.accent,
-                      fontSize: 10,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -435,10 +431,9 @@ class _LeaderboardTile extends ConsumerWidget {
           ),
           Text(
             '${player.score}',
-            style: GoogleFonts.playfairDisplay(
+            style: AppTextStyles.titleMedium.copyWith(
               color: AppColors.accent,
               fontWeight: FontWeight.w900,
-              fontSize: 16,
             ),
           ),
         ],
@@ -472,9 +467,8 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
         children: [
           Text(
             'SENARYOYU DEĞERLENDİR',
-            style: GoogleFonts.playfairDisplay(
+            style: AppTextStyles.labelSmall.copyWith(
               color: Colors.white54,
-              fontSize: 12,
               fontWeight: FontWeight.w900,
               letterSpacing: 1,
             ),
@@ -549,9 +543,8 @@ class _FeedbackButton extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               label,
-              style: GoogleFonts.playfairDisplay(
+              style: AppTextStyles.labelSmall.copyWith(
                 color: isActive ? color : Colors.white38,
-                fontSize: 11,
                 fontWeight: FontWeight.w900,
               ),
             ),

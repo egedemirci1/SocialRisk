@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_text_styles.dart';
 
-/// Oylama paneli — Alkış / Eleştiri butonları (Tiyatro Temalı).
+/// Oylama paneli — Alkış / Eleştiri butonları (Parti Temalı).
 class VotingPanel extends StatefulWidget {
   const VotingPanel({
     super.key,
@@ -65,19 +66,16 @@ class _VotingPanelState extends State<VotingPanel>
         children: [
           Text(
             'PERFORMANS NASILDI?',
-            style: GoogleFonts.playfairDisplay(
+            style: AppTextStyles.headlineMedium.copyWith(
               color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
               letterSpacing: 2,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Başaktörün sergilediği rolü değerlendirin',
-            style: GoogleFonts.libreBaskerville(
+            'Oyuncunun sergilediği performansı değerlendirin',
+            style: AppTextStyles.bodyMedium.copyWith(
               color: Colors.white54,
-              fontSize: 13,
             ),
           ),
           const SizedBox(height: 24),
@@ -187,8 +185,7 @@ class _VoteButton extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 label,
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: 10,
+                style: AppTextStyles.labelSmall.copyWith(
                   fontWeight: FontWeight.w900,
                   color: isSelected ? color : Colors.white54,
                   letterSpacing: 1,

@@ -15,9 +15,10 @@ import '../../../shared/models/enums.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/utils/toast_utils.dart';
 
-/// Fuaye (Lobi) Ekranı — Tiyatro Temalı
+/// Fuaye (Lobi) Ekranı — Parti Temalı
 class LobbyScreen extends ConsumerStatefulWidget {
   const LobbyScreen({super.key, required this.roomCode});
 
@@ -72,9 +73,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Sahne Arkası / Fuaye',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.w900,
+          'Lobi',
+          style: AppTextStyles.headlineMedium.copyWith(
             color: AppColors.accent,
             letterSpacing: 1.5,
           ),
@@ -143,7 +143,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     error: (e, _) => Center(
                       child: Text(
                         'Hata: $e',
-                        style: GoogleFonts.playfairDisplay(
+                        style: AppTextStyles.titleMedium.copyWith(
                           color: AppColors.primary,
                         ),
                       ),
@@ -182,8 +182,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'SAHNE KODU',
-                  style: GoogleFonts.playfairDisplay(
+                  'ODA KODU',
+                  style: AppTextStyles.labelSmall.copyWith(
                     color: Colors.white54,
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
@@ -192,9 +192,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 ),
                 Text(
                   widget.roomCode,
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w900,
+                  style: AppTextStyles.displayMedium.copyWith(
                     color: AppColors.accent,
                     letterSpacing: 4,
                   ),
@@ -241,7 +239,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 ),
               if (isHost) ...[
                 StageButton(
-                  label: 'PERDEYİ AÇ',
+                  label: 'OYUNU BAŞLAT',
                   icon: Icons.play_arrow_rounded,
                   backgroundColor: (allReady && players.length >= 2)
                       ? AppColors.primary
@@ -288,9 +286,9 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 const SizedBox(height: 12),
                 Text(
                   allReady
-                      ? 'Tüm aktörler sahneye hazır!'
-                      : 'Tüm aktörlerin hazırlanmasını bekleyin...',
-                  style: GoogleFonts.libreBaskerville(
+                      ? 'Tüm oyuncular partiye hazır!'
+                      : 'Diğer oyuncuların hazırlanmasını bekleyin...',
+                  style: AppTextStyles.bodyMedium.copyWith(
                     color: allReady ? Colors.green : Colors.white30,
                     fontSize: 12,
                   ),
@@ -358,16 +356,15 @@ class _PlayerTile extends ConsumerWidget {
                 children: [
                   Text(
                     name + (isCurrentPlayer ? ' (Sen)' : ''),
-                    style: GoogleFonts.playfairDisplay(
+                    style: AppTextStyles.titleLarge.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
-                      fontSize: 16,
                     ),
                   ),
                   if (activeTitleItem != null)
                     Text(
                       activeTitleItem.name.toUpperCase(),
-                      style: GoogleFonts.playfairDisplay(
+                      style: AppTextStyles.labelSmall.copyWith(
                         color: AppColors.accent,
                         fontSize: 10,
                         fontWeight: FontWeight.w900,
@@ -385,8 +382,8 @@ class _PlayerTile extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  isReady ? 'HAZIR' : 'KULİSTE',
-                  style: GoogleFonts.playfairDisplay(
+                  isReady ? 'HAZIR' : 'BEKLİYOR',
+                  style: AppTextStyles.labelSmall.copyWith(
                     color: isReady ? Colors.green : Colors.orange,
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
@@ -416,7 +413,7 @@ class _ReadyToggleButton extends ConsumerWidget {
     final isReady = me?.isReady ?? false;
 
     return StageButton(
-      label: isReady ? 'HENÜZ HAZIR DEĞİLİM' : 'SAHNEYE HAZIRIM!',
+      label: isReady ? 'HENÜZ HAZIR DEĞİLİM' : 'PARTİYE HAZIRIM!',
       icon: isReady ? Icons.close_rounded : Icons.check_circle_outline_rounded,
       backgroundColor: isReady ? Colors.black26 : AppColors.primary,
       textColor: isReady ? Colors.white54 : Colors.white,
@@ -443,10 +440,10 @@ class _RotatingTooltipsState extends State<_RotatingTooltips> {
   int _currentIndex = 0;
   late final Timer _timer;
   final List<String> _tips = [
-    '🎭 Sahne tozunu yutmaya hazır mısın?',
-    '🎭 Unutma, her büyük aktör bir zamanlar sadece bir izleyiciydi.',
-    '🎭 Performansın alkışları puanlarını belirleyecek.',
-    '🎭 Doğaçlama yaparken dürüstlükten ayrılma.',
+    '🎉 Parti başlasın! Hazır mısın?',
+    '😎 Kimse mükemmel doğmaz, en iyi hamleni yap!',
+    '🔥 Diğer oyuncuların oyları kaderini belirleyecek.',
+    '👀 Cesur taklitler ve zor seçimler seni bekliyor.',
   ];
 
   @override
@@ -472,7 +469,7 @@ class _RotatingTooltipsState extends State<_RotatingTooltips> {
       child: Text(
         _tips[_currentIndex],
         key: ValueKey<int>(_currentIndex),
-        style: GoogleFonts.libreBaskerville(
+        style: AppTextStyles.bodyMedium.copyWith(
           color: AppColors.accent,
           fontSize: 12,
           fontStyle: FontStyle.italic,

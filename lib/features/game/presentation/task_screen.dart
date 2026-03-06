@@ -19,8 +19,10 @@ import 'widgets/spectator_strip.dart';
 import 'widgets/turn_counter_badge.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
+import '../../../core/constants/app_text_styles.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
 
-/// Senaryo (Görev) Ekranı — Tiyatro Temalı
+/// Senaryo Ekranı — Parti Temalı
 class TaskScreen extends ConsumerStatefulWidget {
   const TaskScreen({super.key, required this.gameId, required this.roomCode});
 
@@ -125,7 +127,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         final currentPlayer = players
             .where((p) => p.id == game.currentPlayerId)
             .firstOrNull;
-        final playerName = currentPlayer?.name ?? 'Aktör';
+        final playerName = currentPlayer?.name ?? 'Oyuncu';
 
         ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
           previous,
@@ -152,9 +154,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           backgroundColor: AppColors.background,
           appBar: AppBar(
             title: Text(
-              'Perde Açılıyor',
-              style: GoogleFonts.playfairDisplay(
-                fontWeight: FontWeight.w900,
+              'Parti Başlıyor',
+              style: AppTextStyles.headlineMedium.copyWith(
                 color: AppColors.accent,
                 letterSpacing: 2,
               ),
@@ -180,45 +181,60 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
               ),
             ],
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: task != null
-                      ? _buildTaskView(
-                          game.passStreak,
-                          task,
-                          roomAsync.value?.visibility ?? RoomVisibility.open,
-                          isMyTurn,
-                          playerName,
-                        )
-                      : (roomAsync.value?.mode == GameMode.economy
-                            ? _buildEconomyRedirect()
-                            : _buildWheelView(
-                                isMyTurn,
-                                playerName,
-                                currentPlayer,
-                                roomAsync.value?.categories ?? [],
-                              )),
-                ),
-              ),
-              if (players.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 24, top: 8),
-                  child: SpectatorStrip(
-                    players: players,
-                    currentPlayerId: game.currentPlayerId,
-                    myPlayerId: user?.uid,
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: ResponsiveWrapper(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              child: task != null
+                                  ? _buildTaskView(
+                                      game.passStreak,
+                                      task,
+                                      roomAsync.value?.visibility ?? RoomVisibility.open,
+                                      isMyTurn,
+                                      playerName,
+                                    )
+                                  : (roomAsync.value?.mode == GameMode.economy
+                                        ? _buildEconomyRedirect()
+                                        : _buildWheelView(
+                                            isMyTurn,
+                                            playerName,
+                                            currentPlayer,
+                                            roomAsync.value?.categories ?? [],
+                                          )),
+                            ),
+                          ),
+                          if (players.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 24, top: 8),
+                              child: SpectatorStrip(
+                                players: players,
+                                currentPlayerId: game.currentPlayerId,
+                                myPlayerId: user?.uid,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-            ],
+              );
+            },
           ),
         );
       },
       loading: () => const Scaffold(
         backgroundColor: AppColors.background,
-        body: TheaterLoadingScreen(message: 'Perde Açılıyor...'),
+        body: TheaterLoadingScreen(message: 'Parti Başlıyor...'),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.background,
@@ -280,19 +296,16 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         const Spacer(),
         Text(
           '🎡 Senaryonu Belirle',
-          style: GoogleFonts.playfairDisplay(
+          style: AppTextStyles.titleLarge.copyWith(
             color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w900,
             letterSpacing: 1,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           'Sahne ışıkları altına çıkmadan önce rolünü seç...',
-          style: GoogleFonts.libreBaskerville(
+          style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white54,
-            fontSize: 13,
           ),
         ),
         const SizedBox(height: 32),
@@ -354,9 +367,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                 : task.difficulty == 'medium'
                 ? 'ORTA'
                 : 'ZOR'}',
-            style: GoogleFonts.playfairDisplay(
+            style: AppTextStyles.labelSmall.copyWith(
               color: AppColors.accent,
-              fontSize: 12,
               fontWeight: FontWeight.w900,
               letterSpacing: 1,
             ),
@@ -380,9 +392,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                   const SizedBox(width: 4),
                   Text(
                     'SAHNEYE ÖZEL',
-                    style: GoogleFonts.cinzel(
+                    style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.amber,
-                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1,
                     ),
@@ -396,10 +407,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           isClosed
               ? 'Sıradaki Sahne Gizli'
               : (isMyTurn ? 'Senaryon Burada:' : '$playerName\'ın Senaryosu:'),
-          style: GoogleFonts.playfairDisplay(
+          style: AppTextStyles.titleLarge.copyWith(
             color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.w900,
             letterSpacing: 1,
           ),
           textAlign: TextAlign.center,
@@ -410,7 +419,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           child: GameCard(
             category: task.category,
             content: isClosed
-                ? 'Mevcut sahneyi görmek için perdeyi arala...'
+                ? 'Mevcut görevi görmek için kartı aç...'
                 : task.content,
             multiplier: task.multiplier,
           ),
@@ -418,7 +427,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         const Spacer(),
         if (isClosed && isMyTurn)
           StageButton(
-            label: 'Perde Arala',
+            label: 'Görevi Aç',
             backgroundColor: AppColors.accent,
             textColor: Colors.black,
             borderColor: AppColors.accent,
@@ -438,10 +447,9 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             onPressed: _isPassing ? null : _passTask,
             child: Text(
               'Bu Rolü Reddet (-${50 * (passStreak + 1)} Alkış)',
-              style: GoogleFonts.playfairDisplay(
+              style: AppTextStyles.labelSmall.copyWith(
                 color: Colors.white38,
                 fontWeight: FontWeight.w900,
-                fontSize: 12,
                 letterSpacing: 1,
               ),
             ),
@@ -449,9 +457,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         ] else
           Text(
             '$playerName senaryosunu okuyor...',
-            style: GoogleFonts.libreBaskerville(
+            style: AppTextStyles.bodyMedium.copyWith(
               color: Colors.white30,
-              fontSize: 14,
               fontStyle: FontStyle.italic,
             ),
             textAlign: TextAlign.center,

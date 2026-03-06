@@ -247,10 +247,10 @@ void main() async {
       'isActive': true,
     },
     'scenario_mystery': {
-      'name': 'Gizemli Perde',
+      'name': 'Gizemli Parti',
       'description': 'Gerilim ve gizem dolu hikayeler.',
       'type': 'category',
-      'categoryName': 'Gizemli Perde',
+      'categoryName': 'Gizemli Parti',
       'imageUrl': '🔍',
       'price': 1200,
       'isActive': true,

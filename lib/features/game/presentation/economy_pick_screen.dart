@@ -12,8 +12,9 @@ import '../../../shared/widgets/buttons/leave_room_button.dart';
 import '../providers/game_provider.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
 import '../../../shared/utils/toast_utils.dart';
+import '../../../core/constants/app_text_styles.dart';
 
-/// Ekonomi modu — Kategori seçim ekranı (Tiyatro Temalı).
+/// Ekonomi modu — Kategori seçim ekranı (Parti Temalı).
 class EconomyPickScreen extends ConsumerStatefulWidget {
   const EconomyPickScreen({
     super.key,
@@ -92,15 +93,14 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
         final currentPlayer = players
             .where((p) => p.id == game.currentPlayerId)
             .firstOrNull;
-        final currentPickerName = currentPlayer?.name ?? 'Aktör';
+        final currentPickerName = currentPlayer?.name ?? 'Oyuncu';
 
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
             title: Text(
               'SENARYO SEÇİMİ',
-              style: GoogleFonts.playfairDisplay(
-                fontWeight: FontWeight.w900,
+              style: AppTextStyles.headlineMedium.copyWith(
                 color: AppColors.accent,
                 letterSpacing: 2,
               ),
@@ -154,20 +154,18 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                             children: [
                               Text(
                                 isMyPick
-                                    ? 'SIRADAKİ AKTÖR SENSİN!'
+                                    ? 'SIRADAKİ OYUNCU SENSİN!'
                                     : '$currentPickerName SEÇİYOR...',
-                                style: GoogleFonts.playfairDisplay(
+                                style: AppTextStyles.titleMedium.copyWith(
                                   color: Colors.white,
-                                  fontSize: 18,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 1,
                                 ),
                               ),
                               Text(
                                 'SEÇİM ${game.currentPickIndex + 1}/${game.categoryPickOrder.length}',
-                                style: GoogleFonts.libreBaskerville(
+                                style: AppTextStyles.labelSmall.copyWith(
                                   color: Colors.white30,
-                                  fontSize: 11,
                                 ),
                               ),
                             ],
@@ -187,9 +185,8 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                       const SizedBox(width: 8),
                       Text(
                         'SAHNE POPÜLERLİĞİ',
-                        style: GoogleFonts.playfairDisplay(
+                        style: AppTextStyles.labelSmall.copyWith(
                           color: Colors.white54,
-                          fontSize: 13,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1,
                         ),
@@ -284,9 +281,8 @@ class _CategoryCard extends StatelessWidget {
                 children: [
                   Text(
                     category.toUpperCase(),
-                    style: GoogleFonts.playfairDisplay(
+                    style: AppTextStyles.titleMedium.copyWith(
                       color: Colors.white,
-                      fontSize: 14,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1,
                     ),
@@ -298,11 +294,10 @@ class _CategoryCard extends StatelessWidget {
                     children: [
                       Text(
                         '${currentValue}x',
-                        style: GoogleFonts.playfairDisplay(
+                        style: AppTextStyles.titleLarge.copyWith(
                           color: hasDecayed
                               ? AppColors.primary
                               : AppColors.accent,
-                          fontSize: 20,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -319,9 +314,8 @@ class _CategoryCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'ALKIŞ ÇARPANI',
-                    style: GoogleFonts.libreBaskerville(
+                    style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white24,
-                      fontSize: 9,
                     ),
                   ),
                 ],
