@@ -11,6 +11,8 @@ import '../providers/room_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/utils/toast_utils.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../../shared/widgets/common/animated_mesh_background.dart';
 
 /// Partiye Katılma Ekranı — Parti Temalı
 class JoinRoomScreen extends ConsumerStatefulWidget {
@@ -77,85 +79,119 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
       message: 'Partiye bağlanılıyor...',
       child: Scaffold(
         backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
-          title: Text(
-          'Partiye Katıl',
-          style: AppTextStyles.headlineMedium.copyWith(
-            color: AppColors.accent,
-            letterSpacing: 1.5,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_rounded,
+              color: AppColors.accent,
+            ),
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_rounded,
-            color: AppColors.accent,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
+        body: Stack(
           children: [
-            const SizedBox(height: 60),
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.surface,
-                border: Border.all(
-                  color: AppColors.accent.withValues(alpha: 0.2),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.accent.withValues(alpha: 0.1),
-                    blurRadius: 40,
-                    spreadRadius: 5,
+            const Positioned.fill(
+              child: AnimatedMeshBackground(),
+            ),
+            SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: ResponsiveWrapper(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF130D26).withValues(alpha: 0.85), // Very dark plum/indigo
+                        borderRadius: BorderRadius.circular(32),
+                        border: Border.all(color: AppColors.accent.withValues(alpha: 0.15), width: 1.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.6),
+                            blurRadius: 40,
+                            offset: const Offset(0, 20),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Partiye Katıl',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 24,
+                              color: Colors.white,
+                              letterSpacing: 1.0,
+                              shadows: const [
+                                Shadow(offset: Offset(0, 4), color: Colors.black26, blurRadius: 4),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.surface,
+                              border: Border.all(
+                                color: AppColors.accent.withValues(alpha: 0.2),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.accent.withValues(alpha: 0.1),
+                                  blurRadius: 20,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.key_rounded,
+                              color: AppColors.accent,
+                              size: 48,
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          Text(
+                            'Parti Kodunu Gir',
+                            style: AppTextStyles.displayMedium.copyWith(
+                              color: Colors.white,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Arkadaşlarının paylaştığı 6 haneli parti kodunu girerek\neğlenceye dahil ol.',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: Colors.white54,
+                              fontSize: 13,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 48),
+                          _buildCodeInputs(),
+                          const SizedBox(height: 60),
+                          StageButton(
+                            label: 'Partiye Katıl',
+                            icon: Icons.login_rounded,
+                            backgroundColor: AppColors.primary,
+                            textColor: AppColors.background,
+                            borderColor: Colors.transparent,
+                            onPressed: _isCodeComplete ? _joinRoom : () {},
+                            isLoading: _isJoining,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ],
+                ),
               ),
-              child: const Icon(
-                Icons.key_rounded,
-                color: AppColors.accent,
-                size: 48,
-              ),
-            ),
-            const SizedBox(height: 32),
-            Text(
-              'Parti Kodunu Gir',
-              style: AppTextStyles.displayMedium.copyWith(
-                color: Colors.white,
-                letterSpacing: 1,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Arkadaşlarının paylaştığı 6 haneli parti kodunu girerek\neğlenceye dahil ol.',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.white54,
-                fontSize: 13,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 48),
-            _buildCodeInputs(),
-            const SizedBox(height: 60),
-            StageButton(
-              label: 'Partiye Katıl',
-              icon: Icons.login_rounded,
-              backgroundColor: AppColors.primary,
-              textColor: Colors.white,
-              borderColor: AppColors.accent,
-              onPressed: _isCodeComplete ? _joinRoom : () {},
-              isLoading: _isJoining,
             ),
           ],
         ),
       ),
-     ),
     );
   }
 

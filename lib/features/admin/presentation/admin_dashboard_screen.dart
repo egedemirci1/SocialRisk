@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/admin_provider.dart';
 import '../../../shared/utils/toast_utils.dart';
+import '../../../shared/widgets/common/animated_mesh_background.dart';
 
 /// Yönetici (Admin) Paneli — Parti Temalı
 class AdminDashboardScreen extends ConsumerWidget {
@@ -39,8 +40,13 @@ class AdminDashboardScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: tasksAsync.when(
-        data: (tasks) {
+      body: Stack(
+        children: [
+          const Positioned.fill(
+            child: AnimatedMeshBackground(),
+          ),
+          tasksAsync.when(
+            data: (tasks) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -204,7 +210,9 @@ class AdminDashboardScreen extends ConsumerWidget {
             'Hata: $e',
             style: const TextStyle(color: AppColors.primary),
           ),
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }

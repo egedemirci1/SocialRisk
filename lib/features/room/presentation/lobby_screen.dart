@@ -267,32 +267,21 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                   playerId: user?.uid ?? '',
                 ),
               if (isHost) ...[
-                StageButton(
-                  label: 'OYUNU BAŞLAT',
-                  icon: Icons.play_arrow_rounded,
-                  backgroundColor: (allReady && players.length >= 2)
-                      ? AppColors.primary
-                      : AppColors.surface,
-                  textColor: (allReady && players.length >= 2)
-                      ? Colors.white
-                      : Colors.white30,
-                  borderColor: (allReady && players.length >= 2)
-                      ? AppColors.accent
-                      : Colors.white10,
-                  onPressed: (allReady && players.length >= 2)
-                      ? () async {
-                          if (onStartGame != null) await onStartGame();
-                        }
-                      : () {},
+                _AnimatedHostStartButton(
+                  isReady: allReady && players.length >= 2,
+                  onPressed: () async {
+                    if (onStartGame != null) await onStartGame();
+                  },
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  allReady
-                      ? 'Tüm oyuncular partiye hazır!'
+                  (allReady && players.length >= 2)
+                      ? 'Haydi, herkes seni bekliyor!'
                       : 'Diğer oyuncuların hazırlanmasını bekleyin...',
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: allReady ? Colors.green : Colors.white30,
+                    color: (allReady && players.length >= 2) ? AppColors.accent : Colors.white30,
                     fontSize: 12,
+                    fontWeight: (allReady && players.length >= 2) ? FontWeight.bold : FontWeight.normal,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -477,6 +466,108 @@ class _RotatingTooltipsState extends State<_RotatingTooltips> {
           fontStyle: FontStyle.italic,
         ),
         textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
+
+class _AnimatedHostStartButton extends StatefulWidget {
+  final bool isReady;
+  final VoidCallback onPressed;
+
+  const _AnimatedHostStartButton({
+    required this.isReady,
+    required this.onPressed,
+  });
+
+  @override
+  State<_AnimatedHostStartButton> createState() => _AnimatedHostStartButtonState();
+}
+
+class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _glowAnimation;
+  late final Animation<double> _shakeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1500));
+    _glowAnimation = Tween<double>(begin: 0.2, end: 1.0).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _shakeAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 5.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 5.0, end: -5.0), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: -5.0, end: 5.0), weight: 2),
+      TweenSequenceItem(tween: Tween(begin: 5.0, end: 0.0), weight: 1),
+      TweenSequenceItem(
+          tween: ConstantTween(0.0), weight: 10), // pause between shakes
+    ]).animate(_controller);
+
+    if (widget.isReady) {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _AnimatedHostStartButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isReady && !oldWidget.isReady) {
+      _controller.repeat();
+    } else if (!widget.isReady && oldWidget.isReady) {
+      _controller.reset();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.isReady) {
+      return StageButton(
+        label: 'OYUNU BAŞLAT',
+        icon: Icons.play_arrow_rounded,
+        backgroundColor: AppColors.surface,
+        textColor: Colors.white30,
+        borderColor: Colors.white10,
+        onPressed: () {},
+      );
+    }
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(_shakeAnimation.value, 0),
+          child: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.accent.withValues(alpha: _glowAnimation.value * 0.5),
+                  blurRadius: 20 * _glowAnimation.value,
+                  spreadRadius: 5 * _glowAnimation.value,
+                )
+              ],
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: child,
+          ),
+        );
+      },
+      child: StageButton(
+        label: 'OYUNU BAŞLAT',
+        icon: Icons.play_arrow_rounded,
+        backgroundColor: AppColors.primary,
+        textColor: Colors.white,
+        borderColor: AppColors.accent,
+        onPressed: widget.onPressed,
       ),
     );
   }

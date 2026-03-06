@@ -16,6 +16,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
+import '../../../shared/widgets/common/animated_mesh_background.dart';
 
 /// Ana menü ekranı — Parti Temalı
 class HomeScreen extends ConsumerStatefulWidget {
@@ -173,6 +174,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -181,17 +183,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         fit: StackFit.expand,
         children: [
           // Arka plan ışıklandırması (Yeni Party konsepti)
-          Positioned(
-            top: -100,
-            left: -100,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.secondary.withValues(alpha: 0.10), // Turkuaz hafif parlama
-              ),
-            ),
+          const Positioned.fill(
+            child: AnimatedMeshBackground(),
           ),
 
           SafeArea(

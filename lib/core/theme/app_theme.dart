@@ -45,15 +45,17 @@ class AppTheme {
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
-            minimumSize: const Size(double.infinity, 52),
+            minimumSize: const Size(double.infinity, 54), // Daha dolgun (52 -> 54)
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16), // Daha modern yuvarlaklık (12 -> 16)
             ),
             textStyle: GoogleFonts.nunito(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
+              fontSize: 18, // Bir tık daha görünür (16 -> 18)
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.5,
             ),
-            elevation: 0,
+            elevation: 8, // Parlama/Derinlik efekti için yükselti eklendi (0 -> 8)
+            shadowColor: AppColors.primary.withOpacity(0.6), // Sarımsı glow efekti
           ),
         ),
 
@@ -61,15 +63,20 @@ class AppTheme {
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.primary,
-            minimumSize: const Size(double.infinity, 52),
+            minimumSize: const Size(double.infinity, 54),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
-            side: const BorderSide(color: AppColors.primary, width: 1.5),
+            side: const BorderSide(color: AppColors.primary, width: 2.0), // Kalınlaştırıldı (1.5 -> 2.0)
             textStyle: GoogleFonts.nunito(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.5,
             ),
+            elevation: 0,
+          ).copyWith(
+            // Tıklama anında veya odaklandığında çok hafif neon parlama hissi (Ripple rengi)
+            overlayColor: WidgetStateProperty.all(AppColors.primary.withOpacity(0.1)),
           ),
         ),
 
@@ -78,41 +85,43 @@ class AppTheme {
           style: TextButton.styleFrom(
             foregroundColor: AppColors.primary,
             textStyle: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontSize: 15, // Ufak bir büyüme
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.3,
             ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
         ),
 
         // Input (TextField)
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: AppColors.surfaceElevated,
+          fillColor: AppColors.surfaceElevated.withOpacity(0.7), // Hafif bir iç şeffaflık (Cam değil ama hafif saydam)
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 18), // Daha ferah iç boşluk
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: AppColors.accent, width: 2.5), // Tıklayınca Camgöbeği (Cyan) parlayan dış çizgi
           ),
           errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.penalty, width: 1.5),
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: AppColors.penalty, width: 2.0),
           ),
           hintStyle: GoogleFonts.inter(
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w400,
             color: Colors.white38,
           ),
           labelStyle: GoogleFonts.inter(
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w500,
             color: Colors.white54,
           ),

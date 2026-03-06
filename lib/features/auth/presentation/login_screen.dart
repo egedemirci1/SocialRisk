@@ -15,6 +15,7 @@ import '../constants/auth_constants.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
+import '../../../shared/widgets/common/animated_mesh_background.dart';
 
 /// Login ekranı — Tiyatro Temalı
 class LoginScreen extends ConsumerStatefulWidget {
@@ -30,6 +31,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   bool _isAnonymousLoading = false;
   bool _isGoogleLoading = false;
   bool _isAppleLoading = false;
+  bool _showFlare = false;
 
   late final AnimationController _fadeController;
   late final Animation<double> _fadeAnimation;
@@ -56,6 +58,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   }
 
   Future<void> _signInAnonymously() async {
+    HapticFeedback.mediumImpact();
+    setState(() => _showFlare = true);
+    Future.delayed(const Duration(milliseconds: 150), () {
+      if (mounted) setState(() => _showFlare = false);
+    });
+
     final name = _nameController.text.trim();
     final nameRegex = RegExp(r'^[a-zA-Z0-9ığüşöçİĞÜŞÖÇ ]+$');
     
@@ -165,22 +173,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           opacity: _fadeAnimation,
           child: Stack(
           children: [
-            // Yeni Parti Işıklandırması
-            Positioned(
-              top: -150,
-              left: -50,
-              right: -50,
-              child: Container(
-                height: 400,
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    colors: [
-                      AppColors.secondary.withValues(alpha: 0.15),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-              ),
+            // Animasyonlu Parti Işıklandırması
+            const Positioned.fill(
+              child: AnimatedMeshBackground(),
             ),
             SafeArea(
               child: Center(
@@ -266,14 +261,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             ),
           ),
           const SizedBox(height: 24),
-          StageButton(
-            label: 'Giriş Yap',
-            icon: Icons.play_arrow_rounded,
-            backgroundColor: AppColors.primary,
-            textColor: AppColors.background,
-            borderColor: Colors.transparent,
-            onPressed: _signInAnonymously,
-            isLoading: _isAnonymousLoading,
+          Stack(
+            children: [
+              StageButton(
+                label: 'Partiye Katıl!',
+                icon: Icons.local_fire_department_rounded,
+                backgroundColor: AppColors.primary,
+                textColor: AppColors.background,
+                borderColor: Colors.transparent,
+                onPressed: _signInAnonymously,
+                isLoading: _isAnonymousLoading,
+              ),
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: AnimatedOpacity(
+                    opacity: _showFlare ? 0.6 : 0.0,
+                    duration: const Duration(milliseconds: 150),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           Text(

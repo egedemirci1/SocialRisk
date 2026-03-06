@@ -10,17 +10,19 @@ class ThemedBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        gradient: RadialGradient(
-          center: Alignment(0.0, -0.2),
-          radius: 1.2,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
-            Color(0xFF231D4D), // AppColors.surface
-            Color(0xFF16103A), // AppColors.background
+            Color(0xFF2E195E), // Rich vibrant Deep Purple
+            Color(0xFF16103A), // Koyu İndigo
+            Color(0xFF1B2A59), // Oceanic Deep Blue
           ],
-          stops: [0.0, 1.0],
+          stops: [0.0, 0.5, 1.0],
         ),
       ),
       child: child,
     );
   }
 }
+
