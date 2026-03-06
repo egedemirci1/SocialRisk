@@ -110,7 +110,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
       data: (game) {
         if (game == null) {
           return const Scaffold(
-            backgroundColor: AppColors.background,
+            backgroundColor: Colors.transparent,
             body: Center(child: CircularProgressIndicator()),
           );
         }

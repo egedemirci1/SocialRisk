@@ -56,7 +56,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,

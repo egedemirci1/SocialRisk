@@ -80,7 +80,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       isLoading: _isCreating,
       message: 'Parti kuruluyor...',
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text(
           'Yeni Parti Kur',
@@ -518,28 +518,60 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               }
             });
           },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              gradient: isSelected ? AppColors.primaryGradient : null,
-              color: isSelected ? null : Colors.transparent,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: isSelected
-                    ? AppColors.accent.withValues(alpha: 0.3)
-                    : Colors.white10,
-                width: 1.5,
+          behavior: HitTestBehavior.opaque,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Base border
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: Colors.white10,
+                    width: 1.5,
+                  ),
+                ),
+                child: Text(
+                  category,
+                  style: AppTextStyles.titleSmall.copyWith(
+                    color: Colors.transparent,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900, // En kalın haliyle yer tutsun
+                  ),
+                ),
               ),
-            ),
-            child: Text(
-              category,
-              style: AppTextStyles.titleSmall.copyWith(
-                color: isSelected ? Colors.white : Colors.white54,
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
+              // Animated Selected Background
+              Positioned.fill(
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
+                  opacity: isSelected ? 1.0 : 0.0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: AppColors.accent.withValues(alpha: 0.3),
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
+              // Animated Text Color
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                style: AppTextStyles.titleSmall.copyWith(
+                  color: isSelected ? Colors.white : Colors.white54,
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
+                ),
+                child: Text(category),
+              ),
+            ],
           ),
         );
       }).toList(),
@@ -562,30 +594,62 @@ class _ToggleChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          gradient: isSelected ? AppColors.primaryGradient : null,
-          color: isSelected ? null : Colors.transparent,
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(
-            color: isSelected
-                ? AppColors.accent.withValues(alpha: 0.3)
-                : Colors.white10,
-            width: 1.5,
+      behavior: HitTestBehavior.opaque,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Base Border
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                color: Colors.white10,
+                width: 1.5,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                label,
+                style: GoogleFonts.nunito(
+                  color: Colors.transparent,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
           ),
-        ),
-        child: Center(
-          child: Text(
-            label,
+          // Animated Background
+          Positioned.fill(
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOut,
+              opacity: isSelected ? 1.0 : 0.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: AppColors.accent.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Animated Text Colors
+          AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
             style: GoogleFonts.nunito(
               color: isSelected ? AppColors.background : Colors.white54,
               fontSize: 13,
               fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
             ),
+            child: Center(child: Text(label)),
           ),
-        ),
+        ],
       ),
     );
   }

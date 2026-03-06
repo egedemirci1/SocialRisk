@@ -50,7 +50,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
     final user = ref.watch(currentUserProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       body: playersAsync.when(
         data: (players) {
           final sorted = List.of(players)

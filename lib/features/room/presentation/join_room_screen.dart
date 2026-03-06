@@ -76,7 +76,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
       isLoading: _isJoining,
       message: 'Sahneye bağlanılıyor...',
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text(
           'Partiye Katıl',

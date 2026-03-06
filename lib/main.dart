@@ -12,6 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
 
 import 'package:social_risk/core/providers/lifecycle_provider.dart';
+import 'package:social_risk/shared/widgets/common/themed_background.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +66,9 @@ class SocialRiskApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       routerConfig: appRouter,
+      builder: (context, child) {
+        return ThemedBackground(child: child!);
+      },
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

@@ -93,7 +93,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
       data: (game) {
         if (game == null) {
           return const Scaffold(
-            backgroundColor: AppColors.background,
+            backgroundColor: Colors.transparent,
             body: Center(child: CircularProgressIndicator()),
           );
         }
@@ -146,7 +146,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
         }
 
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
             title: Text(
               'ELEŞTİRİ & OYLAMA',
@@ -295,7 +295,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
         );
       },
       loading: () => const Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         body: TheaterLoadingScreen(message: 'Skor Hesaplanıyor...'),
       ),
       error: (e, _) => Scaffold(

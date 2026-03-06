@@ -54,7 +54,7 @@ class _DifficultyChoiceScreenState
       data: (game) {
         if (game == null) {
           return const Scaffold(
-            backgroundColor: AppColors.background,
+            backgroundColor: Colors.transparent,
             body: Center(child: Text('Oyun bulunamadı')),
           );
         }

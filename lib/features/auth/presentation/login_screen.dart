@@ -10,6 +10,7 @@ import '../data/firebase_user_source.dart';
 import '../domain/user_entity.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/utils/pending_toast.dart';
+import '../../../shared/widgets/common/social_risk_logo.dart';
 
 /// Login ekranı — Tiyatro Temalı
 class LoginScreen extends ConsumerStatefulWidget {
@@ -125,7 +126,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       isLoading: _isAnonymousLoading || _isGoogleLoading || _isAppleLoading,
       message: 'Partiye giriş yapılıyor...',
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         body: FadeTransition(
           opacity: _fadeAnimation,
           child: Stack(
@@ -175,30 +176,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   }
 
   Widget _buildHeader() {
-    return Column(
+    return const Column(
       children: [
-        SizedBox(
-          width: double.infinity,
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              'Social Risk',
-              style: GoogleFonts.poppins(
-                fontSize: 56,
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.0,
-                shadows: const [
-                  Shadow(offset: Offset(-2, -2), color: Colors.black87),
-                  Shadow(offset: Offset(2, -2), color: Colors.black87),
-                  Shadow(offset: Offset(2, 2), color: Colors.black87),
-                  Shadow(offset: Offset(-2, 2), color: Colors.black87),
-                  Shadow(offset: Offset(0, 8), color: Colors.black54, blurRadius: 10),
-                ],
-              ),
-            ),
-          ),
-        ),
+        SocialRiskLogo(height: 180),
       ],
     );
   }

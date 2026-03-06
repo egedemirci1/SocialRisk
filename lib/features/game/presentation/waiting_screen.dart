@@ -114,7 +114,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
       data: (game) {
         if (game == null) {
           return const Scaffold(
-            backgroundColor: AppColors.background,
+            backgroundColor: Colors.transparent,
             body: Center(child: CircularProgressIndicator()),
           );
         }
@@ -139,7 +139,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
         final playerName = currentPlayer?.name ?? 'Ayrılan Oyuncu';
 
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: Colors.transparent,
           appBar: AppBar(
             leading: ExitRoomButton(roomCode: widget.roomCode),
             backgroundColor: Colors.transparent,
@@ -240,11 +240,11 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
         );
       },
       loading: () => const Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         body: TheaterLoadingScreen(message: 'Parti Hazırlanıyor...'),
       ),
       error: (e, _) => Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         body: Center(child: Text('Hata: $e')),
       ),
     );

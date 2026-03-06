@@ -14,6 +14,7 @@ import '../../auth/domain/user_entity.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/utils/pending_toast.dart';
+import '../../../shared/widgets/common/social_risk_logo.dart';
 
 /// Ana menü ekranı — Tiyatro Temalı
 class HomeScreen extends ConsumerStatefulWidget {
@@ -161,7 +162,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final cosmetics = cosmeticsAsync.value ?? [];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -204,6 +205,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: Column(
                     children: [
+                      const SizedBox(height: 20),
+                      const SocialRiskLogo(height: 80),
                       const Spacer(flex: 2),
                   _buildWelcome(
                     context,

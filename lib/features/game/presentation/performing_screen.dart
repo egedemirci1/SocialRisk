@@ -79,7 +79,7 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
           'GÖSTERİ BAŞLADI',
@@ -212,7 +212,7 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
           );
         },
         loading: () => Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: Colors.transparent,
           body: const TheaterLoadingScreen(message: 'Oyuncu Bekleniyor...'),
         ),
         error: (e, _) => Center(child: Text('Hata: $e')),
