@@ -24,7 +24,7 @@ class UserEntity {
     this.walletPoints = 0,
     this.rank = 'Çırak',
     this.ownedCosmetics = const [],
-    this.ownedCategories = GameConstants.defaultCategories,
+    this.ownedCategories = GameConstants.defaultCategoriesConst,
     this.activeFrame,
     this.activeTitle,
   });

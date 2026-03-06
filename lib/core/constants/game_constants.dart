@@ -15,6 +15,18 @@ class GameConstants {
   /// Varsayılan kategoriler — CategoryConstants'tan tek kaynak (SSoT)
   static List<String> get defaultCategories => CategoryConstants.defaultCategoryNames;
 
+  /// Const varsayılan liste (constructor default param için; içerik defaultCategories ile aynı)
+  static const List<String> defaultCategoriesConst = [
+    'Fiziksel',
+    'Bilgi',
+    'Dijital',
+    'İtiraf',
+    'Zihinsel',
+    'Ahlaki',
+    'Görsel',
+    'Mahrem',
+  ];
+
   /// Zorluk seviyeleri
   static const List<String> defaultDifficulties = ['easy', 'medium', 'hard'];
 

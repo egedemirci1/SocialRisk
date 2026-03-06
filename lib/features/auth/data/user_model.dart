@@ -21,7 +21,7 @@ class UserModel {
     this.walletPoints = 0,
     this.rank = 'Newbie',
     this.ownedCosmetics = const [],
-    this.ownedCategories = GameConstants.defaultCategories,
+    this.ownedCategories = GameConstants.defaultCategoriesConst,
     this.activeFrame,
     this.activeTitle,
     required this.updatedAt,
