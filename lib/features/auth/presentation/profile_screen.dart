@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../auth/domain/user_entity.dart';
+import '../../../shared/utils/toast_utils.dart';
+import '../../../shared/utils/toast_utils.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../economy/providers/economy_provider.dart';
@@ -34,10 +36,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         content: TextField(
           controller: controller,
+          maxLength: 24,
           style: const TextStyle(color: Colors.white),
           decoration: const InputDecoration(
             labelText: 'Yeni Sahne Adı',
             labelStyle: TextStyle(color: Colors.white70),
+            counterStyle: TextStyle(color: Colors.white54),
           ),
         ),
         actions: [
@@ -54,11 +58,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
     );
 
-    if (newName != null && newName.isNotEmpty && mounted) {
-      final updatedUser = user.copyWith(displayName: newName);
-      await ref
-          .read(userControllerProvider.notifier)
-          .updateUserProfile(updatedUser);
+    if (newName != null && mounted) {
+      final name = newName.trim();
+      final nameRegex = RegExp(r'^[a-zA-Z0-9ığüşöçİĞÜŞÖÇ ]+$');
+      
+      if (name.length >= 3 && nameRegex.hasMatch(name)) {
+        final updatedUser = user.copyWith(displayName: name);
+        await ref
+            .read(userControllerProvider.notifier)
+            .updateUserProfile(updatedUser);
+        if (mounted) ToastUtils.showSuccess(context, 'Profil güncellendi!');
+      } else {
+        ToastUtils.showError(context, 'Lütfen geçerli bir isim giriniz! (En az 3 karakter, sadece harf ve sayı)');
+      }
     }
   }
 
@@ -92,12 +104,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Hata: ${e.toString()}'),
-              backgroundColor: AppColors.primary,
-            ),
-          );
+          ToastUtils.showError(context, 'Hata: ${e.toString()}');
         }
       } finally {
         if (mounted) setState(() => _isUploading = false);
@@ -116,11 +123,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Sahne Arkası',
-          style: GoogleFonts.playfairDisplay(
+          'Profilinizi Düzenleyin',
+          style: GoogleFonts.poppins(
             fontWeight: FontWeight.w900,
             color: AppColors.accent,
-            letterSpacing: 1.5,
+            letterSpacing: 1.0,
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -191,12 +198,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: Row(
         children: [
           _TabItem(
-            title: 'Aktör',
+            title: 'Profil',
             isSelected: _selectedTabIndex == 0,
             onTap: () => setState(() => _selectedTabIndex = 0),
           ),
           _TabItem(
-            title: 'Gardırop',
+            title: 'Eşyalar',
             isSelected: _selectedTabIndex == 1,
             onTap: () => setState(() => _selectedTabIndex = 1),
           ),
@@ -288,29 +295,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       orElse: () => null,
                     );
                     if (activeTitleItem == null) return const SizedBox.shrink();
-                    return Container(
-                      margin: const EdgeInsets.only(top: 8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: AppColors.accentGradient.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: AppColors.accent.withValues(alpha: 0.3),
+                      return Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
                         ),
-                      ),
-                      child: Text(
-                        activeTitleItem.name,
-                        style: GoogleFonts.playfairDisplay(
-                          color: AppColors.accent,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 2,
+                        decoration: BoxDecoration(
+                          gradient: AppColors.accentGradient.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: AppColors.accent.withValues(alpha: 0.3),
+                          ),
                         ),
-                      ),
-                    );
+                        child: Text(
+                          activeTitleItem.name,
+                          style: GoogleFonts.nunito(
+                            color: AppColors.accent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      );
                   },
                   loading: () => const SizedBox.shrink(),
                   error: (_, _) => const SizedBox.shrink(),
@@ -359,8 +366,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(40.0),
                   child: Text(
-                    'Henüz bir kostümünüz yok.\nMağazaya göz atmak ister misiniz?',
-                    style: GoogleFonts.libreBaskerville(color: Colors.white38),
+                    'Henüz bir eşyanız yok.\nMağazadaki harika içeriklere göz atmak ister misiniz?',
+                    style: GoogleFonts.nunito(
+                      color: Colors.white38,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -539,12 +550,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Sahne Kayıtları',
-          style: GoogleFonts.playfairDisplay(
+          'İstatistikler',
+          style: GoogleFonts.poppins(
             color: AppColors.accent,
             fontSize: 18,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.5,
+            fontWeight: FontWeight.w800,
           ),
         ),
         const Divider(color: Colors.white10),
@@ -555,30 +565,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             return Column(
               children: [
                 _StatRow(
-                  icon: Icons.confirmation_number_rounded,
-                  label: 'Bilet Bakiye',
+                  icon: Icons.monetization_on_rounded,
+                  label: 'Bakiye',
                   value: '${p?.walletPoints ?? 0}',
                 ),
                 const SizedBox(height: 12),
                 _StatRow(
                   icon: Icons.workspace_premium_rounded,
                   label: 'Rütbe',
-                  value: p?.rank ?? 'Newbie',
+                  value: p?.rank ?? 'Çırak',
                 ),
                 const SizedBox(height: 12),
                 _StatRow(
                   icon: Icons.style_rounded,
                   label: 'Koleksiyon',
                   value: '${p?.ownedCosmetics.length ?? 0} ürün',
-                ),
-                const SizedBox(height: 32),
-                StageButton(
-                  label: 'Sahneden İn (Çıkış Yap)',
-                  icon: Icons.logout_rounded,
-                  backgroundColor: AppColors.error.withValues(alpha: 0.1),
-                  textColor: AppColors.error,
-                  borderColor: AppColors.error.withValues(alpha: 0.5),
-                  onPressed: () => _handleSignOut(context, ref),
                 ),
               ],
             );
@@ -602,40 +603,46 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: AppColors.surface,
-          title: Row(
+          titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+          title: Column(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: AppColors.error),
-              const SizedBox(width: 8),
+              const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 40),
+              const SizedBox(height: 10),
               Text(
                 'DİKKAT!',
-                style: GoogleFonts.playfairDisplay(
+                style: GoogleFonts.poppins(
                   color: AppColors.error,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 20,
                 ),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
-          content: Text(
-            'Şu anda Misafir olarak oynuyorsunuz. Çıkış yaparsanız puanlarınız, '
-            'rütbeniz ve tüm kozmetikleriniz KALICI OLARAK silinecektir '
-            've bir daha geri döndürülemez!\n\nYine de çıkış yapmak istiyor musunuz?',
-            style: const TextStyle(color: Colors.white),
+          content: const Text(
+            'Misafir olarak oynuyorsun. Çıkış yaparsan puan, rütbe ve kozmetikler kalıcı olarak silinir.\n\nYine de çıkmak istiyor musun?',
+            style: TextStyle(color: Colors.white70),
+            textAlign: TextAlign.center,
           ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
+          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text(
-                'İPTAL',
-                style: TextStyle(color: Colors.white54),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Colors.white38),
+                foregroundColor: Colors.white54,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('HAYIR', style: GoogleFonts.nunito(fontWeight: FontWeight.w800)),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text(
-                'EVET, SİLİNSİN',
-                style: TextStyle(color: Colors.white),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
+              onPressed: () => Navigator.pop(context, true),
+              child: Text('SİL VE ÇIK', style: GoogleFonts.nunito(color: Colors.white, fontWeight: FontWeight.w800)),
             ),
           ],
         ),
@@ -651,12 +658,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Çıkış yapılamadı: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        ToastUtils.showError(context, 'Çıkış yapılamadı: $e');
       }
     }
   }
@@ -741,11 +743,10 @@ class _TabItem extends StatelessWidget {
           child: Center(
             child: Text(
               title,
-              style: GoogleFonts.playfairDisplay(
-                color: isSelected ? Colors.white : Colors.white54,
-                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
-                fontSize: 10,
-                letterSpacing: 1,
+              style: GoogleFonts.nunito(
+                color: isSelected ? AppColors.background : Colors.white54,
+                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                fontSize: 13,
               ),
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/admin_provider.dart';
+import '../../../shared/utils/toast_utils.dart';
 
 /// Yönetmen (Admin) Paneli — Tiyatro Temalı
 class AdminDashboardScreen extends ConsumerWidget {
@@ -36,46 +37,15 @@ class AdminDashboardScreen extends ConsumerWidget {
             icon: const Icon(Icons.download_rounded, color: AppColors.accent),
             tooltip: 'Klasik Senaryoları Ekle',
             onPressed: () async {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Senaryolar ekleniyor...')),
-              );
+              ToastUtils.showInfo(context, 'Senaryolar ekleniyor...');
               try {
                 await ref.read(adminControllerProvider.notifier).seedTasks();
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Repertuar güncellendi!')),
-                  );
+                  ToastUtils.showSuccess(context, 'Repertuar güncellendi!');
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Hata: $e')));
-                }
-              }
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.storefront_rounded, color: AppColors.accent),
-            tooltip: 'Gardırobu Doldur',
-            onPressed: () async {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Eşyalar ekleniyor...')),
-              );
-              try {
-                await ref
-                    .read(adminControllerProvider.notifier)
-                    .seedCosmetics();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Gardırop güncellendi!')),
-                  );
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Hata: $e')));
+                  ToastUtils.showError(context, 'Hata: $e');
                 }
               }
             },

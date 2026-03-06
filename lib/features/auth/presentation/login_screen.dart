@@ -2,11 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../shared/widgets/common/loading_overlay.dart';
 import '../providers/auth_provider.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../core/constants/app_colors.dart';
 import '../data/firebase_user_source.dart';
 import '../domain/user_entity.dart';
+import '../../../shared/utils/toast_utils.dart';
+import '../../../shared/utils/pending_toast.dart';
 
 /// Login ekranı — Tiyatro Temalı
 class LoginScreen extends ConsumerStatefulWidget {
@@ -49,14 +52,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 
   Future<void> _signInAnonymously() async {
     final name = _nameController.text.trim();
+    final nameRegex = RegExp(r'^[a-zA-Z0-9ığüşöçİĞÜŞÖÇ ]+$');
+    
     if (name.isEmpty) {
       _showError('Lütfen sahne adınızı belirleyin');
       return;
     }
+    if (name.length < 3) {
+      _showError('İsim en az 3 karakter olmalıdır');
+      return;
+    }
+    if (!nameRegex.hasMatch(name)) {
+      _showError('Sadece harf ve rakam kullanın');
+      return;
+    }
+    
     setState(() => _isAnonymousLoading = true);
     try {
+      PendingToast.instance.setSuccess('Anonim olarak giriş yapıldı');
       await ref.read(authControllerProvider.notifier).signIn(name);
     } catch (e) {
+      PendingToast.instance.consume(); // clear the pending toast if login failed
       if (mounted) _showError('Giriş başarısız: $e');
     } finally {
       if (mounted) setState(() => _isAnonymousLoading = false);
@@ -83,8 +99,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         await userSource.createUserProfile(
           UserEntity(uid: cred.user!.uid, displayName: displayName),
         );
+        PendingToast.instance.setSuccess('Giriş Başarılı');
       }
     } catch (e) {
+      PendingToast.instance.consume();
       if (mounted) _showError('Giriş başarısız: $e');
     } finally {
       if (mounted) {
@@ -98,18 +116,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 
   void _showError(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.primary),
-    );
+    ToastUtils.showInfo(context, message);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: Stack(
+    return LoadingOverlay(
+      isLoading: _isAnonymousLoading || _isGoogleLoading || _isAppleLoading,
+      message: 'Partiye giriş yapılıyor...',
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Stack(
           children: [
             // Yeni Parti Işıklandırması
             Positioned(
@@ -142,13 +161,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       _buildLoginCard(),
                       const SizedBox(height: 32),
                       _buildSocialSection(),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   );

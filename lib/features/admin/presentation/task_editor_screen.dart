@@ -5,6 +5,7 @@ import '../domain/task_item_entity.dart';
 import '../providers/admin_provider.dart';
 import '../../../shared/models/enums.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/utils/toast_utils.dart';
 
 /// Senaryo Editörü — Tiyatro Temalı
 class TaskEditorScreen extends ConsumerStatefulWidget {
@@ -57,12 +58,13 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
       } else {
         await notifier.updateTask(task);
       }
-      if (mounted) Navigator.pop(context);
+      if (mounted) {
+        ToastUtils.showSuccess(context, widget.taskToEdit == null ? 'Senaryo eklendi!' : 'Senaryo güncellendi!');
+        Navigator.pop(context);
+      }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Hata: $e')));
+        ToastUtils.showError(context, 'Hata: $e');
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -97,9 +99,11 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
               TextFormField(
                 initialValue: _content,
                 maxLines: 4,
+                maxLength: 200,
                 decoration: InputDecoration(
                   fillColor: AppColors.surface,
                   filled: true,
+                  counterStyle: GoogleFonts.libreBaskerville(color: Colors.white54),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,

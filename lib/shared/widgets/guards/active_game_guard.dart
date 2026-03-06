@@ -5,6 +5,7 @@ import '../../../features/room/providers/room_provider.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/models/enums.dart';
+import '../../utils/toast_utils.dart';
 
 /// Dinler ve eğer odadaki oyuncu sayısı 2'nin altına düşerse
 /// kullanıcıyı ana ekrana (lobi/home) atar.
@@ -46,13 +47,9 @@ class ActiveGameGuard extends ConsumerWidget {
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Oyuncu sayısı yetersiz kaldığı için oyun sona erdi.',
-                ),
-                backgroundColor: AppColors.primary,
-              ),
+            ToastUtils.showError(
+              context,
+              'Oyuncu sayısı yetersiz kaldığı için oyun sona erdi.',
             );
 
             // Kalan o son kişiyi de odadan çıkartıyoruz

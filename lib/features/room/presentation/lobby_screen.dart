@@ -15,6 +15,7 @@ import '../../../shared/models/enums.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/utils/toast_utils.dart';
 
 /// Fuaye (Lobi) Ekranı — Tiyatro Temalı
 class LobbyScreen extends ConsumerStatefulWidget {
@@ -36,11 +37,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
         // Oda silinmiş (Muhtemelen host çıktığı için)
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Ev sahibi odadan ayrıldığı için oda kapatıldı.'),
-              ),
-            );
+            ToastUtils.showError(context, 'Ev sahibi odadan ayrıldığı için oda kapatıldı.');
             context.go('/home');
           }
         });
@@ -208,9 +205,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
               icon: const Icon(Icons.copy_rounded, color: AppColors.accent),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: widget.roomCode));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Kod kopyalandı!')),
-                );
+                ToastUtils.showSuccess(context, 'Kod kopyalandı!');
               },
             ),
           ],
@@ -284,9 +279,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                             }
                           } catch (e) {
                             if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Hata: $e')),
-                              );
+                              ToastUtils.showError(context, 'Hata: $e');
                             }
                           }
                         }

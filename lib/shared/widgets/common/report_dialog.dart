@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../features/auth/providers/user_provider.dart';
+import '../../utils/toast_utils.dart';
 
 class ReportDialog {
   static Future<void> show(
@@ -84,17 +85,11 @@ class ReportDialog {
               reason: selectedReason,
             );
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Kullanıcı raporlandı. İnceleyeceğiz.'),
-            ),
-          );
+          ToastUtils.showSuccess(context, 'Kullanıcı raporlandı. İnceleyeceğiz.');
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Raporlanırken hata oluştu.')),
-          );
+          ToastUtils.showError(context, 'Raporlanırken hata oluştu.');
         }
       }
     }

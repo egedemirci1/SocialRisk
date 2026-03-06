@@ -22,7 +22,7 @@ class UserEntity {
     required this.displayName,
     this.avatarUrl,
     this.walletPoints = 0,
-    this.rank = 'Newbie',
+    this.rank = 'Çırak',
     this.ownedCosmetics = const [],
     this.ownedCategories = GameConstants.defaultCategories,
     this.activeFrame,

@@ -304,50 +304,100 @@ class _WheelPainter extends CustomPainter {
     final radius = size.width / 2;
     final sliceAngle = 2 * pi / categories.length;
 
+    // Dış halka parlaması (subtle outer glow)
+    final outerGlowPaint = Paint()
+      ..color = AppColors.primary.withValues(alpha: 0.15)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 10);
+    canvas.drawCircle(center, radius, outerGlowPaint);
+
     for (int i = 0; i < categories.length; i++) {
-      final startAngle = i * sliceAngle - pi / 2; // -π/2 to start from top
+      final startAngle = i * sliceAngle - pi / 2;
       final cat = categories[i];
 
-      // Dilim
-      final paint = Paint()
-        ..color = cat.color.withValues(alpha: 0.85)
-        ..style = PaintingStyle.fill;
+      // Dilim Gradient
+      final slicePath = Path()
+        ..moveTo(center.dx, center.dy)
+        ..arcTo(
+          Rect.fromCircle(center: center, radius: radius),
+          startAngle,
+          sliceAngle,
+          false,
+        )
+        ..close();
 
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        startAngle,
-        sliceAngle,
-        true,
-        paint,
-      );
+      final sliceGradient = RadialGradient(
+        center: Alignment.center,
+        radius: 1.0,
+        colors: [
+          cat.color.withValues(alpha: 0.95),
+          cat.color.withValues(alpha: 0.7),
+        ],
+        stops: const [0.4, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: radius));
 
-      // Dilim kenarlık
+      final paint = Paint()..shader = sliceGradient;
+      canvas.drawPath(slicePath, paint);
+
+      // Dilim kenarlık (ince ve şık)
       final borderPaint = Paint()
-        ..color = Colors.white.withValues(alpha: 0.2)
+        ..color = Colors.white.withValues(alpha: 0.15)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5;
+        ..strokeWidth = 1.0;
+      canvas.drawPath(slicePath, borderPaint);
 
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        startAngle,
-        sliceAngle,
-        true,
-        borderPaint,
-      );
-
-      // Kategori ismi — dilimin ortasına
+      // Metin ve İkon yerleşimi
       final midAngle = startAngle + sliceAngle / 2;
-      final textRadius = radius * 0.62;
+      
+      // İkon (Daha dışarıda)
+      final iconRadius = radius * 0.75;
+      final iconX = center.dx + iconRadius * cos(midAngle);
+      final iconY = center.dy + iconRadius * sin(midAngle);
+
+      final iconPainter = TextPainter(
+        text: TextSpan(
+          text: String.fromCharCode(cat.icon.codePoint),
+          style: TextStyle(
+            fontSize: 24,
+            fontFamily: cat.icon.fontFamily,
+            package: cat.icon.fontPackage,
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                color: Colors.black.withValues(alpha: 0.5),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      canvas.save();
+      canvas.translate(iconX, iconY);
+      canvas.rotate(midAngle + pi / 2);
+      iconPainter.paint(
+        canvas,
+        Offset(-iconPainter.width / 2, -iconPainter.height / 2),
+      );
+      canvas.restore();
+
+      // Kategori ismi (Daha içeride)
+      final textRadius = radius * 0.45;
       final textX = center.dx + textRadius * cos(midAngle);
       final textY = center.dy + textRadius * sin(midAngle);
 
       final textPainter = TextPainter(
         text: TextSpan(
           text: cat.name,
-          style: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
+          style: GoogleFonts.nunito(
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
             color: Colors.white,
+            letterSpacing: 0.5,
+            shadows: [
+              const Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 1)),
+            ],
           ),
         ),
         textDirection: TextDirection.ltr,
@@ -363,19 +413,47 @@ class _WheelPainter extends CustomPainter {
       canvas.restore();
     }
 
-    // Merkez daire
+    // Merkez göbek (Premium Glassmorphism / Metalic Hub)
+    final hubRadius = radius * 0.22;
+    
+    // Hub Gölgesi
     canvas.drawCircle(
       center,
-      radius * 0.18,
-      Paint()..color = AppColors.surfaceElevated,
-    );
-    canvas.drawCircle(
-      center,
-      radius * 0.18,
+      hubRadius + 2,
       Paint()
-        ..color = Colors.white.withValues(alpha: 0.3)
+        ..color = Colors.black.withValues(alpha: 0.3)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
+    );
+
+    // Hub Arka Plan (Metalik Gradient)
+    final hubGradient = LinearGradient(
+      colors: [
+        Colors.white.withValues(alpha: 0.9),
+        Colors.white.withValues(alpha: 0.4),
+        Colors.white.withValues(alpha: 0.7),
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    ).createShader(Rect.fromCircle(center: center, radius: hubRadius));
+
+    canvas.drawCircle(center, hubRadius, Paint()..shader = hubGradient);
+    
+    // Hub İç Halkası
+    canvas.drawCircle(
+      center,
+      hubRadius * 0.7,
+      Paint()
+        ..color = AppColors.background.withValues(alpha: 0.8)
+        ..style = PaintingStyle.fill,
+    );
+
+    canvas.drawCircle(
+      center,
+      hubRadius,
+      Paint()
+        ..color = Colors.white.withValues(alpha: 0.5)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+        ..strokeWidth = 1.5,
     );
   }
 

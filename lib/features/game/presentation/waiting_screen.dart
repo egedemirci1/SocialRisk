@@ -12,6 +12,7 @@ import 'widgets/turn_counter_badge.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
+import '../../../shared/utils/toast_utils.dart';
 
 /// Bekleme ekranı — Tiyatro Temalı
 class WaitingScreen extends ConsumerStatefulWidget {
@@ -67,11 +68,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
         // Oyun silinmiş veya hata oluşmuş (Muhtemelen host çıktığı için)
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Oyun sona erdi veya ev sahibi ayrıldı.'),
-              ),
-            );
+            ToastUtils.showError(context, 'Oyun sona erdi veya ev sahibi ayrıldı.');
             context.go('/home');
           }
         });

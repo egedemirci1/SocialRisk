@@ -8,6 +8,7 @@ import '../providers/game_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../../../shared/models/enums.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
+import '../../../shared/utils/toast_utils.dart';
 
 /// Kategori belirlendikten sonra oyuncunun zorluk seçtiği ekran — Tiyatro Temalı
 class DifficultyChoiceScreen extends ConsumerStatefulWidget {
@@ -38,9 +39,7 @@ class _DifficultyChoiceScreenState
           .chooseDifficulty(gameId: widget.gameId, difficulty: difficulty);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Hata: $e')));
+        ToastUtils.showError(context, 'Hata: $e');
         setState(() => _isLoading = false);
       }
     }

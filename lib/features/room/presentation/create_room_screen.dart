@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/models/enums.dart';
+import '../../../shared/widgets/common/loading_overlay.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/game_constants.dart';
 
 /// Sahne Kurma Ekranı — Tiyatro Temalı
@@ -63,9 +65,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Hata: ${e.toString()}')));
+        ToastUtils.showError(context, 'Hata: ${e.toString()}');
       }
     } finally {
       if (mounted) setState(() => _isCreating = false);
@@ -74,10 +74,13 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(
+    return LoadingOverlay(
+      isLoading: _isCreating,
+      message: 'Sahne kuruluyor...',
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          title: Text(
           'Yeni Parti Kur',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w900,
@@ -168,6 +171,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           ),
         ),
       ),
+     ),
     );
   }
 
@@ -505,11 +509,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 if (_selectedCategories.length > 2) {
                   _selectedCategories.remove(category);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('En az 2 kategori seçmelisiniz.'),
-                    ),
-                  );
+                  ToastUtils.showWarning(context, 'En az 2 kategori seçmelisiniz.');
                 }
               } else {
                 _selectedCategories.add(category);

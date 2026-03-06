@@ -8,6 +8,7 @@ import '../../economy/providers/economy_provider.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
+import '../../../shared/utils/toast_utils.dart';
 
 /// Gişe ve Kulis (Mağaza) Ekranı — Tiyatro Temalı
 class StoreScreen extends ConsumerStatefulWidget {
@@ -31,26 +32,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           .read(economyControllerProvider.notifier)
           .buyCosmetic(uid: uid, cosmeticId: item.id, price: item.price);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${item.name} artık gardırobunuzda!',
-            style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Colors.green.shade800,
-        ),
-      );
+      ToastUtils.showSuccess(context, '${item.name} artık gardırobunuzda!');
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Hata: ${e.toString().replaceAll('Exception: ', '')}',
-            style: GoogleFonts.playfairDisplay(fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: AppColors.primary,
-        ),
-      );
+      ToastUtils.showError(context, 'Hata: ${e.toString().replaceAll('Exception: ', '')}');
     }
   }
 
@@ -158,18 +143,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 .read(economyControllerProvider.notifier)
                 .addPointsToWallet(uid: uid, points: 500);
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '+500 bilet eklendi!',
-                    style: GoogleFonts.playfairDisplay(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  backgroundColor: Colors.green.shade800,
-                  duration: const Duration(seconds: 1),
-                ),
-              );
+              ToastUtils.showSuccess(context, '+500 altın eklendi!');
             }
           },
           child: Container(
@@ -196,8 +170,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           child: Row(
             children: [
               const Icon(
-                Icons.confirmation_number_rounded,
-                color: AppColors.accent,
+                Icons.monetization_on_rounded,
+                color: AppColors.primary,
                 size: 16,
               ),
               const SizedBox(width: 8),
@@ -524,17 +498,17 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
-                      Icons.confirmation_number_rounded,
-                      color: Colors.white70,
-                      size: 10,
+                      Icons.monetization_on_rounded,
+                      color: AppColors.primary,
+                      size: 12,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '${item.price}',
-                      style: GoogleFonts.playfairDisplay(
+                      style: GoogleFonts.nunito(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
-                        fontSize: 11,
+                        fontSize: 12,
                       ),
                     ),
                   ],

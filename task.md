@@ -63,6 +63,13 @@ Bu liste Ata ve Ege'nin paralel çalışabilmesi için fazlara ayrılmıştır.
 - [ ] **Lobi & Oyun Ekranları:** Kalan tüm ekranlardaki eski tırnaklı fontların ve kahverengi tonların temizlenmesi.
 - [ ] **Responsive İnce Ayar:** Tablet ve web görünümünde içeriklerin çok yayılmaması için `ConstrainedBox` kontrollerinin yaygınlaştırılması.
 
+### 🔔 Hata Yönetimi & Bildirimler (Toaster)
+- [x] Merkezi ToastUtils yapısının kurulması ve tüm ScaffoldMessenger.showSnackBar yapısının buna taşınması (Ege) <!-- id: 14 -->
+- [x] Toast bildirimlerinin sağ üste taşınması ve Overlay yapısına geçilmesi (Ege) <!-- id: 17 -->
+- [x] Giriş ekranında en az 3 karakter kontrolü eklenmesi (Ege) <!-- id: 18 -->
+- [x] Toast tasarımlarının (Success, Error, Warning, Info) yapılması (Ege) <!-- id: 15 -->
+- [x] Tüm sayfalardaki (Login, Profile, Room, Admin, Game vb.) snackbar çağrılarının ToastUtils ile değiştirilmesi (Ege) <!-- id: 16 -->
+
 ---
 
 > [!NOTE]

@@ -11,6 +11,7 @@ import '../../room/providers/room_provider.dart';
 import '../../../shared/widgets/buttons/leave_room_button.dart';
 import '../providers/game_provider.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../../shared/utils/toast_utils.dart';
 
 /// Ekonomi modu — Kategori seçim ekranı (Tiyatro Temalı).
 class EconomyPickScreen extends ConsumerStatefulWidget {
@@ -45,9 +46,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
           );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Hata: $e')));
+        ToastUtils.showError(context, 'Hata: $e');
       }
     } finally {
       if (mounted) setState(() => _isPicking = false);

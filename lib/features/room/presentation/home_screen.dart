@@ -6,19 +6,133 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../shared/utils/toast_utils.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../admin/providers/admin_provider.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../auth/domain/user_entity.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/utils/pending_toast.dart';
 
 /// Ana menü ekranı — Tiyatro Temalı
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final pending = PendingToast.instance.consume();
+      if (pending != null) {
+        final (msg, isSuccess) = pending;
+        if (isSuccess) {
+          ToastUtils.showSuccess(context, msg);
+        } else {
+          ToastUtils.showError(context, msg);
+        }
+      }
+    });
+  }
+
+  void _showSettingsSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.white24,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Ayarlar',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ListTile(
+                  leading: const Icon(Icons.person_outline_rounded, color: AppColors.accent),
+                  title: Text('Profil', style: GoogleFonts.nunito(color: Colors.white, fontWeight: FontWeight.w700)),
+                  subtitle: Text('Adı ve fotoğrafı düzenle', style: GoogleFonts.nunito(color: Colors.white54, fontSize: 12)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/profile');
+                  },
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.confirmation_number_rounded, color: AppColors.accent),
+                  title: Text('Mağaza', style: GoogleFonts.nunito(color: Colors.white, fontWeight: FontWeight.w700)),
+                  subtitle: Text('Kozmetikler ve içerikler', style: GoogleFonts.nunito(color: Colors.white54, fontSize: 12)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/store');
+                  },
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.menu_book_rounded, color: AppColors.accent),
+                  title: Text('İçeriklerim', style: GoogleFonts.nunito(color: Colors.white, fontWeight: FontWeight.w700)),
+                  subtitle: Text('Kendi içeriklerini yönet', style: GoogleFonts.nunito(color: Colors.white54, fontSize: 12)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/custom-deck');
+                  },
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                const Divider(color: Colors.white12),
+                ListTile(
+                  leading: const Icon(Icons.logout_rounded, color: AppColors.error),
+                  title: Text(
+                    'Çıkış Yap',
+                    style: GoogleFonts.nunito(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _handleLogout(context, ref);
+                  },
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
     final userProfileAsync = user != null
         ? ref.watch(watchUserProfileProvider(user.uid))
@@ -48,6 +162,23 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_outline_rounded, color: AppColors.accent),
+            onPressed: () => context.push('/profile'),
+            tooltip: 'Profil',
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined, color: AppColors.accent),
+            onPressed: () => _showSettingsSheet(context, ref),
+            tooltip: 'Ayarlar',
+          ),
+          const SizedBox(width: 4),
+        ],
+      ),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -175,18 +306,18 @@ class HomeScreen extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         StageButton(
-          label: 'Yeni Sahne Kur',
+          label: 'Yeni Parti Başlat',
           icon: Icons.add_circle_outline_rounded,
-          backgroundColor: AppColors.primary, // Mango Sarı
-          textColor: AppColors.background, // İç metin siyah/koyu (Kontrast)
+          backgroundColor: AppColors.primary,
+          textColor: AppColors.background,
           borderColor: Colors.transparent,
           onPressed: () => context.push('/create-room'),
         ),
         const SizedBox(height: 16),
         StageButton(
-          label: 'Gösteriye Katıl',
+          label: 'Partiye Katıl',
           icon: Icons.theater_comedy_rounded,
-          backgroundColor: AppColors.secondary, // Turkuaz
+          backgroundColor: AppColors.secondary,
           textColor: Colors.white,
           borderColor: Colors.transparent,
           onPressed: () => context.push('/join-room'),
@@ -232,86 +363,116 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFooter(BuildContext context, WidgetRef ref) {
-    return TextButton.icon(
-      onPressed: () async {
-        final user = ref.read(currentUserProvider);
-        if (user?.isAnonymous == true) {
-          final confirm = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              backgroundColor: AppColors.surface,
-              title: Row(
-                children: [
-                  const Icon(
-                    Icons.warning_amber_rounded,
-                    color: AppColors.error,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'DİKKAT!',
-                    style: GoogleFonts.playfairDisplay(
-                      color: AppColors.error,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+  Future<void> _handleLogout(BuildContext context, WidgetRef ref) async {
+    final user = ref.read(currentUserProvider);
+    if (user?.isAnonymous == true) {
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+          title: Column(
+            children: [
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: AppColors.error,
+                size: 40,
               ),
-              content: const Text(
-                'Şu anda Misafir olarak oynuyorsunuz. Çıkış yaparsanız puanlarınız, '
-                'rütbeniz ve tüm kozmetikleriniz KALICI OLARAK silinecektir '
-                've bir daha geri döndürülemez!\n\nYine de çıkış yapmak istiyor musunuz?',
-                style: TextStyle(color: Colors.white),
+              const SizedBox(height: 10),
+              Text(
+                'DİKKAT!',
+                style: GoogleFonts.poppins(
+                  color: AppColors.error,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 20,
+                ),
+                textAlign: TextAlign.center,
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text(
-                    'İPTAL',
-                    style: TextStyle(color: Colors.white54),
-                  ),
+            ],
+          ),
+          content: const Text(
+            'Misafir olarak oynuyorsun. Çıkış yaparsan puan, rütbe ve kozmetikler kalıcı olarak silinir.\n\nYine de çıkmak istiyor musun?',
+            style: TextStyle(color: Colors.white70),
+            textAlign: TextAlign.center,
+          ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
+          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          actions: [
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Colors.white38),
+                foregroundColor: Colors.white54,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.error,
-                  ),
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text(
-                    'EVET, SİLİNSİN',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
+              ),
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('HAYIR', style: GoogleFonts.nunito(fontWeight: FontWeight.w800)),
             ),
-          );
-
-          if (confirm != true) return;
-        }
-
-        try {
-          await ref.read(authControllerProvider.notifier).logout();
-          if (context.mounted) context.go('/login');
-        } catch (e) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Çıkış yapılamadı: $e'),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-            );
-          }
-        }
-      },
-      icon: const Icon(Icons.logout_rounded, color: AppColors.accent, size: 20),
-      label: Text(
-        'Perdeyi Kapat',
-        style: GoogleFonts.nunito(
-          color: AppColors.error,
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 1.0,
+              onPressed: () => Navigator.pop(context, true),
+              child: Text('SİL VE ÇIK', style: GoogleFonts.nunito(color: Colors.white, fontWeight: FontWeight.w800)),
+            ),
+          ],
         ),
-      ),
+      );
+
+      if (confirm != true) return;
+    }
+
+    try {
+      await ref.read(authControllerProvider.notifier).logout();
+      if (context.mounted) {
+        ToastUtils.showSuccess(context, 'Çıkış Başarılı');
+        await Future.delayed(const Duration(milliseconds: 600));
+        if (context.mounted) context.go('/login');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ToastUtils.showError(context, 'Çıkış yapılamadı: $e');
+      }
+    }
+  }
+
+  Widget _buildFooter(BuildContext context, WidgetRef ref) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        TextButton(
+          onPressed: () => context.push('/profile'),
+          child: Text(
+            'Profil',
+            style: GoogleFonts.nunito(
+              color: AppColors.accent,
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        Container(
+          height: 16,
+          width: 1,
+          color: Colors.white24,
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+        ),
+        TextButton(
+          onPressed: () => _showSettingsSheet(context, ref),
+          child: Text(
+            'Ayarlar',
+            style: GoogleFonts.nunito(
+              color: AppColors.accent,
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

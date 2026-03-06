@@ -17,6 +17,7 @@ import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
+import '../../../shared/utils/toast_utils.dart';
 
 /// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor (Tiyatro Temalı).
 class VotingScreen extends ConsumerStatefulWidget {
@@ -73,9 +74,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isProcessing = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Hata: $e')));
+        ToastUtils.showError(context, 'Hata: $e');
       }
     }
   }
