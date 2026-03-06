@@ -319,7 +319,7 @@ class _WheelPainter extends CustomPainter {
       final midAngle = startAngle + sliceAngle / 2;
       
       // İkon (Daha dışarıda)
-      final iconRadius = radius * 0.75;
+      final iconRadius = radius * 0.70;
       final iconX = center.dx + iconRadius * cos(midAngle);
       final iconY = center.dy + iconRadius * sin(midAngle);
 
@@ -353,7 +353,7 @@ class _WheelPainter extends CustomPainter {
       canvas.restore();
 
       // Kategori ismi (Daha içeride)
-      final textRadius = radius * 0.45;
+      final textRadius = radius * 0.42;
       final textX = center.dx + textRadius * cos(midAngle);
       final textY = center.dy + textRadius * sin(midAngle);
 
@@ -361,7 +361,7 @@ class _WheelPainter extends CustomPainter {
         text: TextSpan(
           text: cat.name,
           style: GoogleFonts.nunito(
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: FontWeight.w900,
             color: Colors.white,
             letterSpacing: 0.5,
@@ -373,9 +373,16 @@ class _WheelPainter extends CustomPainter {
         textDirection: TextDirection.ltr,
       )..layout();
 
+      // Ölçeklendirme (Overflow engelleme)
+      final maxContextWidth = radius * 0.45;
+      final scale = textPainter.width > maxContextWidth 
+          ? maxContextWidth / textPainter.width 
+          : 1.0;
+
       canvas.save();
       canvas.translate(textX, textY);
       canvas.rotate(midAngle + pi / 2);
+      canvas.scale(scale);
       textPainter.paint(
         canvas,
         Offset(-textPainter.width / 2, -textPainter.height / 2),

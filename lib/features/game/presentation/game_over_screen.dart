@@ -7,8 +7,9 @@ import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_text_styles.dart';
 
-/// Oyun sonu ekranı — Tiyatro Temalı
+/// Oyun sonu ekranı — Parti Temalı
 class GameOverScreen extends ConsumerStatefulWidget {
   const GameOverScreen({super.key, required this.roomCode});
 
@@ -70,10 +71,9 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                       const Text('🏆', style: TextStyle(fontSize: 72)),
                       const SizedBox(height: 16),
                       Text(
-                        'BAŞROLDE',
-                        style: GoogleFonts.playfairDisplay(
+                        'KAZANAN',
+                        style: AppTextStyles.labelSmall.copyWith(
                           color: AppColors.accent,
-                          fontSize: 16,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 4,
                         ),
@@ -81,19 +81,16 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                       const SizedBox(height: 8),
                       Text(
                         winner?.name.toUpperCase() ?? '',
-                        style: GoogleFonts.playfairDisplay(
+                        style: AppTextStyles.headlineMedium.copyWith(
                           color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
                           letterSpacing: 2,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         '${winner?.score ?? 0} ALKIŞ',
-                        style: GoogleFonts.playfairDisplay(
+                        style: AppTextStyles.titleLarge.copyWith(
                           color: AppColors.accent,
-                          fontSize: 24,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -112,10 +109,9 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'AKTÖR SIRALAMASI',
-                        style: GoogleFonts.playfairDisplay(
+                        'OYUNCU SIRALAMASI',
+                        style: AppTextStyles.labelSmall.copyWith(
                           color: Colors.white54,
-                          fontSize: 13,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1,
                         ),
@@ -161,14 +157,13 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                             ),
                             const SizedBox(width: 12),
                             Flexible(
-                              child: Text(
-                                '+$myScore Alkış Bakiyenize Eklendi',
-                                style: GoogleFonts.playfairDisplay(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
+                                child: Text(
+                                  '+$myScore Alkış Bakiyenize Eklendi',
+                                  style: AppTextStyles.titleMedium.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
-                              ),
                             ),
                           ],
                         ),
@@ -178,7 +173,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                         children: [
                           Expanded(
                             child: StageButton(
-                              label: 'FUAYEYE DÖN',
+                              label: 'LOBİYE DÖN',
                               icon: Icons.home_rounded,
                               backgroundColor: AppColors.surface,
                               textColor: Colors.white,

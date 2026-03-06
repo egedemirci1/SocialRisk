@@ -9,8 +9,9 @@ import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../../shared/utils/toast_utils.dart';
+import '../../../core/constants/app_text_styles.dart';
 
-/// Gişe ve Kulis (Mağaza) Ekranı — Tiyatro Temalı
+/// Mağaza Ekranı — Parti Temalı
 class StoreScreen extends ConsumerStatefulWidget {
   const StoreScreen({super.key});
 
@@ -58,8 +59,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
       appBar: AppBar(
         title: Text(
           'Mağaza',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.w900,
+          style: AppTextStyles.headlineMedium.copyWith(
             color: AppColors.accent,
             letterSpacing: 2,
           ),
@@ -88,7 +88,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             error: (err, stack) => Center(
               child: Text(
                 'Hata: $err',
-                style: GoogleFonts.playfairDisplay(color: AppColors.primary),
+                style: AppTextStyles.titleMedium.copyWith(color: AppColors.primary),
               ),
             ),
             data: (items) {
@@ -178,10 +178,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               userProfileAsync.when(
                 data: (profile) => Text(
                   '${profile?.walletPoints ?? 0}',
-                  style: GoogleFonts.playfairDisplay(
+                  style: AppTextStyles.titleMedium.copyWith(
                     color: AppColors.accent,
                     fontWeight: FontWeight.w900,
-                    fontSize: 14,
                   ),
                 ),
                 loading: () => const SizedBox(
@@ -227,12 +226,11 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 child: Center(
                   child: Text(
                     tabs[index],
-                    style: GoogleFonts.playfairDisplay(
+                    style: AppTextStyles.labelSmall.copyWith(
                       color: isSelected ? Colors.white : Colors.white54,
                       fontWeight: isSelected
                           ? FontWeight.w900
                           : FontWeight.w500,
-                      fontSize: 10,
                       letterSpacing: 1,
                     ),
                   ),
@@ -310,7 +308,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           ),
           const CosmeticItemEntity(
             id: 'scenario_mystery',
-            name: 'Gizemli Perde',
+            name: 'Gizemli Parti',
             description:
                 'Gerilim ve gizem temalı görevler ağırlıklı olarak çıkar.',
             imageUrl: '🔍',
@@ -345,9 +343,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               const SizedBox(height: 16),
               Text(
                 'Henüz sergilenecek ürün yok.',
-                style: GoogleFonts.libreBaskerville(
+                style: AppTextStyles.bodyMedium.copyWith(
                   color: Colors.white24,
-                  fontSize: 14,
                 ),
               ),
             ],
@@ -369,19 +366,16 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.playfairDisplay(
+                    style: AppTextStyles.headlineMedium.copyWith(
                       color: AppColors.accent,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
                       letterSpacing: 1.5,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: GoogleFonts.libreBaskerville(
+                    style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white30,
-                      fontSize: 10,
                     ),
                   ),
                 ],
@@ -438,10 +432,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               children: [
                 Text(
                   item.name,
-                  style: GoogleFonts.playfairDisplay(
+                  style: AppTextStyles.titleMedium.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
-                    fontSize: 13,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -449,9 +442,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 const SizedBox(height: 2),
                 Text(
                   item.description,
-                  style: GoogleFonts.libreBaskerville(
+                  style: AppTextStyles.labelSmall.copyWith(
                     color: Colors.white38,
-                    fontSize: 10,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -473,10 +465,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               ),
               child: Text(
                 'Sahip',
-                style: GoogleFonts.playfairDisplay(
+                style: AppTextStyles.labelSmall.copyWith(
                   color: AppColors.accent,
                   fontWeight: FontWeight.w900,
-                  fontSize: 10,
                   letterSpacing: 1,
                 ),
               ),

@@ -13,8 +13,9 @@ import 'widgets/turn_counter_badge.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
+import '../../../core/constants/app_text_styles.dart';
 
-/// Gösteri (Performing) Ekranı — Tiyatro Temalı
+/// Gösteri (Performing) Ekranı — Parti Temalı
 class PerformingScreen extends ConsumerStatefulWidget {
   const PerformingScreen({
     super.key,
@@ -82,8 +83,7 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
       appBar: AppBar(
         title: Text(
           'GÖSTERİ BAŞLADI',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.w900,
+          style: AppTextStyles.headlineMedium.copyWith(
             color: AppColors.accent,
             letterSpacing: 2,
           ),
@@ -140,9 +140,8 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                           children: [
                             Text(
                               isMyTurn ? 'SENARYONUZ:' : 'SERGİLENEN ROL:',
-                              style: GoogleFonts.playfairDisplay(
+                              style: AppTextStyles.labelSmall.copyWith(
                                 color: AppColors.accent,
-                                fontSize: 12,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 1,
                               ),
@@ -153,9 +152,8 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                               isClosed && !isMyTurn
                                   ? 'GİZLİ SENARYO'
                                   : (task?.content ?? 'Rol belirtilmemiş'),
-                              style: GoogleFonts.playfairDisplay(
+                              style: AppTextStyles.headlineMedium.copyWith(
                                 color: Colors.white,
-                                fontSize: 24,
                                 fontWeight: FontWeight.w900,
                               ),
                               textAlign: TextAlign.center,
@@ -167,9 +165,8 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                       if (isMyTurn) ...[
                         Text(
                           'Senaryoyu sergilediyseniz performansınızı bitirin.',
-                          style: GoogleFonts.libreBaskerville(
+                          style: AppTextStyles.bodyMedium.copyWith(
                             color: Colors.white54,
-                            fontSize: 13,
                             fontStyle: FontStyle.italic,
                           ),
                           textAlign: TextAlign.center,
@@ -190,10 +187,9 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                         ),
                         const SizedBox(height: 24),
                         Text(
-                          'Başaktörün performansını sergilemesi bekleniyor...',
-                          style: GoogleFonts.libreBaskerville(
+                          'Oyuncunun performansını sergilemesi bekleniyor...',
+                          style: AppTextStyles.bodyMedium.copyWith(
                             color: Colors.white54,
-                            fontSize: 13,
                             fontStyle: FontStyle.italic,
                           ),
                           textAlign: TextAlign.center,
@@ -217,7 +213,7 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
         },
         loading: () => Scaffold(
           backgroundColor: AppColors.background,
-          body: const TheaterLoadingScreen(message: 'Aktör Bekleniyor...'),
+          body: const TheaterLoadingScreen(message: 'Oyuncu Bekleniyor...'),
         ),
         error: (e, _) => Center(child: Text('Hata: $e')),
       ),

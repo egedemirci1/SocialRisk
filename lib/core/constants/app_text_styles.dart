@@ -2,35 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTextStyles {
-  static final displayLarge = GoogleFonts.playfairDisplay(
+  static final displayLarge = GoogleFonts.poppins(
     fontSize: 32,
     fontWeight: FontWeight.w800,
   );
-  static final displayMedium = GoogleFonts.playfairDisplay(
+  static final displayMedium = GoogleFonts.poppins(
     fontSize: 24,
     fontWeight: FontWeight.w700,
   );
-  static final headlineMedium = GoogleFonts.playfairDisplay(
+  static final headlineMedium = GoogleFonts.poppins(
     fontSize: 20,
     fontWeight: FontWeight.w700,
   );
-  static final titleLarge = GoogleFonts.libreBaskerville(
+  static final titleLarge = GoogleFonts.poppins(
     fontSize: 18,
     fontWeight: FontWeight.w600,
   );
-  static final titleMedium = GoogleFonts.libreBaskerville(
+  static final titleMedium = GoogleFonts.nunito(
     fontSize: 16,
     fontWeight: FontWeight.w600,
   );
-  static final titleSmall = GoogleFonts.libreBaskerville(
+  static final titleSmall = GoogleFonts.nunito(
     fontSize: 14,
     fontWeight: FontWeight.w600,
   );
-  static final bodyMedium = GoogleFonts.libreBaskerville(
+  static final bodyMedium = GoogleFonts.nunito(
     fontSize: 14,
     fontWeight: FontWeight.w400,
   );
-  static final labelSmall = GoogleFonts.inter(
+  static final labelSmall = GoogleFonts.nunito(
     fontSize: 12,
     fontWeight: FontWeight.w500,
     letterSpacing: 1.2,

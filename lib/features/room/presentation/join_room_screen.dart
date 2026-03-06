@@ -9,9 +9,10 @@ import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/utils/toast_utils.dart';
 
-/// Sahneye Katılma Ekranı — Tiyatro Temalı
+/// Partiye Katılma Ekranı — Parti Temalı
 class JoinRoomScreen extends ConsumerStatefulWidget {
   const JoinRoomScreen({super.key});
 
@@ -55,14 +56,14 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
       await repo.joinRoom(
         roomCode: _roomCode,
         playerId: user.uid,
-        playerName: user.displayName ?? 'Aktör',
+        playerName: user.displayName ?? 'Oyuncu',
         playerAvatarUrl: userProfile?.avatarUrl,
       );
 
       if (mounted) context.push('/lobby', extra: _roomCode);
     } catch (e) {
       if (mounted) {
-        ToastUtils.showError(context, 'Sahne bulunamadı: ${e.toString()}');
+        ToastUtils.showError(context, 'Parti bulunamadı: ${e.toString()}');
       }
     } finally {
       if (mounted) setState(() => _isJoining = false);
@@ -79,8 +80,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
         appBar: AppBar(
           title: Text(
           'Partiye Katıl',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.w900,
+          style: AppTextStyles.headlineMedium.copyWith(
             color: AppColors.accent,
             letterSpacing: 1.5,
           ),
@@ -126,17 +126,15 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
             const SizedBox(height: 32),
             Text(
               'Parti Kodunu Gir',
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 28,
-                fontWeight: FontWeight.w900,
+              style: AppTextStyles.displayMedium.copyWith(
                 color: Colors.white,
                 letterSpacing: 1,
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              'Arkadaşlarının paylatığı 6 haneli parti kodunu girerek\negğlenceye dahil ol.',
-              style: GoogleFonts.libreBaskerville(
+              'Arkadaşlarının paylaştığı 6 haneli parti kodunu girerek\neğlenceye dahil ol.',
+              style: AppTextStyles.bodyMedium.copyWith(
                 color: Colors.white54,
                 fontSize: 13,
               ),
@@ -146,7 +144,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
             _buildCodeInputs(),
             const SizedBox(height: 60),
             StageButton(
-              label: 'Gösteriye Katıl',
+              label: 'Partiye Katıl',
               icon: Icons.login_rounded,
               backgroundColor: AppColors.primary,
               textColor: Colors.white,
@@ -207,9 +205,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
                   child: Center(
                     child: Text(
                       char,
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
+                      style: AppTextStyles.displayMedium.copyWith(
                         color: AppColors.accent,
                       ),
                     ),

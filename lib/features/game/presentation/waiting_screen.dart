@@ -13,8 +13,9 @@ import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../shared/utils/toast_utils.dart';
+import '../../../core/constants/app_text_styles.dart';
 
-/// Bekleme ekranı — Tiyatro Temalı
+/// Bekleme ekranı — Parti Temalı
 class WaitingScreen extends ConsumerStatefulWidget {
   const WaitingScreen({
     super.key,
@@ -135,7 +136,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
           });
         }
 
-        final playerName = currentPlayer?.name ?? 'Ayrılan Aktör';
+        final playerName = currentPlayer?.name ?? 'Ayrılan Oyuncu';
 
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -177,7 +178,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                       ),
                       child: const Center(
                         child: Icon(
-                          Icons.theater_comedy_rounded,
+                          Icons.celebration_rounded,
                           color: AppColors.accent,
                           size: 48,
                         ),
@@ -186,11 +187,9 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                   ),
                   const SizedBox(height: 32),
                   Text(
-                    'KULİS SIRASI',
-                    style: GoogleFonts.playfairDisplay(
+                    'BEKLEME SIRASI',
+                    style: AppTextStyles.headlineMedium.copyWith(
                       color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
                       letterSpacing: 4,
                     ),
                   ),
@@ -199,9 +198,8 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                     game.status == GameStatus.performing
                         ? '$playerName performansını sergiliyor...'
                         : '$playerName rolünü belirliyor...',
-                    style: GoogleFonts.libreBaskerville(
+                    style: AppTextStyles.bodyMedium.copyWith(
                       color: Colors.white54,
-                      fontSize: 16,
                       fontStyle: FontStyle.italic,
                     ),
                     textAlign: TextAlign.center,
@@ -226,10 +224,9 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          'Sıra bittiğinde alkış tufanı başlayacak',
-                          style: GoogleFonts.playfairDisplay(
+                          'Sıra bittiğinde oylama başlayacak',
+                          style: AppTextStyles.labelSmall.copyWith(
                             color: Colors.white30,
-                            fontSize: 13,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -244,7 +241,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
       },
       loading: () => const Scaffold(
         backgroundColor: AppColors.background,
-        body: TheaterLoadingScreen(message: 'Kulis Hazırlanıyor...'),
+        body: TheaterLoadingScreen(message: 'Parti Hazırlanıyor...'),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.background,

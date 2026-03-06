@@ -11,8 +11,10 @@ import '../providers/room_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/game_constants.dart';
+import '../../../core/constants/app_text_styles.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
 
-/// Sahne Kurma Ekranı — Tiyatro Temalı
+/// Oda Kurma Ekranı — Parti Temalı
 class CreateRoomScreen extends ConsumerStatefulWidget {
   const CreateRoomScreen({super.key});
 
@@ -76,7 +78,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   Widget build(BuildContext context) {
     return LoadingOverlay(
       isLoading: _isCreating,
-      message: 'Sahne kuruluyor...',
+      message: 'Parti kuruluyor...',
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
@@ -103,7 +105,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
+        child: ResponsiveWrapper(
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
@@ -270,14 +272,14 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               children: [
                 Text(
                   '2',
-                  style: GoogleFonts.libreBaskerville(
+                  style: AppTextStyles.labelSmall.copyWith(
                     color: Colors.white38,
                     fontSize: 10,
                   ),
                 ),
                 Text(
                   '8',
-                  style: GoogleFonts.libreBaskerville(
+                  style: AppTextStyles.labelSmall.copyWith(
                     color: Colors.white38,
                     fontSize: 10,
                   ),
@@ -349,14 +351,14 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 children: [
                   Text(
                     '50',
-                    style: GoogleFonts.libreBaskerville(
+                    style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white38,
                       fontSize: 10,
                     ),
                   ),
                   Text(
                     '500',
-                    style: GoogleFonts.libreBaskerville(
+                    style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white38,
                       fontSize: 10,
                     ),
@@ -401,14 +403,14 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 children: [
                   Text(
                     '3',
-                    style: GoogleFonts.libreBaskerville(
+                    style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white38,
                       fontSize: 10,
                     ),
                   ),
                   Text(
                     '20',
-                    style: GoogleFonts.libreBaskerville(
+                    style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white38,
                       fontSize: 10,
                     ),
@@ -447,9 +449,9 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         const SizedBox(height: 8),
         Text(
           _selectedMode == GameMode.classic
-              ? 'Tüm aktörlerle klasik tiyatro deneyimi.'
+              ? 'Tüm oyuncularla klasik parti deneyimi.'
               : 'Ekonomi ve kaynak yönetimi odaklı performans.',
-          style: GoogleFonts.libreBaskerville(
+          style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white54,
             fontSize: 10,
           ),
@@ -484,9 +486,9 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         const SizedBox(height: 8),
         Text(
           _isOpenMode
-              ? 'Sahne tüm izleyicilere (oyunculara) açık.'
-              : 'Sadece davetli aktörler sahneye çıkabilir.',
-          style: GoogleFonts.libreBaskerville(
+              ? 'Oda tüm oyunculara açık.'
+              : 'Sadece davetli oyuncular katılabilir.',
+          style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white54,
             fontSize: 10,
           ),
@@ -532,7 +534,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             ),
             child: Text(
               category,
-              style: GoogleFonts.playfairDisplay(
+              style: AppTextStyles.titleSmall.copyWith(
                 color: isSelected ? Colors.white : Colors.white54,
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,

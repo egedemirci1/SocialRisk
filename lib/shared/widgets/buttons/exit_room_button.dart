@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../../../features/room/providers/room_provider.dart';
+import '../../../core/constants/app_text_styles.dart';
 
 class ExitRoomButton extends ConsumerWidget {
   final String roomCode;
@@ -25,15 +26,15 @@ class ExitRoomButton extends ConsumerWidget {
               side: BorderSide(color: AppColors.accent.withValues(alpha: 0.3)),
             ),
             title: Text(
-              'Sahneden Ayrıl',
-              style: GoogleFonts.playfairDisplay(
+              'Partiden Ayrıl',
+              style: AppTextStyles.titleMedium.copyWith(
                 color: AppColors.accent,
                 fontWeight: FontWeight.bold,
               ),
             ),
             content: Text(
               'Oyundan çıkmak istediğinize emin misiniz? (Eğer kurucuysanız oda kapanır.)',
-              style: GoogleFonts.libreBaskerville(color: Colors.white70),
+              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
             ),
             actions: [
               TextButton(

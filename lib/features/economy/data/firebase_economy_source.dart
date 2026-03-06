@@ -242,12 +242,12 @@ class FirebaseEconomySource implements EconomyRepository {
       ),
       const CosmeticItemEntity(
         id: 'scenario_mystery',
-        name: 'Gizemli Perde',
+        name: 'Gizemli Parti',
         description: 'Gerilim ve gizem dolu hikayeler.',
         imageUrl: '🔍',
         price: 1200,
         type: 'category',
-        categoryName: 'Gizemli Perde',
+        categoryName: 'Gizemli Parti',
       ),
     ];
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/models/enums.dart';
+import '../../../../core/constants/app_text_styles.dart';
 
 class TurnCounterBadge extends StatelessWidget {
   const TurnCounterBadge({
@@ -33,9 +34,8 @@ class TurnCounterBadge extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: GoogleFonts.libreBaskerville(
+          style: AppTextStyles.labelSmall.copyWith(
             color: AppColors.accent,
-            fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
         ),
