@@ -19,7 +19,6 @@ import '../../economy/providers/economy_provider.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_text_styles.dart';
-import '../../../shared/widgets/common/responsive_wrapper.dart';
 
 /// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor (Parti Temalı).
 class VotingScreen extends ConsumerStatefulWidget {
@@ -177,18 +176,15 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             ],
           ),
           body: SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                    child: IntrinsicHeight(
-                      child: ResponsiveWrapper(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          children: [
-                            const Spacer(),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                    const SizedBox(height: 16),
                     PlayerAvatar(
                       uid: game.currentPlayerId,
                       displayName: performerName,
@@ -261,35 +257,35 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    const Spacer(),
-                    if (_isProcessing || _hasProcessed)
-                      _buildProcessingIndicator()
-                    else if (isMyTurn)
-                      _buildWaitingForOthers()
-                    else if (_hasVoted)
-                      _buildVotedStatus()
-                    else
-                      VotingPanel(
-                        onVote: (value) {
-                          if (user == null) return;
-                          setState(() => _hasVoted = true);
-                          ref
-                              .read(voteControllerProvider.notifier)
-                              .castVote(
-                                gameId: widget.gameId,
-                                voterId: user.uid,
-                                value: VoteValue.values.byName(value),
-                              );
-                        },
-                      ),
-                            const SizedBox(height: 48),
-                          ],
-                        ),
-                      ),
+                    const SizedBox(height: 24),
+                      ],
                     ),
                   ),
-                );
-              },
+                ),
+                // Oylama / bekleme alanı her zaman altta görünsün
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+                  child: _isProcessing || _hasProcessed
+                      ? _buildProcessingIndicator()
+                      : isMyTurn
+                          ? _buildWaitingForOthers()
+                          : _hasVoted
+                              ? _buildVotedStatus()
+                              : VotingPanel(
+                                  onVote: (value) {
+                                    if (user == null) return;
+                                    setState(() => _hasVoted = true);
+                                    ref
+                                        .read(voteControllerProvider.notifier)
+                                        .castVote(
+                                          gameId: widget.gameId,
+                                          voterId: user.uid,
+                                          value: VoteValue.values.byName(value),
+                                        );
+                                  },
+                                ),
+                ),
+              ],
             ),
           ),
         );

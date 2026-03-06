@@ -315,11 +315,48 @@ class _WheelPainter extends CustomPainter {
         ..strokeWidth = 1.0;
       canvas.drawPath(slicePath, borderPaint);
 
-      // Metin ve İkon yerleşimi
+      // Metin ve İkon yerleşimi — yazılar dışta (geniş alan), ikonlar ortaya yakın
       final midAngle = startAngle + sliceAngle / 2;
       
-      // İkon (Daha dışarıda)
-      final iconRadius = radius * 0.70;
+      // Kategori ismi (Dışta, daha geniş alan — sığması için)
+      final textRadius = radius * 0.70;
+      final textX = center.dx + textRadius * cos(midAngle);
+      final textY = center.dy + textRadius * sin(midAngle);
+
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: cat.name,
+          style: GoogleFonts.nunito(
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+            color: Colors.white,
+            letterSpacing: 0.5,
+            shadows: [
+              const Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 1)),
+            ],
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      // Ölçeklendirme (Overflow engelleme — dış halkada daha geniş alan)
+      final maxContextWidth = radius * 0.50;
+      final scale = textPainter.width > maxContextWidth 
+          ? maxContextWidth / textPainter.width 
+          : 1.0;
+
+      canvas.save();
+      canvas.translate(textX, textY);
+      canvas.rotate(midAngle + pi / 2);
+      canvas.scale(scale);
+      textPainter.paint(
+        canvas,
+        Offset(-textPainter.width / 2, -textPainter.height / 2),
+      );
+      canvas.restore();
+
+      // İkon (Ortaya yakın)
+      final iconRadius = radius * 0.42;
       final iconX = center.dx + iconRadius * cos(midAngle);
       final iconY = center.dy + iconRadius * sin(midAngle);
 
@@ -327,7 +364,7 @@ class _WheelPainter extends CustomPainter {
         text: TextSpan(
           text: String.fromCharCode(cat.icon.codePoint),
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 22,
             fontFamily: cat.icon.fontFamily,
             package: cat.icon.fontPackage,
             color: Colors.white,
@@ -349,43 +386,6 @@ class _WheelPainter extends CustomPainter {
       iconPainter.paint(
         canvas,
         Offset(-iconPainter.width / 2, -iconPainter.height / 2),
-      );
-      canvas.restore();
-
-      // Kategori ismi (Daha içeride)
-      final textRadius = radius * 0.42;
-      final textX = center.dx + textRadius * cos(midAngle);
-      final textY = center.dy + textRadius * sin(midAngle);
-
-      final textPainter = TextPainter(
-        text: TextSpan(
-          text: cat.name,
-          style: GoogleFonts.nunito(
-            fontSize: 12,
-            fontWeight: FontWeight.w900,
-            color: Colors.white,
-            letterSpacing: 0.5,
-            shadows: [
-              const Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 1)),
-            ],
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
-
-      // Ölçeklendirme (Overflow engelleme)
-      final maxContextWidth = radius * 0.45;
-      final scale = textPainter.width > maxContextWidth 
-          ? maxContextWidth / textPainter.width 
-          : 1.0;
-
-      canvas.save();
-      canvas.translate(textX, textY);
-      canvas.rotate(midAngle + pi / 2);
-      canvas.scale(scale);
-      textPainter.paint(
-        canvas,
-        Offset(-textPainter.width / 2, -textPainter.height / 2),
       );
       canvas.restore();
     }

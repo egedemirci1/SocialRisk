@@ -24,7 +24,6 @@ class CreateRoomScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
-  int _maxPlayers = 4;
   bool _isScoreMode = true; // true = Puan Hedefi, false = Tur Sayısı
   double _scoreTarget = 500;
   double _roundTarget = 5;
@@ -109,33 +108,10 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: _buildSection(
-                        title: 'Kişi Sayısı',
-                        icon: Icons.people_alt_rounded,
-                        fillHeight: true,
-                        child: Expanded(
-                          child: Center(
-                            child: _buildPlayerSlider(),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildSection(
-                        title: 'Oyun Sonu',
-                        icon: Icons.flag_rounded,
-                        fillHeight: true,
-                        child: _buildEndCondition(),
-                      ),
-                    ),
-                  ],
-                ),
+              _buildSection(
+                title: 'Oyun Sonu',
+                icon: Icons.flag_rounded,
+                child: _buildEndCondition(),
               ),
               const SizedBox(height: 12),
               _buildSection(
@@ -222,51 +198,6 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           child,
         ],
       ),
-    );
-  }
-
-  Widget _buildPlayerSlider() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '$_maxPlayers Kişi',
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-          ),
-        ),
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: AppColors.primary,
-            inactiveTrackColor: Colors.black38,
-            thumbColor: AppColors.primary,
-            overlayColor: AppColors.primary.withValues(alpha: 0.2),
-            trackHeight: 4,
-          ),
-          child: Slider(
-            value: _maxPlayers.toDouble(),
-            min: 2,
-            max: 8,
-            divisions: 6,
-            onChanged: (value) => setState(() => _maxPlayers = value.toInt()),
-          ),
-        ),
-        Transform.translate(
-          offset: const Offset(0, -16),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('2', style: AppTextStyles.labelSmall.copyWith(color: Colors.white38)),
-                Text('8', style: AppTextStyles.labelSmall.copyWith(color: Colors.white38)),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 

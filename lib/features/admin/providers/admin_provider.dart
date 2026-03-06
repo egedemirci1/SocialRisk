@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../domain/task_item_entity.dart';
 import '../domain/report_entity.dart';
 import 'task_provider.dart';
-import '../data/task_seed_migration.dart';
+import '../../../core/data/seeded_tasks/seeded_tasks.dart';
 
 part 'admin_provider.g.dart';
 
@@ -84,7 +84,7 @@ class AdminController extends _$AdminController {
     try {
       final source = ref.read(taskSourceProvider);
       final success = await source.seedTasks(
-        TaskSeedMigration.seedData,
+        getAllSeededTasks(),
         clearAllFirst: true,
       );
       if (success == 0) {

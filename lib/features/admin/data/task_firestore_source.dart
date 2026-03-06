@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/task_item_entity.dart';
 import '../../../shared/models/enums.dart';
 import '../../../core/constants/game_constants.dart';
+import '../../../core/data/seeded_tasks/seeded_tasks.dart';
 
 /// Firestore'daki görevleri yöneten data source.
 /// CRUD + oyun içi görev çekme + feedback.
@@ -87,8 +88,29 @@ class TaskFirestoreSource {
 
   // ── Görev Ön-Yükleme Havuzu (İyileştirme) ────────────────────
 
+  /// Local (seeded) görevleri kategori_zorluk key'ine göre gruplar.
+  /// Firebase'e yazmadan oyun havuzunu doldurmak için kullanılır.
+  static Map<String, List<Map<String, dynamic>>> _localPoolByCombo() {
+    final all = getAllSeededTasks();
+    final combo = <String, List<Map<String, dynamic>>>{};
+    for (var i = 0; i < all.length; i++) {
+      final t = all[i];
+      final cat = t['category'] as String? ?? '';
+      final diff = t['difficulty'] as String? ?? 'easy';
+      final key = '${cat}_$diff';
+      combo.putIfAbsent(key, () => []);
+      combo[key]!.add({
+        'id': 'local_${cat}_${diff}_$i',
+        'category': cat,
+        'content': t['content'] ?? '',
+        'difficulty': diff,
+      });
+    }
+    return combo;
+  }
+
   /// Oyun başında tüm kategori×zorluk kombinasyonları için görevleri
-  /// tek seferde çeker. Sonuç game doc'a yazılır.
+  /// tek seferde çeker. Önce local (800 soru), isteğe bağlı Firestore eklenir.
   Future<Map<String, List<Map<String, dynamic>>>> fetchTaskPool({
     bool includeCustomDeck = false,
     String? hostId,
@@ -98,13 +120,23 @@ class TaskFirestoreSource {
     final diffs = GameConstants.defaultDifficulties;
     final poolSize = GameConstants.taskPoolSizePerCombo;
     final pool = <String, List<Map<String, dynamic>>>{};
+    final localByCombo = _localPoolByCombo();
 
     for (final category in cats) {
       for (final difficulty in diffs) {
         final poolKey = '${category}_$difficulty';
         final List<Map<String, dynamic>> tasksForCombo = [];
 
-        // 1. Normal görevleri çek
+        // 1. Local (seeded) görevleri ekle — Firebase zorunlu değil
+        final localList = localByCombo[poolKey] ?? [];
+        if (localList.isNotEmpty) {
+          localList.shuffle(_random);
+          tasksForCombo.addAll(
+            localList.take(poolSize),
+          );
+        }
+
+        // 2. İsteğe bağlı: Firestore'dan da çek (admin eklediyse)
         final snap = await _tasksRef
             .where('category', isEqualTo: category)
             .where('difficulty', isEqualTo: difficulty)
@@ -122,7 +154,7 @@ class TaskFirestoreSource {
           });
         }
 
-        // 2. Özel görevleri ekle
+        // 3. Özel görevleri ekle
         if (includeCustomDeck && hostId != null) {
           final customSnap = await _firestore
               .collection('users')
@@ -144,11 +176,11 @@ class TaskFirestoreSource {
           }
         }
 
-        // 3. Karıştır
+        // 4. Karıştır ve havuz boyutuna indir
         tasksForCombo.shuffle(_random);
 
         if (tasksForCombo.isNotEmpty) {
-          pool[poolKey] = tasksForCombo;
+          pool[poolKey] = tasksForCombo.take(poolSize).toList();
         }
       }
     }

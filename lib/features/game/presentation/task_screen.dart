@@ -150,6 +150,28 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
 
         _handleStatusChanges(game, isMyTurn);
 
+        // Fallback: Eğer oyun zaten oylama aşamasındaysa hemen yönlendir
+        // (diğer oyuncunun stream gecikmesiyle task ekranında kalmasını önler)
+        if (game.status == GameStatus.voting) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.replace(
+                '/voting',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
+            }
+          });
+        } else if (game.status == GameStatus.performing) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.replace(
+                '/performing',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
+            }
+          });
+        }
+
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
