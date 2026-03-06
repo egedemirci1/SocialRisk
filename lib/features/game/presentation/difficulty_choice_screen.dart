@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/game_provider.dart';
 import '../../room/providers/room_provider.dart';
@@ -81,8 +81,7 @@ class _DifficultyChoiceScreenState
           appBar: AppBar(
             title: Text(
               isMyTurn ? 'ZORLUK SEVİYESİ' : 'BEKLENİYOR',
-              style: GoogleFonts.playfairDisplay(
-                fontWeight: FontWeight.w900,
+              style: AppTextStyles.headlineMedium.copyWith(
                 color: AppColors.accent,
                 letterSpacing: 2,
               ),
@@ -115,10 +114,9 @@ class _DifficultyChoiceScreenState
                         ),
                         child: Text(
                           'KATEGORİ: ${game.selectedCategory?.toUpperCase() ?? "?"}',
-                          style: GoogleFonts.playfairDisplay(
+                          style: AppTextStyles.labelSmall.copyWith(
                             color: AppColors.accent,
                             fontWeight: FontWeight.w900,
-                            fontSize: 13,
                             letterSpacing: 1,
                           ),
                         ),
@@ -126,24 +124,44 @@ class _DifficultyChoiceScreenState
                     ),
                     const Spacer(),
                     if (isMyTurn) ...[
-                      Text(
-                        'RİSK VE ÖDÜL DENGESİ',
-                        style: GoogleFonts.playfairDisplay(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: AppColors.accent.withValues(alpha: 0.15),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Performansının zorluğunu sen belirle...',
-                        style: GoogleFonts.libreBaskerville(
-                          color: Colors.white54,
-                          fontSize: 14,
+                        child: Column(
+                          children: [
+                            Text(
+                              'RİSK VE ÖDÜL',
+                              style: AppTextStyles.titleLarge.copyWith(
+                                color: Colors.white,
+                                letterSpacing: 2,
+                                fontWeight: FontWeight.w900,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Performansının zorluğunu sen belirle...',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: Colors.white54,
+                                fontStyle: FontStyle.italic,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 48),
                       _buildDifficultyCard(
@@ -171,9 +189,8 @@ class _DifficultyChoiceScreenState
                       const SizedBox(height: 32),
                       Text(
                         '$playerName zorluk seviyesini seçiyor...',
-                        style: GoogleFonts.playfairDisplay(
+                        style: AppTextStyles.titleLarge.copyWith(
                           color: Colors.white,
-                          fontSize: 20,
                           fontWeight: FontWeight.w900,
                         ),
                         textAlign: TextAlign.center,
@@ -219,9 +236,8 @@ class _DifficultyChoiceScreenState
             Expanded(
               child: Text(
                 title,
-                style: GoogleFonts.playfairDisplay(
+                style: AppTextStyles.titleLarge.copyWith(
                   color: color,
-                  fontSize: 20,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1,
                 ),
@@ -235,9 +251,8 @@ class _DifficultyChoiceScreenState
               ),
               child: Text(
                 multiplier,
-                style: GoogleFonts.playfairDisplay(
+                style: AppTextStyles.titleMedium.copyWith(
                   color: color,
-                  fontSize: 18,
                   fontWeight: FontWeight.w900,
                 ),
               ),

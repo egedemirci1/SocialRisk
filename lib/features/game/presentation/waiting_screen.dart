@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/models/enums.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
@@ -164,76 +163,94 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
           body: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ScaleTransition(
-                    scale: _pulseAnimation,
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.accent.withValues(alpha: 0.1),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.celebration_rounded,
-                          color: AppColors.accent,
-                          size: 48,
+              child: Container(
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: AppColors.accent.withValues(alpha: 0.2),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ScaleTransition(
+                      scale: _pulseAnimation,
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.accent.withValues(alpha: 0.1),
                         ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  Text(
-                    'BEKLEME SIRASI',
-                    style: AppTextStyles.headlineMedium.copyWith(
-                      color: Colors.white,
-                      letterSpacing: 4,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    game.status == GameStatus.performing
-                        ? '$playerName performansını sergiliyor...'
-                        : '$playerName rolünü belirliyor...',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: Colors.white54,
-                      fontStyle: FontStyle.italic,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 48),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: AppColors.accent.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.info_outline_rounded,
-                          color: AppColors.accent,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Sıra bittiğinde oylama başlayacak',
-                          style: AppTextStyles.labelSmall.copyWith(
-                            color: Colors.white30,
-                            fontWeight: FontWeight.w700,
+                        child: const Center(
+                          child: Icon(
+                            Icons.celebration_rounded,
+                            color: AppColors.accent,
+                            size: 48,
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 32),
+                    Text(
+                      'BEKLEME SIRASI',
+                      style: AppTextStyles.headlineMedium.copyWith(
+                        color: Colors.white,
+                        letterSpacing: 4,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      game.status == GameStatus.performing
+                          ? '$playerName performansını sergiliyor...'
+                          : '$playerName rolünü belirliyor...',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: Colors.white54,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 48),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.background.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.accent.withValues(alpha: 0.1),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.info_outline_rounded,
+                            color: AppColors.accent,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Sıra bittiğinde oylama başlayacak',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: Colors.white30,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

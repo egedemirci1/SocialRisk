@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/widgets/cards/game_card.dart';
 import '../../../shared/widgets/game/spin_wheel.dart' hide AnimatedBuilder;
 import '../../../shared/widgets/buttons/stage_button.dart';
@@ -317,21 +316,42 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         if (currentPlayer != null)
           PlayerSpotlight(player: currentPlayer, isMe: isMyTurn),
         const Spacer(),
-        Text(
-          '🎡 Senaryonu Belirle',
-          style: AppTextStyles.titleLarge.copyWith(
-            color: Colors.white,
-            letterSpacing: 1,
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: AppColors.accent.withValues(alpha: 0.15),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Text(
+                '🎡 Senaryonu Belirle',
+                style: AppTextStyles.titleLarge.copyWith(
+                  color: Colors.white,
+                  letterSpacing: 1,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Sıran gelmeden önce görevini seç...',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: Colors.white54,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Sıran gelmeden önce görevini seç...',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white54,
-          ),
-        ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 40),
         SpinWheel(
           spinningTarget: ref
               .watch(watchGameProvider(widget.gameId))
