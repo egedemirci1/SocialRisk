@@ -386,7 +386,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           },
           onSpinComplete: _onWheelResult,
         ),
-        const Spacer(),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -567,6 +567,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             ],
           ),
         ),
+
       ],
     );
   }

@@ -95,27 +95,27 @@ class _DifficultyChoiceScreenState
                     Center(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+                          horizontal: 20,
+                          vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.accent.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
+                          color: AppColors.accent.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(24),
                           border: Border.all(
-                            color: AppColors.accent.withValues(alpha: 0.3),
+                            color: AppColors.accent.withValues(alpha: 0.4),
                           ),
                         ),
                         child: Text(
                           'KATEGORİ: ${game.selectedCategory?.toUpperCase() ?? "?"}',
-                          style: AppTextStyles.labelSmall.copyWith(
+                          style: AppTextStyles.titleMedium.copyWith(
                             color: AppColors.accent,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: 1,
+                            letterSpacing: 2,
                           ),
                         ),
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 32),
                     if (isMyTurn) ...[
                       Container(
                         decoration: BoxDecoration(
