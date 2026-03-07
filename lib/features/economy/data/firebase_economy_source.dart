@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/economy_repository.dart';
 import '../domain/cosmetic_item_entity.dart';
+import '../domain/economy_exceptions.dart';
 
 class FirebaseEconomySource implements EconomyRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+
+  FirebaseEconomySource({FirebaseFirestore? firestore})
+      : _firestore = firestore ?? FirebaseFirestore.instance;
 
   DocumentReference<Map<String, dynamic>> _userDoc(String uid) =>
       _firestore.collection('users').doc(uid);
@@ -58,7 +62,7 @@ class FirebaseEconomySource implements EconomyRepository {
         final snapshot = await transaction.get(docRef);
 
         if (!snapshot.exists) {
-          throw Exception("Kullanıcı bulunamadı.");
+          throw const UserNotFoundException();
         }
 
         final currentPoints = snapshot.data()?['walletPoints'] as int? ?? 0;
@@ -67,11 +71,11 @@ class FirebaseEconomySource implements EconomyRepository {
         );
 
         if (ownedCosmetics.contains(cosmeticId)) {
-          throw Exception("Bu eşyaya zaten sahipsiniz.");
+          throw const AlreadyOwnedCosmeticException();
         }
 
         if (currentPoints < price) {
-          throw Exception("Yetersiz bakiye.");
+          throw const InsufficientBalanceException();
         }
 
         // Parayı düş ve envantere ekle
@@ -103,6 +107,8 @@ class FirebaseEconomySource implements EconomyRepository {
       });
     } on FirebaseException catch (e) {
       throw Exception('Satın alma işlemi başarısız: ${e.message}');
+    } on EconomyException {
+      rethrow;
     } catch (e) {
       throw Exception(e.toString().replaceAll('Exception: ', ''));
     }

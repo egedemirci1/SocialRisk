@@ -8,8 +8,14 @@ import '../../../core/data/seeded_tasks/seeded_tasks.dart';
 /// Firestore'daki görevleri yöneten data source.
 /// CRUD + oyun içi görev çekme + feedback.
 class TaskFirestoreSource {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final Random _random = Random();
+  final FirebaseFirestore _firestore;
+  final Random _random;
+
+  TaskFirestoreSource({
+    FirebaseFirestore? firestore,
+    Random? random,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _random = random ?? Random();
 
   CollectionReference<Map<String, dynamic>> get _tasksRef =>
       _firestore.collection('tasks');

@@ -11,9 +11,13 @@ import 'package:rxdart/rxdart.dart';
 
 class FirebaseRoomSource implements RoomRepository {
   final FirebaseFirestore _firestore;
+  final TaskFirestoreSource _taskSource;
 
-  FirebaseRoomSource({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+  FirebaseRoomSource({
+    FirebaseFirestore? firestore,
+    TaskFirestoreSource? taskSource,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _taskSource = taskSource ?? TaskFirestoreSource();
 
   CollectionReference<Map<String, dynamic>> get _roomsRef =>
       _firestore.collection('rooms');
@@ -269,8 +273,7 @@ class FirebaseRoomSource implements RoomRepository {
                 ? categoriesList
                 : GameConstants.defaultMarketValues.keys.toList());
 
-      final taskSource = TaskFirestoreSource();
-      final taskPool = await taskSource.fetchTaskPool(
+      final taskPool = await _taskSource.fetchTaskPool(
         includeCustomDeck: useCustomDeck,
         hostId: hostId,
         categories: activeCategories,

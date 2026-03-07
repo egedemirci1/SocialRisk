@@ -12,6 +12,9 @@ import '../../economy/providers/economy_provider.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
 
+/// Test override: null ise gerçek ImagePicker kullanılır; override ile () async => null verilerek iptal simüle edilir.
+final pickImageFromGalleryProvider = Provider<Future<XFile?> Function()?>((ref) => null);
+
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
@@ -74,14 +77,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _pickAndUploadImage(String uid) async {
-    final picker = ImagePicker();
-    // Web ve mobil'de yerleşik olarak (native) resmi sıkıştırmak/küçültmek en performanslı ve güvenli yoldur.
-    final image = await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 512, // Native yeniden boyutlandırma (512x512 max)
-      maxHeight: 512,
-      imageQuality: 70, // %70 kalite (JPEG için yerleşik sıkıştırma)
-    );
+    final pick = ref.read(pickImageFromGalleryProvider);
+    final image = pick != null
+        ? await pick()
+        : await ImagePicker().pickImage(
+            source: ImageSource.gallery,
+            maxWidth: 512,
+            maxHeight: 512,
+            imageQuality: 70,
+          );
 
     if (image != null) {
       if (!mounted) return;

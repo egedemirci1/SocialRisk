@@ -62,6 +62,8 @@ class PlayerAvatar extends ConsumerWidget {
       }
     }
 
+    final useAvatarImage = currentAvatarUrl != null && currentAvatarUrl.isNotEmpty;
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -110,10 +112,10 @@ class PlayerAvatar extends ConsumerWidget {
           child: CircleAvatar(
             radius: radius,
             backgroundColor: AppColors.surfaceElevated,
-            backgroundImage: currentAvatarUrl != null
-                ? NetworkImage(currentAvatarUrl)
+            backgroundImage: useAvatarImage
+                ? NetworkImage(currentAvatarUrl!)
                 : null,
-            child: currentAvatarUrl == null
+            child: !useAvatarImage
                 ? Text(
                     displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
                     style: AppTextStyles.titleSmall.copyWith(fontSize: radius * 0.8,

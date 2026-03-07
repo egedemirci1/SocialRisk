@@ -1,7 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../data/firebase_auth_source.dart';
 import '../domain/auth_repository.dart';
+import '../constants/auth_constants.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 part 'auth_provider.g.dart';
 
@@ -39,3 +43,22 @@ class AuthController extends _$AuthController {
     state = await AsyncValue.guard(() => repo.signOut());
   }
 }
+
+/// Google ile giriş yapan callback. Testte override edilerek iptal veya hata simüle edilir.
+final signInWithGoogleCallbackProvider = Provider<Future<UserCredential> Function()>((ref) {
+  return () async {
+    if (kIsWeb) {
+      final provider = GoogleAuthProvider();
+      return FirebaseAuth.instance.signInWithPopup(provider);
+    }
+    final googleSignIn = GoogleSignIn(serverClientId: kGoogleSignInWebClientId);
+    final googleUser = await googleSignIn.signIn();
+    if (googleUser == null) throw Exception('Google giriş iptal edildi');
+    final googleAuth = await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    return FirebaseAuth.instance.signInWithCredential(credential);
+  };
+});

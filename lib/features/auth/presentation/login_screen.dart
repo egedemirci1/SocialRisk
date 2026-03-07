@@ -1,16 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import '../../../shared/widgets/common/loading_overlay.dart';
 import '../providers/auth_provider.dart';
+import '../providers/user_provider.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../core/constants/app_colors.dart';
-import '../data/firebase_user_source.dart';
 import '../domain/user_entity.dart';
-import '../constants/auth_constants.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
@@ -93,22 +90,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   }
 
   Future<UserCredential> _signInWithGoogle() async {
-    if (kIsWeb) {
-      final provider = GoogleAuthProvider();
-      return FirebaseAuth.instance.signInWithPopup(provider);
-    }
-    // Android / iOS: Firebase Auth için Web Client ID gerekli (Google Cloud Console → Credentials → OAuth 2.0 Web client)
-    final googleSignIn = GoogleSignIn(
-      serverClientId: kGoogleSignInWebClientId,
-    );
-    final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) throw Exception('Google giriş iptal edildi');
-    final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    return FirebaseAuth.instance.signInWithCredential(credential);
+    return ref.read(signInWithGoogleCallbackProvider)();
   }
 
   Future<void> _signInSocial(
@@ -127,8 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           await cred.user!.updateDisplayName(displayName);
         }
         // Kullanıcı profilini Firestore'da oluştur (anonim hesap oluşturmadan)
-        final userSource = FirebaseUserSource();
-        await userSource.createUserProfile(
+        await ref.read(userRepositoryProvider).createUserProfile(
           UserEntity(uid: cred.user!.uid, displayName: displayName),
         );
         PendingToast.instance.setSuccess('Giriş Başarılı');

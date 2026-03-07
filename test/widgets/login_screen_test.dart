@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:social_risk/features/auth/domain/auth_repository.dart';
+import 'package:social_risk/features/auth/domain/user_entity.dart';
+import 'package:social_risk/features/auth/domain/user_repository.dart';
 import 'package:social_risk/features/auth/presentation/login_screen.dart';
 import 'package:social_risk/features/auth/providers/auth_provider.dart';
+import 'package:social_risk/features/auth/providers/user_provider.dart';
 import 'package:social_risk/shared/widgets/common/social_risk_logo.dart';
 
 // ---------------------------------------------------------------------------
@@ -14,6 +18,24 @@ import 'package:social_risk/shared/widgets/common/social_risk_logo.dart';
 // signInAnonymously çağrısını verify edeceğiz.
 // ---------------------------------------------------------------------------
 class MockAuthRepository extends Mock implements AuthRepository {}
+
+class MockUserRepository extends Mock implements UserRepository {}
+
+/// Fake UserCredential for social sign-in tests.
+class FakeUserCredential implements UserCredential {
+  FakeUserCredential(this.user);
+  @override
+  final User? user;
+  @override
+  AuthCredential? get credential => null;
+  @override
+  AdditionalUserInfo? get additionalUserInfo => null;
+}
+
+UserCredential fakeUserCredential({String uid = 'google-uid', String? displayName = 'Google User'}) {
+  final user = MockUser(uid: uid, isAnonymous: false, displayName: displayName);
+  return FakeUserCredential(user);
+}
 
 /// Fake auth repository for widget tests — no Firebase calls.
 class FakeAuthRepository implements AuthRepository {
@@ -65,6 +87,7 @@ class _ThrowingAuthController extends AuthController {
 void main() {
   setUpAll(() {
     registerFallbackValue('');
+    registerFallbackValue(const UserEntity(uid: '', displayName: ''));
   });
 
   group('LoginScreen', () {
@@ -287,6 +310,71 @@ void main() {
       expect(find.text('Lütfen sahne adınızı belirleyin'), findsNothing);
       expect(find.text('İsim en az 3 karakter olmalıdır'), findsNothing);
       expect(find.text('Sadece harf ve rakam kullanın'), findsNothing);
+    });
+
+    // ─── Google giriş iptali ─────────────────────────────────────────────
+    testWidgets('Google signIn null (iptal) döndüğünde ekranda "Google giriş iptal edildi" hatası çıkar', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(600, 900));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
+            signInWithGoogleCallbackProvider.overrideWithValue(
+              () async => throw Exception('Google giriş iptal edildi'),
+            ),
+          ],
+          child: MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(600, 900)),
+              child: const LoginScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 1500));
+
+      await tester.tap(find.text('Google ile Devam Et'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 800));
+
+      expect(find.textContaining('Google giriş iptal edildi'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 4));
+    });
+
+    // ─── Sosyal giriş sonrası profil hatası ─────────────────────────────
+    testWidgets('Sosyal giriş başarılı, createUserProfile hata fırlatınca doğru hata mesajı görünür', (tester) async {
+      final mockUserRepo = MockUserRepository();
+      when(() => mockUserRepo.createUserProfile(any())).thenThrow(
+        Exception('Profil oluşturulamadı'),
+      );
+
+      await tester.binding.setSurfaceSize(const Size(600, 900));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
+            userRepositoryProvider.overrideWithValue(mockUserRepo),
+            signInWithGoogleCallbackProvider.overrideWithValue(
+              () async => fakeUserCredential(),
+            ),
+          ],
+          child: MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(600, 900)),
+              child: const LoginScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 1500));
+
+      await tester.tap(find.text('Google ile Devam Et'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 800));
+
+      expect(find.textContaining('Profil oluşturulamadı'), findsOneWidget);
+      verify(() => mockUserRepo.createUserProfile(any())).called(1);
+      await tester.pump(const Duration(seconds: 4));
     });
   });
 }
