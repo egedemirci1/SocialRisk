@@ -10,7 +10,10 @@ import '../../../shared/models/enums.dart';
 import 'package:rxdart/rxdart.dart';
 
 class FirebaseRoomSource implements RoomRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+
+  FirebaseRoomSource({FirebaseFirestore? firestore})
+      : _firestore = firestore ?? FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> get _roomsRef =>
       _firestore.collection('rooms');
@@ -20,6 +23,31 @@ class FirebaseRoomSource implements RoomRepository {
 
   CollectionReference<Map<String, dynamic>> _playersRef(String roomCode) =>
       _roomDoc(roomCode).collection('players');
+
+  /// Oda dökümanını ve ilişkili tüm alt verileri (oyun, oyuncular) siler.
+  /// Hata oluşursa loglar, kullanıcı deneyimini bozmamak için fırlatmaz.
+  Future<void> _deleteRoomAndRelatedData(
+    String roomCode,
+    Map<String, dynamic>? roomData,
+  ) async {
+    try {
+      final batch = _firestore.batch();
+      final gameId = roomData?['gameId'];
+      if (gameId != null && gameId.toString().isNotEmpty) {
+        batch.delete(_firestore.collection('games').doc(gameId.toString()));
+      }
+      final playersSnap = await _playersRef(roomCode).get();
+      for (final doc in playersSnap.docs) {
+        batch.delete(doc.reference);
+      }
+      batch.delete(_roomDoc(roomCode));
+      await batch.commit();
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Oda silinirken hata (roomCode=$roomCode): $e');
+      }
+    }
+  }
 
   @override
   Future<String> createRoom({
@@ -37,8 +65,6 @@ class FirebaseRoomSource implements RoomRepository {
   }) async {
     try {
       String roomCode = AppHelpers.generateRoomCode();
-
-      // Kodun benzersiz olduğunu kontrol et
       while (await doesRoomExist(roomCode)) {
         roomCode = AppHelpers.generateRoomCode();
       }
@@ -58,7 +84,6 @@ class FirebaseRoomSource implements RoomRepository {
 
       await _roomDoc(roomCode).set(roomModel.toJson());
 
-      // Host'u oyuncu olarak ekle
       final hostPlayer = PlayerModel(
         id: hostId,
         displayName: hostName,
@@ -122,49 +147,34 @@ class FirebaseRoomSource implements RoomRepository {
     required String playerId,
   }) async {
     try {
-      // 0. Oda bilgilerini al (Host kontrolü için)
       final roomSnap = await _roomDoc(roomCode).get();
-      if (!roomSnap.exists) return; // Oda zaten silinmiş olabilir
+      if (!roomSnap.exists) return;
 
       final roomData = roomSnap.data()!;
       final isHost = roomData['hostId'] == playerId;
 
       if (isHost) {
-        // Eğer ayrılan kişi host ise, odayı ve içindekileri tamamen temizle
-        final gameId = roomData['gameId'];
-
-        final batch = _firestore.batch();
-
-        if (gameId != null && gameId.toString().isNotEmpty) {
-          batch.delete(_firestore.collection('games').doc(gameId));
-        }
-
-        // Oyuncular alt koleksiyonunu batch ile temizle
-        final playersSnap = await _playersRef(roomCode).get();
-        for (var doc in playersSnap.docs) {
-          batch.delete(doc.reference);
-        }
-
-        batch.delete(_roomDoc(roomCode));
-        await batch.commit();
+        await _deleteRoomAndRelatedData(roomCode, roomData);
         return;
       }
 
-      // 1. Oyuncunun odadan ayrılması (Eğer host değilse)
       await _playersRef(roomCode).doc(playerId).delete();
 
-      // 2. Kalan oyuncu sayısını kontrol et
       final playersCountSnap = await _playersRef(roomCode).count().get();
-      if (playersCountSnap.count == 0 || playersCountSnap.count == null) {
-        // Eğer odada kimse kalmadıysa odayı ve bağlı oyunu tamamen sil
-        final gameId = roomData['gameId'];
-        if (gameId != null && gameId.toString().isNotEmpty) {
-          await _firestore.collection('games').doc(gameId).delete();
-        }
-        await _roomDoc(roomCode).delete();
+      final count = playersCountSnap.count ?? 0;
+      if (count == 0) {
+        await _deleteRoomAndRelatedData(roomCode, roomData);
       }
     } on FirebaseException catch (e) {
+      if (kDebugMode) {
+        debugPrint('Odadan ayrılırken hata: ${e.message}');
+      }
       throw Exception('Odadan ayrılırken hata oluştu: ${e.message}');
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Odadan ayrılırken hata: $e');
+      }
+      rethrow;
     }
   }
 
@@ -246,7 +256,6 @@ class FirebaseRoomSource implements RoomRepository {
     try {
       final roomRef = _roomDoc(roomCode);
 
-      // ─── Görev havuzunu önceden yükle (transaction dışında) ───
       final roomSnap = await roomRef.get();
       if (!roomSnap.exists) throw Exception('Oda bulunamadı!');
       final roomData = roomSnap.data()!;
@@ -267,7 +276,6 @@ class FirebaseRoomSource implements RoomRepository {
         categories: activeCategories,
       );
 
-      // ─── Atomik Transaction: Oda güncelle + Oyun oluştur ───
       return await _firestore.runTransaction((transaction) async {
         final freshRoomSnap = await transaction.get(roomRef);
         if (!freshRoomSnap.exists) throw Exception('Oda bulunamadı!');
@@ -339,7 +347,6 @@ class FirebaseRoomSource implements RoomRepository {
             .where('createdAt', isLessThan: Timestamp.fromDate(thresholdDate))
             .get();
       } catch (_) {
-        // Regular users don't have permission to cleanup. Just ignore.
         return;
       }
 
@@ -352,13 +359,11 @@ class FirebaseRoomSource implements RoomRepository {
         final roomData = doc.data();
         final gameId = roomData['gameId'] as String?;
 
-        // 1. Bağlı oyun dökümanını sil
         if (gameId != null && gameId.isNotEmpty) {
           batch.delete(_firestore.collection('games').doc(gameId));
           operationCount++;
         }
 
-        // 2. Odanın "players" alt koleksiyonunu sil
         final playersSnap = await _playersRef(doc.id).get();
         for (final playerDoc in playersSnap.docs) {
           batch.delete(playerDoc.reference);
@@ -371,11 +376,9 @@ class FirebaseRoomSource implements RoomRepository {
           }
         }
 
-        // 3. Odanın kendisini sil
         batch.delete(doc.reference);
         operationCount++;
 
-        // Batch limit kontrolü (Firestore max 500)
         if (operationCount >= 450) {
           await batch.commit();
           batch = _firestore.batch();

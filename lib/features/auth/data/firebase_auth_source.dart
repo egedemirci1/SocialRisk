@@ -1,12 +1,19 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import '../domain/auth_repository.dart';
 import '../domain/user_entity.dart';
-import '../data/firebase_user_source.dart';
+import '../domain/user_repository.dart';
+import 'firebase_user_source.dart';
 
 class FirebaseAuthSource implements AuthRepository {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth;
+  final UserRepository _userRepository;
+
+  FirebaseAuthSource({
+    FirebaseAuth? auth,
+    UserRepository? userRepository,
+  })  : _auth = auth ?? FirebaseAuth.instance,
+        _userRepository = userRepository ?? FirebaseUserSource();
 
   @override
   Stream<User?> get authStateChanges => _auth.userChanges();
@@ -17,15 +24,12 @@ class FirebaseAuthSource implements AuthRepository {
   @override
   Future<UserCredential?> signInAnonymously(String displayName) async {
     try {
-      // Eğer halihazırda anonim bir oturum varsa, yeni hesap açmak yerine var olanı güncelle
       if (_auth.currentUser != null && _auth.currentUser!.isAnonymous) {
         await _auth.currentUser!.updateDisplayName(displayName);
         await _auth.currentUser!.reload();
-        final userSource = FirebaseUserSource();
-        await userSource.createUserProfile(
+        await _userRepository.createUserProfile(
           UserEntity(uid: _auth.currentUser!.uid, displayName: displayName),
         );
-        // Mevcut oturum korundu, yeni anonim kullanıcı oluşturulmadı.
         return null;
       }
 
@@ -34,10 +38,11 @@ class FirebaseAuthSource implements AuthRepository {
         await credential.user!.updateDisplayName(displayName);
         await credential.user!.reload();
 
-        // Sign in başarılı olunca kullanıcı profilini Global User tablosuna da ekle.
-        final userSource = FirebaseUserSource();
-        await userSource.createUserProfile(
-          UserEntity(uid: credential.user!.uid, displayName: displayName),
+        await _userRepository.createUserProfile(
+          UserEntity(
+            uid: credential.user!.uid,
+            displayName: displayName,
+          ),
         );
       }
       return credential;
@@ -51,11 +56,11 @@ class FirebaseAuthSource implements AuthRepository {
     final user = _auth.currentUser;
     if (user != null && user.isAnonymous) {
       try {
-        final collectionRef = FirebaseFirestore.instance.collection('users');
-        await collectionRef.doc(user.uid).delete();
+        await _userRepository.deleteUserProfileAndAvatar(user.uid);
       } catch (e) {
-        // Silme başarısız olsa bile çıkışa mani olma
-        debugPrint('Kullanıcı dökümanı silinirken hata oldu: $e');
+        if (kDebugMode) {
+          debugPrint('Kullanıcı dökümanı/avatar silinirken hata: $e');
+        }
       }
     }
     await _auth.signOut();

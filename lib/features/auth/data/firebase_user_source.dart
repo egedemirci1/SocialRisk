@@ -7,7 +7,14 @@ import '../domain/user_repository.dart';
 import 'user_model.dart';
 
 class FirebaseUserSource implements UserRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  final FirebaseStorage _storage;
+
+  FirebaseUserSource({
+    FirebaseFirestore? firestore,
+    FirebaseStorage? storage,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _storage = storage ?? FirebaseStorage.instance;
 
   CollectionReference<Map<String, dynamic>> _usersRef() =>
       _firestore.collection('users');
@@ -17,9 +24,6 @@ class FirebaseUserSource implements UserRepository {
 
   @override
   Future<void> createUserProfile(UserEntity user) async {
-    final doc = await _userDoc(user.uid).get();
-    if (doc.exists) return; // Zaten varsa ezme
-
     final model = UserModel(
       uid: user.uid,
       displayName: user.displayName,
@@ -28,8 +32,7 @@ class FirebaseUserSource implements UserRepository {
       rank: user.rank,
       updatedAt: DateTime.now(),
     );
-
-    await _userDoc(user.uid).set(model.toJson());
+    await _userDoc(user.uid).set(model.toJson(), SetOptions(merge: true));
   }
 
   @override
@@ -70,15 +73,13 @@ class FirebaseUserSource implements UserRepository {
   @override
   Future<String?> uploadAvatar(String uid, dynamic fileData) async {
     try {
-      // 1. Eski profil URL'sini al
       final oldProfile = await getUserProfile(uid).catchError((_) => null);
       final oldAvatarUrl = oldProfile?.avatarUrl;
 
-      // 2. Yeni resim için benzersiz isim oluştur (Cache Buster)
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final storageRef = FirebaseStorage.instance.ref().child(
-        'avatars/${uid}_$timestamp.jpg',
-      );
+      final storageRef = _storage.ref().child(
+            'avatars/${uid}_$timestamp.jpg',
+          );
 
       UploadTask uploadTask;
       if (fileData is Uint8List) {
@@ -93,18 +94,18 @@ class FirebaseUserSource implements UserRepository {
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
-      // Update the user's document as well
       await updateAvatarUrl(uid, downloadUrl);
 
-      // 3. Eski resmi Storage'dan sil
       if (oldAvatarUrl != null &&
           oldAvatarUrl.isNotEmpty &&
           oldAvatarUrl.startsWith('https://firebasestorage.googleapis.com')) {
         try {
-          final oldRef = FirebaseStorage.instance.refFromURL(oldAvatarUrl);
+          final oldRef = _storage.refFromURL(oldAvatarUrl);
           await oldRef.delete();
         } catch (e) {
-          // Eski resim silinirken hata olsa bile, yeni resim yüklendiği için işlemi kesme
+          if (kDebugMode) {
+            debugPrint('Eski avatar silinirken hata: $e');
+          }
         }
       }
 
@@ -130,7 +131,7 @@ class FirebaseUserSource implements UserRepository {
     required String targetUserAvatar,
     required String reason,
   }) async {
-    final reportRef = FirebaseFirestore.instance.collection('reports').doc();
+    final reportRef = _firestore.collection('reports').doc();
     await reportRef.set({
       'reporterId': reporterId,
       'targetUserId': targetUserId,
@@ -147,5 +148,26 @@ class FirebaseUserSource implements UserRepository {
       'displayName': name,
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
+  }
+
+  @override
+  Future<void> deleteUserProfileAndAvatar(String uid) async {
+    final profile = await getUserProfile(uid).catchError((_) => null);
+    final avatarUrl = profile?.avatarUrl;
+
+    if (avatarUrl != null &&
+        avatarUrl.isNotEmpty &&
+        avatarUrl.startsWith('https://firebasestorage.googleapis.com')) {
+      try {
+        final ref = _storage.refFromURL(avatarUrl);
+        await ref.delete();
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint('Avatar silinirken hata: $e');
+        }
+      }
+    }
+
+    await _userDoc(uid).delete();
   }
 }

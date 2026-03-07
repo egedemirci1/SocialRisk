@@ -6,13 +6,13 @@ void main() {
   group('AppHelpers – Edge Cases', () {
     // ─────────── generateRoomCode ───────────
     group('generateRoomCode edge cases', () {
-      test('100 kez üretilen kodların hepsi benzersiz olmalı (çakışma riski düşük)', () {
+      test('100 kez üretilen kodların hepsi benzersiz olmalı', () {
+        const count = 100;
         final codes = <String>{};
-        for (var i = 0; i < 100; i++) {
+        for (var i = 0; i < count; i++) {
           codes.add(AppHelpers.generateRoomCode());
         }
-        // 100 üretimde en az 95 benzersiz olmalı (rastgelelik garantisi yok ama istatistiksel beklenti)
-        expect(codes.length, greaterThanOrEqualTo(95));
+        expect(codes.length, count, reason: 'Üretilen $count kodun hepsi benzersiz olmalı');
       });
 
       test('üretilen kodlarda karıştırılabilir karakterler (0, O, I, 1) bulunmamalı', () {

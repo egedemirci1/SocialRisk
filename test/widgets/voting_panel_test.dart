@@ -15,13 +15,11 @@ void main() {
         ),
       );
 
-      // Panel title
-      expect(find.text('Nasıl buldun?'), findsOneWidget);
+      expect(find.text('PERFORMANS NASILDI?'), findsOneWidget);
 
-      // Three vote buttons
-      expect(find.text('Beğendim'), findsOneWidget);
-      expect(find.text('Nötr'), findsOneWidget);
-      expect(find.text('Beğenmedim'), findsOneWidget);
+      expect(find.text('BEĞEN'), findsOneWidget);
+      expect(find.text('KARARSIZ'), findsOneWidget);
+      expect(find.text('BEĞENME'), findsOneWidget);
     });
 
     testWidgets('calls onVote with "like" when like tapped', (tester) async {
@@ -36,11 +34,12 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('👍'));
+      await tester.tap(find.text('BEĞEN'));
+      await tester.pumpAndSettle();
       expect(votedValue, 'like');
     });
 
-    testWidgets('calls onVote with "neutral" when nötr tapped', (tester) async {
+    testWidgets('calls onVote with "neutral" when kararsiz tapped', (tester) async {
       String? votedValue;
       await tester.pumpWidget(
         MaterialApp(
@@ -52,11 +51,12 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('😐'));
+      await tester.tap(find.text('KARARSIZ'));
+      await tester.pumpAndSettle();
       expect(votedValue, 'neutral');
     });
 
-    testWidgets('calls onVote with "dislike" when dislike tapped', (tester) async {
+    testWidgets('calls onVote with "dislike" when begenme tapped', (tester) async {
       String? votedValue;
       await tester.pumpWidget(
         MaterialApp(
@@ -68,7 +68,8 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('👎'));
+      await tester.tap(find.text('BEĞENME'));
+      await tester.pumpAndSettle();
       expect(votedValue, 'dislike');
     });
 
@@ -84,9 +85,34 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('👍'));
-      await tester.tap(find.text('👎'));
-      expect(voteCount, 1); // only first vote counts
+      await tester.tap(find.text('BEĞEN'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('BEĞENME'));
+      await tester.pumpAndSettle();
+      expect(voteCount, 1);
+    });
+
+    testWidgets('after voting, other buttons are disabled and do not trigger onVote', (tester) async {
+      int voteCount = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: VotingPanel(
+              onVote: (_) => voteCount++,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('BEĞEN'));
+      await tester.pumpAndSettle();
+      expect(voteCount, 1);
+
+      await tester.tap(find.text('KARARSIZ'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('BEĞENME'));
+      await tester.pumpAndSettle();
+      expect(voteCount, 1);
     });
 
     testWidgets('shows progress bar', (tester) async {

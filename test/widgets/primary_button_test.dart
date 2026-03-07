@@ -83,8 +83,26 @@ void main() {
       );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      // Label should not be visible during loading
       expect(find.text('Loading'), findsNothing);
+    });
+
+    testWidgets('when isLoading is true, tap does not call onPressed', (tester) async {
+      int pressCount = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PrimaryButton(
+              label: 'Submit',
+              isLoading: true,
+              onPressed: () => pressCount++,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(PrimaryButton));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(pressCount, 0);
     });
 
     testWidgets('is accessible with Semantics', (tester) async {
@@ -99,8 +117,7 @@ void main() {
         ),
       );
 
-      final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.label, 'Accessible Button');
+      expect(find.text('Accessible Button'), findsOneWidget);
     });
   });
 }

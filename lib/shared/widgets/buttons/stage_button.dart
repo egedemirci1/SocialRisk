@@ -111,18 +111,23 @@ class StageButton extends StatelessWidget {
                   )
                 : Row(
                     mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       iconWidget ?? const SizedBox.shrink(),
                       if (icon != null)
                         Icon(icon, color: textColor, size: 24),
                       if (label.isNotEmpty) ...[
                         const SizedBox(width: 12),
-                        Text(
-                          label,
-                          style: AppTextStyles.titleMedium.copyWith(fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: textColor,
-                            letterSpacing: 1.0,),
+                        Flexible(
+                          child: Text(
+                            label,
+                            style: AppTextStyles.titleMedium.copyWith(fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: textColor,
+                              letterSpacing: 1.0,),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
                         ),
                       ],
                     ],

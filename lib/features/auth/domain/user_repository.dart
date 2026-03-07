@@ -15,4 +15,6 @@ abstract class UserRepository {
     required String reason,
   });
   Future<void> updateDisplayName(String uid, String name);
+  /// Anonim kullanıcı çıkışında profil dökümanını ve Storage'daki avatarı siler.
+  Future<void> deleteUserProfileAndAvatar(String uid);
 }

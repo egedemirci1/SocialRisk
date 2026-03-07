@@ -260,12 +260,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ],
         ),
         const SizedBox(height: 24),
-        Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
+        Row(
+          children: [
+            Expanded(
+              child: Text(
                 user.displayName,
                 style: AppTextStyles.displayLarge.copyWith(fontSize: 36,
                   fontWeight: FontWeight.w900,
@@ -279,16 +277,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     Shadow(offset: Offset(0, 6), color: Colors.black54, blurRadius: 8),
                   ],),
                 textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.edit_rounded, color: AppColors.accent, size: 22),
-                onPressed: () => _updateDisplayName(user),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.edit_rounded, color: AppColors.accent, size: 22),
+              onPressed: () => _updateDisplayName(user),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+            ),
+          ],
         ),
         userProfileAsync.when(
           data: (profile) {
@@ -330,6 +330,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 2,),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       );
                   },
@@ -522,6 +524,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 fontWeight: isEquipped ? FontWeight.bold : FontWeight.normal,),
               textAlign: TextAlign.center,
               maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             if (isEquipped)
               Padding(
@@ -629,17 +632,24 @@ class _StatRow extends StatelessWidget {
         children: [
           Icon(icon, color: AppColors.accent, size: 20),
           const SizedBox(width: 12),
-          Text(
-            label,
-            style: AppTextStyles.labelSmall.copyWith(color: Colors.white54,
-              fontSize: 13,),
+          Flexible(
+            child: Text(
+              label,
+              style: AppTextStyles.labelSmall.copyWith(color: Colors.white54,
+                fontSize: 13,),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-          const Spacer(),
-          Text(
-            value,
-            style: AppTextStyles.titleLarge.copyWith(color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w900,),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              value,
+              style: AppTextStyles.titleLarge.copyWith(color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w900,),
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+            ),
           ),
         ],
       ),

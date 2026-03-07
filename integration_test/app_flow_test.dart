@@ -10,7 +10,7 @@ void main() {
     testWidgets('Uygulama başarıyla başlatılabilmeli', (WidgetTester tester) async {
       // Arrange
       app.main();
-      
+
       // Act
       // Asenkron işlemlerin bitmesi için bekliyoruz
       await tester.pumpAndSettle();
