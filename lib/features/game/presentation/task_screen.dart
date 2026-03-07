@@ -175,13 +175,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
-            title: Text(
-              'Parti Başlıyor',
-              style: AppTextStyles.headlineMedium.copyWith(
-                color: AppColors.accent,
-                letterSpacing: 2,
-              ),
-            ),
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
@@ -317,13 +310,10 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           PlayerSpotlight(player: currentPlayer, isMe: isMyTurn),
         const Spacer(),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: AppColors.accent.withValues(alpha: 0.15),
-            ),
+            border: Border.all(color: AppColors.accent.withValues(alpha: 0.15)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.2),
@@ -334,18 +324,45 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           ),
           child: Column(
             children: [
-              Text(
-                '🎡 Senaryonu Belirle',
-                style: AppTextStyles.titleLarge.copyWith(
-                  color: Colors.white,
-                  letterSpacing: 1,
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withValues(alpha: 0.1),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Text(
+                  'PARTİ BAŞLIYOR',
+                  style: AppTextStyles.titleLarge.copyWith(
+                    color: AppColors.accent,
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.w900,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Sıran gelmeden önce görevini seç...',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: Colors.white54,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                child: Column(
+                  children: [
+                    Text(
+                      '🎡 Senaryonu Belirle',
+                      style: AppTextStyles.titleLarge.copyWith(
+                        color: Colors.white,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Sıran gelmeden önce görevini seç...',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: Colors.white54,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -398,115 +415,158 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
       children: [
         const Spacer(),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: AppColors.accentGradient.begin,
-              end: AppColors.accentGradient.end,
-              colors: AppColors.accentGradient.colors
-                  .map((c) => c.withValues(alpha: 0.15))
-                  .toList(),
-            ),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
-          ),
-          child: Text(
-            'Kategori: ${task.category} • ${task.difficulty == 'easy'
-                ? 'KOLAY'
-                : task.difficulty == 'medium'
-                ? 'ORTA'
-                : 'ZOR'}',
-            style: AppTextStyles.labelSmall.copyWith(
-              color: AppColors.accent,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 1,
-            ),
-          ),
-        ),
-        if (task.id.length >
-            15) // UserTask ID'leri timestamp olduğu için genelde uzundur, veya tags kontrolü yapılabilir
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.amber.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.accent.withValues(alpha: 0.15)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
-                  const SizedBox(width: 4),
-                  Text(
-                    'GÖREVE ÖZEL',
-                    style: AppTextStyles.labelSmall.copyWith(
-                      color: Colors.amber,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
-                    ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withValues(alpha: 0.1),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
-                ],
+                ),
+                child: Text(
+                  'PARTİ BAŞLIYOR',
+                  style: AppTextStyles.titleLarge.copyWith(
+                    color: AppColors.accent,
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.w900,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: AppColors.accentGradient.begin,
+                          end: AppColors.accentGradient.end,
+                          colors: AppColors.accentGradient.colors
+                              .map((c) => c.withValues(alpha: 0.15))
+                              .toList(),
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
+                      ),
+                      child: Text(
+                        'Kategori: ${task.category} • ${task.difficulty == 'easy'
+                            ? 'KOLAY'
+                            : task.difficulty == 'medium'
+                            ? 'ORTA'
+                            : 'ZOR'}',
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: AppColors.accent,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                    if (task.id.length > 15) // UserTask ID'leri timestamp olduğu için genelde uzundur, veya tags kontrolü yapılabilir
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
+                              const SizedBox(width: 4),
+                              Text(
+                                'GÖREVE ÖZEL',
+                                style: AppTextStyles.labelSmall.copyWith(
+                                  color: Colors.amber,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 24),
+                    Text(
+                      isClosed
+                          ? 'Sıradaki Görev Gizli'
+                          : (isMyTurn ? 'Senaryon Burada:' : '$playerName\'ın Senaryosu:'),
+                      style: AppTextStyles.titleLarge.copyWith(
+                        color: Colors.white,
+                        letterSpacing: 1,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ScaleTransition(
+                      scale: _cardAnimation,
+                      child: GameCard(
+                        category: task.category,
+                        content: isClosed
+                            ? 'Mevcut görevi görmek için kartı aç...'
+                            : task.content,
+                        multiplier: task.multiplier,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    if (isClosed && isMyTurn)
+                      StageButton(
+                        label: 'Görevi Aç',
+                        backgroundColor: AppColors.accent,
+                        textColor: Colors.black,
+                        borderColor: AppColors.accent,
+                        onPressed: () => setState(() => _contentRevealed = true),
+                      )
+                    else if (isMyTurn) ...[
+                      StageButton(
+                        label: 'Gösteriye Katıl',
+                        backgroundColor: AppColors.primary,
+                        textColor: Colors.white,
+                        borderColor: AppColors.accent,
+                        onPressed: _acceptTask,
+                        isLoading: _isAccepting,
+                      ),
+                      const SizedBox(height: 12),
+                      _AnimatedPassButton(
+                        passStreak: passStreak,
+                        isPassing: _isPassing,
+                        onPass: _passTask,
+                      ),
+                    ] else
+                      Text(
+                        '$playerName senaryosunu okuyor...',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: Colors.white30,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        const SizedBox(height: 24),
-        Text(
-          isClosed
-              ? 'Sıradaki Görev Gizli'
-              : (isMyTurn ? 'Senaryon Burada:' : '$playerName\'ın Senaryosu:'),
-          style: AppTextStyles.titleLarge.copyWith(
-            color: Colors.white,
-            letterSpacing: 1,
-          ),
-          textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 24),
-        ScaleTransition(
-          scale: _cardAnimation,
-          child: GameCard(
-            category: task.category,
-            content: isClosed
-                ? 'Mevcut görevi görmek için kartı aç...'
-                : task.content,
-            multiplier: task.multiplier,
-          ),
-        ),
-        const Spacer(),
-        if (isClosed && isMyTurn)
-          StageButton(
-            label: 'Görevi Aç',
-            backgroundColor: AppColors.accent,
-            textColor: Colors.black,
-            borderColor: AppColors.accent,
-            onPressed: () => setState(() => _contentRevealed = true),
-          )
-        else if (isMyTurn) ...[
-          StageButton(
-            label: 'Gösteriye Katıl',
-            backgroundColor: AppColors.primary,
-            textColor: Colors.white,
-            borderColor: AppColors.accent,
-            onPressed: _acceptTask,
-            isLoading: _isAccepting,
-          ),
-          const SizedBox(height: 12),
-          _AnimatedPassButton(
-            passStreak: passStreak,
-            isPassing: _isPassing,
-            onPass: _passTask,
-          ),
-        ] else
-          Text(
-            '$playerName senaryosunu okuyor...',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: Colors.white30,
-              fontStyle: FontStyle.italic,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        const SizedBox(height: 32),
       ],
     );
   }

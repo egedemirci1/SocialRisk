@@ -79,13 +79,6 @@ class _DifficultyChoiceScreenState
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
-            title: Text(
-              isMyTurn ? 'ZORLUK SEVİYESİ' : 'BEKLENİYOR',
-              style: AppTextStyles.headlineMedium.copyWith(
-                color: AppColors.accent,
-                letterSpacing: 2,
-              ),
-            ),
             leading: ExitRoomButton(roomCode: widget.roomCode),
             backgroundColor: Colors.transparent,
             elevation: 0,
@@ -125,7 +118,6 @@ class _DifficultyChoiceScreenState
                     const Spacer(),
                     if (isMyTurn) ...[
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
                           borderRadius: BorderRadius.circular(20),
@@ -142,23 +134,50 @@ class _DifficultyChoiceScreenState
                         ),
                         child: Column(
                           children: [
-                            Text(
-                              'RİSK VE ÖDÜL',
-                              style: AppTextStyles.titleLarge.copyWith(
-                                color: Colors.white,
-                                letterSpacing: 2,
-                                fontWeight: FontWeight.w900,
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              decoration: BoxDecoration(
+                                color: AppColors.accent.withValues(alpha: 0.1),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                ),
                               ),
-                              textAlign: TextAlign.center,
+                              child: Text(
+                                'ZORLUK SEVİYESİ',
+                                style: AppTextStyles.titleLarge.copyWith(
+                                  color: AppColors.accent,
+                                  letterSpacing: 2,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Performansının zorluğunu sen belirle...',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: Colors.white54,
-                                fontStyle: FontStyle.italic,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'RİSK VE ÖDÜL',
+                                    style: AppTextStyles.titleLarge.copyWith(
+                                      color: Colors.white,
+                                      letterSpacing: 2,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Performansının zorluğunu sen belirle...',
+                                    style: AppTextStyles.bodyMedium.copyWith(
+                                      color: Colors.white54,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
-                              textAlign: TextAlign.center,
                             ),
                           ],
                         ),
@@ -185,15 +204,62 @@ class _DifficultyChoiceScreenState
                         onTap: () => _selectDifficulty('hard'),
                       ),
                     ] else ...[
-                      const CircularProgressIndicator(color: AppColors.accent),
-                      const SizedBox(height: 32),
-                      Text(
-                        '$playerName zorluk seviyesini seçiyor...',
-                        style: AppTextStyles.titleLarge.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: AppColors.accent.withValues(alpha: 0.15),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        textAlign: TextAlign.center,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              decoration: BoxDecoration(
+                                color: AppColors.accent.withValues(alpha: 0.1),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                ),
+                              ),
+                              child: Text(
+                                'BEKLENİYOR',
+                                style: AppTextStyles.titleLarge.copyWith(
+                                  color: AppColors.accent,
+                                  letterSpacing: 2,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                              child: Column(
+                                children: [
+                                  const CircularProgressIndicator(color: AppColors.accent),
+                                  const SizedBox(height: 32),
+                                  Text(
+                                    '$playerName zorluk seviyesini seçiyor...',
+                                    style: AppTextStyles.titleLarge.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                     const Spacer(flex: 2),
