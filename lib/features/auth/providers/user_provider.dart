@@ -82,4 +82,12 @@ class UserController extends _$UserController {
           ),
     );
   }
+
+  Future<void> updateDisplayName(String uid, String name) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(userRepositoryProvider).updateDisplayName(uid, name);
+      await ref.read(authRepositoryProvider).updateDisplayName(name);
+    });
+  }
 }

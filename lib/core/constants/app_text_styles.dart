@@ -35,4 +35,11 @@ class AppTextStyles {
     fontWeight: FontWeight.w500,
     letterSpacing: 1.2,
   );
+
+  // Special style for Medieval/Fantasy headers (Replacing Cinzel)
+  static final specialHeading = GoogleFonts.poppins(
+    fontSize: 18,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 1.5,
+  );
 }

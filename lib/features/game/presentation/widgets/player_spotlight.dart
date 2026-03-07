@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../shared/widgets/common/player_avatar.dart';
@@ -89,10 +88,10 @@ class PlayerSpotlight extends ConsumerWidget {
               ),
               child: Text(
                 '${activeTitleItem.imageUrl} ${activeTitleItem.name}',
-                style: GoogleFonts.cinzel(
+                style: AppTextStyles.specialHeading.copyWith(
                   color: const Color(0xFFD4AF37),
                   fontSize: 11,
-                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
                 ),
               ),
             ),

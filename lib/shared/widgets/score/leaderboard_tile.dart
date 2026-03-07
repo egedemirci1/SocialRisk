@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 
@@ -76,11 +75,9 @@ class LeaderboardTile extends StatelessWidget {
                       )
                     : Text(
                         '$rank',
-                        style: GoogleFonts.nunito(
-                          fontSize: 18,
+                        style: AppTextStyles.titleMedium.copyWith(fontSize: 18,
                           fontWeight: FontWeight.w800,
-                          color: _rankColor,
-                        ),
+                          color: _rankColor,),
                         textAlign: TextAlign.center,
                       ),
               ),
@@ -133,11 +130,9 @@ class LeaderboardTile extends StatelessWidget {
               // Puan
               Text(
                 '$score',
-                style: GoogleFonts.nunito(
-                  fontSize: 20,
+                style: AppTextStyles.titleMedium.copyWith(fontSize: 20,
                   fontWeight: FontWeight.w800,
-                  color: _rankColor,
-                ),
+                  color: _rankColor,),
               ),
               const SizedBox(width: 4),
               Text(

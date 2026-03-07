@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../domain/task_item_entity.dart';
 import '../providers/admin_provider.dart';
 import '../../../shared/models/enums.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/category_constants.dart';
 import '../../../shared/utils/toast_utils.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Senaryo Editörü — Tiyatro Temalı
 class TaskEditorScreen extends ConsumerStatefulWidget {
@@ -79,11 +79,9 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
       appBar: AppBar(
         title: Text(
           widget.taskToEdit == null ? 'YENİ SENARYO' : 'SENARYOYU DÜZENLE',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.w900,
+          style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w900,
             color: AppColors.accent,
-            letterSpacing: 1.5,
-          ),
+            letterSpacing: 1.5,),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -104,16 +102,14 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                 decoration: InputDecoration(
                   fillColor: AppColors.surface,
                   filled: true,
-                  counterStyle: GoogleFonts.libreBaskerville(color: Colors.white54),
+                  counterStyle: AppTextStyles.titleSmall.copyWith(color: Colors.white54),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                 ),
-                style: GoogleFonts.libreBaskerville(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
+                style: AppTextStyles.titleMedium.copyWith(color: Colors.white,
+                  fontSize: 16,),
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Boş bırakılamaz' : null,
                 onSaved: (v) => _content = v!,
@@ -159,13 +155,11 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                       (p) => ChoiceChip(
                         label: Text(
                           p.toUpperCase(),
-                          style: GoogleFonts.playfairDisplay(
-                            fontSize: 10,
+                          style: AppTextStyles.titleLarge.copyWith(fontSize: 10,
                             fontWeight: FontWeight.w900,
                             color: _tags.contains(p)
                                 ? Colors.white
-                                : Colors.white54,
-                          ),
+                                : Colors.white54,),
                         ),
                         selected: _tags.contains(p),
                         selectedColor: AppColors.primary,
@@ -199,11 +193,9 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
                           'REPERTUARA EKLE',
-                          style: GoogleFonts.playfairDisplay(
-                            color: Colors.black,
+                          style: AppTextStyles.titleLarge.copyWith(color: Colors.black,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: 2,
-                          ),
+                            letterSpacing: 2,),
                         ),
                 ),
               ),
@@ -219,12 +211,10 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         text,
-        style: GoogleFonts.playfairDisplay(
-          color: AppColors.accent,
+        style: AppTextStyles.titleLarge.copyWith(color: AppColors.accent,
           fontSize: 13,
           fontWeight: FontWeight.w900,
-          letterSpacing: 1.5,
-        ),
+          letterSpacing: 1.5,),
       ),
     );
   }
@@ -251,10 +241,8 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                   value: i,
                   child: Text(
                     i.toUpperCase(),
-                    style: GoogleFonts.playfairDisplay(
-                      color: Colors.white,
-                      fontSize: 13,
-                    ),
+                    style: AppTextStyles.titleLarge.copyWith(color: Colors.white,
+                      fontSize: 13,),
                   ),
                 ),
               )

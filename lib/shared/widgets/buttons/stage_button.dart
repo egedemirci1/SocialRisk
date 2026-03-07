@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import '../../../core/constants/app_colors.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Etkileşimli buton (tıklandığında küçülme animasyonu)
 class InteractiveButton extends StatefulWidget {
@@ -121,12 +119,10 @@ class StageButton extends StatelessWidget {
                         const SizedBox(width: 12),
                         Text(
                           label,
-                          style: GoogleFonts.nunito(
-                            fontSize: 18,
+                          style: AppTextStyles.titleMedium.copyWith(fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: textColor,
-                            letterSpacing: 1.0,
-                          ),
+                            letterSpacing: 1.0,),
                         ),
                       ],
                     ],

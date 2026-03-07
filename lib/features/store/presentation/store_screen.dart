@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 
 import '../../economy/providers/economy_provider.dart';
@@ -99,8 +98,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             data: (items) {
               final profile = userProfileAsync.value;
               final owned = profile?.ownedCosmetics ?? [];
-              final roleItems = items.where((i) => i.type == 'title').toList();
-              final maskItems = items.where((i) => i.type == 'frame').toList();
+              final roleItems = items.where((i) => i.type == 'title').toList()
+                ..sort((a, b) => a.price.compareTo(b.price));
+              final maskItems = items.where((i) => i.type == 'frame').toList()
+                ..sort((a, b) => a.price.compareTo(b.price));
 
               return Column(
                 children: [
@@ -328,7 +329,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             price: 1300,
             type: 'category',
           ),
-        ];
+        ]..sort((a, b) => a.price.compareTo(b.price));
         title = 'Özel Senaryolar';
         subtitle = 'Oyundaki görev havuzunu belirleyen tema paketleri.';
         icon = Icons.menu_book_rounded;
@@ -405,31 +406,47 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     bool isOwned,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        gradient: AppColors.surfaceGradient,
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.surface.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isOwned
-              ? AppColors.accent.withValues(alpha: 0.3)
-              : AppColors.accent.withValues(alpha: 0.1),
+              ? AppColors.primary.withValues(alpha: 0.3)
+              : Colors.white.withValues(alpha: 0.05),
         ),
+        boxShadow: [
+          if (isOwned)
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              blurRadius: 10,
+              spreadRadius: -2,
+            ),
+        ],
       ),
       child: Row(
         children: [
-          // Emoji
+          // Emoji/Icon Container with Glass effect
           Container(
-            width: 44,
-            height: 44,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: Colors.black26,
-              borderRadius: BorderRadius.circular(10),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.1),
+                  Colors.white.withValues(alpha: 0.02),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
             alignment: Alignment.center,
-            child: Text(item.imageUrl, style: const TextStyle(fontSize: 24)),
+            child: Text(item.imageUrl, style: const TextStyle(fontSize: 26)),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 16),
           // İsim + Açıklama
           Expanded(
             child: Column(
@@ -448,7 +465,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 Text(
                   item.description,
                   style: AppTextStyles.labelSmall.copyWith(
-                    color: Colors.white38,
+                    color: Colors.white.withValues(alpha: 0.4),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -456,55 +473,73 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               ],
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           // Fiyat veya Sahiplik durumu
           if (isOwned)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              width: 85,
+              height: 40,
               decoration: BoxDecoration(
-                color: AppColors.accent.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary.withValues(alpha: 0.2),
+                    AppColors.primary.withValues(alpha: 0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: AppColors.accent.withValues(alpha: 0.3),
+                  color: AppColors.primary.withValues(alpha: 0.4),
                 ),
               ),
-              child: Text(
-                'Sahip',
-                style: AppTextStyles.labelSmall.copyWith(
-                  color: AppColors.accent,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 14),
+                  const SizedBox(width: 6),
+                  Text(
+                    'SAHİP',
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
               ),
             )
           else
             GestureDetector(
               onTap: () => _buyItem(context, ref, uid, item),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
+                width: 85,
+                height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.primary),
+                  gradient: AppColors.accentGradient,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.accent.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
                       Icons.monetization_on_rounded,
-                      color: AppColors.primary,
-                      size: 12,
+                      color: Colors.white,
+                      size: 14,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 6),
                     Text(
                       '${item.price}',
-                      style: GoogleFonts.nunito(
+                      style: AppTextStyles.labelSmall.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
-                        fontSize: 12,
+                        fontSize: 13,
                       ),
                     ),
                   ],

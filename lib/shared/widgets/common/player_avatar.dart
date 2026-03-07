@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'dart:math' as math;
 import '../../../core/constants/app_colors.dart';
 import '../../../features/auth/providers/user_provider.dart';
 import 'custom_frame_painter.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Oyuncu avatar widget'ı — Fotoğraf veya baş harf gösterir.
 /// Puan bazlı efekt desteği mevcut (🔥 alev / ❄️ buz / ✨ parıltı).
@@ -117,11 +116,9 @@ class PlayerAvatar extends ConsumerWidget {
             child: currentAvatarUrl == null
                 ? Text(
                     displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
-                    style: GoogleFonts.inter(
-                      fontSize: radius * 0.8,
+                    style: AppTextStyles.titleSmall.copyWith(fontSize: radius * 0.8,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white54,
-                    ),
+                      color: Colors.white54,),
                   )
                 : null,
           ),

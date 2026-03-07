@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/category_constants.dart';
@@ -54,12 +53,10 @@ class GameCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   category.toUpperCase(),
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
+                  style: AppTextStyles.labelSmall.copyWith(fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: _categoryColor,
-                    letterSpacing: 1.5,
-                  ),
+                    letterSpacing: 1.5,),
                 ),
               ],
             ),
@@ -95,11 +92,9 @@ class GameCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '${multiplier}x Puan',
-                      style: GoogleFonts.nunito(
-                        fontSize: 15,
+                      style: AppTextStyles.titleSmall.copyWith(fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.accent,
-                      ),
+                        color: AppColors.accent,),
                     ),
                   ],
                 ),

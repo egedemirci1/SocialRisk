@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/admin_provider.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Raporlanan Fotoğraflar — Parti Temalı
 class ReportedPhotosScreen extends ConsumerWidget {
@@ -18,11 +18,9 @@ class ReportedPhotosScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           'RAPORLU OYUNCU ADLARI',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.w900,
+          style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w900,
             color: AppColors.accent,
-            letterSpacing: 1.5,
-          ),
+            letterSpacing: 1.5,),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -43,11 +41,9 @@ class ReportedPhotosScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   Text(
                     'TÜM OYUNCULAR TEMİZ 🎉',
-                    style: GoogleFonts.playfairDisplay(
-                      color: Colors.white70,
+                    style: AppTextStyles.titleLarge.copyWith(color: Colors.white70,
                       fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
+                      fontWeight: FontWeight.w700,),
                   ),
                 ],
               ),
@@ -97,20 +93,16 @@ class ReportedPhotosScreen extends ConsumerWidget {
                           children: [
                             Text(
                               report.targetUserName.toUpperCase(),
-                              style: GoogleFonts.playfairDisplay(
-                                fontWeight: FontWeight.w900,
+                              style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w900,
                                 color: Colors.white,
-                                fontSize: 16,
-                              ),
+                                fontSize: 16,),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'İHBAR: ${report.reason.toUpperCase()}',
-                              style: GoogleFonts.libreBaskerville(
-                                color: AppColors.primary,
+                              style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary,
                                 fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                              ),
+                                fontWeight: FontWeight.w700,),
                             ),
                           ],
                         ),

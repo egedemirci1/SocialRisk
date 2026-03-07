@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/models/enums.dart';
 import '../../auth/domain/user_entity.dart';
 import '../../custom_decks/domain/user_task_entity.dart';
@@ -10,6 +9,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_colors.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 class CustomDeckEditorScreen extends ConsumerStatefulWidget {
   const CustomDeckEditorScreen({super.key});
@@ -69,11 +69,9 @@ class _CustomDeckEditorScreenState
               ),
               title: Text(
                 editingTask == null ? 'İçerik Oluştur' : 'İçeriği Düzenle',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
+                style: AppTextStyles.titleLarge.copyWith(color: Colors.white,
                   fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                ),
+                  fontSize: 16,),
                 textAlign: TextAlign.center,
               ),
               content: Form(
@@ -92,11 +90,11 @@ class _CustomDeckEditorScreenState
                       maxLines: 3,
                       minLines: 1,
                       maxLength: 120,
-                      style: GoogleFonts.nunito(color: Colors.white),
+                      style: AppTextStyles.titleSmall.copyWith(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'İçerik Metni',
-                        labelStyle: GoogleFonts.nunito(color: AppColors.accent),
-                        counterStyle: GoogleFonts.nunito(color: Colors.white38),
+                        labelStyle: AppTextStyles.titleSmall.copyWith(color: AppColors.accent),
+                        counterStyle: AppTextStyles.titleSmall.copyWith(color: Colors.white38),
                         filled: true,
                         fillColor: AppColors.surfaceElevated,
                         enabledBorder: OutlineInputBorder(
@@ -113,11 +111,11 @@ class _CustomDeckEditorScreenState
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: selectedDifficulty,
+                      initialValue: selectedDifficulty,
                       dropdownColor: _cardColor,
                       decoration: InputDecoration(
                         labelText: 'Zorluk',
-                        labelStyle: GoogleFonts.nunito(color: _accentGold),
+                        labelStyle: AppTextStyles.titleSmall.copyWith(color: _accentGold),
                         filled: true,
                         fillColor: Colors.black.withValues(alpha: 0.4),
                         enabledBorder: OutlineInputBorder(
@@ -151,9 +149,7 @@ class _CustomDeckEditorScreenState
                                   value: item.value,
                                   child: Text(
                                     (item.child as Text).data!,
-                                    style: GoogleFonts.nunito(
-                                      color: _textLight,
-                                    ),
+                                    style: AppTextStyles.titleSmall.copyWith(color: _textLight,),
                                   ),
                                 ),
                               )
@@ -178,7 +174,7 @@ class _CustomDeckEditorScreenState
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
                   onPressed: isLoading ? null : () => Navigator.pop(context),
-                  child: Text('İptal', style: GoogleFonts.nunito(fontWeight: FontWeight.w700)),
+                  child: Text('İptal', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w700)),
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton(
@@ -232,9 +228,7 @@ class _CustomDeckEditorScreenState
                         )
                       : Text(
                           editingTask == null ? 'İçerik Ekle' : 'Güncelle',
-                          style: GoogleFonts.nunito(
-                            fontWeight: FontWeight.w800,
-                          ),
+                          style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w800,),
                         ),
                 ),
               ],
@@ -282,11 +276,9 @@ class _CustomDeckEditorScreenState
           appBar: AppBar(
             title: Text(
               'İçeriklerim',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w800,
+              style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w800,
                 color: Colors.white,
-                fontSize: 18,
-              ),
+                fontSize: 18,),
             ),
             backgroundColor: Colors.transparent,
             elevation: 0,
@@ -351,7 +343,7 @@ class _CustomDeckEditorScreenState
                         error: (err, stack) => Center(
                           child: Text(
                             'Bir hata oluştu: $err',
-                            style: GoogleFonts.nunito(color: _accentCrimson),
+                            style: AppTextStyles.titleSmall.copyWith(color: _accentCrimson),
                           ),
                         ),
                         data: (allTasks) {
@@ -375,22 +367,18 @@ class _CustomDeckEditorScreenState
                                     Text(
                                       'Bu bölümde kendi içeriklerini oluşturabilirsin.',
                                       textAlign: TextAlign.center,
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white70,
+                                      style: AppTextStyles.titleLarge.copyWith(color: Colors.white70,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
-                                        height: 1.5,
-                                      ),
+                                        height: 1.5,),
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
                                       'Bu içerikleri oyun içinde kullanarak eğlenceni katlayabilirsin!',
                                       textAlign: TextAlign.center,
-                                      style: GoogleFonts.nunito(
-                                        color: Colors.white38,
+                                      style: AppTextStyles.labelSmall.copyWith(color: Colors.white38,
                                         fontSize: 13,
-                                        height: 1.5,
-                                      ),
+                                        height: 1.5,),
                                     ),
                                     const SizedBox(height: 24),
                                     ElevatedButton.icon(
@@ -404,7 +392,7 @@ class _CustomDeckEditorScreenState
                                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                                       ),
                                       icon: const Icon(Icons.add_rounded),
-                                      label: Text('İçerik Oluştur', style: GoogleFonts.nunito(fontWeight: FontWeight.w800)),
+                                      label: Text('İçerik Oluştur', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w800)),
                                     ),
                                   ],
                                 ),
@@ -472,12 +460,10 @@ class _CustomDeckEditorScreenState
                                               children: [
                                                 Text(
                                                   task.content,
-                                                  style: GoogleFonts.nunito(
-                                                    color: _textLight,
+                                                  style: AppTextStyles.titleMedium.copyWith(color: _textLight,
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
-                                                    height: 1.4,
-                                                  ),
+                                                    height: 1.4,),
                                                 ),
                                                 const SizedBox(height: 8),
                                                 Row(
@@ -504,14 +490,12 @@ class _CustomDeckEditorScreenState
                                                       child: Text(
                                                         task.category,
                                                         style:
-                                                            GoogleFonts.nunito(
-                                                              color:
+                                                            AppTextStyles.labelSmall.copyWith(color:
                                                                   _accentGold,
                                                               fontSize: 12,
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .bold,
-                                                            ),
+                                                                      .bold,),
                                                       ),
                                                     ),
                                                     const SizedBox(width: 8),
@@ -543,15 +527,13 @@ class _CustomDeckEditorScreenState
                                                             ? 'ORTA'
                                                             : 'ZOR',
                                                         style:
-                                                            GoogleFonts.nunito(
-                                                              color: Colors
+                                                            AppTextStyles.labelSmall.copyWith(color: Colors
                                                                   .grey
                                                                   .shade400,
                                                               fontSize: 12,
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .bold,
-                                                            ),
+                                                                      .bold,),
                                                       ),
                                                     ),
                                                   ],

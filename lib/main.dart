@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
@@ -17,10 +16,7 @@ import 'package:social_risk/shared/widgets/common/themed_background.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ─── FONTS: Enable Google Fonts HTTP fetching ───
-  // Allows downloading fonts like Cinzel over HTTP.
-  GoogleFonts.config.allowRuntimeFetching = true;
-
+  // ─── Firebase Initialization ───
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // ─── NOTE: TaskSeedMigration removed from startup ───

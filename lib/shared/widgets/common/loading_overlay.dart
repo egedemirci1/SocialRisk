@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 class LoadingOverlay extends StatelessWidget {
   final bool isLoading;
@@ -8,11 +8,11 @@ class LoadingOverlay extends StatelessWidget {
   final String message;
 
   const LoadingOverlay({
-    Key? key,
+    super.key,
     required this.isLoading,
     required this.child,
     this.message = 'İşleniyor...',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class LoadingOverlay extends StatelessWidget {
         child,
         if (isLoading)
           Container(
-            color: Colors.black.withOpacity(0.6),
+            color: Colors.black.withValues(alpha: 0.6),
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -32,12 +32,10 @@ class LoadingOverlay extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     message,
-                    style: GoogleFonts.nunito(
-                      color: Colors.white,
+                    style: AppTextStyles.titleMedium.copyWith(color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.none,
-                    ),
+                      decoration: TextDecoration.none,),
                   ),
                 ],
               ),

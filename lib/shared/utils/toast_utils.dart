@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 class ToastUtils {
   static OverlayEntry? _currentEntry;
@@ -160,11 +160,9 @@ class _ToastWidgetState extends State<_ToastWidget> with SingleTickerProviderSta
                   Expanded(
                     child: Text(
                       widget.message,
-                      style: GoogleFonts.nunito(
-                        color: widget.textColor,
+                      style: AppTextStyles.labelSmall.copyWith(color: widget.textColor,
                         fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
+                        fontWeight: FontWeight.w700,),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),

@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Uygulama başlarken gösterilen splash ekranı.
 /// Firebase auth durumunu dinler ve uygun sayfaya yönlendirir.
@@ -45,22 +45,18 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             Text(
               'Social Risk',
-              style: GoogleFonts.nunito(
-                fontSize: 48,
+              style: AppTextStyles.titleMedium.copyWith(fontSize: 48,
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
-                letterSpacing: 1.5,
-              ),
+                letterSpacing: 1.5,),
             ),
             const SizedBox(height: 16),
             Text(
               'Parti Hazırlanıyor...',
-              style: GoogleFonts.nunito(
-                fontSize: 18,
+              style: AppTextStyles.titleMedium.copyWith(fontSize: 18,
                 color: AppColors.primary,
                 fontWeight: FontWeight.w800,
-                letterSpacing: 1.0,
-              ),
+                letterSpacing: 1.0,),
             ),
             const SizedBox(height: 48),
             const SizedBox(

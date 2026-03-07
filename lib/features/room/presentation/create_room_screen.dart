@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/models/enums.dart';
 import '../../../shared/widgets/common/loading_overlay.dart';
@@ -30,7 +29,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   double _scoreTarget = 500;
   double _roundTarget = 5;
   bool _isCreating = false;
-  List<String> _selectedCategories = GameConstants.defaultCategoriesConst.toList();
+  final List<String> _selectedCategories = GameConstants.defaultCategoriesConst.toList();
   GameMode _selectedMode = GameMode.classic;
 
   Future<void> _createRoom() async {
@@ -123,15 +122,13 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                       children: [
                         Text(
                           'Yeni Parti Kur',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w900,
+                          style: AppTextStyles.displayMedium.copyWith(fontWeight: FontWeight.w900,
                             fontSize: 24,
                             color: Colors.white,
                             letterSpacing: 1.0,
                             shadows: const [
                               Shadow(offset: Offset(0, 4), color: Colors.black26, blurRadius: 4),
-                            ],
-                          ),
+                            ],),
                         ),
                         const SizedBox(height: 24),
                         _buildSection(
@@ -206,8 +203,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               Flexible(
                 child: Text(
                   title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
+                  style: AppTextStyles.titleLarge.copyWith(fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: AppColors.accent,
                     letterSpacing: 0.5,
@@ -216,8 +212,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                         color: AppColors.accent.withValues(alpha: 0.3),
                         blurRadius: 6,
                       ),
-                    ],
-                  ),
+                    ],),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -265,14 +260,12 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         if (_isScoreMode) ...[
           AnimatedDefaultTextStyle(
             duration: const Duration(milliseconds: 200),
-            style: GoogleFonts.poppins(
-              fontSize: 16 + (14 * scoreRatio), // Goes from 16 to 30!
+            style: AppTextStyles.titleLarge.copyWith(fontSize: 16 + (14 * scoreRatio), // Goes from 16 to 30!
               fontWeight: FontWeight.w900, 
               color: scoreColor,
               shadows: [
                 Shadow(color: scoreColor.withValues(alpha: 0.5), blurRadius: 10 * scoreRatio),
-              ],
-            ),
+              ],),
             child: Text('${_scoreTarget.toInt()} Puan'),
           ),
           SliderTheme(
@@ -312,14 +305,12 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         ] else ...[
           AnimatedDefaultTextStyle(
             duration: const Duration(milliseconds: 200),
-            style: GoogleFonts.poppins(
-              fontSize: 16 + (14 * roundRatio), // Goes from 16 to 30!
+            style: AppTextStyles.titleLarge.copyWith(fontSize: 16 + (14 * roundRatio), // Goes from 16 to 30!
               fontWeight: FontWeight.w900, 
               color: roundColor,
               shadows: [
                 Shadow(color: roundColor.withValues(alpha: 0.5), blurRadius: 10 * roundRatio),
-              ],
-            ),
+              ],),
             child: Text('${_roundTarget.toInt()} Tur'),
           ),
           SliderTheme(
@@ -425,24 +416,20 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                     children: [
                       Text(
                         _selectedMode == GameMode.classic ? 'Klasik Parti' : 'Patron Parti',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
+                        style: AppTextStyles.titleLarge.copyWith(fontSize: 14,
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5,
-                        ),
+                          letterSpacing: 0.5,),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _selectedMode == GameMode.classic
                             ? 'Şans çarkını çevir ve rastgele kategoriden gelen riskli cezalarla yüzleş. Puan toplamak için tek şansın cesaret!'
                             : 'Görevleri tamamlayarak coin kazan; bu coinlerle başkalarına ceza kitle, risklerden kurtul. Kim daha acımasızsa o kazanır.',
-                        style: GoogleFonts.nunito(
-                          fontSize: 13,
+                        style: AppTextStyles.labelSmall.copyWith(fontSize: 13,
                           color: Colors.white70,
                           fontWeight: FontWeight.w600,
-                          height: 1.4,
-                        ),
+                          height: 1.4,),
                       ),
                     ],
                   ),
@@ -556,11 +543,9 @@ class _ToggleChip extends StatelessWidget {
             child: Center(
               child: Text(
                 label,
-                style: GoogleFonts.nunito(
-                  color: Colors.transparent,
+                style: AppTextStyles.labelSmall.copyWith(color: Colors.transparent,
                   fontSize: 13,
-                  fontWeight: FontWeight.w900,
-                ),
+                  fontWeight: FontWeight.w900,),
               ),
             ),
           ),
@@ -586,11 +571,9 @@ class _ToggleChip extends StatelessWidget {
           AnimatedDefaultTextStyle(
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOut,
-            style: GoogleFonts.nunito(
-              color: isSelected ? AppColors.background : Colors.white54,
+            style: AppTextStyles.labelSmall.copyWith(color: isSelected ? AppColors.background : Colors.white54,
               fontSize: 13,
-              fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
-            ),
+              fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,),
             child: Center(child: Text(label)),
           ),
         ],

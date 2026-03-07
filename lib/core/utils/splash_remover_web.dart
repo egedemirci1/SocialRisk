@@ -1,8 +1,8 @@
-import 'dart:html' as html;
+import 'dart:js' as js;
 
 /// Removes the HTML native splash overlay (web only). Call when app is ready to show login/home.
 void removeNativeSplash() {
   try {
-    html.window.callMethod('removeSplashWhenReady');
+    js.context.callMethod('removeSplashWhenReady');
   } catch (_) {}
 }

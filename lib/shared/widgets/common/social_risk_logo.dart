@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 class SocialRiskLogo extends StatelessWidget {
   final double height;
@@ -26,28 +26,23 @@ class SocialRiskLogo extends StatelessWidget {
               width: height * 0.05,
             ),
           ),
-          child: Center(
             child: Text(
               'S',
-              style: GoogleFonts.montserrat(
+              style: AppTextStyles.specialHeading.copyWith(
                 color: Colors.white,
                 fontSize: height * 0.35,
-                fontWeight: FontWeight.w900,
                 height: 1.1,
               ),
             ),
-          ),
         ),
         SizedBox(height: height * 0.1),
         Text(
           'SOCIALRISK',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
+          style: AppTextStyles.titleLarge.copyWith(color: Colors.white,
             fontSize: height * 0.2,
             fontWeight: FontWeight.w900,
             letterSpacing: 2.5,
-            height: 1.0,
-          ),
+            height: 1.0,),
         ),
       ],
     );

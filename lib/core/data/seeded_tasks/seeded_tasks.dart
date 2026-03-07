@@ -1,5 +1,6 @@
 /// 8 kategori × 100 soru = 800 soru, tamamen local.
 /// Kategoriler: Fiziksel, Bilgi, Dijital, İtiraf, Zihinsel, Ahlaki, Görsel, Mahrem.
+library;
 import 'tasks_fiziksel.dart';
 import 'tasks_bilgi.dart';
 import 'tasks_dijital.dart';

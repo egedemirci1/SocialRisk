@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/loading_overlay.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -24,20 +23,43 @@ class JoinRoomScreen extends ConsumerStatefulWidget {
 
 class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
   static const _codeLength = 6;
-  final List<TextEditingController> _controllers = List.generate(
-    _codeLength,
-    (_) => TextEditingController(),
-  );
-  final List<FocusNode> _focusNodes = List.generate(
-    _codeLength,
-    (_) => FocusNode(),
-  );
-  final TextEditingController _codeController = TextEditingController();
-  final FocusNode _codeFocusNode = FocusNode();
+  late final List<TextEditingController> _controllers;
+  late final List<FocusNode> _focusNodes;
   bool _isJoining = false;
 
-  String get _roomCode => _codeController.text.toUpperCase().replaceAll(' ', '');
+  String get _roomCode => _controllers.map((c) => c.text).join().toUpperCase();
   bool get _isCodeComplete => _roomCode.length == _codeLength;
+
+  @override
+  void initState() {
+    super.initState();
+    _controllers = List.generate(_codeLength, (_) => TextEditingController());
+    _focusNodes = List.generate(_codeLength, (i) {
+      final node = FocusNode();
+      node.addListener(() {
+        if (node.hasFocus && _controllers[i].text.isNotEmpty) {
+          // Auto-select the character when box gains focus
+          _controllers[i].selection = TextSelection(
+            baseOffset: 0,
+            extentOffset: _controllers[i].text.length,
+          );
+        }
+        setState(() {});
+      });
+      return node;
+    });
+  }
+
+  @override
+  void dispose() {
+    for (final c in _controllers) {
+      c.dispose();
+    }
+    for (final f in _focusNodes) {
+      f.dispose();
+    }
+    super.dispose();
+  }
 
   Future<void> _joinRoom() async {
     if (!_isCodeComplete) {
@@ -120,15 +142,13 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
                         children: [
                           Text(
                             'Partiye Katıl',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w900,
+                            style: AppTextStyles.displayMedium.copyWith(fontWeight: FontWeight.w900,
                               fontSize: 24,
                               color: Colors.white,
                               letterSpacing: 1.0,
                               shadows: const [
                                 Shadow(offset: Offset(0, 4), color: Colors.black26, blurRadius: 4),
-                              ],
-                            ),
+                              ],),
                           ),
                           const SizedBox(height: 32),
                           Container(
@@ -163,10 +183,10 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Arkadaşlarının paylaştığı 6 haneli parti kodunu girerek\neğlenceye dahil ol.',
+                            'Arkadaşlarının paylaştığı 6 haneli parti kodunu girerek eğlenceye dahil ol.',
                             style: AppTextStyles.bodyMedium.copyWith(
                               color: Colors.white54,
-                              fontSize: 13,
+                              fontSize: 12.5,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -196,61 +216,93 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
   }
 
   Widget _buildCodeInputs() {
-    return GestureDetector(
-      onTap: () => _codeFocusNode.requestFocus(),
-      child: Stack(
-        children: [
-          // Hidden real TextField that handles input
-          Opacity(
-            opacity: 0,
-            child: TextField(
-              controller: _codeController,
-              focusNode: _codeFocusNode,
-              maxLength: _codeLength,
-              textCapitalization: TextCapitalization.characters,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp('[a-zA-Z0-9]')),
-              ],
-              onChanged: (_) => setState(() {}),
-            ),
-          ),
-          // Visual display boxes
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(_codeLength, (index) {
-              final code = _roomCode;
-              final char = index < code.length ? code[index] : '';
-              final isFocused = _codeFocusNode.hasFocus && index == (code.length < _codeLength ? code.length : _codeLength - 1);
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: index == 3 ? 8 : 4),
-                child: Container(
-                  width: 44,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: isFocused
-                          ? AppColors.accent
-                          : char.isNotEmpty
-                              ? AppColors.accent.withValues(alpha: 0.5)
-                              : Colors.white12,
-                      width: isFocused ? 2 : 1,
-                    ),
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(_codeLength, (index) {
+          final hasText = _controllers[index].text.isNotEmpty;
+
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: index == 3 ? 6 : 3),
+            child: SizedBox(
+              width: 42,
+              height: 54,
+              child: KeyboardListener(
+                focusNode: FocusNode(),
+                onKeyEvent: (event) {
+                  if (event is! KeyDownEvent) return;
+                  
+                  if (event.logicalKey == LogicalKeyboardKey.backspace &&
+                      _controllers[index].text.isEmpty &&
+                      index > 0) {
+                    _controllers[index - 1].clear();
+                    _focusNodes[index - 1].requestFocus();
+                    setState(() {});
+                  } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && index > 0) {
+                    _focusNodes[index - 1].requestFocus();
+                  } else if (event.logicalKey == LogicalKeyboardKey.arrowRight && index < _codeLength - 1) {
+                    _focusNodes[index + 1].requestFocus();
+                  }
+                },
+                child: TextField(
+                  controller: _controllers[index],
+                  focusNode: _focusNodes[index],
+                  textAlign: TextAlign.center,
+                  maxLength: 1,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  showCursor: false,
+                  textCapitalization: TextCapitalization.characters,
+                  keyboardType: TextInputType.visiblePassword,
+                  style: AppTextStyles.displayMedium.copyWith(
+                    color: AppColors.accent,
+                    fontSize: 28,
                   ),
-                  child: Center(
-                    child: Text(
-                      char,
-                      style: AppTextStyles.displayMedium.copyWith(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp('[a-zA-Z0-9]')),
+                  ],
+                  decoration: InputDecoration(
+                    counterText: '',
+                    filled: true,
+                    fillColor: AppColors.surface,
+                    contentPadding: EdgeInsets.zero,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: hasText
+                            ? AppColors.accent.withValues(alpha: 0.5)
+                            : Colors.white12,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
                         color: AppColors.accent,
+                        width: 2,
                       ),
                     ),
                   ),
+                  onTap: () {
+                    // Always select entire text on tap
+                    if (_controllers[index].text.isNotEmpty) {
+                      _controllers[index].selection = TextSelection(
+                        baseOffset: 0,
+                        extentOffset: _controllers[index].text.length,
+                      );
+                    }
+                  },
+                  onChanged: (value) {
+                    if (value.isNotEmpty && index < _codeLength - 1) {
+                      _focusNodes[index + 1].requestFocus();
+                    }
+                    setState(() {});
+                  },
                 ),
-              );
-            }),
-          ),
-        ],
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/category_constants.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Kategori bilgisi — çark dilimi için renk, ikon ve isim.
 class WheelCategory {
@@ -213,11 +213,9 @@ class _SpinWheelState extends State<SpinWheel>
                   const SizedBox(width: 8),
                   Text(
                     _isSpinning ? 'Dönüyor...' : 'Çarkı Çevir!',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
+                    style: AppTextStyles.titleMedium.copyWith(fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
+                      color: Colors.white,),
                   ),
                 ],
               ),
@@ -226,20 +224,16 @@ class _SpinWheelState extends State<SpinWheel>
         else if (!_hasResult && !widget.canSpin && _isSpinning)
           Text(
             'Çark dönüyor...',
-            style: GoogleFonts.inter(
-              fontSize: 14,
+            style: AppTextStyles.titleSmall.copyWith(fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: Colors.white70,
-            ),
+              color: Colors.white70,),
           )
         else if (!_hasResult && !widget.canSpin)
           Text(
             '${widget.playerName ?? 'Oyuncu'}\'nun çarkı çevirmesi bekleniyor...',
-            style: GoogleFonts.inter(
-              fontSize: 14,
+            style: AppTextStyles.titleSmall.copyWith(fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: Colors.white54,
-            ),
+              color: Colors.white54,),
           ),
       ],
     );
@@ -326,15 +320,13 @@ class _WheelPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(
           text: cat.name,
-          style: GoogleFonts.nunito(
-            fontSize: 13,
+          style: AppTextStyles.labelSmall.copyWith(fontSize: 13,
             fontWeight: FontWeight.w900,
             color: Colors.white,
             letterSpacing: 0.5,
             shadows: [
               const Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 1)),
-            ],
-          ),
+            ],),
         ),
         textDirection: TextDirection.ltr,
       )..layout();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Ana aksiyon butonu — gradient arka plan, loading state destekli, Tıklama efekti (Scale & Haptic)
 class PrimaryButton extends StatefulWidget {
@@ -125,11 +125,9 @@ class _PrimaryButtonState extends State<PrimaryButton> with SingleTickerProvider
                             ],
                             Text(
                               widget.label,
-                              style: GoogleFonts.nunito(
-                                fontSize: 16,
+                              style: AppTextStyles.titleMedium.copyWith(fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
+                                color: Colors.white,),
                             ),
                           ],
                         ),

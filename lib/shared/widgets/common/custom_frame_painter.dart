@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import '../../../core/constants/app_colors.dart';
 
 class CustomFramePainter extends CustomPainter {
   final String frameId;
@@ -58,16 +57,16 @@ class CustomFramePainter extends CustomPainter {
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
     final paintObj = Paint()..style = PaintingStyle.fill;
     
-    List<Color> colors = [Colors.redAccent.shade400.withOpacity(0.8), Colors.orangeAccent, Colors.yellowAccent];
+    List<Color> colors = [Colors.redAccent.shade400.withValues(alpha: 0.8), Colors.orangeAccent, Colors.yellowAccent];
     List<double> offsets = [14.0, 9.0, 5.0];
     
     // Alt taban için ekstra kırmızı parlama
     canvas.drawArc(Rect.fromCircle(center: Offset.zero, radius: r + 6), -math.pi * 0.4, math.pi * 0.8, false, 
-        Paint()..color=Colors.red.withOpacity(0.6)..style=PaintingStyle.stroke..strokeWidth=8..maskFilter=const MaskFilter.blur(BlurStyle.normal, 10));
+        Paint()..color=Colors.red.withValues(alpha: 0.6)..style=PaintingStyle.stroke..strokeWidth=8..maskFilter=const MaskFilter.blur(BlurStyle.normal, 10));
 
     for (int k = 0; k < 3; k++) {
       paintObj.color = colors[k];
-      glowPaint.color = colors[k].withOpacity(0.5);
+      glowPaint.color = colors[k].withValues(alpha: 0.5);
       
       final flamePath = Path();
       
@@ -81,8 +80,11 @@ class CustomFramePainter extends CustomPainter {
         double x = currentR * math.cos(angle);
         double y = currentR * math.sin(angle);
         
-        if (angle == -math.pi * 0.9) flamePath.moveTo(x, y);
-        else flamePath.lineTo(x, y);
+        if (angle == -math.pi * 0.9) {
+          flamePath.moveTo(x, y);
+        } else {
+          flamePath.lineTo(x, y);
+        }
       }
       
       for (double angle = math.pi * 0.9; angle >= -math.pi * 0.9; angle -= 0.05) {
@@ -98,7 +100,7 @@ class CustomFramePainter extends CustomPainter {
 
   void _paintIce(Canvas canvas, double r) {
     final glow = Paint()
-      ..color = Colors.cyanAccent.withOpacity(0.6)
+      ..color = Colors.cyanAccent.withValues(alpha: 0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 6
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
@@ -123,14 +125,14 @@ class CustomFramePainter extends CustomPainter {
     }
     
     canvas.drawCircle(Offset.zero, r, glow);
-    canvas.drawCircle(Offset.zero, r, Paint()..color = Colors.cyanAccent.withOpacity(0.8)..style = PaintingStyle.stroke..strokeWidth = 4);
+    canvas.drawCircle(Offset.zero, r, Paint()..color = Colors.cyanAccent.withValues(alpha: 0.8)..style = PaintingStyle.stroke..strokeWidth = 4);
     canvas.drawPath(path, paintObj);
-    canvas.drawPath(path, Paint()..color=Colors.white.withOpacity(0.5)..style=PaintingStyle.stroke..strokeWidth=1.5);
+    canvas.drawPath(path, Paint()..color=Colors.white.withValues(alpha: 0.5)..style=PaintingStyle.stroke..strokeWidth=1.5);
   }
 
   void _paintFlower(Canvas canvas, double r) {
     // Daha kalın, gölgeli sarmaşık
-    final vineGlow = Paint()..color=Colors.lightGreenAccent.withOpacity(0.5)..style=PaintingStyle.stroke..strokeWidth=6..maskFilter=const MaskFilter.blur(BlurStyle.normal, 4);
+    final vineGlow = Paint()..color=Colors.lightGreenAccent.withValues(alpha: 0.5)..style=PaintingStyle.stroke..strokeWidth=6..maskFilter=const MaskFilter.blur(BlurStyle.normal, 4);
     final vinePaint = Paint()
       ..color = Colors.green.shade600
       ..style = PaintingStyle.stroke
@@ -142,8 +144,11 @@ class CustomFramePainter extends CustomPainter {
         double currentR = r + wobble;
         double x = currentR * math.cos(angle);
         double y = currentR * math.sin(angle);
-        if (angle == -math.pi * 0.95) path.moveTo(x, y);
-        else path.lineTo(x, y);
+        if (angle == -math.pi * 0.95) {
+          path.moveTo(x, y);
+        } else {
+          path.lineTo(x, y);
+        }
     }
     canvas.drawPath(path, vineGlow);
     canvas.drawPath(path, vinePaint);
@@ -159,7 +164,7 @@ class CustomFramePainter extends CustomPainter {
       canvas.translate(x, y);
       canvas.rotate(angle);
       
-      final petalGlow = Paint()..color=Colors.pink.withOpacity(0.6)..maskFilter=const MaskFilter.blur(BlurStyle.normal, 3);
+      final petalGlow = Paint()..color=Colors.pink.withValues(alpha: 0.6)..maskFilter=const MaskFilter.blur(BlurStyle.normal, 3);
       final petalPaint = Paint()..color = Colors.pinkAccent.shade100;
       
       for (int i = 0; i < 5; i++) {
@@ -181,7 +186,7 @@ class CustomFramePainter extends CustomPainter {
   void _paintShield(Canvas canvas, double r) {
     // Holografik aydınlatma
     final hexGlow = Paint()
-      ..color = Colors.indigoAccent.shade100.withOpacity(0.6)
+      ..color = Colors.indigoAccent.shade100.withValues(alpha: 0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 8
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
@@ -199,8 +204,11 @@ class CustomFramePainter extends CustomPainter {
         double currentR = r + 6;
         double x = currentR * math.cos(angle);
         double y = currentR * math.sin(angle);
-        if (i == 0) path.moveTo(x, y);
-        else path.lineTo(x, y);
+        if (i == 0) {
+          path.moveTo(x, y);
+        } else {
+          path.lineTo(x, y);
+        }
     }
     canvas.drawPath(path, hexGlow);
     canvas.drawPath(path, hexPaint);
@@ -215,12 +223,12 @@ class CustomFramePainter extends CustomPainter {
     }
     
     // İç katman
-    canvas.drawCircle(Offset.zero, r-1, Paint()..color = Colors.indigoAccent.withOpacity(0.8)..style = PaintingStyle.stroke..strokeWidth = 2.5);
+    canvas.drawCircle(Offset.zero, r-1, Paint()..color = Colors.indigoAccent.withValues(alpha: 0.8)..style = PaintingStyle.stroke..strokeWidth = 2.5);
   }
 
   void _paintIvy(Canvas canvas, double r) {
     // 3 kalın sarmaşık dalı
-    final vineGlow = Paint()..color=Colors.greenAccent.withOpacity(0.4)..style=PaintingStyle.stroke..strokeWidth=6..maskFilter=const MaskFilter.blur(BlurStyle.normal, 3);
+    final vineGlow = Paint()..color=Colors.greenAccent.withValues(alpha: 0.4)..style=PaintingStyle.stroke..strokeWidth=6..maskFilter=const MaskFilter.blur(BlurStyle.normal, 3);
     final vinePaint = Paint()
       ..color = Colors.green.shade800
       ..style = PaintingStyle.stroke
@@ -239,8 +247,11 @@ class CustomFramePainter extends CustomPainter {
         double x = currentR * math.cos(angle);
         double y = currentR * math.sin(angle);
         
-        if (angle == -math.pi * 0.95) path.moveTo(x, y);
-        else path.lineTo(x, y);
+        if (angle == -math.pi * 0.95) {
+          path.moveTo(x, y);
+        } else {
+          path.lineTo(x, y);
+        }
       }
       canvas.drawPath(path, vineGlow);
       canvas.drawPath(path, vinePaint);
@@ -308,7 +319,7 @@ class CustomFramePainter extends CustomPainter {
 
   void _paintStars(Canvas canvas, double r) {
     final orbitGlow = Paint()
-      ..color = const Color(0xFFFFD700).withOpacity(0.5)
+      ..color = const Color(0xFFFFD700).withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 6
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
@@ -321,8 +332,11 @@ class CustomFramePainter extends CustomPainter {
     final orbitPath = Path();
     for (double angle = -math.pi; angle <= math.pi; angle += 0.1) {
       double currentR = r + math.sin(angle * 12) * 4;
-      if (angle == -math.pi) orbitPath.moveTo(currentR * math.cos(angle), currentR * math.sin(angle));
-      else orbitPath.lineTo(currentR * math.cos(angle), currentR * math.sin(angle));
+      if (angle == -math.pi) {
+        orbitPath.moveTo(currentR * math.cos(angle), currentR * math.sin(angle));
+      } else {
+        orbitPath.lineTo(currentR * math.cos(angle), currentR * math.sin(angle));
+      }
     }
     canvas.drawPath(orbitPath, orbitGlow);
     canvas.drawPath(orbitPath, orbitPaint);

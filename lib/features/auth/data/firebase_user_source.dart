@@ -140,4 +140,12 @@ class FirebaseUserSource implements UserRepository {
       'createdAt': FieldValue.serverTimestamp(),
     });
   }
+
+  @override
+  Future<void> updateDisplayName(String uid, String name) async {
+    await _userDoc(uid).set({
+      'displayName': name,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
 }

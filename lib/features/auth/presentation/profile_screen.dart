@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../auth/domain/user_entity.dart';
 import '../../../shared/utils/toast_utils.dart';
-import '../../../shared/utils/toast_utils.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -32,7 +31,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         backgroundColor: AppColors.surface,
         title: Text(
           'Oyuncu Adını Güncelle',
-          style: GoogleFonts.playfairDisplay(color: AppColors.accent),
+          style: AppTextStyles.titleLarge.copyWith(color: AppColors.accent),
         ),
         content: TextField(
           controller: controller,
@@ -124,11 +123,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       appBar: AppBar(
         title: Text(
           'Profilinizi Düzenleyin',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w900,
+          style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w900,
             color: AppColors.accent,
-            letterSpacing: 1.0,
-          ),
+            letterSpacing: 1.0,),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -270,8 +267,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             children: [
               Text(
                 user.displayName,
-                style: GoogleFonts.poppins(
-                  fontSize: 36,
+                style: AppTextStyles.displayLarge.copyWith(fontSize: 36,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
                   letterSpacing: 0.5,
@@ -281,8 +277,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     Shadow(offset: Offset(1.5, 1.5), color: Colors.black87),
                     Shadow(offset: Offset(-1.5, 1.5), color: Colors.black87),
                     Shadow(offset: Offset(0, 6), color: Colors.black54, blurRadius: 8),
-                  ],
-                ),
+                  ],),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(width: 8),
@@ -317,7 +312,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          gradient: AppColors.accentGradient.withOpacity(0.1),
+                          gradient: LinearGradient(
+                            begin: AppColors.accentGradient.begin,
+                            end: AppColors.accentGradient.end,
+                            colors: AppColors.accentGradient.colors
+                                .map((c) => c.withValues(alpha: 0.1))
+                                .toList(),
+                          ),
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(
                             color: AppColors.accent.withValues(alpha: 0.3),
@@ -325,12 +326,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         child: Text(
                           activeTitleItem.name,
-                          style: GoogleFonts.nunito(
-                            color: AppColors.accent,
+                          style: AppTextStyles.labelSmall.copyWith(color: AppColors.accent,
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
-                            letterSpacing: 2,
-                          ),
+                            letterSpacing: 2,),
                         ),
                       );
                   },
@@ -382,11 +381,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   padding: const EdgeInsets.all(40.0),
                   child: Text(
                     'Henüz bir eşyanız yok.\nMağazadaki harika içeriklere göz atmak ister misiniz?',
-                    style: GoogleFonts.nunito(
-                      color: Colors.white38,
+                    style: AppTextStyles.titleSmall.copyWith(color: Colors.white38,
                       fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                      fontWeight: FontWeight.w600,),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -408,12 +405,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(width: 8),
                       Text(
                         'Çerçeveler',
-                        style: GoogleFonts.playfairDisplay(
-                          color: AppColors.accent,
+                        style: AppTextStyles.titleLarge.copyWith(color: AppColors.accent,
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 1,
-                        ),
+                          letterSpacing: 1,),
                       ),
                     ],
                   ),
@@ -446,12 +441,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(width: 8),
                       Text(
                         'Ünvanlar',
-                        style: GoogleFonts.playfairDisplay(
-                          color: AppColors.accent,
+                        style: AppTextStyles.titleLarge.copyWith(color: AppColors.accent,
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 1,
-                        ),
+                          letterSpacing: 1,),
                       ),
                     ],
                   ),
@@ -524,11 +517,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             const SizedBox(height: 8),
             Text(
               item.name,
-              style: GoogleFonts.libreBaskerville(
-                color: isEquipped ? Colors.white : Colors.white70,
+              style: AppTextStyles.labelSmall.copyWith(color: isEquipped ? Colors.white : Colors.white70,
                 fontSize: 10,
-                fontWeight: isEquipped ? FontWeight.bold : FontWeight.normal,
-              ),
+                fontWeight: isEquipped ? FontWeight.bold : FontWeight.normal,),
               textAlign: TextAlign.center,
               maxLines: 2,
             ),
@@ -546,11 +537,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   child: Text(
                     'Aktif',
-                    style: GoogleFonts.playfairDisplay(
-                      color: AppColors.accent,
+                    style: AppTextStyles.titleLarge.copyWith(color: AppColors.accent,
                       fontSize: 8,
-                      fontWeight: FontWeight.w900,
-                    ),
+                      fontWeight: FontWeight.w900,),
                   ),
                 ),
               ),
@@ -566,11 +555,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       children: [
         Text(
           'İstatistikler',
-          style: GoogleFonts.poppins(
-            color: AppColors.accent,
+          style: AppTextStyles.titleLarge.copyWith(color: AppColors.accent,
             fontSize: 18,
-            fontWeight: FontWeight.w800,
-          ),
+            fontWeight: FontWeight.w800,),
         ),
         const Divider(color: Colors.white10),
         const SizedBox(height: 16),
@@ -609,74 +596,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Future<void> _handleSignOut(BuildContext context, WidgetRef ref) async {
-    final user = ref.read(currentUserProvider);
-    final isAnonymous = user?.isAnonymous ?? false;
-
-    if (isAnonymous) {
-      final confirm = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: AppColors.surface,
-          titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-          title: Column(
-            children: [
-              const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 40),
-              const SizedBox(height: 10),
-              Text(
-                'DİKKAT!',
-                style: GoogleFonts.poppins(
-                  color: AppColors.error,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-          content: const Text(
-            'Misafir olarak oynuyorsun. Çıkış yaparsan puan, rütbe ve kozmetikler kalıcı olarak silinir.\n\nYine de çıkmak istiyor musun?',
-            style: TextStyle(color: Colors.white70),
-            textAlign: TextAlign.center,
-          ),
-          actionsAlignment: MainAxisAlignment.spaceEvenly,
-          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          actions: [
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Colors.white38),
-                foregroundColor: Colors.white54,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              onPressed: () => Navigator.pop(context, false),
-              child: Text('HAYIR', style: GoogleFonts.nunito(fontWeight: FontWeight.w800)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              onPressed: () => Navigator.pop(context, true),
-              child: Text('SİL VE ÇIK', style: GoogleFonts.nunito(color: Colors.white, fontWeight: FontWeight.w800)),
-            ),
-          ],
-        ),
-      );
-
-      if (confirm != true) return;
-    }
-
-    try {
-      await ref.read(authControllerProvider.notifier).logout();
-      if (context.mounted) {
-        context.go('/login');
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ToastUtils.showError(context, 'Çıkış yapılamadı: $e');
-      }
-    }
-  }
 }
 
 class _StatRow extends StatelessWidget {
@@ -712,19 +631,15 @@ class _StatRow extends StatelessWidget {
           const SizedBox(width: 12),
           Text(
             label,
-            style: GoogleFonts.libreBaskerville(
-              color: Colors.white54,
-              fontSize: 13,
-            ),
+            style: AppTextStyles.labelSmall.copyWith(color: Colors.white54,
+              fontSize: 13,),
           ),
           const Spacer(),
           Text(
             value,
-            style: GoogleFonts.playfairDisplay(
-              color: Colors.white,
+            style: AppTextStyles.titleLarge.copyWith(color: Colors.white,
               fontSize: 18,
-              fontWeight: FontWeight.w900,
-            ),
+              fontWeight: FontWeight.w900,),
           ),
         ],
       ),
@@ -758,11 +673,9 @@ class _TabItem extends StatelessWidget {
           child: Center(
             child: Text(
               title,
-              style: GoogleFonts.nunito(
-                color: isSelected ? AppColors.background : Colors.white54,
+              style: AppTextStyles.labelSmall.copyWith(color: isSelected ? AppColors.background : Colors.white54,
                 fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                fontSize: 13,
-              ),
+                fontSize: 13,),
             ),
           ),
         ),

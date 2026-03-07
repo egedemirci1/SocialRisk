@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Etkileşimli buton (tıklandığında küçülme animasyonu)
 class InteractiveButton extends StatefulWidget {
@@ -117,11 +117,9 @@ class MedievalButton extends StatelessWidget {
                         const SizedBox(width: 12),
                         Text(
                           label,
-                          style: GoogleFonts.cinzel(
+                          style: AppTextStyles.specialHeading.copyWith(
                             fontSize: 17,
-                            fontWeight: FontWeight.w700,
                             color: textColor,
-                            letterSpacing: 1.0,
                           ),
                         ),
                       ],

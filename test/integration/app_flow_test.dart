@@ -17,7 +17,7 @@ void main() {
 
       // Assert
       // Uygulamanın root MaterialApp veya router yapısını bulmasını bekleriz.
-      expect(find.byType(MaterialApp).or(find.byType(MaterialApp.router)), findsOneWidget);
+      expect(find.byType(MaterialApp), findsOneWidget);
     });
   });
 }

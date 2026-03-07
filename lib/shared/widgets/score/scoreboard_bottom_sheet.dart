@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../features/room/providers/room_provider.dart';
@@ -178,10 +177,11 @@ class _ScoreTile extends ConsumerWidget {
                   if (titleItem != null)
                     Text(
                       '${titleItem.imageUrl} ${titleItem.name}',
-                      style: GoogleFonts.cinzel(
+                      style: AppTextStyles.labelSmall.copyWith(
                         color: const Color(0xFFD4AF37),
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
                       ),
                     ),
                 ],

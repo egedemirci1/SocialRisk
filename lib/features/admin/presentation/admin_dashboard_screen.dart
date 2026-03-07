@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/admin_provider.dart';
-import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Yönetici (Admin) Paneli — Parti Temalı
 class AdminDashboardScreen extends ConsumerWidget {
@@ -20,11 +19,9 @@ class AdminDashboardScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           'YÖNETİCİ PANELİ',
-          style: GoogleFonts.playfairDisplay(
-            fontWeight: FontWeight.w900,
+          style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w900,
             color: AppColors.accent,
-            letterSpacing: 2,
-          ),
+            letterSpacing: 2,),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -66,11 +63,9 @@ class AdminDashboardScreen extends ConsumerWidget {
                       Expanded(
                         child: Text(
                           'Kategoriler sabitlendi. İçerik girişine hazırsınız.',
-                          style: GoogleFonts.playfairDisplay(
-                            color: Colors.white,
+                          style: AppTextStyles.titleLarge.copyWith(color: Colors.white,
                             fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                          ),
+                            fontSize: 14,),
                         ),
                       ),
                     ],
@@ -82,10 +77,8 @@ class AdminDashboardScreen extends ConsumerWidget {
                   child: Center(
                     child: Text(
                       'Sistemde görev bulunamadı.',
-                      style: GoogleFonts.libreBaskerville(
-                        color: Colors.white24,
-                        fontSize: 16,
-                      ),
+                      style: AppTextStyles.titleMedium.copyWith(color: Colors.white24,
+                        fontSize: 16,),
                     ),
                   ),
                 )
@@ -112,18 +105,14 @@ class AdminDashboardScreen extends ConsumerWidget {
                   ),
                   title: Text(
                     task.content,
-                    style: GoogleFonts.playfairDisplay(
-                      color: Colors.white,
+                    style: AppTextStyles.titleLarge.copyWith(color: Colors.white,
                       fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                    ),
+                      fontSize: 15,),
                   ),
                   subtitle: Text(
                     '${task.category.toUpperCase()} • ${task.difficulty.toUpperCase()} • 👍 ${task.likes} / 👎 ${task.dislikes}',
-                    style: GoogleFonts.libreBaskerville(
-                      color: Colors.white30,
-                      fontSize: 11,
-                    ),
+                    style: AppTextStyles.labelSmall.copyWith(color: Colors.white30,
+                      fontSize: 11,),
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -159,16 +148,12 @@ class AdminDashboardScreen extends ConsumerWidget {
                               backgroundColor: AppColors.surface,
                               title: Text(
                                 'GÖREVİ SİL?',
-                                style: GoogleFonts.playfairDisplay(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w900,
-                                ),
+                                style: AppTextStyles.titleLarge.copyWith(color: Colors.white,
+                                  fontWeight: FontWeight.w900,),
                               ),
                               content: Text(
                                 'Bu görev sistemden kalıcı olarak silinecek.',
-                                style: GoogleFonts.libreBaskerville(
-                                  color: Colors.white70,
-                                ),
+                                style: AppTextStyles.titleSmall.copyWith(color: Colors.white70,),
                               ),
                               actions: [
                                 TextButton(

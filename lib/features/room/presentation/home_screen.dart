@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -17,6 +16,7 @@ import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Ana menü ekranı — Parti Temalı
 class HomeScreen extends ConsumerStatefulWidget {
@@ -72,17 +72,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SizedBox(height: 20),
                 Text(
                   'Ayarlar',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
+                  style: AppTextStyles.headlineMedium.copyWith(color: Colors.white,
                     fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
+                    fontWeight: FontWeight.w700,),
                 ),
                 const SizedBox(height: 16),
                 ListTile(
                   leading: const Icon(Icons.person_outline_rounded, color: AppColors.accent),
-                  title: Text('Profil', style: GoogleFonts.nunito(color: Colors.white, fontWeight: FontWeight.w700)),
-                  subtitle: Text('Adı ve fotoğrafı düzenle', style: GoogleFonts.nunito(color: Colors.white54, fontSize: 12)),
+                  title: Text('Profil', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+                  subtitle: Text('Adı ve fotoğrafı düzenle', style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12)),
                   onTap: () {
                     Navigator.pop(context);
                     context.push('/profile');
@@ -91,8 +89,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.confirmation_number_rounded, color: AppColors.accent),
-                  title: Text('Mağaza', style: GoogleFonts.nunito(color: Colors.white, fontWeight: FontWeight.w700)),
-                  subtitle: Text('Kozmetikler ve içerikler', style: GoogleFonts.nunito(color: Colors.white54, fontSize: 12)),
+                  title: Text('Mağaza', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+                  subtitle: Text('Kozmetikler ve içerikler', style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12)),
                   onTap: () {
                     Navigator.pop(context);
                     context.push('/store');
@@ -101,8 +99,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.menu_book_rounded, color: AppColors.accent),
-                  title: Text('İçeriklerim', style: GoogleFonts.nunito(color: Colors.white, fontWeight: FontWeight.w700)),
-                  subtitle: Text('Kendi içeriklerini yönet', style: GoogleFonts.nunito(color: Colors.white54, fontSize: 12)),
+                  title: Text('İçeriklerim', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+                  subtitle: Text('Kendi içeriklerini yönet', style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12)),
                   onTap: () {
                     Navigator.pop(context);
                     context.push('/custom-deck');
@@ -114,10 +112,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   leading: const Icon(Icons.logout_rounded, color: AppColors.error),
                   title: Text(
                     'Çıkış Yap',
-                    style: GoogleFonts.nunito(
-                      color: AppColors.error,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: AppTextStyles.titleSmall.copyWith(color: AppColors.error,
+                      fontWeight: FontWeight.w700,),
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -203,7 +199,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     displayName,
                     profile,
                     cosmetics,
-                    user?.uid,
+                    user.uid,
                   ),
                   const Spacer(),
                   _buildActions(context, ref, user),
@@ -253,8 +249,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         const SizedBox(height: 4),
         Text(
           playerName,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
+          style: AppTextStyles.displayLarge.copyWith(color: Colors.white,
             fontSize: 36,
             fontWeight: FontWeight.w900,
             letterSpacing: 0.5,
@@ -264,8 +259,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Shadow(offset: Offset(1.5, 1.5), color: Colors.black87),
               Shadow(offset: Offset(-1.5, 1.5), color: Colors.black87),
               Shadow(offset: Offset(0, 6), color: Colors.black54, blurRadius: 8),
-            ],
-          ),
+            ],),
           textAlign: TextAlign.center,
         ),
         if (activeTitleItem != null) ...[
@@ -273,7 +267,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
-              gradient: AppColors.accentGradient.withOpacity(0.15),
+              gradient: LinearGradient(
+                begin: AppColors.accentGradient.begin,
+                end: AppColors.accentGradient.end,
+                colors: AppColors.accentGradient.colors
+                    .map((c) => c.withValues(alpha: 0.15))
+                    .toList(),
+              ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
                 color: AppColors.accent.withValues(alpha: 0.35),
@@ -281,12 +281,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             child: Text(
               activeTitleItem.name,
-              style: GoogleFonts.nunito(
-                color: AppColors.accent,
+              style: AppTextStyles.labelSmall.copyWith(color: AppColors.accent,
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
-                letterSpacing: 1.5,
-              ),
+                letterSpacing: 1.5,),
             ),
           ),
         ],
@@ -374,11 +372,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const SizedBox(height: 10),
               Text(
                 'DİKKAT!',
-                style: GoogleFonts.poppins(
-                  color: AppColors.error,
+                style: AppTextStyles.headlineMedium.copyWith(color: AppColors.error,
                   fontWeight: FontWeight.w800,
-                  fontSize: 20,
-                ),
+                  fontSize: 20,),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -400,7 +396,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               onPressed: () => Navigator.pop(context, false),
-              child: Text('HAYIR', style: GoogleFonts.nunito(fontWeight: FontWeight.w800)),
+              child: Text('HAYIR', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w800)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -410,7 +406,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               onPressed: () => Navigator.pop(context, true),
-              child: Text('SİL VE ÇIK', style: GoogleFonts.nunito(color: Colors.white, fontWeight: FontWeight.w800)),
+              child: Text('SİL VE ÇIK', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
             ),
           ],
         ),
@@ -441,11 +437,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onPressed: () => context.push('/profile'),
           child: Text(
             'Profil',
-            style: GoogleFonts.nunito(
-              color: AppColors.accent,
+            style: AppTextStyles.titleSmall.copyWith(color: AppColors.accent,
               fontSize: 14,
-              fontWeight: FontWeight.w800,
-            ),
+              fontWeight: FontWeight.w800,),
           ),
         ),
         Container(
@@ -458,11 +452,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onPressed: () => _showSettingsSheet(context, ref),
           child: Text(
             'Ayarlar',
-            style: GoogleFonts.nunito(
-              color: AppColors.accent,
+            style: AppTextStyles.titleSmall.copyWith(color: AppColors.accent,
               fontSize: 14,
-              fontWeight: FontWeight.w800,
-            ),
+              fontWeight: FontWeight.w800,),
           ),
         ),
       ],

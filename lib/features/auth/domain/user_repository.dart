@@ -14,4 +14,5 @@ abstract class UserRepository {
     required String targetUserAvatar,
     required String reason,
   });
+  Future<void> updateDisplayName(String uid, String name);
 }

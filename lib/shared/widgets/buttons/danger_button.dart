@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Tehlike aksiyonu butonu — Pas geç, Reddet gibi durumlar için. Haptic & Scale animeli.
 class DangerButton extends StatefulWidget {
@@ -136,13 +136,11 @@ class _DangerButtonState extends State<DangerButton> with SingleTickerProviderSt
                             ],
                             Text(
                               widget.label,
-                              style: GoogleFonts.nunito(
-                                fontSize: 16,
+                              style: AppTextStyles.titleMedium.copyWith(fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: widget.outlined
                                     ? AppColors.penalty
-                                    : Colors.white,
-                              ),
+                                    : Colors.white,),
                             ),
                           ],
                         ),

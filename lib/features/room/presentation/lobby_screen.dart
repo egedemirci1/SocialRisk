@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart' show User;
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
@@ -164,18 +163,19 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     try {
                       final room = roomAsync.value;
                       final players = playersAsync.value ?? [];
-                      final playerIds = players.map((p) => p.id as String).toList();
+                      final playerIds = players.map((p) => p.id).toList();
                       final gameId = await ref.read(roomRepositoryProvider).startGameInRoom(
                         roomCode: widget.roomCode,
                         playerIds: playerIds,
                         mode: room?.mode ?? GameMode.classic,
                         categories: room?.categories ?? [],
                       );
-                      if (mounted) {
-                        context.go('/task', extra: {'gameId': gameId, 'roomCode': widget.roomCode});
-                      }
+                      
+                      if (!context.mounted) return;
+                      context.go('/task', extra: {'gameId': gameId, 'roomCode': widget.roomCode});
                     } catch (e) {
-                      if (mounted) ToastUtils.showError(context, 'Hata: $e');
+                      if (!context.mounted) return;
+                      ToastUtils.showError(context, 'Hata: $e');
                     } finally {
                       if (mounted) setState(() => _isStartingGame = false);
                     }

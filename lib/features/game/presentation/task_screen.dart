@@ -400,7 +400,13 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            gradient: AppColors.accentGradient.withOpacity(0.15),
+            gradient: LinearGradient(
+              begin: AppColors.accentGradient.begin,
+              end: AppColors.accentGradient.end,
+              colors: AppColors.accentGradient.colors
+                  .map((c) => c.withValues(alpha: 0.15))
+                  .toList(),
+            ),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
           ),

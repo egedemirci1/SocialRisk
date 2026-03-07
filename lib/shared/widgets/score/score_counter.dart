@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Animasyonlu puan sayacı — puan değiştiğinde animasyonlu geçiş.
 class ScoreCounter extends StatelessWidget {
@@ -31,11 +31,9 @@ class ScoreCounter extends StatelessWidget {
             return Text(
               '$value',
               style: textStyle ??
-                  GoogleFonts.nunito(
-                    fontSize: 20,
+                  AppTextStyles.titleMedium.copyWith(fontSize: 20,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.accent,
-                  ),
+                    color: AppColors.accent,),
             );
           },
         ),
@@ -52,13 +50,11 @@ class ScoreCounter extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               child: Text(
                 delta! > 0 ? '+$delta' : '$delta',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
+                style: AppTextStyles.labelSmall.copyWith(fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: delta! > 0
                       ? AppColors.votePositive
-                      : AppColors.penalty,
-                ),
+                      : AppColors.penalty,),
               ),
             ),
           ),

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../shared/widgets/common/loading_overlay.dart';
 import '../providers/auth_provider.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
@@ -16,6 +15,7 @@ import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
+import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Login ekranı — Tiyatro Temalı
 class LoginScreen extends ConsumerStatefulWidget {
@@ -138,8 +138,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       if (mounted) {
         String msg = 'Giriş başarısız';
         if (e is PlatformException) {
-          msg = '${e.message ?? e.code}';
-          if (e.code != null && e.code!.isNotEmpty) msg = '${e.code}: $msg';
+          msg = e.message ?? e.code;
+          if (e.code.isNotEmpty) msg = '${e.code}: $msg';
         } else if (e.toString().contains('ApiException') || e.toString().contains('sign_in_failed')) {
           msg = e.toString().replaceFirst(RegExp(r'^Exception:\s*'), '');
         } else {
@@ -232,17 +232,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           TextField(
             controller: _nameController,
             maxLength: 24,
-            style: GoogleFonts.nunito(
-              fontSize: 20,
+            style: AppTextStyles.titleMedium.copyWith(fontSize: 20,
               color: Colors.white,
-              fontWeight: FontWeight.w800,
-            ),
+              fontWeight: FontWeight.w800,),
             decoration: InputDecoration(
               hintText: 'Oyuncu Adınız...',
-              hintStyle: GoogleFonts.nunito(
-                color: Colors.white38,
-                fontWeight: FontWeight.w600,
-              ),
+              hintStyle: AppTextStyles.titleSmall.copyWith(color: Colors.white38,
+                fontWeight: FontWeight.w600,),
               counterText: '',
               prefixIcon: const Icon(
                 Icons.person_outline_rounded,
@@ -291,11 +287,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           const SizedBox(height: 16),
           Text(
             '* Anonim olarak devam edeceksiniz. İstatistikleriniz bu cihaza kaydedilir.',
-            style: GoogleFonts.nunito(
-              color: Colors.white38,
+            style: AppTextStyles.labelSmall.copyWith(color: Colors.white38,
               fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+              fontWeight: FontWeight.w600,),
             textAlign: TextAlign.center,
           ),
         ],
@@ -313,12 +307,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'Veya',
-                style: GoogleFonts.nunito(
-                  color: Colors.white38,
+                style: AppTextStyles.titleSmall.copyWith(color: Colors.white38,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: 1.5,
-                ),
+                  letterSpacing: 1.5,),
               ),
             ),
             const Expanded(child: Divider(color: Colors.white10)),
