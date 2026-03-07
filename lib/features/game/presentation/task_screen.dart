@@ -75,7 +75,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     setState(() => _isAccepting = true);
     try {
       await ref.read(gameControllerProvider.notifier).acceptTask(widget.gameId);
-      await ref.read(gameControllerProvider.notifier).acceptTask(widget.gameId);
       // Removed context.push to rely purely on the provider listener!
     } finally {
       if (mounted) setState(() => _isAccepting = false);
@@ -94,8 +93,10 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             roomId: widget.roomCode,
             playerId: uid,
           );
-      setState(() => _contentRevealed = false);
-      _cardController.reset();
+      if (mounted) {
+        setState(() => _contentRevealed = false);
+        _cardController.reset();
+      }
     } finally {
       if (mounted) setState(() => _isPassing = false);
     }
@@ -105,6 +106,49 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   Widget build(BuildContext context) {
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final roomAsync = ref.watch(watchRoomProvider(widget.roomCode));
+
+    ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
+      previous,
+      next,
+    ) {
+      final prev = previous?.value;
+      final nextG = next.value;
+      if (prev?.currentTask == null && nextG?.currentTask != null) {
+        if (mounted) {
+          setState(() => _contentRevealed = false);
+          _cardController.forward(from: 0.0);
+        }
+      }
+      if (nextG != null && prev?.status != nextG.status) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            if (nextG.status == GameStatus.choosingDifficulty) {
+              context.replace(
+                '/difficulty',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
+            } else if (nextG.status == GameStatus.performing) {
+              context.replace(
+                '/performing',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
+            } else if (nextG.status == GameStatus.voting) {
+              context.replace(
+                '/voting',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
+            } else if (nextG.status == GameStatus.results) {
+              context.replace(
+                '/round-result',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
+            } else if (nextG.status == GameStatus.finished) {
+              context.replace('/game-over', extra: widget.roomCode);
+            }
+          }
+        });
+      }
+    });
 
     return gameAsync.when(
       data: (game) {
@@ -129,17 +173,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             .firstOrNull;
         final playerName = currentPlayer?.name ?? 'Oyuncu';
 
-        ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
-          previous,
-          next,
-        ) {
-          if (previous?.value?.currentTask == null &&
-              next.value?.currentTask != null) {
-            setState(() => _contentRevealed = false);
-            _cardController.forward(from: 0.0);
-          }
-        });
-
         if (task != null &&
             !_cardController.isAnimating &&
             _cardController.value == 0.0) {
@@ -147,8 +180,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             if (mounted) _cardController.forward(from: 0.0);
           });
         }
-
-        _handleStatusChanges(game, isMyTurn);
 
         // Fallback: Eğer oyun zaten oylama aşamasındaysa hemen yönlendir
         // (diğer oyuncunun stream gecikmesiyle task ekranında kalmasını önler)
@@ -256,45 +287,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         body: Center(child: Text('Hata: $e')),
       ),
     );
-  }
-
-  void _handleStatusChanges(GameEntity game, bool isMyTurn) {
-    ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
-      previous,
-      next,
-    ) {
-      if (!mounted) return;
-      final nextG = next.value;
-      if (nextG != null && previous?.value?.status != nextG.status) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            if (nextG.status == GameStatus.choosingDifficulty) {
-              context.replace(
-                '/difficulty',
-                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-              );
-            } else if (nextG.status == GameStatus.performing) {
-              context.replace(
-                '/performing',
-                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-              );
-            } else if (nextG.status == GameStatus.voting) {
-              context.replace(
-                '/voting',
-                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-              );
-            } else if (nextG.status == GameStatus.results) {
-              context.replace(
-                '/round-result',
-                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-              );
-            } else if (nextG.status == GameStatus.finished) {
-              context.replace('/game-over', extra: widget.roomCode);
-            }
-          }
-        });
-      }
-    });
   }
 
   Widget _buildWheelView(

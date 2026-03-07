@@ -54,6 +54,24 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
 
+    ref.listen<AsyncValue<GameEntity?>>(
+      watchGameProvider(widget.gameId),
+      (previous, next) {
+        if (!context.mounted) return;
+        final currentStatus = next.value?.status;
+
+        if (currentStatus == GameStatus.playing ||
+            currentStatus == GameStatus.choosingDifficulty) {
+          context.go(
+            '/task',
+            extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+          );
+        } else if (currentStatus == GameStatus.finished) {
+          context.go('/game-over', extra: widget.roomCode);
+        }
+      },
+    );
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
@@ -92,25 +110,6 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
               isGameOver = players.any((p) => p.score >= room.endConditionValue);
             }
           }
-
-          ref.listen<AsyncValue<GameEntity?>>(
-            watchGameProvider(widget.gameId),
-            (previous, next) {
-              if (!context.mounted) return;
-              final currentStatus = next.value?.status;
-
-              if (currentStatus == GameStatus.playing ||
-                  currentStatus == GameStatus.choosingDifficulty) {
-                // nextTurn çağrıldı — tüm oyuncular task ekranına
-                context.go(
-                  '/task',
-                  extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-                );
-              } else if (currentStatus == GameStatus.finished) {
-                context.go('/game-over', extra: widget.roomCode);
-              }
-            },
-          );
 
           return SafeArea(
             child: SingleChildScrollView(
@@ -500,12 +499,14 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
 
   void _submit(bool like) {
     if (_givenFeedback != null) return;
+    final userId = ref.read(currentUserProvider)?.uid;
+    if (userId == null) return;
     setState(() => _givenFeedback = like);
     ref
         .read(taskControllerProvider.notifier)
         .submitFeedback(
           taskId: widget.taskId,
-          userId: ref.read(currentUserProvider)!.uid,
+          userId: userId,
           isLike: like,
         );
   }

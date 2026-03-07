@@ -89,6 +89,22 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
     final roomAsync = ref.watch(watchRoomProvider(widget.roomCode));
 
+    ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
+      previous,
+      next,
+    ) {
+      if (!mounted) return;
+      final currentStatus = next.value?.status;
+      if (currentStatus == GameStatus.results) {
+        context.go(
+          '/round-result',
+          extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+        );
+      } else if (currentStatus == GameStatus.finished) {
+        context.go('/game-over', extra: widget.roomCode);
+      }
+    });
+
     return gameAsync.when(
       data: (game) {
         if (game == null) {
@@ -103,22 +119,6 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             .where((p) => p.id == game.currentPlayerId)
             .firstOrNull;
         final performerName = performer?.name ?? 'Oyuncu';
-
-        // Game durumu listener'ı (Riverpod bunu otomatik yönetir, koşulsuz çağrılmalı)
-        ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
-          previous,
-          next,
-        ) {
-          final currentStatus = next.value?.status;
-          if (currentStatus == GameStatus.results) {
-            context.go(
-              '/round-result',
-              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-            );
-          } else if (currentStatus == GameStatus.finished) {
-            context.go('/game-over', extra: widget.roomCode);
-          }
-        });
 
         final activePlayerIds = activePlayers.map((p) => p.id).toList();
         final allVoted =
@@ -505,6 +505,7 @@ class _FloatingPsychologicalTextsState
     'Gerilim tırmanıyor...',
   ];
 
+  final Random _rng = Random();
   late Timer _timer;
   String _currentText = '';
   Alignment _currentAlignment = Alignment.center;
@@ -512,14 +513,14 @@ class _FloatingPsychologicalTextsState
   @override
   void initState() {
     super.initState();
-    _currentText = _texts[Random().nextInt(_texts.length)];
+    _currentText = _texts[_rng.nextInt(_texts.length)];
     _timer = Timer.periodic(const Duration(seconds: 4), (_) {
       if (!mounted) return;
       setState(() {
-        _currentText = _texts[Random().nextInt(_texts.length)];
+        _currentText = _texts[_rng.nextInt(_texts.length)];
         _currentAlignment = Alignment(
-          (Random().nextDouble() * 1.6) - 0.8, // -0.8 to 0.8
-          (Random().nextDouble() * 1.6) - 0.8,
+          (_rng.nextDouble() * 1.6) - 0.8, // -0.8 to 0.8
+          (_rng.nextDouble() * 1.6) - 0.8,
         );
       });
     });
