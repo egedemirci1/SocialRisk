@@ -75,6 +75,11 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
               '/task',
               extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
             );
+          } else if (game.status == GameStatus.choosingDifficulty) {
+            context.replace(
+              '/difficulty',
+              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+            );
           } else if (game.status == GameStatus.finished) {
             context.replace('/game-over', extra: widget.roomCode);
           } else if (game.status == GameStatus.results) {
@@ -249,7 +254,6 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasDecayed = currentValue < defaultValue;
     return GestureDetector(
       onTap: isPickable ? onTap : null,
       child: Container(
@@ -273,6 +277,28 @@ class _CategoryCard extends StatelessWidget {
                   size: 32,
                 ),
               ),
+            if (!isLocked && currentValue > 10)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Column(
+                  children: [
+                    const Icon(
+                      Icons.local_fire_department_rounded,
+                      color: Colors.orange,
+                      size: 20,
+                    ),
+                    Text(
+                      'Sıcak Fırsat',
+                      style: AppTextStyles.labelSmall.copyWith(
+                        color: Colors.orange,
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             Opacity(
               opacity: isLocked ? 0.2 : 1.0,
               child: Column(
@@ -292,15 +318,15 @@ class _CategoryCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${currentValue}x',
+                        '$currentValue',
                         style: AppTextStyles.titleLarge.copyWith(
-                          color: hasDecayed
+                          color: currentValue < defaultValue
                               ? AppColors.primary
                               : AppColors.accent,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
-                      if (hasDecayed) ...[
+                      if (currentValue < defaultValue) ...[
                         const SizedBox(width: 4),
                         const Icon(
                           Icons.trending_down_rounded,
@@ -312,7 +338,7 @@ class _CategoryCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'ALKIŞ ÇARPANI',
+                    'TABAN PUAN',
                     style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white24,
                     ),

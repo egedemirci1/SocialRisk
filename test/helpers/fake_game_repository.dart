@@ -167,6 +167,8 @@ class FakeGameRepository implements GameRepository {
   @override
   Future<void> setRoundResult({
     required String gameId,
+    required String roomId,
+    required String playerId,
     required int score,
     required int multiplier,
   }) async {
@@ -175,7 +177,12 @@ class FakeGameRepository implements GameRepository {
     s.status = GameStatus.results;
     s.lastRoundScore = score;
     s.lastRoundMultiplier = multiplier;
-    s.lastRoundPlayerId = s.currentPlayerId;
+    s.lastRoundPlayerId = playerId;
+    
+    // Puanı da güncelle
+    final key = _scoreKey(roomId, playerId);
+    _playerScores[key] = (_playerScores[key] ?? 0) + score;
+    
     _emit(gameId);
   }
 
@@ -258,6 +265,7 @@ class FakeGameRepository implements GameRepository {
     s.currentPickIndex = 0;
     s.lockedCategories = [];
     s.categoryMarketValues = Map.from(GameConstants.defaultMarketValues);
+    s.categoryPickCounts = Map.from(GameConstants.defaultPickCounts);
     s.currentTask = null;
     s.selectedCategory = null;
     s.selectedDifficulty = null;
@@ -282,9 +290,13 @@ class FakeGameRepository implements GameRepository {
     final newValue = (currentValue - GameConstants.marketDecayAmount).clamp(1, 10);
     updatedMarket[category] = newValue;
     s.categoryMarketValues = updatedMarket;
-    final defaultVal = GameConstants.defaultMarketValues[category] ?? 1;
-    final timesSelected = defaultVal - newValue + 1;
-    if (timesSelected >= GameConstants.lockThreshold) {
+    
+    final updatedCounts = Map<String, int>.from(s.categoryPickCounts);
+    final newCount = (updatedCounts[category] ?? 0) + 1;
+    updatedCounts[category] = newCount;
+    s.categoryPickCounts = updatedCounts;
+
+    if (newCount >= GameConstants.lockThreshold) {
       s.lockedCategories = [...s.lockedCategories, category];
     }
     s.currentPickIndex++;
@@ -319,11 +331,13 @@ class _MutableGameState {
     this.selectedDifficulty,
     this.mode = GameMode.classic,
     Map<String, int>? categoryMarketValues,
+    Map<String, int>? categoryPickCounts,
     List<String>? lockedCategories,
     List<String>? categoryPickOrder,
     this.currentPickIndex = 0,
   })  : usedTaskIds = usedTaskIds ?? [],
         categoryMarketValues = categoryMarketValues ?? {},
+        categoryPickCounts = categoryPickCounts ?? {},
         lockedCategories = lockedCategories ?? [],
         categoryPickOrder = categoryPickOrder ?? [];
 
@@ -345,6 +359,7 @@ class _MutableGameState {
   String? selectedDifficulty;
   GameMode mode;
   Map<String, int> categoryMarketValues;
+  Map<String, int> categoryPickCounts;
   List<String> lockedCategories;
   List<String> categoryPickOrder;
   int currentPickIndex;
@@ -371,6 +386,7 @@ class _MutableGameState {
       selectedDifficulty: e.selectedDifficulty,
       mode: e.mode,
       categoryMarketValues: Map.from(e.categoryMarketValues),
+      categoryPickCounts: Map.from(e.categoryPickCounts),
       lockedCategories: List.from(e.lockedCategories),
       categoryPickOrder: List.from(e.categoryPickOrder),
       currentPickIndex: e.currentPickIndex,
@@ -397,6 +413,7 @@ class _MutableGameState {
       selectedDifficulty: selectedDifficulty,
       mode: mode,
       categoryMarketValues: categoryMarketValues,
+      categoryPickCounts: categoryPickCounts,
       lockedCategories: lockedCategories,
       categoryPickOrder: categoryPickOrder,
       currentPickIndex: currentPickIndex,

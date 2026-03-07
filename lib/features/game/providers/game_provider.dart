@@ -84,16 +84,11 @@ class GameController extends _$GameController {
   }) async {
     final repo = ref.read(gameRepositoryProvider);
 
-    // Puanı oyuncuya ekle
-    await repo.updatePlayerScore(
-      roomId: roomId,
-      playerId: playerId,
-      scoreToAdd: scoreToAdd,
-    );
-
-    // Game ends manually by the host on the RoundResultScreen based on condition
+    // Puanı ve sonuçları transaction ile tek seferde güncelle
     await repo.setRoundResult(
       gameId: gameId,
+      roomId: roomId,
+      playerId: playerId,
       score: scoreToAdd,
       multiplier: taskMultiplier,
     );

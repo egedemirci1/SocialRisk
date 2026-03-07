@@ -37,6 +37,8 @@ abstract class GameRepository {
 
   Future<void> setRoundResult({
     required String gameId,
+    required String roomId,
+    required String playerId,
     required int score,
     required int multiplier,
   });

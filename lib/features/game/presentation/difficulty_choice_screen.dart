@@ -186,6 +186,7 @@ class _DifficultyChoiceScreenState
                       _buildDifficultyCard(
                         title: 'AMATÖR',
                         multiplier: '1x',
+                        estimatedPoints: (game.categoryMarketValues[game.selectedCategory] ?? 10) * 1,
                         color: Colors.green,
                         onTap: () => _selectDifficulty('easy'),
                       ),
@@ -193,6 +194,7 @@ class _DifficultyChoiceScreenState
                       _buildDifficultyCard(
                         title: 'PROFESYONEL',
                         multiplier: '2x',
+                        estimatedPoints: (game.categoryMarketValues[game.selectedCategory] ?? 10) * 2,
                         color: Colors.orange,
                         onTap: () => _selectDifficulty('medium'),
                       ),
@@ -200,6 +202,7 @@ class _DifficultyChoiceScreenState
                       _buildDifficultyCard(
                         title: 'DUAYEN',
                         multiplier: '3x',
+                        estimatedPoints: (game.categoryMarketValues[game.selectedCategory] ?? 10) * 3,
                         color: AppColors.primary,
                         onTap: () => _selectDifficulty('hard'),
                       ),
@@ -284,6 +287,7 @@ class _DifficultyChoiceScreenState
   Widget _buildDifficultyCard({
     required String title,
     required String multiplier,
+    required int estimatedPoints,
     required Color color,
     required VoidCallback onTap,
   }) {
@@ -297,30 +301,42 @@ class _DifficultyChoiceScreenState
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
         ),
-        child: Row(
+        child: Column(
           children: [
-            Expanded(
-              child: Text(
-                title,
-                style: AppTextStyles.titleLarge.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: AppTextStyles.titleLarge.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                    ),
+                  ),
                 ),
-              ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    multiplier,
+                    style: AppTextStyles.titleMedium.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                multiplier,
-                style: AppTextStyles.titleMedium.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w900,
-                ),
+            const SizedBox(height: 12),
+            Text(
+              'Tahmini Kazanç: +$estimatedPoints Puan',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.white70,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],

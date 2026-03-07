@@ -37,13 +37,17 @@ class GameConstants {
   static Map<String, int> get defaultMarketValues {
     final map = <String, int>{};
     for (final c in CategoryConstants.all) {
-      map[c.id] = c.id == 'Bilgi' ? 1 : 2;
+      map[c.id] = 10; // Tüm kategoriler 10 Taban Puanla başlar
     }
     return map;
   }
 
   /// Her seçimde çarpan bu kadar düşer
-  static const int marketDecayAmount = 1;
+  static const int marketDecayAmount = 2;
+
+  /// Ekonomi modu puan sınırları
+  static const int minMarketValue = 5;
+  static const int maxMarketValue = 25;
 
   /// Bu kadar kez seçilince kategori kilitlenir
   static const int lockThreshold = 3;

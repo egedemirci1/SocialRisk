@@ -36,6 +36,22 @@ class FirebaseVoteSource implements VoteRepository {
     String gameId, {
     int taskMultiplier = 1,
   }) async {
+    // Oyun modunu ve pazar değerini öğrenmek için oyunu çek
+    final gameSnap = await _firestore.collection('games').doc(gameId).get();
+    if (!gameSnap.exists) return 0;
+
+    final gameData = gameSnap.data()!;
+    final mode = gameData['mode'] as String?;
+    final selectedCategory = gameData['selectedCategory'] as String?;
+    final marketValues = gameData['categoryMarketValues'] as Map<String, dynamic>? ?? {};
+
+    // 10 Taban Puanı Koruma Hattı (Classic vs Economy)
+    int baseScore = 10; // Varsayılan (Classic)
+
+    if (mode == 'economy' && selectedCategory != null) {
+      baseScore = marketValues[selectedCategory] as int? ?? 10;
+    }
+
     final snapshot = await _votesRef(gameId).get();
     int totalScore = 0;
 
@@ -43,14 +59,14 @@ class FirebaseVoteSource implements VoteRepository {
       final vote = VoteModel.fromJson(doc.data(), doc.id);
       switch (vote.value) {
         case VoteValue.like:
-          // Beğendim: 10 * multiplier
-          totalScore += (10 * taskMultiplier);
+          // Beğendim: Dinamik (veya Klasik 10) taban puan * multiplier
+          totalScore += (baseScore * taskMultiplier);
           break;
         case VoteValue.neutral:
           totalScore += 0;
           break;
         case VoteValue.dislike:
-          // Beğenmedim: Sabit -10 (çarpan etkisiz)
+          // Beğenmedim: Sabit -10 (Klasik modda da böyle kalsın denmişti)
           totalScore -= 10;
           break;
       }

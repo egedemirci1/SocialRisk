@@ -7,8 +7,14 @@ import '../../../core/utils/helpers.dart';
 import '../../../core/constants/game_constants.dart';
 
 class FirebaseGameSource implements GameRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final Random _random = Random();
+  final FirebaseFirestore _firestore;
+  final Random _random;
+
+  FirebaseGameSource({
+    FirebaseFirestore? firestore,
+    Random? random,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _random = random ?? Random();
 
   CollectionReference<Map<String, dynamic>> get _gamesRef =>
       _firestore.collection('games');
@@ -180,90 +186,154 @@ class FirebaseGameSource implements GameRepository {
   @override
   Future<void> setRoundResult({
     required String gameId,
+    required String roomId,
+    required String playerId,
     required int score,
     required int multiplier,
   }) async {
-    final snap = await _gameDoc(gameId).get();
-    final currentPlayerId = snap.data()?['currentPlayerId'] as String?;
+    try {
+      final gameDocRef = _gameDoc(gameId);
+      final playerDocRef = _firestore
+          .collection('rooms')
+          .doc(roomId)
+          .collection('players')
+          .doc(playerId);
 
-    await _gameDoc(gameId).update({
-      'status': 'results',
-      'lastRoundScore': score,
-      'lastRoundMultiplier': multiplier,
-      'lastRoundPlayerId': currentPlayerId,
-    });
+      await _firestore.runTransaction((transaction) async {
+        final gameSnap = await transaction.get(gameDocRef);
+        if (!gameSnap.exists) return;
+        final game = GameModel.fromJson(gameSnap.data()!, gameSnap.id);
+
+        transaction.update(playerDocRef, {
+          'score': FieldValue.increment(score),
+        });
+
+        final updates = <String, dynamic>{
+          'status': 'results',
+          'lastRoundScore': score,
+          'lastRoundMultiplier': multiplier,
+          'lastRoundPlayerId': playerId,
+        };
+
+        // Ekonomi Modu: Sıra Değişimi Hazırlığı
+        if (game.categoryPickOrder.isNotEmpty) {
+          final nextPickIndex = game.currentPickIndex + 1;
+          if (nextPickIndex >= game.categoryPickOrder.length) {
+            updates['currentPickIndex'] = 0;
+            updates['currentRound'] = game.currentRound + 1;
+            // Tur başa döndüğünde ilk oyuncuyu ata
+            updates['currentPlayerId'] = game.categoryPickOrder[0];
+          } else {
+            updates['currentPickIndex'] = nextPickIndex;
+            // SIRADAKİ OYUNCUYU BURADA GÜNCELLE:
+            updates['currentPlayerId'] = game.categoryPickOrder[nextPickIndex];
+          }
+        }
+
+        transaction.update(gameDocRef, updates);
+      });
+    } on FirebaseException catch (e) {
+      throw Exception('Sonuçlar kaydedilirken hata oluştu: ${e.message}');
+    } catch (e) {
+      throw Exception('Sonuçlar kaydedilirken beklenmeyen hata: $e');
+    }
   }
 
   @override
   Future<void> nextTurn(String gameId) async {
     try {
-      final snap = await _gameDoc(gameId).get();
-      if (!snap.exists) return;
+      final gameDocRef = _gameDoc(gameId);
 
-      final game = GameModel.fromJson(snap.data()!, snap.id);
+      await _firestore.runTransaction((transaction) async {
+        final snap = await transaction.get(gameDocRef);
+        if (!snap.exists) return;
 
-      // Aktif oyuncuları kontrol et
-      final playersSnap = await _firestore
-          .collection('rooms')
-          .doc(game.roomId)
-          .collection('players')
-          .get();
-      final activePlayerIds = playersSnap.docs.map((d) => d.id).toSet();
+        final game = GameModel.fromJson(snap.data()!, snap.id);
 
-      // Sıradaki aktif oyuncuyu bul (çıkmış oyuncuları atla)
-      final currentIndex = game.turnOrder.indexOf(game.currentPlayerId);
-      String? nextPlayerId;
-      int nextIndex = currentIndex;
-      bool isNewRound = false;
-
-      for (int i = 1; i <= game.turnOrder.length; i++) {
-        nextIndex = (currentIndex + i) % game.turnOrder.length;
-        if (nextIndex == 0) isNewRound = true;
-
-        if (activePlayerIds.contains(game.turnOrder[nextIndex])) {
-          nextPlayerId = game.turnOrder[nextIndex];
-          break;
+        // Economy Modu Kontrolü
+        if (game.categoryPickOrder.isNotEmpty) {
+          final updates = <String, dynamic>{
+            // currentPlayerId zaten setRoundResult ile güncellendiği için 
+            // burada sadece status ve temizlik yapıyoruz
+            'currentTask': null,
+            'selectedCategory': null,
+            'selectedDifficulty': null,
+            'status': 'playing',
+            'spinningTarget': null,
+          };
+          transaction.update(gameDocRef, updates);
+          return;
         }
-      }
 
-      // Kimse kalmadıysa oyunu bitir
-      if (nextPlayerId == null) {
-        await _gameDoc(gameId).update({'status': 'finished'});
-        return;
-      }
-
-      // Oyun bitiş kontrolü (Tur sayısına göre)
-      if (isNewRound) {
-        final roomSnap = await _firestore
-            .collection('rooms')
-            .doc(game.roomId)
-            .get();
-        if (roomSnap.exists) {
-          final roomData = roomSnap.data()!;
-          final endType = roomData['endConditionType'] as String?;
-          final endVal = roomData['endConditionValue'] as int? ?? 10;
-
-          if (endType == 'rounds' && game.currentRound >= endVal) {
-            await _gameDoc(gameId).update({'status': 'finished'});
-            return;
+        // Klasik Mod Mantığı (Mevcut)
+        // Aktif oyuncuları transaction içinden tek tek kontrol et
+        final activePlayerIds = <String>{};
+        for (final pid in game.turnOrder) {
+          final pSnap = await transaction.get(
+            _firestore
+                .collection('rooms')
+                .doc(game.roomId)
+                .collection('players')
+                .doc(pid),
+          );
+          if (pSnap.exists) {
+            activePlayerIds.add(pid);
           }
         }
-      }
 
-      final updates = <String, dynamic>{
-        'currentPlayerId': nextPlayerId,
-        'currentTask': null,
-        'selectedCategory': null,
-        'selectedDifficulty': null,
-        'status': 'playing',
-        'spinningTarget': null,
-      };
+        final currentIndex = game.turnOrder.indexOf(game.currentPlayerId);
+        String? nextPlayerId;
+        int nextIndex = currentIndex;
+        bool isNewRound = false;
 
-      if (isNewRound) {
-        updates['currentRound'] = game.currentRound + 1;
-      }
+        for (int i = 1; i <= game.turnOrder.length; i++) {
+          nextIndex = (currentIndex + i) % game.turnOrder.length;
+          if (nextIndex == 0) isNewRound = true;
 
-      await _gameDoc(gameId).update(updates);
+          if (activePlayerIds.contains(game.turnOrder[nextIndex])) {
+            nextPlayerId = game.turnOrder[nextIndex];
+            break;
+          }
+        }
+
+        // Kimse kalmadıysa oyunu bitir
+        if (nextPlayerId == null) {
+          transaction.update(gameDocRef, {'status': 'finished'});
+          return;
+        }
+
+        // Oyun bitiş kontrolü (Tur sayısına göre)
+        if (isNewRound) {
+          final roomDocRef = _firestore.collection('rooms').doc(game.roomId);
+          final roomSnap = await transaction.get(roomDocRef);
+          
+          if (roomSnap.exists) {
+            final roomData = roomSnap.data()!;
+            final endType = roomData['endConditionType'] as String?;
+            final endVal = roomData['endConditionValue'] as int? ?? 10;
+
+            if (endType == 'rounds' && game.currentRound >= endVal) {
+              transaction.update(gameDocRef, {'status': 'finished'});
+              return;
+            }
+          }
+        }
+
+        final updates = <String, dynamic>{
+          'currentPlayerId': nextPlayerId,
+          'currentTask': null,
+          'selectedCategory': null,
+          'selectedDifficulty': null,
+          'status': 'playing',
+          'spinningTarget': null,
+        };
+
+        if (isNewRound) {
+          updates['currentRound'] = game.currentRound + 1;
+        }
+
+        transaction.update(gameDocRef, updates);
+      });
     } on FirebaseException catch (e) {
       throw Exception('Sıra geçerken bağlantı hatası oluştu: ${e.message}');
     } catch (e) {
@@ -354,6 +424,7 @@ class FirebaseGameSource implements GameRepository {
       'currentPickIndex': 0,
       'lockedCategories': [],
       'categoryMarketValues': GameConstants.defaultMarketValues,
+      'categoryPickCounts': GameConstants.defaultPickCounts,
       'currentTask': null,
       'selectedCategory': null,
       'selectedDifficulty': null,
@@ -382,38 +453,49 @@ class FirebaseGameSource implements GameRepository {
           throw Exception('Bu kategori kilitli!');
         }
 
-        final updatedMarket = Map<String, int>.from(game.categoryMarketValues);
-        final currentValue = updatedMarket[category] ?? 1;
-        final newValue = (currentValue - GameConstants.marketDecayAmount).clamp(
-          1,
-          10,
-        );
-        updatedMarket[category] = newValue;
+        final marketValues = Map<String, int>.from(game.categoryMarketValues);
+        final oldValue = marketValues[category] ?? 10;
+        final newValue = (oldValue - GameConstants.marketDecayAmount)
+            .clamp(GameConstants.minMarketValue, GameConstants.maxMarketValue);
+        final drop = oldValue - newValue;
 
-        final defaultVal = GameConstants.defaultMarketValues[category] ?? 1;
-        final timesSelected = defaultVal - newValue + 1;
-        final updatedLocked = List<String>.from(game.lockedCategories);
-        if (timesSelected >= GameConstants.lockThreshold) {
-          updatedLocked.add(category);
+        // Kendi değerini düşür
+        marketValues[category] = newValue;
+
+        // Puan düştüyse başka birine aktar
+        if (drop > 0) {
+          final otherCategories = marketValues.keys
+              .where((c) => c != category && !game.lockedCategories.contains(c))
+              .toList();
+
+          if (otherCategories.isNotEmpty) {
+            final rival = otherCategories[_random.nextInt(otherCategories.length)];
+            final rivalOld = marketValues[rival] ?? 10;
+            marketValues[rival] = (rivalOld + drop)
+                .clamp(GameConstants.minMarketValue, GameConstants.maxMarketValue);
+          }
         }
 
-        final nextPickIndex = game.currentPickIndex + 1;
-        final allPicked = nextPickIndex >= game.categoryPickOrder.length;
+        // Seçim sayısını güncelle ve kilitleme kontrolü yap
+        final updatedPickCounts = Map<String, int>.from(game.categoryPickCounts);
+        final newPickCount = (updatedPickCounts[category] ?? 0) + 1;
+        updatedPickCounts[category] = newPickCount;
+
+        final updatedLocked = List<String>.from(game.lockedCategories);
+        if (newPickCount >= GameConstants.lockThreshold) {
+          if (!updatedLocked.contains(category)) {
+            updatedLocked.add(category);
+          }
+        }
 
         final updates = <String, dynamic>{
-          'categoryMarketValues': updatedMarket,
+          'categoryMarketValues': marketValues,
+          'categoryPickCounts': updatedPickCounts,
           'lockedCategories': updatedLocked,
-          'currentPickIndex': nextPickIndex,
           'selectedCategory': category,
           'status': 'choosingDifficulty',
           'spinningTarget': null,
         };
-
-        if (allPicked) {
-          updates['currentPlayerId'] = game.categoryPickOrder.first;
-        } else {
-          updates['currentPlayerId'] = game.categoryPickOrder[nextPickIndex];
-        }
 
         transaction.update(gameDocRef, updates);
       });

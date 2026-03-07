@@ -21,6 +21,7 @@ class GameEntity {
   // Faz 10: Ekonomi modu alanları
   final GameMode mode;
   final Map<String, int> categoryMarketValues;
+  final Map<String, int> categoryPickCounts;
   final List<String> lockedCategories;
   final List<String> categoryPickOrder;
   final int currentPickIndex;
@@ -44,6 +45,7 @@ class GameEntity {
     this.selectedDifficulty,
     this.mode = GameMode.classic,
     this.categoryMarketValues = const {},
+    this.categoryPickCounts = const {},
     this.lockedCategories = const [],
     this.categoryPickOrder = const [],
     this.currentPickIndex = 0,

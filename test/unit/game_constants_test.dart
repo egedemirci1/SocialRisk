@@ -89,19 +89,17 @@ void main() {
         }
       });
 
-      test('Bilgi kategorisinin başlangıç çarpanı 1 olmalı', () {
-        final market = GameConstants.defaultMarketValues;
-        expect(market['Bilgi'], 1);
-      });
-
-      test('diğer kategorilerin başlangıç çarpanı 2 olmalı', () {
+      test('Tüm kategorilerin başlangıç çarpanı 10 olmalı', () {
         final market = GameConstants.defaultMarketValues;
         for (final entry in market.entries) {
-          if (entry.key != 'Bilgi') {
-            expect(entry.value, 2,
-                reason: '${entry.key} kategorisi 2 olmalı');
-          }
+          expect(entry.value, 10,
+              reason: '${entry.key} kategorisi 10 olmalı');
         }
+      });
+
+      test('Ekonomi modu puan sınırları (min 5, max 25) doğru tanımlanmalı', () {
+        expect(GameConstants.minMarketValue, 5);
+        expect(GameConstants.maxMarketValue, 25);
       });
 
       test('defaultPickCounts tüm değerleri 0 olmalı', () {
@@ -116,8 +114,8 @@ void main() {
         expect(GameConstants.lockThreshold, greaterThan(0));
       });
 
-      test('marketDecayAmount pozitif olmalı', () {
-        expect(GameConstants.marketDecayAmount, greaterThan(0));
+      test('marketDecayAmount 2 olmalı', () {
+        expect(GameConstants.marketDecayAmount, 2);
       });
     });
 

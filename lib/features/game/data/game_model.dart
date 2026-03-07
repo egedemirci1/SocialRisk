@@ -22,6 +22,7 @@ class GameModel {
   // Faz 10: Ekonomi modu
   final String mode;
   final Map<String, int> categoryMarketValues;
+  final Map<String, int> categoryPickCounts;
   final List<String> lockedCategories;
   final List<String> categoryPickOrder;
   final int currentPickIndex;
@@ -46,6 +47,7 @@ class GameModel {
     this.selectedDifficulty,
     this.mode = 'classic',
     this.categoryMarketValues = const {},
+    this.categoryPickCounts = const {},
     this.lockedCategories = const [],
     this.categoryPickOrder = const [],
     this.currentPickIndex = 0,
@@ -72,6 +74,9 @@ class GameModel {
       mode: json['mode'] as String? ?? 'classic',
       categoryMarketValues: Map<String, int>.from(
         json['categoryMarketValues'] ?? {},
+      ),
+      categoryPickCounts: Map<String, int>.from(
+        json['categoryPickCounts'] ?? {},
       ),
       lockedCategories: List<String>.from(json['lockedCategories'] ?? []),
       categoryPickOrder: List<String>.from(json['categoryPickOrder'] ?? []),
@@ -115,6 +120,7 @@ class GameModel {
       if (selectedCategory != null) 'selectedCategory': selectedCategory,
       if (selectedDifficulty != null) 'selectedDifficulty': selectedDifficulty,
       'categoryMarketValues': categoryMarketValues,
+      'categoryPickCounts': categoryPickCounts,
       'lockedCategories': lockedCategories,
       'categoryPickOrder': categoryPickOrder,
       'currentPickIndex': currentPickIndex,
@@ -156,6 +162,7 @@ class GameModel {
         orElse: () => GameMode.classic,
       ),
       categoryMarketValues: categoryMarketValues,
+      categoryPickCounts: categoryPickCounts,
       lockedCategories: lockedCategories,
       categoryPickOrder: categoryPickOrder,
       currentPickIndex: currentPickIndex,
