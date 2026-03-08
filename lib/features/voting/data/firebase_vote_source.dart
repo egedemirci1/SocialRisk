@@ -14,8 +14,14 @@ class FirebaseVoteSource implements VoteRepository {
     required String gameId,
     required String voterId,
     required VoteValue value,
+    bool timedOut = false,
   }) async {
-    final voteModel = VoteModel(voterId: voterId, value: value);
+    final voteModel = VoteModel(
+      voterId: voterId,
+      value: value,
+      timedOut: timedOut,
+      penaltyApplied: false,
+    );
     await _votesRef(gameId).doc(voterId).set(voteModel.toJson());
   }
 
@@ -57,17 +63,20 @@ class FirebaseVoteSource implements VoteRepository {
 
     for (final doc in snapshot.docs) {
       final vote = VoteModel.fromJson(doc.data(), doc.id);
+      if (vote.timedOut) {
+        continue;
+      }
+
       switch (vote.value) {
         case VoteValue.like:
           // Beğendim: Dinamik (veya Klasik 10) taban puan * multiplier
           totalScore += (baseScore * taskMultiplier);
           break;
         case VoteValue.neutral:
-          totalScore += 0;
+          totalScore += 5;
           break;
         case VoteValue.dislike:
-          // Beğenmedim: Sabit -10 (Klasik modda da böyle kalsın denmişti)
-          totalScore -= 10;
+          totalScore += 0;
           break;
       }
     }
@@ -75,6 +84,37 @@ class FirebaseVoteSource implements VoteRepository {
     return totalScore;
   }
 
+
+  @override
+  Future<List<String>> applyTimedOutPenalties(
+    String gameId,
+    String roomId, {
+    int penalty = 10,
+  }) async {
+    final snapshot = await _votesRef(gameId)
+        .where('timedOut', isEqualTo: true)
+        .where('penaltyApplied', isEqualTo: false)
+        .get();
+
+    if (snapshot.docs.isEmpty) {
+      return [];
+    }
+
+    final batch = _firestore.batch();
+    final penalizedIds = <String>[];
+
+    for (final doc in snapshot.docs) {
+      penalizedIds.add(doc.id);
+      batch.update(
+        _firestore.collection('rooms').doc(roomId).collection('players').doc(doc.id),
+        {'score': FieldValue.increment(-penalty)},
+      );
+      batch.update(doc.reference, {'penaltyApplied': true});
+    }
+
+    await batch.commit();
+    return penalizedIds;
+  }
   @override
   Future<void> clearVotes(String gameId) async {
     final snapshot = await _votesRef(gameId).get();
@@ -86,3 +126,5 @@ class FirebaseVoteSource implements VoteRepository {
     await batch.commit();
   }
 }
+
+

@@ -11,7 +11,7 @@ class VotingPanel extends StatefulWidget {
     this.timeLimit = const Duration(seconds: 15),
   });
 
-  final void Function(String voteValue) onVote;
+  final void Function(String voteValue, {bool timedOut}) onVote;
   final bool isEnabled;
   final Duration timeLimit;
 
@@ -34,7 +34,7 @@ class _VotingPanelState extends State<VotingPanel>
 
     _timerController.addStatusListener((status) {
       if (status == AnimationStatus.completed && _selectedVote == null) {
-        _castVote('neutral');
+        _castVote('neutral', timedOut: true);
       }
     });
   }
@@ -45,10 +45,10 @@ class _VotingPanelState extends State<VotingPanel>
     super.dispose();
   }
 
-  void _castVote(String value) {
+  void _castVote(String value, {bool timedOut = false}) {
     if (_selectedVote != null || !widget.isEnabled) return;
     setState(() => _selectedVote = value);
-    widget.onVote(value);
+    widget.onVote(value, timedOut: timedOut);
   }
 
   @override
@@ -198,3 +198,4 @@ class _VoteButton extends StatelessWidget {
     );
   }
 }
+

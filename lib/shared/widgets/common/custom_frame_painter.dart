@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 class CustomFramePainter extends CustomPainter {
+  static const double _referenceAvatarRadius = 24;
+  static const double _referenceFrameExtent = _referenceAvatarRadius * 0.08;
+  static const double _referenceTotalDiameter =
+      (_referenceAvatarRadius * 2) + (_referenceFrameExtent * 2);
+  static const double _referencePaintRadius =
+      _referenceAvatarRadius + _referenceFrameExtent;
   final String frameId;
   final double radius;
 
@@ -13,11 +19,13 @@ class CustomFramePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final r = radius + 4; // Çizimi avatarın biraz daha dışına al
+    final scale = size.shortestSide / _referenceTotalDiameter;
+    final r = _referencePaintRadius;
 
     // Canvas'ı döndür: 0 açısı tam alt nokta olsun (pi/2)
     canvas.save();
     canvas.translate(center.dx, center.dy);
+    canvas.scale(scale);
     canvas.rotate(math.pi / 2);
 
     switch (frameId) {
@@ -434,3 +442,5 @@ class CustomFramePainter extends CustomPainter {
     return true;
   }
 }
+
+

@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 
 import '../../economy/providers/economy_provider.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
+import '../../economy/domain/economy_exceptions.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../../shared/utils/toast_utils.dart';
@@ -36,7 +37,11 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     } catch (e) {
       if (!context.mounted) return;
       final msg = e.toString().replaceAll('Exception: ', '');
-      final isInsufficient = msg.contains('Yetersiz bakiye');
+      final lowerMsg = msg.toLowerCase();
+      final isInsufficient =
+          e is InsufficientBalanceException ||
+          lowerMsg.contains('yetersiz bakiye') ||
+          lowerMsg.contains('insufficient balance');
       ToastUtils.showError(
         context,
         isInsufficient ? 'Yetersiz bakiye' : 'Hata: $msg',
@@ -551,3 +556,4 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     );
   }
 }
+

@@ -168,33 +168,15 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: StageButton(
-                              label: 'LOBİYE DÖN',
-                              icon: Icons.home_rounded,
-                              backgroundColor: AppColors.surface,
-                              textColor: Colors.white,
-                              borderColor: AppColors.accent.withValues(
-                                alpha: 0.3,
-                              ),
-                              onPressed: () => context.go('/home'),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: StageButton(
-                              label: 'TEKRAR OYNA',
-                              icon: Icons.replay_rounded,
-                              backgroundColor: AppColors.primary,
-                              textColor: Colors.white,
-                              borderColor: AppColors.accent,
-                              onPressed: () =>
-                                  context.go('/lobby', extra: widget.roomCode),
-                            ),
-                          ),
-                        ],
+                      StageButton(
+                        label: 'LOBİYE DÖN',
+                        icon: Icons.home_rounded,
+                        backgroundColor: AppColors.surface,
+                        textColor: Colors.white,
+                        borderColor: AppColors.accent.withValues(
+                          alpha: 0.3,
+                        ),
+                        onPressed: () => context.go('/home'),
                       ),
                     ],
                   ),

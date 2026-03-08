@@ -57,6 +57,24 @@ class FirebaseEconomySource implements EconomyRepository {
   }) async {
     try {
       final docRef = _userDoc(uid);
+      final userSnapshot = await docRef.get();
+
+      if (!userSnapshot.exists) {
+        throw const UserNotFoundException();
+      }
+
+      final userData = userSnapshot.data()!;
+      final currentPoints = userData['walletPoints'] as int? ?? 0;
+      final ownedCosmetics = List<String>.from(userData['ownedCosmetics'] ?? []);
+
+      if (ownedCosmetics.contains(cosmeticId)) {
+        throw const AlreadyOwnedCosmeticException();
+      }
+
+      if (currentPoints < price) {
+        throw const InsufficientBalanceException();
+      }
+
 
       await _firestore.runTransaction((transaction) async {
         final snapshot = await transaction.get(docRef);

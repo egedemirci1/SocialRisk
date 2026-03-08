@@ -47,6 +47,12 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
     setState(() => _isProcessing = true);
 
     try {
+      await ref.read(voteControllerProvider.notifier).applyTimedOutPenalties(
+        gameId: widget.gameId,
+        roomId: widget.roomCode,
+        penalty: 10,
+      );
+
       final earned = await ref
           .read(voteControllerProvider.notifier)
           .calculateAndApplyScore(
@@ -301,15 +307,22 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                       : _hasVoted
                           ? _buildVotedStatus()
                           : VotingPanel(
-                              onVote: (value) {
+                              onVote: (value, {timedOut = false}) {
                                 if (user == null) return;
                                 setState(() => _hasVoted = true);
+                                if (timedOut && mounted) {
+                                  ToastUtils.showError(
+                                    context,
+                                    'S\u00fcre doldu. Oy vermedi\u011fin i\u00e7in -10 puan cezas\u0131 ald\u0131n.',
+                                  );
+                                }
                                 ref
                                     .read(voteControllerProvider.notifier)
                                     .castVote(
                                       gameId: widget.gameId,
                                       voterId: user.uid,
                                       value: VoteValue.values.byName(value),
+                                      timedOut: timedOut,
                                     );
                               },
                             ),
@@ -559,4 +572,6 @@ class _FloatingPsychologicalTextsState
     );
   }
 }
+
+
 

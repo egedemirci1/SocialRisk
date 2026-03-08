@@ -289,6 +289,80 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     );
   }
 
+
+  Widget _buildTopTitleCard({
+    required String badge,
+    required String title,
+    String? subtitle,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.surface.withValues(alpha: 0.96),
+            AppColors.surface.withValues(alpha: 0.82),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.18)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+            decoration: BoxDecoration(
+              color: AppColors.accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(
+                color: AppColors.accent.withValues(alpha: 0.28),
+              ),
+            ),
+            child: Text(
+              badge,
+              style: AppTextStyles.labelSmall.copyWith(
+                color: AppColors.accent,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.2,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: AppTextStyles.titleLarge.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              subtitle,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.white54,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildWheelView(
     bool isMyTurn,
     String playerName,
@@ -301,66 +375,12 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         if (currentPlayer != null)
           PlayerSpotlight(player: currentPlayer, isMe: isMyTurn),
         const Spacer(),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.accent.withValues(alpha: 0.15)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.accent.withValues(alpha: 0.1),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                child: Text(
-                  'PARTİ BAŞLIYOR',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: AppColors.accent,
-                    letterSpacing: 2,
-                    fontWeight: FontWeight.w900,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                child: Column(
-                  children: [
-                    Text(
-                      '🎡 Senaryonu Belirle',
-                      style: AppTextStyles.titleLarge.copyWith(
-                        color: Colors.white,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Sıran gelmeden önce görevini seç...',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: Colors.white54,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        _buildTopTitleCard(
+          badge: 'PARTİ BAŞLIYOR',
+          title: '🎡 Senaryonu Belirle',
+          subtitle: 'Sıran gelmeden önce görevini seç...',
         ),
-        const SizedBox(height: 40),
+        const SizedBox(height: 44),
         SpinWheel(
           spinningTarget: ref
               .watch(watchGameProvider(widget.gameId))
@@ -498,18 +518,14 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                           ),
                         ),
                       ),
-                    const SizedBox(height: 24),
-                    Text(
-                      isClosed
+                    const SizedBox(height: 26),
+                    _buildTopTitleCard(
+                      badge: isClosed ? 'GİZLİ TUR' : 'SAHNEDEKİ GÖREV',
+                      title: isClosed
                           ? 'Sıradaki Görev Gizli'
-                          : (isMyTurn ? 'Senaryon Burada:' : '$playerName\'ın Senaryosu:'),
-                      style: AppTextStyles.titleLarge.copyWith(
-                        color: Colors.white,
-                        letterSpacing: 1,
-                      ),
-                      textAlign: TextAlign.center,
+                          : (isMyTurn ? 'Senaryon Burada:' : '${playerName} senaryosu:'),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 26),
                     ScaleTransition(
                       scale: _cardAnimation,
                       child: GameCard(
@@ -655,3 +671,4 @@ class _AnimatedPassButtonState extends State<_AnimatedPassButton>
     );
   }
 }
+

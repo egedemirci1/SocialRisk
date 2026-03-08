@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../features/auth/providers/user_provider.dart';
 import 'custom_frame_painter.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
 
-/// Oyuncu avatar widget'ı — Fotoğraf veya baş harf gösterir.
-/// Puan bazlı efekt desteği mevcut (🔥 alev / ❄️ buz / ✨ parıltı).
+/// Oyuncu avatar widget'i - Fotograf veya bas harf gosterir.
+/// Puan bazli efekt destegi mevcut.
 class PlayerAvatar extends ConsumerWidget {
   const PlayerAvatar({
     super.key,
@@ -27,12 +28,23 @@ class PlayerAvatar extends ConsumerWidget {
   final String? frameId;
   final String? uid;
 
-  /// Puan aralığına göre efekt belirle
+  static double _frameExtent(double radius) =>
+      (radius * 0.08).clamp(1.5, 5.0);
+
+  static double _frameStrokeWidth(double radius) =>
+      (radius * 0.05).clamp(1.5, 3.0);
+
+  static double _frameGlowBlur(double radius) =>
+      (radius * 0.25).clamp(4.0, 12.0);
+
+  static double _frameGlowSpread(double radius) =>
+      (radius * 0.06).clamp(0.5, 2.5);
+
   String? get _effect {
     if (!showEffect || score == 0) return null;
-    if (score >= 3000) return '🔥';
-    if (score >= 1500) return '✨';
-    if (score >= 500) return '❄️';
+    if (score >= 3000) return '??';
+    if (score >= 1500) return '?';
+    if (score >= 500) return '??';
     return null;
   }
 
@@ -43,8 +55,6 @@ class PlayerAvatar extends ConsumerWidget {
     return Colors.transparent;
   }
 
-  // CustomFramePainter artık çerçeveler için kullanılıyor
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String? currentFrameId = frameId;
@@ -52,130 +62,142 @@ class PlayerAvatar extends ConsumerWidget {
 
     if (uid != null) {
       final userAsync = ref.watch(watchUserProfileProvider(uid!));
-      if (userAsync.value != null) {
-        if (userAsync.value!.activeFrame != null) {
-          currentFrameId = userAsync.value!.activeFrame;
+      final profile = userAsync.value;
+      if (profile != null) {
+        if (profile.activeFrame != null) {
+          currentFrameId = profile.activeFrame;
         }
-        if (userAsync.value!.avatarUrl != null && userAsync.value!.avatarUrl!.isNotEmpty) {
-          currentAvatarUrl = userAsync.value!.avatarUrl;
+        if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty) {
+          currentAvatarUrl = profile.avatarUrl;
         }
       }
     }
 
-    final useAvatarImage = currentAvatarUrl != null && currentAvatarUrl.isNotEmpty;
+    final useAvatarImage =
+        currentAvatarUrl != null && currentAvatarUrl.isNotEmpty;
+    final hasFrame = currentFrameId != null && currentFrameId.isNotEmpty;
+    final frameExtent = hasFrame ? _frameExtent(radius) : 0.0;
+    final frameStrokeWidth = _frameStrokeWidth(radius);
+    final frameGlowBlur = _frameGlowBlur(radius);
+    final frameGlowSpread = _frameGlowSpread(radius);
+    final avatarDiameter = radius * 2;
+    final totalDiameter = avatarDiameter + (frameExtent * 2);
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        // Avatar çerçevesi
-        DecoratedBox(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: _borderColor,
-              width: score >= 500 ? 2.5 : 0,
-            ),
-            boxShadow: currentFrameId != null 
-              ? [
-                  BoxShadow(
-                    color: (currentFrameId == 'frame_fire'
-                            ? AppColors.fire
-                            : currentFrameId == 'frame_ice'
-                            ? AppColors.ice
-                            : currentFrameId == 'frame_flower'
-                            ? Colors.pinkAccent
-                            : currentFrameId == 'frame_shield'
-                            ? Colors.indigoAccent
-                            : currentFrameId == 'frame_ivy'
-                            ? Colors.green
-                            : currentFrameId == 'frame_neon'
-                            ? Colors.cyanAccent
-                            : currentFrameId == 'frame_stars'
-                            ? const Color(0xFFD4AF37)
-                            : currentFrameId == 'frame_lightning'
-                            ? Colors.lightBlueAccent
-                            : AppColors.primary)
-                        .withValues(alpha: 0.5),
-                    blurRadius: 12,
-                    spreadRadius: 4,
-                  ),
-                ] : score >= 1500
-                ? [
-                    BoxShadow(
-                      color: _borderColor.withValues(alpha: 0.4),
-                      blurRadius: 12,
-                      spreadRadius: 1,
-                    ),
-                  ]
-                : null,
-          ),
-          child: CircleAvatar(
-            radius: radius,
-            backgroundColor: AppColors.surfaceElevated,
-            backgroundImage: useAvatarImage
-                ? NetworkImage(currentAvatarUrl!)
-                : null,
-            child: !useAvatarImage
-                ? Text(
-                    displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
-                    style: AppTextStyles.titleSmall.copyWith(fontSize: radius * 0.8,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white54,),
-                  )
-                : null,
-          ),
-        ),
-
-        // Satın Alınan Kozmetik Çerçeve (Frame) - Görsel Efekt
-        if (currentFrameId != null) ...[
-          // Renkli aura / glow border
+    return SizedBox(
+      width: totalDiameter,
+      height: totalDiameter,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
           Positioned.fill(
-            child: IgnorePointer(
-              child: Container(
+            child: Center(
+              child: DecoratedBox(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: currentFrameId == 'frame_fire'
-                        ? AppColors.fire.withValues(alpha: 0.8)
-                        : currentFrameId == 'frame_ice'
-                        ? AppColors.ice.withValues(alpha: 0.8)
-                        : currentFrameId == 'frame_flower'
-                        ? Colors.pinkAccent.withValues(alpha: 0.8)
-                        : currentFrameId == 'frame_shield'
-                        ? Colors.indigoAccent.withValues(alpha: 0.8)
-                        : currentFrameId == 'frame_ivy'
-                        ? Colors.green.withValues(alpha: 0.8)
-                        : currentFrameId == 'frame_neon'
-                        ? Colors.cyanAccent.withValues(alpha: 0.8)
-                        : currentFrameId == 'frame_stars'
-                        ? const Color(0xFFD4AF37).withValues(alpha: 0.8)
-                        : currentFrameId == 'frame_lightning'
-                        ? Colors.lightBlueAccent.withValues(alpha: 0.8)
-                        : AppColors.primary,
-                    width: 2.5,
+                    color: _borderColor,
+                    width: score >= 500 ? 2.5 : 0,
                   ),
+                  boxShadow: hasFrame
+                      ? [
+                          BoxShadow(
+                            color: _frameColor(currentFrameId!)
+                                .withValues(alpha: 0.5),
+                            blurRadius: frameGlowBlur,
+                            spreadRadius: frameGlowSpread,
+                          ),
+                        ]
+                      : score >= 1500
+                          ? [
+                              BoxShadow(
+                                color: _borderColor.withValues(alpha: 0.4),
+                                blurRadius: 12,
+                                spreadRadius: 1,
+                              ),
+                            ]
+                          : null,
+                ),
+                child: CircleAvatar(
+                  radius: radius,
+                  backgroundColor: AppColors.surfaceElevated,
+                  backgroundImage:
+                      useAvatarImage ? NetworkImage(currentAvatarUrl!) : null,
+                  child: !useAvatarImage
+                      ? Text(
+                          displayName.isNotEmpty
+                              ? displayName[0].toUpperCase()
+                              : '?',
+                          style: AppTextStyles.titleSmall.copyWith(
+                            fontSize: radius * 0.8,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white54,
+                          ),
+                        )
+                      : null,
                 ),
               ),
             ),
           ),
-          // Doğal çizimli özel frame painter
-          Positioned.fill(
-            child: IgnorePointer(
-              child: CustomPaint(
-                painter: CustomFramePainter(frameId: currentFrameId, radius: radius),
+          if (hasFrame) ...[
+            Positioned.fill(
+              child: IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: _frameColor(currentFrameId!).withValues(alpha: 0.8),
+                      width: frameStrokeWidth,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+            Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(
+                  painter: CustomFramePainter(
+                    frameId: currentFrameId!,
+                    radius: radius,
+                  ),
+                ),
+              ),
+            ),
+          ],
+          if (_effect != null)
+            Positioned(
+              right: -4,
+              top: -4,
+              child: Text(
+                _effect!,
+                style: TextStyle(fontSize: radius * 0.55),
+              ),
+            ),
         ],
-
-        // Efekt emojisi
-        if (_effect != null)
-          Positioned(
-            right: -4,
-            top: -4,
-            child: Text(_effect!, style: TextStyle(fontSize: radius * 0.55)),
-          ),
-      ],
+      ),
     );
   }
+
+  Color _frameColor(String frame) {
+    switch (frame) {
+      case 'frame_fire':
+        return AppColors.fire;
+      case 'frame_ice':
+        return AppColors.ice;
+      case 'frame_flower':
+        return Colors.pinkAccent;
+      case 'frame_shield':
+        return Colors.indigoAccent;
+      case 'frame_ivy':
+        return Colors.green;
+      case 'frame_neon':
+        return Colors.cyanAccent;
+      case 'frame_stars':
+        return const Color(0xFFD4AF37);
+      case 'frame_lightning':
+        return Colors.lightBlueAccent;
+      default:
+        return AppColors.primary;
+    }
+  }
 }
+
