@@ -15,7 +15,7 @@ final List<Map<String, dynamic>> tasksDijital = [
   {'category': 'Dijital', 'content': 'Rehberindeki ilk 5 kişinin adını söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Dijital', 'content': 'Ekran süresinden en çok kullandığın 3 uygulamayı söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Dijital', 'content': 'En son dinlediğin şarkıyı herkese aç.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Dijital', 'content': 'Bir sonraki bildirimi gelen uygulama ne olursa olsun herkese göster.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
+
   {'category': 'Dijital', 'content': 'Telefonundaki alarmları göster.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
   {'category': 'Dijital', 'content': 'En son favorilere eklediğin şeyi söyle (tarayıcı veya uygulama).', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Dijital', 'content': 'Rehberinde "A" ile başlayan kaç kişi var? Say.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
@@ -48,7 +48,7 @@ final List<Map<String, dynamic>> tasksDijital = [
   {'category': 'Dijital', 'content': 'En son arama geçmişini herkese göster.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Dijital', 'content': 'Tarayıcı geçmişinden son 5 aramayı söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Dijital', 'content': 'Bir arkadaşına "Biraz önce seni düşündüm" yaz.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Dijital', 'content': 'Telefonundaki tüm uygulama bildirimlerini aç ve bir sonrakini herkese göster.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
+
   {'category': 'Dijital', 'content': 'Galeride "favoriler"e eklediğin fotoğrafları göster.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Dijital', 'content': 'En son kaydettiğin ekran görüntüsünü göster.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Dijital', 'content': 'Rehberindeki son aradığın 5 kişiyi söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
@@ -95,7 +95,7 @@ final List<Map<String, dynamic>> tasksDijital = [
   {'category': 'Dijital', 'content': 'En son yaptığın 10 Google aramasını söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Dijital', 'content': 'Rehberinde "anne", "baba" veya "aile" kayıtlı kişilere "Seni seviyorum" yaz.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Dijital', 'content': 'Twitter/X\'te en son beğendiğin 3 gönderiyi göster.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Dijital', 'content': 'Telefonundaki "hatırlatıcılar"ı aç; bir sonrakini herkese oku.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
+
   {'category': 'Dijital', 'content': 'Bir gruba sesli mesaj at: Gruptakilere teker teker "Merhaba [isim]" de.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Dijital', 'content': 'Galeride "favoriler"deki en eski fotoğrafı göster ve hikayesini anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Dijital', 'content': 'En son aldığın e-posta bildiriminin konusunu ve gönderenini söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},

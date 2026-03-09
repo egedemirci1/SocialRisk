@@ -40,15 +40,10 @@ class RoomController extends _$RoomController {
   }) async {
     state = const AsyncLoading();
 
-    // E20: Get user profile to attach avatarUrl
-    final userProfile = await ref
-        .read(userRepositoryProvider)
-        .getUserProfile(hostId);
+    final userProfile = await ref.read(userRepositoryProvider).getUserProfile(hostId);
 
     final result = await AsyncValue.guard(
-      () => ref
-          .read(roomRepositoryProvider)
-          .createRoom(
+      () => ref.read(roomRepositoryProvider).createRoom(
             hostId: hostId,
             hostName: hostName,
             hostAvatarUrl: userProfile?.avatarUrl,
@@ -76,12 +71,8 @@ class RoomController extends _$RoomController {
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final userProfile = await ref
-          .read(userRepositoryProvider)
-          .getUserProfile(playerId);
-      await ref
-          .read(roomRepositoryProvider)
-          .joinRoom(
+      final userProfile = await ref.read(userRepositoryProvider).getUserProfile(playerId);
+      await ref.read(roomRepositoryProvider).joinRoom(
             roomCode: roomCode,
             playerId: playerId,
             playerName: playerName,
@@ -98,9 +89,10 @@ class RoomController extends _$RoomController {
     required String roomCode,
     required String playerId,
   }) async {
-    await ref
-        .read(roomRepositoryProvider)
-        .leaveRoom(roomCode: roomCode, playerId: playerId);
+    await ref.read(roomRepositoryProvider).leaveRoom(
+          roomCode: roomCode,
+          playerId: playerId,
+        );
     ref.read(currentRoomTrackerProvider.notifier).updateRoom(null);
     state = const AsyncData(null);
   }
@@ -110,24 +102,40 @@ class RoomController extends _$RoomController {
     required String playerId,
     required bool isReady,
   }) async {
-    await ref
-        .read(roomRepositoryProvider)
-        .toggleReady(roomCode: roomCode, playerId: playerId, isReady: isReady);
+    await ref.read(roomRepositoryProvider).toggleReady(
+          roomCode: roomCode,
+          playerId: playerId,
+          isReady: isReady,
+        );
+  }
+
+  Future<void> sendLobbyEmote({
+    required String roomCode,
+    required String playerId,
+    required String emote,
+  }) async {
+    await ref.read(roomRepositoryProvider).sendLobbyEmote(
+          roomCode: roomCode,
+          playerId: playerId,
+          emote: emote,
+        );
   }
 
   Future<void> toggleVisibility({
     required String roomCode,
     required RoomVisibility visibility,
   }) async {
-    await ref
-        .read(roomRepositoryProvider)
-        .toggleVisibility(roomCode: roomCode, visibility: visibility);
+    await ref.read(roomRepositoryProvider).toggleVisibility(
+          roomCode: roomCode,
+          visibility: visibility,
+        );
   }
 
   Future<void> startGame(String roomCode) async {
-    await ref
-        .read(roomRepositoryProvider)
-        .updateRoomStatus(roomCode: roomCode, status: GameStatus.playing);
+    await ref.read(roomRepositoryProvider).updateRoomStatus(
+          roomCode: roomCode,
+          status: GameStatus.playing,
+        );
   }
 
   Future<void> cleanupZombies() async {

@@ -13,6 +13,7 @@ class RoomEntity {
   final List<String> categories;
   final bool useCustomDeck;
   final DateTime createdAt;
+  final Map<String, LobbyEmoteEntity> lobbyEmotes;
 
   const RoomEntity({
     required this.roomCode,
@@ -27,6 +28,19 @@ class RoomEntity {
     this.useCustomDeck = false,
     this.gameId,
     required this.createdAt,
+    this.lobbyEmotes = const {},
+  });
+}
+
+class LobbyEmoteEntity {
+  final String emote;
+  final DateTime sentAt;
+  final DateTime expiresAt;
+
+  const LobbyEmoteEntity({
+    required this.emote,
+    required this.sentAt,
+    required this.expiresAt,
   });
 }
 
@@ -36,6 +50,8 @@ class PlayerEntity {
   final String? avatarUrl;
   final String? activeFrame;
   final String? activeTitle;
+  final String? lobbyEmote;
+  final DateTime? lobbyEmoteExpiresAt;
   final int score;
   final int passStreak;
   final bool isReady;
@@ -46,11 +62,12 @@ class PlayerEntity {
     this.avatarUrl,
     this.activeFrame,
     this.activeTitle,
+    this.lobbyEmote,
+    this.lobbyEmoteExpiresAt,
     this.score = 0,
     this.passStreak = 0,
     this.isReady = false,
   });
 
-  /// Alias — ekran kodları `player.name` kullanıyor.
   String get name => displayName;
 }

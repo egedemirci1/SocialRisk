@@ -29,16 +29,16 @@ class PlayerAvatar extends ConsumerWidget {
   final String? uid;
 
   static double _frameExtent(double radius) =>
-      (radius * 0.08).clamp(1.5, 5.0);
+      (radius * 0.072).clamp(1.35, 4.5);
 
   static double _frameStrokeWidth(double radius) =>
-      (radius * 0.05).clamp(1.5, 3.0);
+      (radius * 0.045).clamp(1.35, 2.7);
 
   static double _frameGlowBlur(double radius) =>
-      (radius * 0.25).clamp(4.0, 12.0);
+      (radius * 0.225).clamp(3.6, 10.8);
 
   static double _frameGlowSpread(double radius) =>
-      (radius * 0.06).clamp(0.5, 2.5);
+      (radius * 0.054).clamp(0.45, 2.25);
 
   String? get _effect {
     if (!showEffect || score == 0) return null;
@@ -154,10 +154,12 @@ class PlayerAvatar extends ConsumerWidget {
             ),
             Positioned.fill(
               child: IgnorePointer(
-                child: CustomPaint(
-                  painter: CustomFramePainter(
-                    frameId: currentFrameId!,
-                    radius: radius,
+                child: ClipRect(
+                  child: CustomPaint(
+                    painter: CustomFramePainter(
+                      frameId: currentFrameId!,
+                      radius: radius,
+                    ),
                   ),
                 ),
               ),
@@ -200,4 +202,3 @@ class PlayerAvatar extends ConsumerWidget {
     }
   }
 }
-

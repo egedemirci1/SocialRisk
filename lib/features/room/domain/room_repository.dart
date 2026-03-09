@@ -37,6 +37,12 @@ abstract class RoomRepository {
     required bool isReady,
   });
 
+  Future<void> sendLobbyEmote({
+    required String roomCode,
+    required String playerId,
+    required String emote,
+  });
+
   Future<void> toggleVisibility({
     required String roomCode,
     required RoomVisibility visibility,
@@ -59,3 +65,4 @@ abstract class RoomRepository {
 
   Future<void> cleanupZombieRoomsAndGames();
 }
+

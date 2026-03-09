@@ -3,7 +3,7 @@ import 'dart:math' as math;
 
 class CustomFramePainter extends CustomPainter {
   static const double _referenceAvatarRadius = 24;
-  static const double _referenceFrameExtent = _referenceAvatarRadius * 0.08;
+  static const double _referenceFrameExtent = _referenceAvatarRadius * 0.072;
   static const double _referenceTotalDiameter =
       (_referenceAvatarRadius * 2) + (_referenceFrameExtent * 2);
   static const double _referencePaintRadius =
@@ -306,8 +306,8 @@ class CustomFramePainter extends CustomPainter {
     double sweep = math.pi * 2 / segments * 0.6; // %60 dolu, %40 boş
     for (int i = 0; i < segments; i++) {
         double startAngle = i * math.pi * 2 / segments;
-        canvas.drawArc(Rect.fromCircle(center: Offset.zero, radius: r+2), startAngle, sweep, false, neonGlowPaint);
-        canvas.drawArc(Rect.fromCircle(center: Offset.zero, radius: r+2), startAngle, sweep, false, neonCorePaint);
+        canvas.drawArc(Rect.fromCircle(center: Offset.zero, radius: r + 1.5), startAngle, sweep, false, neonGlowPaint);
+        canvas.drawArc(Rect.fromCircle(center: Offset.zero, radius: r + 1.5), startAngle, sweep, false, neonCorePaint);
     }
     
     // Zıt renk dış/iç varyasyon
@@ -320,8 +320,8 @@ class CustomFramePainter extends CustomPainter {
 
     for (int i = 0; i < segments; i++) {
         double startAngle = (i * math.pi * 2 / segments) + math.pi/segments; // Offset
-        canvas.drawArc(Rect.fromCircle(center: Offset.zero, radius: r + 8), startAngle, sweep*0.8, false, secondaryGlow);
-        canvas.drawArc(Rect.fromCircle(center: Offset.zero, radius: r + 8), startAngle, sweep*0.8, false, secondaryCore);
+        canvas.drawArc(Rect.fromCircle(center: Offset.zero, radius: r + 4.5), startAngle, sweep*0.8, false, secondaryGlow);
+        canvas.drawArc(Rect.fromCircle(center: Offset.zero, radius: r + 4.5), startAngle, sweep*0.8, false, secondaryCore);
     }
   }
 
@@ -401,10 +401,10 @@ class CustomFramePainter extends CustomPainter {
     final path = Path();
     // Sağa ve sola ani kırılan dinamik şimşek halkası
     for (double angle = -math.pi; angle <= math.pi; angle += 0.15) {
-      double jitter = (angle * 10).toInt() % 2 == 0 ? 10.0 : -4.0; 
-      if ((angle * 10).toInt() % 5 == 0) jitter += 8.0;
+      double jitter = (angle * 10).toInt() % 2 == 0 ? 6.0 : -3.0; 
+      if ((angle * 10).toInt() % 5 == 0) jitter += 4.0;
 
-      double currentR = r + 2 + jitter;
+      double currentR = r + 1 + jitter;
       double x = currentR * math.cos(angle);
       double y = currentR * math.sin(angle);
       
@@ -426,11 +426,11 @@ class CustomFramePainter extends CustomPainter {
       double startX = r * math.cos(angle);
       double startY = r * math.sin(angle);
       spike.moveTo(startX, startY);
-      spike.lineTo((r+15)*math.cos(angle+0.1), (r+15)*math.sin(angle+0.1));
-      spike.lineTo((r+22)*math.cos(angle-0.05), (r+22)*math.sin(angle-0.05));
+      spike.lineTo((r + 8) * math.cos(angle + 0.1), (r + 8) * math.sin(angle + 0.1));
+      spike.lineTo((r + 12) * math.cos(angle - 0.05), (r + 12) * math.sin(angle - 0.05));
       
-      canvas.drawPath(spike, Paint()..color=Colors.blueAccent..style=PaintingStyle.stroke..strokeWidth=6..maskFilter=const MaskFilter.blur(BlurStyle.normal,3));
-      canvas.drawPath(spike, Paint()..color=Colors.white..style=PaintingStyle.stroke..strokeWidth=2);
+      canvas.drawPath(spike, Paint()..color=Colors.blueAccent..style=PaintingStyle.stroke..strokeWidth=4.5..maskFilter=const MaskFilter.blur(BlurStyle.normal,3));
+      canvas.drawPath(spike, Paint()..color=Colors.white..style=PaintingStyle.stroke..strokeWidth=1.5);
     }
   }
 
@@ -442,5 +442,7 @@ class CustomFramePainter extends CustomPainter {
     return true;
   }
 }
+
+
 
 

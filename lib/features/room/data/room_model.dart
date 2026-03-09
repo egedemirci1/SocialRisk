@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../shared/models/enums.dart';
 import '../domain/room_entity.dart';
 
@@ -14,6 +15,7 @@ class RoomModel {
   final List<String> categories;
   final bool useCustomDeck;
   final DateTime createdAt;
+  final Map<String, LobbyEmoteModel> lobbyEmotes;
 
   const RoomModel({
     required this.roomCode,
@@ -27,9 +29,11 @@ class RoomModel {
     this.useCustomDeck = false,
     this.gameId,
     required this.createdAt,
+    this.lobbyEmotes = const {},
   });
 
   factory RoomModel.fromJson(Map<String, dynamic> json) {
+    final rawEmotes = (json['lobbyEmotes'] as Map<String, dynamic>?) ?? const {};
     return RoomModel(
       roomCode: json['roomCode'] as String,
       hostId: json['hostId'] as String,
@@ -42,6 +46,12 @@ class RoomModel {
       useCustomDeck: json['useCustomDeck'] as bool? ?? false,
       gameId: json['gameId'] as String?,
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      lobbyEmotes: rawEmotes.map(
+        (key, value) => MapEntry(
+          key,
+          LobbyEmoteModel.fromJson(Map<String, dynamic>.from(value as Map), key),
+        ),
+      ),
     );
   }
 
@@ -58,6 +68,9 @@ class RoomModel {
       'useCustomDeck': useCustomDeck,
       'gameId': gameId,
       'createdAt': FieldValue.serverTimestamp(),
+      'lobbyEmotes': {
+        for (final entry in lobbyEmotes.entries) entry.key: entry.value.toJson(),
+      },
     };
   }
 
@@ -87,6 +100,48 @@ class RoomModel {
       players: players,
       gameId: gameId,
       createdAt: createdAt,
+      lobbyEmotes: lobbyEmotes.map(
+        (key, value) => MapEntry(key, value.toEntity()),
+      ),
+    );
+  }
+}
+
+class LobbyEmoteModel {
+  final String playerId;
+  final String emote;
+  final DateTime sentAt;
+  final DateTime expiresAt;
+
+  const LobbyEmoteModel({
+    required this.playerId,
+    required this.emote,
+    required this.sentAt,
+    required this.expiresAt,
+  });
+
+  factory LobbyEmoteModel.fromJson(Map<String, dynamic> json, String playerId) {
+    return LobbyEmoteModel(
+      playerId: playerId,
+      emote: json['emote'] as String? ?? '',
+      sentAt: (json['sentAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      expiresAt: (json['expiresAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'emote': emote,
+      'sentAt': Timestamp.fromDate(sentAt),
+      'expiresAt': Timestamp.fromDate(expiresAt),
+    };
+  }
+
+  LobbyEmoteEntity toEntity() {
+    return LobbyEmoteEntity(
+      emote: emote,
+      sentAt: sentAt,
+      expiresAt: expiresAt,
     );
   }
 }
@@ -97,6 +152,8 @@ class PlayerModel {
   final String? avatarUrl;
   final String? activeFrame;
   final String? activeTitle;
+  final String? lobbyEmote;
+  final DateTime? lobbyEmoteExpiresAt;
   final int score;
   final int passStreak;
   final bool isReady;
@@ -107,6 +164,8 @@ class PlayerModel {
     this.avatarUrl,
     this.activeFrame,
     this.activeTitle,
+    this.lobbyEmote,
+    this.lobbyEmoteExpiresAt,
     this.score = 0,
     this.passStreak = 0,
     this.isReady = false,
@@ -119,6 +178,8 @@ class PlayerModel {
       avatarUrl: json['avatarUrl'] as String?,
       activeFrame: json['activeFrame'] as String?,
       activeTitle: json['activeTitle'] as String?,
+      lobbyEmote: json['lobbyEmote'] as String?,
+      lobbyEmoteExpiresAt: (json['lobbyEmoteExpiresAt'] as Timestamp?)?.toDate(),
       score: json['score'] as int? ?? 0,
       passStreak: json['passStreak'] as int? ?? 0,
       isReady: json['isReady'] as bool? ?? false,
@@ -131,6 +192,10 @@ class PlayerModel {
       'avatarUrl': avatarUrl,
       'activeFrame': activeFrame,
       'activeTitle': activeTitle,
+      'lobbyEmote': lobbyEmote,
+      'lobbyEmoteExpiresAt': lobbyEmoteExpiresAt == null
+          ? null
+          : Timestamp.fromDate(lobbyEmoteExpiresAt!),
       'score': score,
       'passStreak': passStreak,
       'isReady': isReady,
@@ -144,6 +209,8 @@ class PlayerModel {
       avatarUrl: avatarUrl,
       activeFrame: activeFrame,
       activeTitle: activeTitle,
+      lobbyEmote: lobbyEmote,
+      lobbyEmoteExpiresAt: lobbyEmoteExpiresAt,
       score: score,
       passStreak: passStreak,
       isReady: isReady,

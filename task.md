@@ -11,6 +11,17 @@ Bu liste, analiz raporunda belirlenen "Premium Parti Deneyimi" hedeflerine ulaş
 - [x] **Giriş Butonunun Enerjisini Artırma:** "Giriş Yap" butonu "Partiye Katıl!" olarak güncellenecek. Butona basıldığında bir anlık beyaz parlama (flare) efekti ve haptic feedback ile oyuncu içeri "davet" edilecek.
 
 ## 3. Kurulum ve Bekleme Ekranları (Create Room & Lobby)
+- [x] Implement 10 "Group Word Association" tasks (Friends give 1-word hints)
+- [x] Refine Group Association tasks for group size balancing
+- [x] Final quality refinement (Remove impossible/absurd tasks & adjust constraints)
+- [x] Final verification
+
+# Phase 2: Refactor Bilgi Tasks
+- [/] Analyze `tasks_bilgi.dart` and mark items as `Bilgi32`
+- [ ] User review of `Bilgi32` items
+- [ ] Remove `Bilgi32` tasks and deduplicate
+- [ ] Implement new high-quality "Bilgi" tasks
+- [ ] Final verification
 - [x] **Ateşli Slider Tasarımı:** Oda kurarken Puan/Tur slider'ı; düşük değerlerde (5-10) sakin mavi/teal rengindeyken, değer arttıkça (`Color.lerp` ile) turuncuya ve ardından "Ateşli" kırmızıya dönecek. Sayı fontu seçilen değer büyüdükçe hafifçe "pop" (scale up) yapacak.
 - [-] **Lobi Etkileşimi (Poke/Dürtme):** *(İptal Edildi - Sunucu yükü sebebiyle kaldırıldı)* Bekleyen oyuncular canı sıkılmasın diye, diğer oyuncuların avatarlarına tıkladığında o avatarın üzerinden uçuşan 🔥, 😂, 👀 emojileri çıkacak. Bu, lobiyi sosyal bir alana çevirecek.
 - [x] **Host İçin "Başlat" Çağrısı:** Odadaki herkes "Hazır" olduğunda, Host'un ekranındaki "Oyunu Başlat" butonu bir neon aura ile parlamaya ve hafifçe sallanmaya (shake) başlayacak: "Haydi, herkes seni bekliyor!" mesajını verecek.
