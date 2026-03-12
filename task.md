@@ -1,59 +1,77 @@
-# Sosyal Risk - Eksik Tasklar Listesi
+# Sosyal Risk - Takım Görev Dağılımı (Modüler Çalışma)
 
-## 1. Arayüz ve Metin Güncellemeleri (UI & Text Changes)
-- [ ] "KATEGORİ" yazısını "Kategori" olarak güncellenecek. varsa bu tarz hataların tümünü kontrol etsin.
-- [ ] Puanlardaki "+" işaretini kaldırılacak (Örn: "+10 Puan" yerine "10 puan"). "Tahmini Kazan. +10 Puan" vb. metinler "10 puan", "20 puan" formatında düzeltilecek.
-- [ ] "Sahnedeki görev" metni "Görev" olarak değiştirilecek.
-- [ ] Görev altındaki "3x Puan" gibi katsayılar hesaplanmış net puan ("30 puan", "20 puan" vb.) olarak yazılacak.
-- [ ] "Gösteriye Katıl" butonu "Görevi Başlat" yapılacak.
-- [ ] "Gösteri Başladı" metni "Görev Başladı" yapılacak.
-- [ ] "Senaryonuz" başlığı "İçerik" olarak değiştirilecek.
-- [ ] "Senaryoyu sergilediyseniz" uyarısı "Görevi tamamladıysanız performansınızı bitirin" yapılacak.
-- [ ] "Performansı bitir" butonu "Görevi Bitir" yapılacak.
-- [ ] İstatistikler ekranında "Bakiye", "Rütbe", "Ev", "Koleksiyon" değerleri sağa yaslanacak. (biraz uğraştırabilir)
-- [ ] Profil düzenleme ekranında isim profil fotoğrafına hizalanacak, kalem ikonu ismin direkt yanına alınacak. (biraz uğraştırabilir)
-- [ ] Çıkış yap pop-up'ında "Hayır" ve "Sil Ve Çık" butonlarındaki harflerin hepsi büyük harf olmayacak.
-- [ ] Eşyalar (Items) boş sekmesinde "Henüz bir eşyanız yok, mağazadaki harika içeriklere göz atmak ister misiniz?" yazısı gösterilecek ve altına "Mağaza"ya yönlendiren buton eklenecek.
-- [ ] Lobi ekranında dönen yazıların içeriği düzenlecek ve Rastgele ekranda çıkan diğer içerikler düzenlenecek. 
-- [ ] Lobi ekranına o an oynanacak oyun modu bilgisi eklenecek.
-- [ ] Çark modundaki renkler yenilenecek. (her kategori farklı renk)
-- [ ] Arayüzdeki "göreve özel" yazısı kaldırılacak.
-- [ ] Oyuncu sıralamasında herkes kendi ismini vurgulu (highlighted) görecek.
-- [ ] Ekonomi Oyun modunun adı "Borsa" olarak değiştirilecek.
-- [ ] "Menü" yapısının güncellenmesi:
-  - [ ] Ana sayfadaki "Ayarlar" butonu "Menü" olacak ve tıklandığında alttan açılacak.
-  - [ ] Alttan açılan barın başlığı "Menü" olacak.
-  - [ ] Menü listesinde "Ayarlar" eklenecek ve ses açma/dil değişikliği bu alt ekrandan yapılacak.
-  - [ ] Menü ekranından "Profil" seçeneği kaldırılacak.
-  - [ ] Ayarlar bölümünün en altında 2026 Tüm Hakları Sakldıır yazsın.
-- [ ] Profil fotoğrafı etrafındaki çerçevenin kare olma sorunu çözülüp tam kaplaması sağlanacak.
-- [ ] Oyun logosu, logo altındaki logotype ve uygulamanın mobil logoları güncellenecek. (biraz uğraştırabilir)
-- [ ] Mağaza içerisindeki bilet (ticket) logosu farklı ve uygun bir ikonla değiştirilecek.
-- [ ] Tepki/Emote seçim ekranındaki mevcut 7 seçeneğe 1 tane daha eklenerek 8'e çıkartılacak.
-- [ ] Tüm cihaz türlerindeki genel Responsive kaymaları / boyutlandırmaları kontrol edilecek.
+Birbirinizle çakışmaları (conflict) önlemek adına tüm görevleri "Görsel/UI" ve "Mantık/State" olarak ikiye ayırdık. 
 
+---
 
+## 🎨 ATA (Arayüz, Metinler, Görseller ve Responsive)
+*Ağırlıklı Çalışma Alanları: UI/UX, Widget dizilimleri, Assets (Logolar, ikonlar), Metin/Dil dosyaları.*
 
-## 2. Oyun Mantığı ve Hata Çözümleri (Logic & Bug Fixes) (Test Scripti Yazılabilir)
-- [ ] Oyun sonunda (son görevden sonra) görev sonu ara ekranı atlanıp direkt sonuç ekranına gidilecek.
-- [ ] Borsa Modu (Ekonomi) Puan/Mantık Hataları:
-  - [ ] +5 puan hardcoded olarak verilmeyecek. İlk 3 oyuncuya sırasıyla 200, 100, 50 puan, geri kalanlara 20 puan verilecek.
-  - [ ] Tahmini kazanç yazıları statik değil, çarpan katsayısına göre dinamik hesaplanıp gösterilecek.
-  - [ ] Görev tamamlandıktan sonra verilen puanlar hardcoded 10 yerine seçilen katsayıyla dinamik verilecek (örn: 12 puanlık oyunda 3x çarpan varsa 36 puan). Mod genelinde toplam puan hesaplaması düzeltilecek.
-  - [ ] Tur mekanizması arızaları (örn: 3 turluk oyunda birine turun hiç geçmemesi) onarılacak.
-  - [ ] Oyunun bitmeme sorunu düzeltilecek.
-  - [ ] Borsa modunda oyundan çıkıldığında "Odadan Ayrıldınız" tarzında bir toaster uyarısı gösterilecek.
-- [ ] Ekonomi modunda kategori seçimi sonrasında, arkada zorluk seviyesi ekranının kısa süreliğine görünmesi/atlaması engellenecek.
-- [ ] Çark modunda üst üste aynı kişiye görev gelmemesi için sıra mekanizması kontrol edilecek.
-- [ ] Geri sayım sayacında (timer) alt ve üst sayaçlar birbiriyle senkron çalışacak.
-- [ ] Çıkış onayındaki "Sil ve Çık" butonu kullanıcının okuyabilmesi için 10 saniyelik geri sayımdan sonra aktif hale gelecek.
-- [ ] Tur bitti sahnesindeki karakter ifadesi (emote), görevin beğenilip beğenilmeme durumuna göre dinamik değişecek.
-- [ ] Tek kategori seçildiği durumlarda sistem otomatik "Borsa Moduna" geçecek, uyarı pop-up'ı (katsayının sabit kalacağı vb. hakkında) gösterilecek.
-- [ ] İçerik havuzu (sorular, görevler) gözden geçirilip düzenlenecek.
-  [ ] Test Scripti Yazılabilir Mantık hesaplama bölümü için.
+### Metin ve İsimlendirme Güncellemeleri
+- [ ] "KATEGORİ" yazısı "Kategori" olarak güncellenecek (ve varsa bu tarz büyük harf hataları taranıp düzeltilecek).
+- [ ] Sahnelerdeki ve butonlardaki tiyatro temalı eski terimler değiştirilecek:
+  - "Sahnedeki görev" -> "Görev"
+  - "Gösteriye Katıl" -> "Görevi Başlat"
+  - "Gösteri Başladı" -> "Görev Başladı"
+  - "Senaryonuz" -> "İçerik"
+  - "Senaryoyu sergilediyseniz" -> "Görevi tamamladıysanız performansınızı bitirin"
+  - "Performansı bitir" -> "Görevi Bitir"
+  - "Ekonomi Oyun modunun" adı -> "Borsa" olarak güncellenecek.
+  - Arayüzdeki "göreve özel" yazısı kaldırılacak.
+- [ ] Puan metinlerindeki "+" işareti kaldırılacak ("+10 Puan" yerine "10 puan" / "Tahmini Kazan. 10 puan" şeklinde).
+- [ ] Görev altındaki "3x Puan" gibi katsayı metinleri, Ata'nın hesapladığı net puan ile birleşip "30 puan", "20 puan" formatında sadece sonuç olarak yazılacak.
 
-## 3. Yeni Özellikler (New Features)
-- [ ] Profil ekranına "Başarımlar (Achievements)" eklenecek.
-- [ ] +18 içerikler için Google Authentication check işlemi yapılacak.
-- [ ] Oyuna çoklu dil kullanımını destekleyecek yerelleştirme (Localization) altyapısı eklenecek.
-- [ ] Yeni "Ses" (Sound) entegrasyonları oyuna dahil edilecek.
+### UI İyileştirmeleri ve Bug Fixler
+- [ ] **İstatistikler Ekranı:** "Bakiye", "Rütbe", "Ev", "Koleksiyon" değerleri sağa yaslanacak. *(biraz uğraştırabilir)*
+- [ ] **Profil Ekranı:** 
+  - İsim, profil fotoğrafına hizalanacak.
+  - Kalem ikonu ismin direkt yanına alınacak. *(biraz uğraştırabilir)*
+  - Profil fotoğrafı çerçevesinin kare olma sorunu çözülüp fotoğrafı tam kaplaması sağlanacak.
+- [ ] **Pop-uplar ve Boş Durumlar (Empty States):**
+  - Çıkış yap pop-up'ında "Hayır" ve "Sil Ve Çık" butonlarındaki harflerin hepsi büyük harf olmayacak.
+  - Eşyalar (Items) boş sekmesine "Henüz bir eşyanız yok, mağazadaki harika içeriklere göz atmak ister misiniz?" yazısı eklenecek ve altına "Mağaza"ya yönlendiren buton konulacak.
+- [ ] **Lobi Ekranı:**
+  - Dönen yazıların içeriği ve rastgele çıkan diğer içerikler düzenlenecek.
+  - O an oynanacak oyun modunun bilgisi ana lobiye eklenecek.
+- [ ] **Menü Yapısı:**
+  - Ana sayfadaki "Ayarlar" butonu "Menü" olacak ve tıklayınca alttan (Bottom Sheet) açılacak. Menü başlığı "Menü" olacak.
+  - Menü listesine "Ayarlar" eklenecek (Ses/Dil değişiklikleri buradan yapılacak).
+  - Menü ekranından "Profil" seçeneği kaldırılacak.
+  - Ayarlar/Menü alanının en altına "2026 Tüm Hakları Saklıdır" yazısı eklenecek.
+- [ ] Çark modundaki katman renkleri yenilenecek (her kategoriye farklı renk atanacak).
+- [ ] Emote (Tepki) ekranına mevcut 7 seçeneğe 1 tane daha eklenerek 8'e çıkartılacak (UI yerleşimi tasarlanacak).
+- [ ] Liderlik tablosunda kullanıcının kendi ismi vurgulu (highlighted) görünecek.
+- [ ] Tüm cihazlarda genel Responsive kaymaları / boyutlandırmaları kontrol edilip çözülecek.
+
+### Asset ve İçerik Görevleri
+- [ ] Oyun logosu, logonun altındaki logotype ve mobil logolar güncellenecek. *(biraz uğraştırabilir)*
+- [ ] Mağazadaki "bilet (ticket)" logosu uygun/yeni bir ikonla değiştirilecek.
+- [ ] İçerik havuzu (sorular, görevler) Ege tarafından gözden geçirilip metinsel olarak düzenlenecek.
+
+---
+
+## ⚙️ EGE (Oyun Mantığı, State Management ve Core Sistemler)
+*Ağırlıklı Çalışma Alanları: Provider/Bloc (State), Oyun Döngüsü, Matematik/Puan Hesaplamaları, Testler, Entegrasyonlar.*
+
+### Oyun Mantığı ve Döngüsü (Game Loop)
+- [ ] Oyun sonunda (son görev bitince) ara ekran atlanıp direkt sonuç ekranına (Liderlik/Puan tablosu) geçilecek.
+- [ ] Tur bitimi sahnesinde çıkacak karakter ifadesi (Emote), görevin seyirci tarafından "Beğenilme/Beğenilmeme" durumuna göre dinamik olarak değiştirilecek.
+- [ ] Çark modunda üst üste aynı kişiye görev gelmemesi için rastgele oyuncu seçimi mantığı (sıra mekanizması) kontrol edilip düzeltilecek.
+- [ ] Tek kategori seçildiğinde, sistemin otomatik "Borsa Moduna" geçmesi ve kullanıcıya uyarı pop-up'ı çıkarılması logic'i yazılacak (Katsayının sabit kalacağına dair).
+- [ ] Zamanlayıcı (Timer) senkronizasyonu: Geri sayım sayacında alt ve üst sayaçlar birbiriyle tutarlı (senkron) hale getirilecek.
+- [ ] Çıkış onayındaki "Sil ve Çık" butonu için 10 saniyelik bir geri sayım engeli konulacak. Süre bitmeden buton aktifleşmeyecek.
+
+### Borsa (Ekonomi) Modu Özel Mantık ve Fixler
+- [ ] **Puan Dağılımı:** Maç sonu +5 hardcoded puan kaldırılacak; ilk 3 oyuncuya sırasıyla `200, 100, 50`, geri kalanlara `20'şer` puan verilme sistemi yazılacak.
+- [ ] **Dinamik Görev Puanları:** Görev tamamlanınca verilen "10" hardcoded puan yerine, "Katsayı x Temel Puan" (örn: 12 puanlık oyunda 3x çarpan = 36) dinamik hesaplaması sisteme entegre edilecek.
+- [ ] Tahmini kazanç metinlerine gidecek veriler dinamik hesaplanıp Ege'nin UI'ına sunulacak. Bütün Borsa modunun toplam puan hesaplaması ve senkron kaymaları düzeltilecek.
+- [ ] **Tur Arızaları:** Borsa modunda bazı durumlarda turun ilerlememesi/hiç geçmemesi ve "oyunun bitmeme sorunu" kontrol edilip çözülecek (Turn-Skip bug'ı).
+- [ ] Oyundan çıkıldığında "Odadan Ayrıldınız" tarzında oyuna uygun bir "toaster/snackbar" tetiklenecek.
+- [ ] Kategori seçiminden sonra arkada zorluk seviyesi ekranının kısa süreli görünmesi/atlaması (UI state sıçraması / routing sorunu) engellenecek.
+- [ ] **Borsa/Ekonomi Mantığı İçin Test Yazımı:** Yukarıdaki puan/tur hesaplamalarının bir daha bozulmaması adına `Mantık hesaplama bölümü için Test Scripti` yazılacak.
+
+### Yeni Sistem Entegrasyonları (Altyapı)
+- [ ] **Achievement Sistemi:** Profil ekranında görünecek "Başarımlar (Achievements)" kontrol mekanizması ve database/state altyapısı kurulacak.
+- [ ] **Auth:** +18 içerik girişleri için Google Authentication yaş/izin check işlemi eklenecek.
+- [ ] **Localization (Yerelleştirme):** Oyuna çoklu dil desteği kazandıracak altyapı (örn. `easy_localization` vb.) entegre edilecek. (Metinleri daha sonra Ege doldurabilecek).
+- [ ] **Ses (Sound) Sistemi:** Yeni ses efektlerini (arka plan müziği, tık efektleri, başarı sesleri vb.) tetikleyecek "AudioPlayer" servis/altyapısı kurulacak.
