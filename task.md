@@ -1,40 +1,58 @@
-# Sosyal Risk Görsel & Deneyim (UX) Geliştirme Yol Haritası
+# Sosyal Risk - Eksik Tasklar Listesi
 
-Bu liste, analiz raporunda belirlenen "Premium Parti Deneyimi" hedeflerine ulaşmak için uygulanacak somut adımları içerir. Her madde, oyunun ruhunu güçlendirmek ve oyuncuyu ekran başında tutmak için tasarlanmıştır.
+## 1. Arayüz ve Metin Güncellemeleri (UI & Text Changes)
+- [ ] "KATEGORİ" yazısını "Kategori" olarak güncellenecek.
+- [ ] Puanlardaki "+" işaretini kaldırılacak (Örn: "+10 Puan" yerine "10 puan").
+- [ ] "Tahmini Kazan. +10 Puan" vb. metinler "10 puan", "20 puan" formatında düzeltilecek.
+- [ ] "Sahnedeki görev" metni "Görev" olarak değiştirilecek.
+- [ ] Görev altındaki "3x Puan" gibi katsayılar hesaplanmış net puan ("30 puan", "20 puan" vb.) olarak yazılacak.
+- [ ] "Gösteriye Katıl" butonu "Görevi Başlat" yapılacak.
+- [ ] "Gösteri Başladı" metni "Görev Başladı" yapılacak.
+- [ ] "Senaryonuz" başlığı "İçerik" olarak değiştirilecek.
+- [ ] "Senaryoyu sergilediyseniz" uyarısı "Görevi tamamladıysanız performansınızı bitirin" yapılacak.
+- [ ] "Performansı bitir" butonu "Görevi Bitir" yapılacak.
+- [ ] İstatistikler ekranında "Bakiye", "Rütbe", "Ev", "Koleksiyon" değerleri sağa yaslanacak.
+- [ ] Profil düzenleme ekranında isim profil fotoğrafına hizalanacak, kalem ikonu ismin direkt yanına alınacak.
+- [ ] Çıkış yap pop-up'ında "Hayır" ve "Sil Ve Çık" butonlarındaki harflerin hepsi büyük harf olmayacak.
+- [ ] Eşyalar (Items) boş sekmesinde "Henüz bir eşyanız yok, mağazadaki harika içeriklere göz atmak ister misiniz?" yazısı gösterilecek ve altına "Mağaza"ya yönlendiren buton eklenecek.
+- [ ] Lobi ekranında dönen yazılar düzenlenecek ve değişeceğini belli etmek için sonuna "..." (nokta nokta) eklenecek.
+- [ ] Rastgele ekranda çıkan diğer içerikler düzenlenecek.
+- [ ] Lobi ekranına o an oynanacak oyun modu bilgisi eklenecek.
+- [ ] Çark modundaki renkler yenilenecek.
+- [ ] Arayüzdeki "göreve özel" yazısı kaldırılacak.
+- [ ] Oyuncu sıralamasında herkes kendi ismini vurgulu (highlighted) görecek.
+- [ ] Oyun modunun adı "Borsa" olarak değiştirilecek.
+- [ ] "Menü" yapısının güncellenmesi:
+  - [ ] Ana sayfadaki "Ayarlar" butonu "Menü" olacak ve tıklandığında alttan açılacak.
+  - [ ] Alttan açılan barın başlığı "Menü" olacak.
+  - [ ] Menü listesinde "Ayarlar" eklenecek ve ses açma/dil değişikliği bu alt ekrandan yapılacak.
+  - [ ] Menü ekranından "Profil" seçeneği kaldırılacak.
+  - [ ] Menünün en altına modern bir tasarımla "Reze ve Ege tarafından geliştirilmiştir" yazısı eklenecek.
+- [ ] Profil fotoğrafı etrafındaki çerçevenin kare olma sorunu çözülüp tam kaplaması sağlanacak.
+- [ ] Oyun logosu, logo altındaki logotype ve uygulamanın mobil logoları güncellenecek.
+- [ ] Mağaza içerisindeki bilet (ticket) logosu farklı ve uygun bir ikonla değiştirilecek.
 
-## 1. Genel Altyapı ve Duyusal Geri Bildirim
-- [ ] **Haptic Feedback (Titreşim) Katmanı:** `HapticFeedback` kullanarak; butonlara basıldığında `lightImpact`, görev onaylandığında `mediumImpact`, ceza alındığında veya süre bittiğinde ise `vibrate` (uzun titreşim) tetikleyicileri eklenecek. Telefon artık oyunla birlikte tepki verecek.
-- [ ] **Tematik Ses Efektleri (Opsiyonel/Altyapı):** Çark dönerken "tık-tık" sesleri ve oylama tamamlandığında bir "başarı/alkış" sesi için `audioplayers` altyapısı kurulacak (dosyalar yoksa ses kütüphanesi hazır tutulacak).
+## 2. Oyun Mantığı ve Hata Çözümleri (Logic & Bug Fixes)
+- [ ] Oyun sonunda (son görevden sonra) görev sonu ara ekranı atlanıp direkt sonuç ekranına gidilecek.
+- [ ] Borsa Modu (Ekonomi) Puan/Mantık Hataları:
+  - [ ] +5 puan hardcoded olarak verilmeyecek. İlk 3 oyuncuya sırasıyla 200, 100, 50 puan, geri kalanlara 20 puan verilecek.
+  - [ ] Tahmini kazanç yazıları statik değil, çarpan katsayısına göre dinamik hesaplanıp gösterilecek.
+  - [ ] Görev tamamlandıktan sonra verilen puanlar hardcoded 10 yerine seçilen katsayıyla dinamik verilecek (örn: 12 puanlık oyunda 3x çarpan varsa 36 puan). Mod genelinde toplam puan hesaplaması düzeltilecek.
+  - [ ] Tur mekanizması arızaları (örn: 3 turluk oyunda birine turun hiç geçmemesi) onarılacak.
+  - [ ] Oyunun bitmeme sorunu düzeltilecek.
+  - [ ] Borsa modunda oyundan çıkıldığında "Odadan Ayrıldınız" tarzında bir toaster uyarısı gösterilecek.
+- [ ] Ekonomi modunda kategori seçimi sonrasında, arkada zorluk seviyesi ekranının kısa süreliğine görünmesi/atlaması engellenecek.
+- [ ] Çark modunda üst üste aynı kişiye görev gelmemesi için sıra mekanizması kontrol edilecek.
+- [ ] Geri sayım sayacında (timer) alt ve üst sayaçlar birbiriyle senkron çalışacak.
+- [ ] Çıkış onayındaki "Sil ve Çık" butonu kullanıcının okuyabilmesi için 10 saniyelik geri sayımdan sonra aktif hale gelecek.
+- [ ] Tur bitti sahnesindeki karakter ifadesi (emote), görevin beğenilip beğenilmeme durumuna göre dinamik değişecek.
+- [ ] Tek kategori seçildiği durumlarda sistem otomatik "Borsa Moduna" geçecek, uyarı pop-up'ı (katsayının sabit kalacağı vb. hakkında) gösterilecek.
 
-## 2. Karşılama ve Atmosfer (Login & Home)
-- [x] **Dinamik Neon Arka Plan:** Login ekranındaki sabit ışıklandırma yerine, yavaşça yer değiştiren, nefes alan (fade-in/out) mor ve camgöbeği mesh-gradient tozları eklenecek. Ekran "yaşayan bir parti alanı" gibi hissettirecek.
-- [x] **Giriş Butonunun Enerjisini Artırma:** "Giriş Yap" butonu "Partiye Katıl!" olarak güncellenecek. Butona basıldığında bir anlık beyaz parlama (flare) efekti ve haptic feedback ile oyuncu içeri "davet" edilecek.
-
-## 3. Kurulum ve Bekleme Ekranları (Create Room & Lobby)
-- [x] Implement 10 "Group Word Association" tasks (Friends give 1-word hints)
-- [x] Refine Group Association tasks for group size balancing
-- [x] Final quality refinement (Remove impossible/absurd tasks & adjust constraints)
-- [x] Final verification
-
-# Phase 2: Refactor Bilgi Tasks
-- [/] Analyze `tasks_bilgi.dart` and mark items as `Bilgi32`
-- [ ] User review of `Bilgi32` items
-- [ ] Remove `Bilgi32` tasks and deduplicate
-- [ ] Implement new high-quality "Bilgi" tasks
-- [ ] Final verification
-- [x] **Ateşli Slider Tasarımı:** Oda kurarken Puan/Tur slider'ı; düşük değerlerde (5-10) sakin mavi/teal rengindeyken, değer arttıkça (`Color.lerp` ile) turuncuya ve ardından "Ateşli" kırmızıya dönecek. Sayı fontu seçilen değer büyüdükçe hafifçe "pop" (scale up) yapacak.
-- [-] **Lobi Etkileşimi (Poke/Dürtme):** *(İptal Edildi - Sunucu yükü sebebiyle kaldırıldı)* Bekleyen oyuncular canı sıkılmasın diye, diğer oyuncuların avatarlarına tıkladığında o avatarın üzerinden uçuşan 🔥, 😂, 👀 emojileri çıkacak. Bu, lobiyi sosyal bir alana çevirecek.
-- [x] **Host İçin "Başlat" Çağrısı:** Odadaki herkes "Hazır" olduğunda, Host'un ekranındaki "Oyunu Başlat" butonu bir neon aura ile parlamaya ve hafifçe sallanmaya (shake) başlayacak: "Haydi, herkes seni bekliyor!" mesajını verecek.
-
-## 4. Oyun İçi Senaryo ve Görev Anı (Task Screen)
-- [x] **Riskli Pass Butonu:** Görevi reddetme butonu (`TextButton`'dan `OutlinedButton`'a) daha belirgin ve uyarıcı hale getirilecek. Basıldığında ekran hafifçe sarsılacak ("Emin misin?") ve puan kaybı görsel bir kırmızı efektle vurgulanacak.
--
-## 5. Oylama ve Gerilimin Zirvesi (Voting Screen)
-- [x] **Ambiyans Işıklandırması:** Oylama esnasında arka plan rengi, görevin o anki zorluk derecesine göre (Zor: Kırmızı, Kolay: Yeşil) köşelerden hafifçe yanıp sönen bir ışık (glow) verecek. Odadaki gerilim görselleştirilecek.
-- [x] **Dinamik "Zaman Baskısı" Barı:** Her oylamaya 20 saniyelik bir geri sayım barı eklenecek. Bar kısaldıkça rengi sarıdan kırmızıya dönecek ve son 3 saniyede titreyerek oyuncuyu hızlı karar vermeye itecek.
-- [x] **Psikolojik Metinler:** "Herkes senin kararını bekliyor...", "Zaman daralıyor!" gibi rastgele seçilen gaz verici metinler ekranın ortasında süzülecek.
-
-## 6. Final ve Ödüllendirme (Round Result Screen)
-- [ ] **Skor Patlaması:** Kazanılan puan ekrana geldiğinde sadece text değil, arkasından bir havai fişek/emoji patlaması çıkacak. Puan ne kadar yüksekse patlama o kadar büyük olacak.
-- [ ] **Liderin Tahtı:** Liderlik tablosunda o anki birinci oyuncunun satırı altın sarısı parlayan bir çerçeve (`Glow`) ve yanında küçük bir taç ikonuyla gösterilecek. Rekabet görsel olarak ödüllendirilecek.
-- [ ] **Host Buton Karakterizasyonu:** "SIRADAKİ GÖREV" yerine "SIRADAKİ KURBANINI SEÇ" gibi oyunun eğlence tonuna uygun, daha kışkırtıcı metinler kullanılacak.
+## 3. Yeni Özellikler (New Features)
+- [ ] Profil ekranına "Başarımlar (Achievements)" eklenecek.
+- [ ] Tepki/Emote seçim ekranındaki mevcut 7 seçeneğe 1 tane daha eklenerek 8'e çıkartılacak.
+- [ ] +18 içerikler için Google Authentication check işlemi yapılacak.
+- [ ] Oyuna çoklu dil kullanımını destekleyecek yerelleştirme (Localization) altyapısı eklenecek.
+- [ ] Tüm cihaz türlerindeki genel Responsive kaymaları / boyutlandırmaları kontrol edilecek.
+- [ ] İçerik havuzu (sorular, görevler) gözden geçirilip düzenlenecek.
+- [ ] Yeni "Ses" (Sound) entegrasyonları oyuna dahil edilecek.
