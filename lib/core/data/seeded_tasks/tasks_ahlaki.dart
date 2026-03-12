@@ -1,7 +1,6 @@
 /// Ahlaki (Etik İkilemler ve Şeytanın Avukatlığı) — 100 soru, local seed.
 final List<Map<String, dynamic>> tasksAhlaki = [
   // ── EASY (34) ──
-  {'category': 'Ahlaki', 'content': 'Gruptan birinin sırrını 10.000 TL karşılığında ifşa eder miydin?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Yanlış bir şeyi görmezden gelmek bazen doğru mu?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Bir arkadaşın hata yaptığında yüzüne söyler misin?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
   {'category': 'Ahlaki', 'content': 'Para kazanmak için ahlaki sınırlarını ne kadar zorlarsın?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
@@ -10,7 +9,6 @@ final List<Map<String, dynamic>> tasksAhlaki = [
   {'category': 'Ahlaki', 'content': 'Gruptan birine "En ahlaki ikileminde ne yaptın?" diye sor.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Başkasının hatasını üstlenir miydin?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
   {'category': 'Ahlaki', 'content': 'Adalet mi, merhamet mi? Bir örnekle açıkla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Ahlaki', 'content': 'Gruptan biri "Şeytanın avukatı ol" de; verilen konuda karşı görüşü savun.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Hiç "küçük" bir yalan söyledin mi? Neden?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
   {'category': 'Ahlaki', 'content': 'Birinin sırrını saklamak seni zorladı mı?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Gruptan birine "Seni en çok zorlayan ahlaki kararın neydi?" diye sor.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
@@ -22,7 +20,6 @@ final List<Map<String, dynamic>> tasksAhlaki = [
   {'category': 'Ahlaki', 'content': 'Gruptan birine "Hiç pişman olduğun bir ahlaki kararın var mı?" diye sor.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Bir arkadaşın haksız olsa da onu destekler misin?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Gerektiğinde "hayır" demek senin için zor mu?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Ahlaki', 'content': 'Gruptan biri "Şeytanın avukatı ol" de; sen bir konu seç, karşıt görüşü savun.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Vicdanınla çatıştığın bir anı anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Birine zarar vermeden yalan söylemek kabul edilebilir mi?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
   {'category': 'Ahlaki', 'content': 'Gruptan birine "En zor "hayır" dediğin an neydi?" diye sor.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
@@ -31,13 +28,11 @@ final List<Map<String, dynamic>> tasksAhlaki = [
   {'category': 'Ahlaki', 'content': 'Gruptan biri bir ikilem yazsın; sen iki seçeneği de savun.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'En çok hangi konuda "gri bölge"de kaldın?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Birine ihanet etmek yerine kendine ihanet eder misin?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Ahlaki', 'content': 'Gruptan birine "Senin ahlaki çizgin nerede?" diye sor.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Sonuç iyi olacaksa yöntem önemli mi?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Hiç "doğru" cevabın olmadığı bir karar verdin mi?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Gruptan biri bir tartışmalı konu açsın; sen şeytanın avukatı ol.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Birinin iyiliği için kendi değerlerinden ödün verir misin?', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
   // ── MEDIUM (33) ──
-  {'category': 'Ahlaki', 'content': 'Gruptan birinin sırrını 100.000 TL karşılığında ifşa eder miydin?', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Bir arkadaşın seni aldattığında ne yapardın?', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Gerektiğinde birini "satmak" (ihbar etmek) doğru mu?', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Gruptan birine "En büyük ahlaki ikilemin neydi?" diye sor.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
@@ -49,13 +44,11 @@ final List<Map<String, dynamic>> tasksAhlaki = [
   {'category': 'Ahlaki', 'content': 'Gruptan birine "Sınırlarını zorlayan bir teklif aldın mı?" diye sor.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Kazanmak için bir arkadaşını feda eder misin?', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Vicdanınla toplumun beklentisi çatışırsa ne yaparsın?', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Ahlaki', 'content': 'Gruptan biri bir ikilem sunsun; sen hem A hem B tarafını savun.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Birine zarar verecek doğruyu söyler misin?', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'En zor "hayır" dediğin anı anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Gruptan birine "Hiç vicdanen rahatsız uyudun mu?" diye sor.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Adalet bazen acımasız mı olmalı?', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Bir sırrı saklamak seni suç ortağı yapar mı?', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Ahlaki', 'content': 'Gruptan biri "Şeytanın avukatı ol" de; sen seçilen konuda karşı görüşü savun.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Kendi değerlerinle çatışan bir karar verdin mi?', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Birinin iyiliği için kendi itibarını riske atar mısın?', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Gruptan birine "En çok hangi konuda "gri bölge"de kaldın?" diye sor.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
@@ -97,14 +90,11 @@ final List<Map<String, dynamic>> tasksAhlaki = [
 
   {'category': 'Ahlaki', 'content': 'En büyük ahlaki ikilemini ve ne yaptığını anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Gruptan birine "Senin ahlaki çizgin nerede? Zorladığın bir an var mı?" diye sor.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Ahlaki', 'content': 'Dürüstlük her zaman en iyi politika mı? İki karşı örnek ver.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Birine ihanet etmek mi daha zor, kendine ihanet etmek mi?', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
 
   {'category': 'Ahlaki', 'content': 'Hiç "doğru" cevabın olmadığı bir karar verdin mi? Ne yaptın?', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Gerektiğinde bir arkadaşını ele verdin mi veya verir misin?', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Gruptan birine "Vicdanınla çatıştığın en zor an neydi?" diye sor.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Ahlaki', 'content': 'Adalet mi, merhamet mi? Kendi hayatından bir örnekle açıkla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Ahlaki', 'content': 'Gruptan biri "Şeytanın avukatı ol" de; sen inandığın bir şeyin karşısını savun.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'En çok pişman olduğun ahlaki kararın neydi? Neden?', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
   {'category': 'Ahlaki', 'content': 'Gruptan birine "Birinin sırrını ifşa etmek senin için ne zaman doğru olur?" diye sor.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
 ];
