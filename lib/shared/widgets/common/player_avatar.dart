@@ -154,12 +154,10 @@ class PlayerAvatar extends ConsumerWidget {
             ),
             Positioned.fill(
               child: IgnorePointer(
-                child: ClipRect(
-                  child: CustomPaint(
-                    painter: CustomFramePainter(
-                      frameId: currentFrameId!,
-                      radius: radius,
-                    ),
+                child: CustomPaint(
+                  painter: CustomFramePainter(
+                    frameId: currentFrameId!,
+                    radius: radius,
                   ),
                 ),
               ),

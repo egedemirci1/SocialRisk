@@ -106,7 +106,7 @@ class _DifficultyChoiceScreenState
                           ),
                         ),
                         child: Text(
-                          'KATEGORİ: ${game.selectedCategory?.toUpperCase() ?? "?"}',
+                          'Kategori: ${game.selectedCategory?.toUpperCase() ?? "?"}',
                           style: AppTextStyles.titleMedium.copyWith(
                             color: AppColors.accent,
                             fontWeight: FontWeight.w900,
@@ -145,7 +145,7 @@ class _DifficultyChoiceScreenState
                                 ),
                               ),
                               child: Text(
-                                'ZORLUK SEVİYESİ',
+                                'Zorluk Seviyesi',
                                 style: AppTextStyles.titleLarge.copyWith(
                                   color: AppColors.accent,
                                   letterSpacing: 2,
@@ -333,7 +333,7 @@ class _DifficultyChoiceScreenState
             ),
             const SizedBox(height: 12),
             Text(
-              'Tahmini Kazanç: +$estimatedPoints Puan',
+              'Tahmini Kazanç: $estimatedPoints Puan',
               style: AppTextStyles.bodyMedium.copyWith(
                 color: Colors.white70,
                 fontWeight: FontWeight.bold,

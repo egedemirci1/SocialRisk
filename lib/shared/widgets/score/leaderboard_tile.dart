@@ -111,8 +111,9 @@ class LeaderboardTile extends StatelessWidget {
                     Text(
                       playerName,
                       style: AppTextStyles.titleLarge.copyWith(
-                        color: Colors.white,
+                        color: isCurrentPlayer ? AppColors.primary : Colors.white,
                         fontSize: 15,
+                        fontWeight: isCurrentPlayer ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
                     if (isCurrentPlayer)

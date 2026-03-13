@@ -227,12 +227,20 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   }
 
   Widget _buildEndCondition() {
-    // Dinamik renk hesaplama: Düşük değerler Mavi/Yeşil, yüksek değerler Turuncu/Kırmızı
+    Color getSliderColor(double r) {
+      if (r < 0.5) {
+        return Color.lerp(const Color(0xFF00E5FF), const Color(0xFF00E676), r * 2) ?? AppColors.accent;
+      } else {
+        return Color.lerp(const Color(0xFF00E676), const Color(0xFFD500F9), (r - 0.5) * 2) ?? AppColors.accent;
+      }
+    }
+
+    // Dinamik renk hesaplama: Mavi -> Yeşil -> Mor
     final scoreRatio = ((_scoreTarget - 50) / 450).clamp(0.0, 1.0);
-    final scoreColor = Color.lerp(const Color(0xFF00E5FF), const Color(0xFFFF3D00), scoreRatio) ?? AppColors.accent;
+    final scoreColor = getSliderColor(scoreRatio);
 
     final roundRatio = ((_roundTarget - 3) / 17).clamp(0.0, 1.0);
-    final roundColor = Color.lerp(const Color(0xFF00E5FF), const Color(0xFFFF3D00), roundRatio) ?? AppColors.accent;
+    final roundColor = getSliderColor(roundRatio);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -370,7 +378,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: _ToggleChip(
-                label: 'Ekonomi',
+                label: 'Borsa',
                 isSelected: _selectedMode == GameMode.economy,
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -461,6 +469,10 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               width: itemWidth,
               child: GestureDetector(
                 onTap: () {
+                  if (category == 'Özel') {
+                    ToastUtils.showInfo(context, 'Özel senaryolar çok yakında eklenecek!');
+                    return;
+                  }
                   setState(() {
                     if (isSelected) {
                       if (_selectedCategories.length > 2) {
@@ -489,10 +501,10 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      category,
+                      category == 'Özel' ? 'Özel (Yakında)' : category,
                       style: AppTextStyles.titleSmall.copyWith(
                         color: isSelected ? Colors.white : Colors.white54,
-                        fontSize: 12,
+                        fontSize: category == 'Özel' ? 10 : 12,
                         fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,

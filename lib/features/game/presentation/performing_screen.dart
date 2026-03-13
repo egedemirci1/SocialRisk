@@ -11,6 +11,7 @@ import 'widgets/spectator_strip.dart';
 import 'widgets/turn_counter_badge.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../core/constants/app_text_styles.dart';
 
@@ -110,115 +111,121 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
           return Column(
             children: [
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (currentPlayer != null)
-                        PlayerSpotlight(player: currentPlayer, isMe: isMyTurn),
-                      const SizedBox(height: 32),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.accent.withValues(alpha: 0.15)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              decoration: BoxDecoration(
-                                color: AppColors.accent.withValues(alpha: 0.1),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
+                child: ResponsiveWrapper(
+                  maxWidth: 600,
+                  padding: EdgeInsets.zero,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (currentPlayer != null)
+                            PlayerSpotlight(player: currentPlayer, isMe: isMyTurn),
+                          const SizedBox(height: 32),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: AppColors.accent.withValues(alpha: 0.15)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
                                 ),
-                              ),
-                              child: Text(
-                                'GÖSTERİ BAŞLADI',
-                                style: AppTextStyles.titleLarge.copyWith(
-                                  color: AppColors.accent,
-                                  letterSpacing: 2,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    isMyTurn ? 'SENARYONUZ:' : 'SERGİLENEN ROL:',
-                                    style: AppTextStyles.labelSmall.copyWith(
-                                      color: AppColors.accent,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 1,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.accent.withValues(alpha: 0.1),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
                                     ),
-                                    textAlign: TextAlign.center,
                                   ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    isClosed && !isMyTurn
-                                        ? 'GİZLİ SENARYO'
-                                        : (task?.content ?? 'Rol belirtilmemiş'),
-                                    style: AppTextStyles.headlineMedium.copyWith(
-                                      color: Colors.white,
+                                  child: Text(
+                                    'GÖREV BAŞLADI',
+                                    style: AppTextStyles.titleLarge.copyWith(
+                                      color: AppColors.accent,
+                                      letterSpacing: 2,
                                       fontWeight: FontWeight.w900,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                                  const SizedBox(height: 48),
-                                  if (isMyTurn) ...[
-                                    Text(
-                                      'Senaryoyu sergilediyseniz performansınızı bitirin.',
-                                      style: AppTextStyles.bodyMedium.copyWith(
-                                        color: Colors.white54,
-                                        fontStyle: FontStyle.italic,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(24),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        isMyTurn ? 'İÇERİK:' : 'SERGİLENEN İÇERİK:',
+                                        style: AppTextStyles.labelSmall.copyWith(
+                                          color: AppColors.accent,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: 1,
+                                        ),
+                                        textAlign: TextAlign.center,
                                       ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 24),
-                                    StageButton(
-                                      label: 'Performansı Bitir',
-                                      icon: Icons.how_to_vote_rounded,
-                                      backgroundColor: AppColors.primary,
-                                      textColor: Colors.white,
-                                      borderColor: AppColors.accent,
-                                      onPressed: _proceedToVoting,
-                                      isLoading: _isProceeding,
-                                    ),
-                                  ] else ...[
-                                    const CircularProgressIndicator(
-                                      color: AppColors.accent,
-                                    ),
-                                    const SizedBox(height: 24),
-                                    Text(
-                                      'Oyuncunun performansını sergilemesi bekleniyor...',
-                                      style: AppTextStyles.bodyMedium.copyWith(
-                                        color: Colors.white54,
-                                        fontStyle: FontStyle.italic,
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        isClosed && !isMyTurn
+                                            ? 'GİZLİ İÇERİK'
+                                            : (task?.content ?? 'Rol belirtilmemiş'),
+                                        style: AppTextStyles.headlineMedium.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                        textAlign: TextAlign.center,
                                       ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ],
-                              ),
+                                      const SizedBox(height: 48),
+                                      if (isMyTurn) ...[
+                                        Text(
+                                          'Görevi tamamladıysanız performansınızı bitirin.',
+                                          style: AppTextStyles.bodyMedium.copyWith(
+                                            color: Colors.white54,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 24),
+                                        StageButton(
+                                          label: 'Görevi Bitir',
+                                          icon: Icons.how_to_vote_rounded,
+                                          backgroundColor: AppColors.primary,
+                                          textColor: Colors.white,
+                                          borderColor: AppColors.accent,
+                                          onPressed: _proceedToVoting,
+                                          isLoading: _isProceeding,
+                                        ),
+                                      ] else ...[
+                                        const CircularProgressIndicator(
+                                          color: AppColors.accent,
+                                        ),
+                                        const SizedBox(height: 24),
+                                        Text(
+                                          'Oyuncunun performansını sergilemesi bekleniyor...',
+                                          style: AppTextStyles.bodyMedium.copyWith(
+                                            color: Colors.white54,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),

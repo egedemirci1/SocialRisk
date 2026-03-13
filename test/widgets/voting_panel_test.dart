@@ -9,7 +9,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: VotingPanel(
-              onVote: (_) {},
+              onVote: (v, {bool timedOut = false}) {},
             ),
           ),
         ),
@@ -28,7 +28,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: VotingPanel(
-              onVote: (v) => votedValue = v,
+              onVote: (v, {bool timedOut = false}) => votedValue = v,
             ),
           ),
         ),
@@ -45,7 +45,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: VotingPanel(
-              onVote: (v) => votedValue = v,
+              onVote: (v, {bool timedOut = false}) => votedValue = v,
             ),
           ),
         ),
@@ -62,7 +62,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: VotingPanel(
-              onVote: (v) => votedValue = v,
+              onVote: (v, {bool timedOut = false}) => votedValue = v,
             ),
           ),
         ),
@@ -79,7 +79,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: VotingPanel(
-              onVote: (_) => voteCount++,
+              onVote: (v, {bool timedOut = false}) => voteCount++,
             ),
           ),
         ),
@@ -98,7 +98,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: VotingPanel(
-              onVote: (_) => voteCount++,
+              onVote: (v, {bool timedOut = false}) => voteCount++,
             ),
           ),
         ),
@@ -120,7 +120,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: VotingPanel(
-              onVote: (_) {},
+              onVote: (v, {bool timedOut = false}) {},
             ),
           ),
         ),

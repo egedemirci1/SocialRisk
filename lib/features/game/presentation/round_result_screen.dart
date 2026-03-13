@@ -216,7 +216,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           ],
           _ScoreRow(
             label: score >= 0 ? 'Kazanılan Puan' : 'Kaybedilen Puan',
-            value: score >= 0 ? '+$score' : '$score',
+            value: '$score',
             color: AppColors.accent,
             isBold: true,
           ),

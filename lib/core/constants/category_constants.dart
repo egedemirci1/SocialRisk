@@ -61,7 +61,7 @@ class CategoryConstants {
       id: 'Görsel',
       name: 'Görsel',
       icon: Icons.theater_comedy_rounded,
-      color: AppColors.ice,
+      color: AppColors.secondary,
     ),
     CategoryDefinition(
       id: 'Mahrem',

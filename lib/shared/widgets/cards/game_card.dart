@@ -9,12 +9,12 @@ class GameCard extends StatelessWidget {
     super.key,
     required this.category,
     required this.content,
-    this.multiplier = 1,
+    required this.points,
   });
 
   final String category;
   final String content;
-  final int multiplier;
+  final int points;
 
   CategoryDefinition get _categoryDef => CategoryConstants.fallback(category);
 
@@ -91,7 +91,7 @@ class GameCard extends StatelessWidget {
                         color: AppColors.accent, size: 18),
                     const SizedBox(width: 4),
                     Text(
-                      '${multiplier}x Puan',
+                      '$points puan',
                       style: AppTextStyles.titleSmall.copyWith(fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: AppColors.accent,),

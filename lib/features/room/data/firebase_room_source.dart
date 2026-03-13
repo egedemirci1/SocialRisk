@@ -100,10 +100,10 @@ class FirebaseRoomSource implements RoomRepository {
       return roomCode;
     } on FirebaseException catch (e) {
       throw Exception(
-        'Oda olusturulurken baglanti hatasi olustu: ${e.message}',
+        'Oda oluşturulurken bağlantı hatası oluştu: ${e.message}',
       );
     } catch (e) {
-      throw Exception('Oda olusturulamadi: $e');
+      throw Exception('Oda oluşturulamadı: $e');
     }
   }
 
@@ -119,7 +119,7 @@ class FirebaseRoomSource implements RoomRepository {
     try {
       final roomDoc = await _roomDoc(roomCode).get();
       if (!roomDoc.exists) {
-        throw Exception('Oda bulunamadi: $roomCode');
+        throw Exception('Oda bulunamadı: $roomCode');
       }
 
       final playersCountSnap = await _playersRef(roomCode).count().get();
@@ -138,7 +138,7 @@ class FirebaseRoomSource implements RoomRepository {
       );
       await _playersRef(roomCode).doc(playerId).set(player.toJson());
     } on FirebaseException catch (e) {
-      throw Exception('Odaya katilirken baglanti hatasi olustu: ${e.message}');
+      throw Exception('Odaya katılırken bağlantı hatası oluştu: ${e.message}');
     } catch (e) {
       throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
@@ -169,10 +169,7 @@ class FirebaseRoomSource implements RoomRepository {
         await _deleteRoomAndRelatedData(roomCode, roomData);
       }
     } on FirebaseException catch (e) {
-      if (kDebugMode) {
-        debugPrint('Odadan ayrilirken hata: ${e.message}');
-      }
-      throw Exception('Odadan ayrilirken hata olustu: ${e.message}');
+      throw Exception('Odadan ayrılırken hata oluştu: ${e.message}');
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Odadan ayrilirken hata: $e');
@@ -216,7 +213,7 @@ class FirebaseRoomSource implements RoomRepository {
     try {
       await _playersRef(roomCode).doc(playerId).update({'isReady': isReady});
     } on FirebaseException catch (e) {
-      throw Exception('Hazir durumu guncellenirken hata olustu: ${e.message}');
+      throw Exception('Hazır durumu güncellenirken hata oluştu: ${e.message}');
     }
   }
 
@@ -234,7 +231,7 @@ class FirebaseRoomSource implements RoomRepository {
         final roomRef = _roomDoc(roomCode);
         final roomSnap = await transaction.get(roomRef);
         if (!roomSnap.exists) {
-          throw Exception('Oda bulunamadi!');
+      if (!roomSnap.exists) throw Exception('Oda bulunamadı!');
         }
 
         final roomData = roomSnap.data() ?? <String, dynamic>{};
@@ -264,7 +261,7 @@ class FirebaseRoomSource implements RoomRepository {
         transaction.update(roomRef, {'lobbyEmotes': rawLobbyEmotes});
       });
     } on FirebaseException catch (e) {
-      throw Exception('Emote gonderilirken hata olustu: ${e.message}');
+      throw Exception('Emote gönderilirken hata oluştu: ${e.message}');
     }
   }
 
@@ -276,7 +273,7 @@ class FirebaseRoomSource implements RoomRepository {
     try {
       await _roomDoc(roomCode).update({'visibility': visibility.name});
     } on FirebaseException catch (e) {
-      throw Exception('Oda gorunurlugu guncellenirken hata olustu: ${e.message}');
+      throw Exception('Oda görünürlüğü güncellenirken hata oluştu: ${e.message}');
     }
   }
 
@@ -288,7 +285,7 @@ class FirebaseRoomSource implements RoomRepository {
     try {
       await _roomDoc(roomCode).update({'status': status.name});
     } on FirebaseException catch (e) {
-      throw Exception('Oda durumu guncellenirken hata olustu: ${e.message}');
+      throw Exception('Oda durumu güncellenirken hata oluştu: ${e.message}');
     }
   }
 
@@ -303,7 +300,7 @@ class FirebaseRoomSource implements RoomRepository {
       final roomRef = _roomDoc(roomCode);
 
       final roomSnap = await roomRef.get();
-      if (!roomSnap.exists) throw Exception('Oda bulunamadi!');
+      if (!roomSnap.exists) throw Exception('Oda bulunamadı!');
       final roomData = roomSnap.data()!;
       final categoriesList = List<String>.from(roomData['categories'] ?? []);
       final useCustomDeck = roomData['useCustomDeck'] as bool? ?? false;
@@ -362,9 +359,9 @@ class FirebaseRoomSource implements RoomRepository {
         return gameId;
       });
     } on FirebaseException catch (e) {
-      throw Exception('Oyun baslatilamadi (Transaction Error): ${e.message}');
+      throw Exception('Oyun başlatılamadı (İşlem Hatası): ${e.message}');
     } catch (e) {
-      throw Exception('Oyun baslatilamadi: $e');
+      throw Exception('Oyun başlatılamadı: $e');
     }
   }
 
@@ -435,7 +432,7 @@ class FirebaseRoomSource implements RoomRepository {
 
       debugPrint('${zombieRoomsQuery.docs.length} zombi oda temizlendi.');
     } catch (e) {
-      debugPrint('Zombi odalari temizlerken hata olustu: $e');
+      debugPrint('Zombi odaları temizlerken hata oluştu: $e');
     }
   }
 }

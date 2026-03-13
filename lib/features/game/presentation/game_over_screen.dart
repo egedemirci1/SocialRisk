@@ -7,6 +7,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
 
 /// Oyun sonu ekranı — Parti Temalı
 class GameOverScreen extends ConsumerStatefulWidget {
@@ -60,128 +61,132 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
               : 0;
 
           return SafeArea(
-            child: Column(
-              children: [
-                const Spacer(),
-                ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: Column(
-                    children: [
-                      const Text('🏆', style: TextStyle(fontSize: 72)),
-                      const SizedBox(height: 16),
-                      Text(
-                        'KAZANAN',
-                        style: AppTextStyles.labelSmall.copyWith(
-                          color: AppColors.accent,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 4,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        winner?.name.toUpperCase() ?? '',
-                        style: AppTextStyles.headlineMedium.copyWith(
-                          color: Colors.white,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${winner?.score ?? 0} PUAN',
-                        style: AppTextStyles.titleLarge.copyWith(
-                          color: AppColors.accent,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 48),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.leaderboard_rounded,
-                        color: Colors.white24,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'OYUNCU SIRALAMASI',
-                        style: AppTextStyles.labelSmall.copyWith(
-                          color: Colors.white54,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    itemCount: sorted.length,
-                    itemBuilder: (context, index) {
-                      final p = sorted[index];
-                      return LeaderboardTile(
-                        rank: index + 1,
-                        playerName: p.name,
-                        score: p.score,
-                        isCurrentPlayer: p.id == user?.uid,
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.accent.withValues(alpha: 0.1),
+            child: ResponsiveWrapper(
+              maxWidth: 600,
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  const Spacer(),
+                  ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: Column(
+                      children: [
+                        const Text('🏆', style: TextStyle(fontSize: 72)),
+                        const SizedBox(height: 16),
+                        Text(
+                          'KAZANAN',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: AppColors.accent,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 4,
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.stars_rounded,
-                              color: AppColors.accent,
-                            ),
-                            const SizedBox(width: 12),
-                            Flexible(
-                                child: Text(
-                                  '+$myScore Puan Bakiyenize Eklendi',
-                                  style: AppTextStyles.titleMedium.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                            ),
-                          ],
+                        const SizedBox(height: 8),
+                        Text(
+                          winner?.name.toUpperCase() ?? '',
+                          style: AppTextStyles.headlineMedium.copyWith(
+                            color: Colors.white,
+                            letterSpacing: 2,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      StageButton(
-                        label: 'LOBİYE DÖN',
-                        icon: Icons.home_rounded,
-                        backgroundColor: AppColors.surface,
-                        textColor: Colors.white,
-                        borderColor: AppColors.accent.withValues(
-                          alpha: 0.3,
+                        const SizedBox(height: 8),
+                        Text(
+                          '${winner?.score ?? 0} PUAN',
+                          style: AppTextStyles.titleLarge.copyWith(
+                            color: AppColors.accent,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
-                        onPressed: () => context.go('/home'),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 48),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.leaderboard_rounded,
+                          color: Colors.white24,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'OYUNCU SIRALAMASI',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: Colors.white54,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      itemCount: sorted.length,
+                      itemBuilder: (context, index) {
+                        final p = sorted[index];
+                        return LeaderboardTile(
+                          rank: index + 1,
+                          playerName: p.name,
+                          score: p.score,
+                          isCurrentPlayer: p.id == user?.uid,
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: AppColors.accent.withValues(alpha: 0.1),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.stars_rounded,
+                                color: AppColors.accent,
+                              ),
+                              const SizedBox(width: 12),
+                              Flexible(
+                                  child: Text(
+                                    '+$myScore Puan Bakiyenize Eklendi',
+                                    style: AppTextStyles.titleMedium.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        StageButton(
+                          label: 'LOBİYE DÖN',
+                          icon: Icons.home_rounded,
+                          backgroundColor: AppColors.surface,
+                          textColor: Colors.white,
+                          borderColor: AppColors.accent.withValues(
+                            alpha: 0.3,
+                          ),
+                          onPressed: () => context.go('/home'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },

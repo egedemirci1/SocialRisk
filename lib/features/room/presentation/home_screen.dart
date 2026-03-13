@@ -71,24 +71,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Ayarlar',
+                  'Menü',
                   style: AppTextStyles.headlineMedium.copyWith(color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,),
                 ),
                 const SizedBox(height: 16),
                 ListTile(
-                  leading: const Icon(Icons.person_outline_rounded, color: AppColors.accent),
-                  title: Text('Profil', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
-                  subtitle: Text('Adı ve fotoğrafı düzenle', style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12)),
+                  leading: const Icon(Icons.settings_rounded, color: AppColors.accent),
+                  title: Text('Ayarlar', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+                  subtitle: Text('Ses ve dil seçenekleri', style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12)),
                   onTap: () {
                     Navigator.pop(context);
-                    context.push('/profile');
+                    ToastUtils.showSuccess(context, 'Ayarlar paneli yakında eklenecek');
                   },
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.confirmation_number_rounded, color: AppColors.accent),
+                  leading: const Icon(Icons.shopping_bag_rounded, color: AppColors.accent),
                   title: Text('Mağaza', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
                   subtitle: Text('Kozmetikler ve içerikler', style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12)),
                   onTap: () {
@@ -120,6 +120,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     _handleLogout(context, ref);
                   },
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: Text(
+                    '2026 Tüm Hakları Saklıdır',
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: Colors.white38,
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 8),
               ],
@@ -184,37 +194,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
 
           SafeArea(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      const SocialRiskLogo(height: 80),
-                      const Spacer(flex: 2),
-                  _buildWelcome(
-                    context,
-                    displayName,
-                    profile,
-                    cosmetics,
-                    user.uid,
+            child: CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 20),
+                            const SocialRiskLogo(height: 100),
+                            const Spacer(flex: 2),
+                            _buildWelcome(
+                              context,
+                              displayName,
+                              profile,
+                              cosmetics,
+                              user.uid,
+                            ),
+                            const SizedBox(height: 32),
+                            _buildActions(context, ref, user),
+                            const Spacer(flex: 3),
+                            _buildFooter(context, ref),
+                            const SizedBox(height: 16),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                  const Spacer(),
-                  _buildActions(context, ref, user),
-                  const Spacer(flex: 2),
-                  _buildFooter(context, ref),
-                  const SizedBox(height: 16),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ),
+        ],
       ),
-    ],
-  ),
-);
+    );
   }
 
   Widget _buildWelcome(
@@ -319,7 +336,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Expanded(
               child: StageButton(
                 label: 'Mağaza',
-                icon: Icons.confirmation_number_rounded,
+                icon: Icons.shopping_bag_rounded,
                 backgroundColor: AppColors.surface,
                 textColor: AppColors.accent,
                 borderColor: AppColors.accent.withValues(alpha: 0.3),
@@ -396,7 +413,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               onPressed: () => Navigator.pop(context, false),
-              child: Text('HAYIR', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w800)),
+              child: Text('Hayır', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w800)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -406,7 +423,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               onPressed: () => Navigator.pop(context, true),
-              child: Text('SİL VE ÇIK', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
+              child: Text('Sil ve Çık', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
             ),
           ],
         ),
@@ -451,7 +468,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         TextButton(
           onPressed: () => _showSettingsSheet(context, ref),
           child: Text(
-            'Ayarlar',
+            'Menü',
             style: AppTextStyles.titleSmall.copyWith(color: AppColors.accent,
               fontSize: 14,
               fontWeight: FontWeight.w800,),

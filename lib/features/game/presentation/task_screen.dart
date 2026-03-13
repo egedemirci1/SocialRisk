@@ -243,6 +243,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                               padding: const EdgeInsets.symmetric(horizontal: 24),
                               child: task != null
                                   ? _buildTaskView(
+                                      game,
                                       game.passStreak,
                                       task,
                                       roomAsync.value?.visibility ?? RoomVisibility.open,
@@ -377,7 +378,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         const Spacer(),
         _buildTopTitleCard(
           badge: 'PARTİ BAŞLIYOR',
-          title: '🎡 Senaryonu Belirle',
+          title: '🎡 Görevini Belirle',
           subtitle: 'Sıran gelmeden önce görevini seç...',
         ),
         const SizedBox(height: 44),
@@ -416,6 +417,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   }
 
   Widget _buildTaskView(
+    GameEntity game,
     int passStreak,
     TaskEntity task,
     RoomVisibility visibility,
@@ -491,39 +493,13 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                         ),
                       ),
                     ),
-                    if (task.id.length > 15) // UserTask ID'leri timestamp olduğu için genelde uzundur, veya tags kontrolü yapılabilir
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.amber.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
-                              const SizedBox(width: 4),
-                              Text(
-                                'GÖREVE ÖZEL',
-                                style: AppTextStyles.labelSmall.copyWith(
-                                  color: Colors.amber,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+
                     const SizedBox(height: 26),
                     _buildTopTitleCard(
-                      badge: isClosed ? 'GİZLİ TUR' : 'SAHNEDEKİ GÖREV',
+                      badge: isClosed ? 'GİZLİ TUR' : 'GÖREV',
                       title: isClosed
                           ? 'Sıradaki Görev Gizli'
-                          : (isMyTurn ? 'Senaryon Burada:' : '${playerName} senaryosu:'),
+                          : (isMyTurn ? 'İçeriğin Burada:' : '${playerName} içeriği:'),
                     ),
                     const SizedBox(height: 26),
                     ScaleTransition(
@@ -533,7 +509,9 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                         content: isClosed
                             ? 'Mevcut görevi görmek için kartı aç...'
                             : task.content,
-                        multiplier: task.multiplier,
+                        points: (game.mode == GameMode.economy 
+                                  ? (game.categoryMarketValues[task.category] ?? 10) 
+                                  : 10) * task.multiplier,
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -547,7 +525,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                       )
                     else if (isMyTurn) ...[
                       StageButton(
-                        label: 'Gösteriye Katıl',
+                        label: 'Görevi Başlat',
                         backgroundColor: AppColors.primary,
                         textColor: Colors.white,
                         borderColor: AppColors.accent,
@@ -562,7 +540,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                       ),
                     ] else
                       Text(
-                        '$playerName senaryosunu okuyor...',
+                        '$playerName içeriği okuyor...',
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: Colors.white30,
                           fontStyle: FontStyle.italic,

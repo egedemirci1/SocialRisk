@@ -11,6 +11,7 @@ import '../../auth/providers/user_provider.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
 
 /// Test override: null ise gerçek ImagePicker kullanılır; override ile () async => null verilerek iptal simüle edilir.
 final pickImageFromGalleryProvider = Provider<Future<XFile?> Function()?>((ref) => null);
@@ -125,11 +126,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(
-          'Profilinizi Düzenleyin',
-          style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w900,
-            color: AppColors.accent,
-            letterSpacing: 1.0,),
+        title: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppColors.surface.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.accent.withValues(alpha: 0.2),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Text(
+            'Profilinizi Düzenleyin',
+            style: AppTextStyles.titleLarge.copyWith(
+              fontWeight: FontWeight.w900,
+              color: AppColors.accent,
+              letterSpacing: 1.0,
+              fontSize: 16,
+            ),
+          ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -166,21 +187,32 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       : userProfile.displayName;
                   profile = userProfile.copyWith(displayName: effectiveName);
                 }
-                return SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      children: [
-                        _buildTabBar(),
-                        const SizedBox(height: 32),
-                        if (_selectedTabIndex == 0)
-                          _buildActorTab(profile, userProfileAsync),
-                        if (_selectedTabIndex == 1)
-                          _buildWardrobeTab(profile, userProfileAsync),
-                        if (_selectedTabIndex == 2)
-                          _buildPerformanceTab(userProfileAsync),
-                      ],
-                    ),
+                return ResponsiveWrapper(
+                  maxWidth: 600,
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                        child: _buildTabBar(),
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (_selectedTabIndex == 0)
+                                _buildActorTab(profile, userProfileAsync),
+                              if (_selectedTabIndex == 1)
+                                _buildWardrobeTab(profile, userProfileAsync),
+                              if (_selectedTabIndex == 2)
+                                _buildPerformanceTab(userProfileAsync),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -265,8 +297,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         const SizedBox(height: 24),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
+            Flexible(
               child: Text(
                 user.displayName,
                 style: AppTextStyles.displayLarge.copyWith(fontSize: 36,
@@ -290,7 +324,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               icon: const Icon(Icons.edit_rounded, color: AppColors.accent, size: 22),
               onPressed: () => _updateDisplayName(user),
               padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+              constraints: const BoxConstraints(),
             ),
           ],
         ),
@@ -351,7 +385,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         const SizedBox(height: 48),
         StageButton(
           label: 'Mağaza',
-          icon: Icons.confirmation_number_rounded,
+          icon: Icons.shopping_bag_rounded,
           backgroundColor: AppColors.surface,
           textColor: AppColors.accent,
           borderColor: AppColors.accent.withValues(alpha: 0.5),
@@ -385,12 +419,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(40.0),
-                  child: Text(
-                    'Henüz bir eşyanız yok.\nMağazadaki harika içeriklere göz atmak ister misiniz?',
-                    style: AppTextStyles.titleSmall.copyWith(color: Colors.white38,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,),
-                    textAlign: TextAlign.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Henüz bir eşyanız yok.\nMağazadaki harika içeriklere göz atmak ister misiniz?',
+                        style: AppTextStyles.titleSmall.copyWith(color: Colors.white38,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      StageButton(
+                        label: 'Mağaza',
+                        icon: Icons.shopping_bag_rounded,
+                        backgroundColor: AppColors.surface,
+                        textColor: AppColors.accent,
+                        borderColor: AppColors.accent.withValues(alpha: 0.5),
+                        onPressed: () => context.push('/store'),
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -636,7 +684,7 @@ class _StatRow extends StatelessWidget {
         children: [
           Icon(icon, color: AppColors.accent, size: 20),
           const SizedBox(width: 12),
-          Flexible(
+          Expanded(
             child: Text(
               label,
               style: AppTextStyles.labelSmall.copyWith(color: Colors.white54,

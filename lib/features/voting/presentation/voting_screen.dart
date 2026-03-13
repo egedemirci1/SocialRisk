@@ -20,6 +20,7 @@ import '../../economy/providers/economy_provider.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
 
 /// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor (Parti Temalı).
 class VotingScreen extends ConsumerStatefulWidget {
@@ -210,125 +211,129 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                 Positioned.fill(
                   child: _FloatingPsychologicalTexts(),
                 ),
-                Column(
-                  children: [
-                    const _VisualCountdownTimer(durationSeconds: 20),
-                    Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      children: [
-                    const SizedBox(height: 16),
-                    PlayerAvatar(
-                      uid: game.currentPlayerId,
-                      displayName: performerName,
-                      radius: 50,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      performerName.toUpperCase(),
-                      style: AppTextStyles.displayMedium.copyWith(
-                        color: Colors.white,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                    // Ünvan gösterimi
-                    Builder(
-                      builder: (context) {
-                        final profile = ref
-                            .watch(
-                              watchUserProfileProvider(game.currentPlayerId),
-                            )
-                            .value;
-                        if (profile?.activeTitle == null) {
-                          return const SizedBox.shrink();
-                        }
-                        final cosmetics =
-                            ref.watch(fetchCosmeticsProvider).value ?? [];
-                        final titleItem = cosmetics
-                            .where((c) => c.id == profile!.activeTitle)
-                            .firstOrNull;
-                        if (titleItem == null) {
-                          return const SizedBox.shrink();
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            '${titleItem.imageUrl} ${titleItem.name}',
-                            style: AppTextStyles.labelSmall.copyWith(
-                              color: AppColors.accent,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'performansını sergiledi:',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: Colors.white54,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: AppColors.accent.withValues(alpha: 0.1),
-                        ),
-                      ),
-                      child: Text(
-                        '"${game.currentTask?.content ?? ""}"',
-                        style: AppTextStyles.titleLarge.copyWith(
-                          color: Colors.white,
-                          fontStyle: FontStyle.italic,
-                          height: 1.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
-            ),
-            // Oylama / bekleme alanı her zaman altta görünsün
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-              child: _isProcessing || _hasProcessed
-                  ? _buildProcessingIndicator()
-                  : isMyTurn
-                      ? _buildWaitingForOthers()
-                      : _hasVoted
-                          ? _buildVotedStatus()
-                          : VotingPanel(
-                              onVote: (value, {timedOut = false}) {
-                                if (user == null) return;
-                                setState(() => _hasVoted = true);
-                                if (timedOut && mounted) {
-                                  ToastUtils.showError(
-                                    context,
-                                    'S\u00fcre doldu. Oy vermedi\u011fin i\u00e7in -10 puan cezas\u0131 ald\u0131n.',
+                ResponsiveWrapper(
+                  maxWidth: 600,
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    children: [
+                      const _VisualCountdownTimer(durationSeconds: 20),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 16),
+                              PlayerAvatar(
+                                uid: game.currentPlayerId,
+                                displayName: performerName,
+                                radius: 50,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                performerName.toUpperCase(),
+                                style: AppTextStyles.displayMedium.copyWith(
+                                  color: Colors.white,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                              // Ünvan gösterimi
+                              Builder(
+                                builder: (context) {
+                                  final profile = ref
+                                      .watch(
+                                        watchUserProfileProvider(game.currentPlayerId),
+                                      )
+                                      .value;
+                                  if (profile?.activeTitle == null) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  final cosmetics =
+                                      ref.watch(fetchCosmeticsProvider).value ?? [];
+                                  final titleItem = cosmetics
+                                      .where((c) => c.id == profile!.activeTitle)
+                                      .firstOrNull;
+                                  if (titleItem == null) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      '${titleItem.imageUrl} ${titleItem.name}',
+                                      style: AppTextStyles.labelSmall.copyWith(
+                                        color: AppColors.accent,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
                                   );
-                                }
-                                ref
-                                    .read(voteControllerProvider.notifier)
-                                    .castVote(
-                                      gameId: widget.gameId,
-                                      voterId: user.uid,
-                                      value: VoteValue.values.byName(value),
-                                      timedOut: timedOut,
-                                    );
-                              },
-                            ),
-            ),
-          ],
-        ),
+                                },
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'performansını sergiledi:',
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: Colors.white54,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              Container(
+                                padding: const EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                  color: AppColors.surface,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: AppColors.accent.withValues(alpha: 0.1),
+                                  ),
+                                ),
+                                child: Text(
+                                  '"${game.currentTask?.content ?? ""}"',
+                                  style: AppTextStyles.titleLarge.copyWith(
+                                    color: Colors.white,
+                                    fontStyle: FontStyle.italic,
+                                    height: 1.5,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Oylama / bekleme alanı her zaman altta görünsün
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+                        child: _isProcessing || _hasProcessed
+                            ? _buildProcessingIndicator()
+                            : isMyTurn
+                                ? _buildWaitingForOthers()
+                                : _hasVoted
+                                    ? _buildVotedStatus()
+                                    : VotingPanel(
+                                        onVote: (value, {timedOut = false}) {
+                                          if (user == null) return;
+                                          setState(() => _hasVoted = true);
+                                          if (timedOut && mounted) {
+                                            ToastUtils.showError(
+                                              context,
+                                              'S\u00fcre doldu. Oy vermedi\u011fin i\u00e7in -10 puan cezas\u0131 ald\u0131n.',
+                                            );
+                                          }
+                                          ref
+                                              .read(voteControllerProvider.notifier)
+                                              .castVote(
+                                                gameId: widget.gameId,
+                                                voterId: user.uid,
+                                                value: VoteValue.values.byName(value),
+                                                timedOut: timedOut,
+                                              );
+                                        },
+                                      ),
+                      ),
+                    ],
+                  ),
+                ),
       ],
     ),
   ),

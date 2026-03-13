@@ -10,6 +10,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
 
 /// Mağaza Ekranı — Parti Temalı
 class StoreScreen extends ConsumerStatefulWidget {
@@ -66,11 +67,29 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(
-          'Mağaza',
-          style: AppTextStyles.headlineMedium.copyWith(
-            color: AppColors.accent,
-            letterSpacing: 2,
+        title: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppColors.surface.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.accent.withValues(alpha: 0.2),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Text(
+            'Mağaza',
+            style: AppTextStyles.headlineMedium.copyWith(
+              color: AppColors.accent,
+              letterSpacing: 2,
+              fontSize: 18,
+            ),
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -108,30 +127,34 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               final maskItems = items.where((i) => i.type == 'frame').toList()
                 ..sort((a, b) => a.price.compareTo(b.price));
 
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                    child: _buildTabSelector(),
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 24,
-                      ),
-                      child: _buildTabContent(
-                        context: context,
-                        ref: ref,
-                        uid: user.uid,
-                        owned: owned,
-                        roleItems: roleItems,
-                        maskItems: maskItems,
-                        isAnonymous: isAnonymous,
+              return ResponsiveWrapper(
+                maxWidth: 600,
+                padding: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                      child: _buildTabSelector(),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 24,
+                        ),
+                        child: _buildTabContent(
+                          context: context,
+                          ref: ref,
+                          uid: user.uid,
+                          owned: owned,
+                          roleItems: roleItems,
+                          maskItems: maskItems,
+                          isAnonymous: isAnonymous,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           ),
@@ -364,7 +387,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
       );
     }
 
-    return Column(
+    final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
@@ -401,6 +424,72 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         }),
       ],
     );
+
+    if (_selectedTab == 2) {
+      return Stack(
+        children: [
+          content,
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.accent.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.accent.withValues(alpha: 0.3),
+                            width: 2,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.lock_clock_rounded,
+                          color: AppColors.accent,
+                          size: 48,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'YAKINDA...',
+                        style: AppTextStyles.displayMedium.copyWith(
+                          color: AppColors.accent,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 4,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Text(
+                          'Özel Senaryolar ve Tema Paketleri Çok Yakında Sizlerle!',
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: Colors.white30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return content;
   }
 
   Widget _buildCompactItem(

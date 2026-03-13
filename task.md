@@ -8,8 +8,8 @@ Birbirinizle çakışmaları (conflict) önlemek adına tüm görevleri "Görsel
 *Ağırlıklı Çalışma Alanları: UI/UX, Widget dizilimleri, Assets (Logolar, ikonlar), Metin/Dil dosyaları.*
 
 ### Metin ve İsimlendirme Güncellemeleri
-- [ ] "KATEGORİ" yazısı "Kategori" olarak güncellenecek (ve varsa bu tarz büyük harf hataları taranıp düzeltilecek).
-- [ ] Sahnelerdeki ve butonlardaki tiyatro temalı eski terimler değiştirilecek:
+- [x] "KATEGORİ" yazısı "Kategori" olarak güncellenecek (ve varsa bu tarz büyük harf hataları taranıp düzeltilecek).
+- [x] Sahnelerdeki ve butonlardaki tiyatro temalı eski terimler değiştirilecek:
   - "Sahnedeki görev" -> "Görev"
   - "Gösteriye Katıl" -> "Görevi Başlat"
   - "Gösteri Başladı" -> "Görev Başladı"
@@ -18,34 +18,40 @@ Birbirinizle çakışmaları (conflict) önlemek adına tüm görevleri "Görsel
   - "Performansı bitir" -> "Görevi Bitir"
   - "Ekonomi Oyun modunun" adı -> "Borsa" olarak güncellenecek.
   - Arayüzdeki "göreve özel" yazısı kaldırılacak.
-- [ ] Puan metinlerindeki "+" işareti kaldırılacak ("+10 Puan" yerine "10 puan" / "Tahmini Kazan. 10 puan" şeklinde).
-- [ ] Görev altındaki "3x Puan" gibi katsayı metinleri, Ata'nın hesapladığı net puan ile birleşip "30 puan", "20 puan" formatında sadece sonuç olarak yazılacak.
+- [x] Puan metinlerindeki "+" işareti kaldırılacak ("+10 Puan" yerine "10 puan" / "Tahmini Kazan. 10 puan" şeklinde).
+- [x] Görev altındaki "3x Puan" gibi katsayı metinleri, Ata'nın hesapladığı net puan ile birleşip "30 puan", "20 puan" formatında sadece sonuç olarak yazılacak.
 
 ### UI İyileştirmeleri ve Bug Fixler
-- [ ] **İstatistikler Ekranı:** "Bakiye", "Rütbe", "Ev", "Koleksiyon" değerleri sağa yaslanacak. *(biraz uğraştırabilir)*
-- [ ] **Profil Ekranı:** 
+- [x] **İstatistikler Ekranı:** "Bakiye", "Rütbe", "Ev", "Koleksiyon" değerleri sağa yaslanacak. *(biraz uğraştırabilir)*
+- [x] **Profil Ekranı:** 
   - İsim, profil fotoğrafına hizalanacak.
-  - Kalem ikonu ismin direkt yanına alınacak. *(biraz uğraştırabilir)*
+  - Kalem ikonu ismin direkt yanına alınacak.
   - Profil fotoğrafı çerçevesinin kare olma sorunu çözülüp fotoğrafı tam kaplaması sağlanacak.
-- [ ] **Pop-uplar ve Boş Durumlar (Empty States):**
+- [x] **Pop-uplar ve Boş Durumlar (Empty States):**
   - Çıkış yap pop-up'ında "Hayır" ve "Sil Ve Çık" butonlarındaki harflerin hepsi büyük harf olmayacak.
   - Eşyalar (Items) boş sekmesine "Henüz bir eşyanız yok, mağazadaki harika içeriklere göz atmak ister misiniz?" yazısı eklenecek ve altına "Mağaza"ya yönlendiren buton konulacak.
-- [ ] **Lobi Ekranı:**
+- [x] **Lobi Ekranı:**
   - Dönen yazıların içeriği ve rastgele çıkan diğer içerikler düzenlenecek.
   - O an oynanacak oyun modunun bilgisi ana lobiye eklenecek.
-- [ ] **Menü Yapısı:**
+- [x] **Menü Yapısı:**
   - Ana sayfadaki "Ayarlar" butonu "Menü" olacak ve tıklayınca alttan (Bottom Sheet) açılacak. Menü başlığı "Menü" olacak.
   - Menü listesine "Ayarlar" eklenecek (Ses/Dil değişiklikleri buradan yapılacak).
   - Menü ekranından "Profil" seçeneği kaldırılacak.
   - Ayarlar/Menü alanının en altına "2026 Tüm Hakları Saklıdır" yazısı eklenecek.
-- [ ] Çark modundaki katman renkleri yenilenecek (her kategoriye farklı renk atanacak).
-- [ ] Emote (Tepki) ekranına mevcut 7 seçeneğe 1 tane daha eklenerek 8'e çıkartılacak (UI yerleşimi tasarlanacak).
-- [ ] Liderlik tablosunda kullanıcının kendi ismi vurgulu (highlighted) görünecek.
-- [ ] Tüm cihazlarda genel Responsive kaymaları / boyutlandırmaları kontrol edilip çözülecek.
+- [x] Çark modundaki katman renkleri yenilenecek (her kategoriye farklı renk atanacak).
+- [x] Emote (Tepki) ekranına mevcut 7 seçeneğe 1 tane daha eklenerek 8'e çıkartılacak
+- [x] Liderlik tablosunda kullanıcının kendi ismi vurgulu (highlighted) görünecek.
+- [x] Tüm cihazlarda genel Responsive kaymaları / boyutlandırmaları kontrol edilip çözülecek.
+- [x] Türkçe karakter ve lokalizasyon düzeltmeleri (Emote Gönder, Bekleme, Hata mesajları vb.)
+    - [x] Lobby ekranı (Gonder -> Gönder, Bekleme -> Bekleniyor)
+    - [x] Firebase Room Source (Exception mesajları)
+    - [x] Genel UI metinleri taraması ve düzeltilmesi
+- [x] "Özel Senaryolar" sayfasını kilitle ve "Yakında..." olarak işaretle (Store & Room Creation)
+- [x] Mağaza ve Profil ana başlıklarını kartlaştır (Premium UI)
 
 ### Asset ve İçerik Görevleri
-- [ ] Oyun logosu, logonun altındaki logotype ve mobil logolar güncellenecek. *(biraz uğraştırabilir)*
-- [ ] Mağazadaki "bilet (ticket)" logosu uygun/yeni bir ikonla değiştirilecek.
+- [x] Oyun logosu, logonun altındaki logotype ve mobil logolar güncellenecek.
+- [x] Mağazadaki "bilet (ticket)" logosu uygun/yeni bir ikonla değiştirilecek.
 - [ ] İçerik havuzu (sorular, görevler) Ege tarafından gözden geçirilip metinsel olarak düzenlenecek.
 
 ---

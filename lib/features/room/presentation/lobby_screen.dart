@@ -20,6 +20,7 @@ import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../domain/room_entity.dart';
 import '../providers/room_provider.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
 
 const List<String> _lobbyEmotes = [
   '\u{1F602}',
@@ -29,6 +30,7 @@ const List<String> _lobbyEmotes = [
   '\u{2753}',
   '\u{1F389}',
   '\u{1F483}',
+  '\u{1F60E}',
 ];
 const Duration _lobbyEmoteCooldown = Duration(seconds: 3);
 
@@ -110,102 +112,109 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
       body: Stack(
         children: [
           SafeArea(
-            child: Column(
-              children: [
-                _buildRoomCodeBanner(context),
-                const SizedBox(height: 16),
-                const _RotatingTooltips(),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: playersAsync.when(
-                    data: (players) {
-                      final roomEmotes = room?.lobbyEmotes ?? const <String, LobbyEmoteEntity>{};
-                      return ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        itemCount: players.length,
-                        itemBuilder: (context, index) {
-                          final player = players[index];
-                          final isMe = player.id == user?.uid;
-                          final lobbyEmote = roomEmotes[player.id];
-                          return _PlayerTile(
-                            playerId: player.id,
-                            name: player.name,
-                            avatarUrl: player.avatarUrl,
-                            isReady: player.isReady,
-                            isCurrentPlayer: isMe,
-                            lobbyEmote: lobbyEmote?.emote,
-                            lobbyEmoteExpiresAt: lobbyEmote?.expiresAt,
-                            cosmetics: cosmetics,
-                            onLongPress: isMe
-                                ? null
-                                : () {
-                                    ReportDialog.show(
-                                      context,
-                                      ref,
-                                      targetUserId: player.id,
-                                      targetUserName: player.name,
-                                      targetUserAvatar: player.avatarUrl ?? '',
-                                    );
-                                  },
-                          );
-                        },
-                      );
-                    },
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(color: AppColors.accent),
-                    ),
-                    error: (e, _) => Center(
-                      child: Text(
-                        'Hata: $e',
-                        style: AppTextStyles.titleMedium.copyWith(color: AppColors.primary),
+            child: ResponsiveWrapper(
+              maxWidth: 600,
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  _buildRoomCodeBanner(context, room),
+
+                  const SizedBox(height: 16),
+                  const _RotatingTooltips(),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: playersAsync.when(
+                      data: (players) {
+                        final roomEmotes = room?.lobbyEmotes ?? const <String, LobbyEmoteEntity>{};
+                        return ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          itemCount: players.length,
+                          itemBuilder: (context, index) {
+                            final player = players[index];
+                            final isMe = player.id == user?.uid;
+                            final lobbyEmote = roomEmotes[player.id];
+                            return _PlayerTile(
+                              playerId: player.id,
+                              name: player.name,
+                              avatarUrl: player.avatarUrl,
+                              isReady: player.isReady,
+                              isCurrentPlayer: isMe,
+                              lobbyEmote: lobbyEmote?.emote,
+                              lobbyEmoteExpiresAt: lobbyEmote?.expiresAt,
+                              cosmetics: cosmetics,
+                              onLongPress: isMe
+                                  ? null
+                                  : () {
+                                      ReportDialog.show(
+                                        context,
+                                        ref,
+                                        targetUserId: player.id,
+                                        targetUserName: player.name,
+                                        targetUserAvatar: player.avatarUrl ?? '',
+                                      );
+                                    },
+                            );
+                          },
+                        );
+                      },
+                      loading: () => const Center(
+                        child: CircularProgressIndicator(color: AppColors.accent),
+                      ),
+                      error: (e, _) => Center(
+                        child: Text(
+                          'Hata: $e',
+                          style: AppTextStyles.titleMedium.copyWith(color: AppColors.primary),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                _buildEmoteBar(context, ref, user, room),
-                const SizedBox(height: 12),
-                _buildActionSection(
-                  context,
-                  ref,
-                  user,
-                  roomAsync,
-                  playersAsync,
-                  onStartGame: () async {
-                    setState(() => _isStartingGame = true);
-                    try {
-                      final room = roomAsync.value;
-                      final players = playersAsync.value ?? [];
-                      final playerIds = players.map((p) => p.id).toList();
-                      final gameId = await ref.read(roomRepositoryProvider).startGameInRoom(
-                            roomCode: widget.roomCode,
-                            playerIds: playerIds,
-                            mode: room?.mode ?? GameMode.classic,
-                            categories: room?.categories ?? [],
-                          );
+                  _buildEmoteBar(context, ref, user, room),
+                  const SizedBox(height: 12),
+                  _buildActionSection(
+                    context,
+                    ref,
+                    user,
+                    roomAsync,
+                    playersAsync,
+                    onStartGame: () async {
+                      setState(() => _isStartingGame = true);
+                      try {
+                        final room = roomAsync.value;
+                        final players = playersAsync.value ?? [];
+                        final playerIds = players.map((p) => p.id).toList();
+                        final gameId = await ref.read(roomRepositoryProvider).startGameInRoom(
+                              roomCode: widget.roomCode,
+                              playerIds: playerIds,
+                              mode: room?.mode ?? GameMode.classic,
+                              categories: room?.categories ?? [],
+                            );
 
-                      if (!context.mounted) return;
-                      context.go('/task', extra: {'gameId': gameId, 'roomCode': widget.roomCode});
-                    } catch (e) {
-                      if (!context.mounted) return;
-                      ToastUtils.showError(context, 'Hata: $e');
-                    } finally {
-                      if (mounted) setState(() => _isStartingGame = false);
-                    }
-                  },
-                ),
-              ],
+                        if (!context.mounted) return;
+                        context.go('/task', extra: {'gameId': gameId, 'roomCode': widget.roomCode});
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ToastUtils.showError(context, 'Hata: $e');
+                      } finally {
+                        if (mounted) setState(() => _isStartingGame = false);
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
           if (_isStartingGame)
             const Positioned.fill(
-              child: TheaterLoadingScreen(message: 'Oyun Hazirlaniyor...'),
+              child: TheaterLoadingScreen(message: 'Oyun Hazırlanıyor...'),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildRoomCodeBanner(BuildContext context) {
+  Widget _buildRoomCodeBanner(BuildContext context, RoomEntity? room) {
+    final modeName = room?.mode == GameMode.economy ? 'BORSA' : 'KLASİK';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
@@ -239,12 +248,37 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 ),
               ],
             ),
-            IconButton(
-              icon: const Icon(Icons.copy_rounded, color: AppColors.accent),
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: widget.roomCode));
-                ToastUtils.showSuccess(context, 'Kod kopyalandi!');
-              },
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
+                  ),
+                  child: Text(
+                    '$modeName MOD',
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: AppColors.accent,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: const Icon(Icons.copy_rounded, color: AppColors.accent, size: 24),
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: widget.roomCode));
+                    ToastUtils.showSuccess(context, 'Kod kopyalandı!');
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -327,7 +361,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                           if (message.contains('Cooldown:')) {
                             final seconds = message.split('Cooldown:').last.replaceAll('Exception: ', '');
                             if (mounted) {
-                              ToastUtils.showError(context, 'Emote bekleme suresi: $seconds sn');
+                              ToastUtils.showError(context, 'Emote bekleme süresi: $seconds sn');
                             }
                             return;
                           }
@@ -383,7 +417,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 Text(
                   (allReady && players.length >= 2)
                       ? 'Haydi, herkes seni bekliyor!'
-                      : 'Diger oyuncularin hazirlanmasini bekleyin...',
+                      : 'Diğer oyuncuların hazırlanmasını bekleyin...',
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: (allReady && players.length >= 2)
                         ? AppColors.accent
@@ -501,7 +535,7 @@ class _PlayerTile extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  isReady ? 'HAZIR' : 'BEKLIYOR',
+                  isReady ? 'HAZIR' : 'BEKLİYOR',
                   style: AppTextStyles.labelSmall.copyWith(
                     color: isReady ? Colors.green : Colors.orange,
                     fontSize: 10,
@@ -579,8 +613,8 @@ class _LobbyCooldownButtonState extends State<_LobbyCooldownButton> {
 
     return StageButton(
       label: isCoolingDown
-          ? 'Emote Bekleme ${remaining.inSeconds + 1}s'
-          : 'Emote Gonder',
+          ? 'Emote Bekleme ${remaining.inSeconds + 1}sn'
+          : 'Emote Gönder',
       icon: isCoolingDown ? Icons.hourglass_bottom_rounded : Icons.emoji_emotions_outlined,
       backgroundColor: isCoolingDown ? Colors.black26 : AppColors.surface,
       textColor: isCoolingDown ? Colors.white54 : AppColors.accent,
@@ -708,7 +742,7 @@ class _ReadyToggleButton extends ConsumerWidget {
     final isReady = me?.isReady ?? false;
 
     return StageButton(
-      label: isReady ? 'HENUZ HAZIR DEGILIM' : 'PARTIYE HAZIRIM!',
+      label: isReady ? 'HENÜZ HAZIR DEĞİLİM' : 'PARTİYE HAZIRIM!',
       icon: isReady ? Icons.close_rounded : Icons.check_circle_outline_rounded,
       backgroundColor: isReady ? Colors.black26 : AppColors.primary,
       textColor: isReady ? Colors.white54 : Colors.white,
@@ -733,10 +767,10 @@ class _RotatingTooltipsState extends State<_RotatingTooltips> {
   int _currentIndex = 0;
   late final Timer _timer;
   final List<String> _tips = [
-    'Parti baslasin! Hazir misin?',
-    'Kimse mukemmel dogmaz, en iyi hamleni yap!',
-    'Diger oyuncularin oylari kaderini belirleyecek.',
-    'Cesur taklitler ve zor secimler seni bekliyor.',
+    'Parti başlasın! Hazır mısın?',
+    'Vereceğin cevaplar çok konuşulacak!',
+    'Diğer oyuncuların oyları kaderini belirleyecek.',
+    'Riskli görevler ve zor seçimler seni bekliyor.',
   ];
 
   @override
@@ -758,16 +792,35 @@ class _RotatingTooltipsState extends State<_RotatingTooltips> {
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 600),
-      child: Text(
-        _tips[_currentIndex],
+      duration: const Duration(milliseconds: 1000),
+      switchInCurve: Curves.easeOutBack,
+      switchOutCurve: Curves.easeIn,
+      transitionBuilder: (child, animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.9, end: 1.0).animate(animation),
+            child: child,
+          ),
+        );
+      },
+      child: Container(
         key: ValueKey<int>(_currentIndex),
-        style: AppTextStyles.bodyMedium.copyWith(
-          color: AppColors.accent,
-          fontSize: 12,
-          fontStyle: FontStyle.italic,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppColors.accent.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
         ),
-        textAlign: TextAlign.center,
+        child: Text(
+          _tips[_currentIndex],
+          style: AppTextStyles.labelSmall.copyWith(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontStyle: FontStyle.italic,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
@@ -832,7 +885,7 @@ class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
   Widget build(BuildContext context) {
     if (!widget.isReady) {
       return StageButton(
-        label: 'OYUNU BASLAT',
+        label: 'OYUNU BAŞLAT',
         icon: Icons.play_arrow_rounded,
         backgroundColor: AppColors.surface,
         textColor: Colors.white30,
@@ -862,7 +915,7 @@ class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
         );
       },
       child: StageButton(
-        label: 'OYUNU BASLAT',
+        label: 'OYUNU BAŞLAT',
         icon: Icons.play_arrow_rounded,
         backgroundColor: AppColors.primary,
         textColor: Colors.white,
