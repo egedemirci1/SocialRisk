@@ -30,6 +30,7 @@ class EconomyPickScreen extends ConsumerStatefulWidget {
 
 class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
   bool _isPicking = false;
+  bool _autoPickFailed = false;
 
   Future<void> _pickCategory(String category) async {
     if (_isPicking) return;
@@ -68,9 +69,27 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
           );
         }
 
+        final marketValues = game.categoryMarketValues;
+        final lockedCats = game.lockedCategories;
+        final categories = marketValues.keys.toList();
+        final isSingleCategory = categories.length == 1;
+        final singleCategory = isSingleCategory ? categories.first : null;
+        final isMyPick = game.currentPlayerId == user?.uid;
+
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
-          if (game.currentTask != null) {
+          if (isSingleCategory &&
+              singleCategory != null &&
+              game.currentTask == null &&
+              game.selectedCategory == null &&
+              game.status == GameStatus.playing &&
+              isMyPick &&
+              !_isPicking &&
+              !_autoPickFailed) {
+            _pickCategory(singleCategory).catchError((_) {
+              if (mounted) setState(() => _autoPickFailed = true);
+            });
+          } else if (game.currentTask != null) {
             context.replace(
               '/task',
               extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
@@ -89,10 +108,6 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
             );
           }
         });
-
-        final isMyPick = game.currentPlayerId == user?.uid;
-        final marketValues = game.categoryMarketValues;
-        final lockedCats = game.lockedCategories;
         final players = playersAsync.value ?? [];
         final currentPlayer = players
             .where((p) => p.id == game.currentPlayerId)
@@ -131,95 +146,103 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isMyPick
-                            ? AppColors.accent.withValues(alpha: 0.3)
-                            : Colors.white10,
+                  if (isSingleCategory)
+                    const Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(color: AppColors.accent),
+                      ),
+                    )
+                  else ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isMyPick
+                              ? AppColors.accent.withValues(alpha: 0.3)
+                              : Colors.white10,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            isMyPick
+                                ? Icons.star_rounded
+                                : Icons.hourglass_top_rounded,
+                            color: isMyPick ? AppColors.accent : Colors.white24,
+                            size: 28,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  isMyPick
+                                      ? 'SIRADAKİ OYUNCU SENSİN!'
+                                      : '$currentPickerName SEÇİYOR...',
+                                  style: AppTextStyles.titleMedium.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                                Text(
+                                  'SEÇİM ${game.currentPickIndex + 1}/${game.categoryPickOrder.length}',
+                                  style: AppTextStyles.labelSmall.copyWith(
+                                    color: Colors.white30,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Row(
+                    const SizedBox(height: 32),
+                    Row(
                       children: [
-                        Icon(
-                          isMyPick
-                              ? Icons.star_rounded
-                              : Icons.hourglass_top_rounded,
-                          color: isMyPick ? AppColors.accent : Colors.white24,
-                          size: 28,
+                        const Icon(
+                          Icons.trending_down_rounded,
+                          color: AppColors.accent,
+                          size: 18,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                isMyPick
-                                    ? 'SIRADAKİ OYUNCU SENSİN!'
-                                    : '$currentPickerName SEÇİYOR...',
-                                style: AppTextStyles.titleMedium.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1,
-                                ),
-                              ),
-                              Text(
-                                'SEÇİM ${game.currentPickIndex + 1}/${game.categoryPickOrder.length}',
-                                style: AppTextStyles.labelSmall.copyWith(
-                                  color: Colors.white30,
-                                ),
-                              ),
-                            ],
+                        const SizedBox(width: 8),
+                        Text(
+                          'PARTİ DENEYİMİ',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: Colors.white54,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.trending_down_rounded,
-                        color: AppColors.accent,
-                        size: 18,
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 1.1,
+                        children: marketValues.keys.map((cat) {
+                          final defaultVal =
+                              GameConstants.defaultMarketValues[cat] ?? 2;
+                          final currentVal = marketValues[cat] ?? defaultVal;
+                          final isLocked = lockedCats.contains(cat);
+                          return _CategoryCard(
+                            category: cat,
+                            currentValue: currentVal,
+                            defaultValue: defaultVal,
+                            isLocked: isLocked,
+                            isPickable: isMyPick && !isLocked && !_isPicking,
+                            onTap: () => _pickCategory(cat),
+                          );
+                        }).toList(),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'PARTİ DENEYİMİ',
-                        style: AppTextStyles.labelSmall.copyWith(
-                          color: Colors.white54,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 1.1,
-                      children: marketValues.keys.map((cat) {
-                        final defaultVal =
-                            GameConstants.defaultMarketValues[cat] ?? 2;
-                        final currentVal = marketValues[cat] ?? defaultVal;
-                        final isLocked = lockedCats.contains(cat);
-                        return _CategoryCard(
-                          category: cat,
-                          currentValue: currentVal,
-                          defaultValue: defaultVal,
-                          isLocked: isLocked,
-                          isPickable: isMyPick && !isLocked && !_isPicking,
-                          onTap: () => _pickCategory(cat),
-                        );
-                      }).toList(),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),

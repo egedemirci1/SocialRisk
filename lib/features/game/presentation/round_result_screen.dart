@@ -17,6 +17,7 @@ import '../../../shared/widgets/common/player_avatar.dart';
 import '../../room/domain/room_entity.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../domain/game_end_utils.dart';
 
 /// Tur sonu ekranı — Parti Temalı
 class RoundResultScreen extends ConsumerStatefulWidget {
@@ -86,7 +87,24 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             return const Center(child: CircularProgressIndicator());
           }
 
+          if (game.status == GameStatus.playing ||
+              game.status == GameStatus.choosingDifficulty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                context.go(
+                  '/task',
+                  extra: {
+                    'gameId': widget.gameId,
+                    'roomCode': widget.roomCode,
+                  },
+                );
+              }
+            });
+            return const Center(child: CircularProgressIndicator());
+          }
+
           final earnedScore = game.lastRoundScore ?? 0;
+          final audienceScore = game.lastRoundAudienceScore ?? 0;
           final multiplier = game.lastRoundMultiplier ?? 1;
           final isPass = multiplier == 0;
           bool isGameOver = game.status == GameStatus.finished;
@@ -100,15 +118,11 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           final room = ref.watch(watchRoomProvider(widget.roomCode)).value;
 
           if (room != null && !isGameOver) {
-            if (room.endConditionType == EndConditionType.rounds) {
-              final activePlayerIds = players.map((p) => p.id).toSet();
-              final activeOrder = game.turnOrder.where((id) => activePlayerIds.contains(id)).toList();
-              final currentCheckId = game.lastRoundPlayerId ?? game.currentPlayerId;
-              final isLastActive = activeOrder.isNotEmpty && activeOrder.last == currentCheckId;
-              isGameOver = game.currentRound >= room.endConditionValue && isLastActive;
-            } else {
-              isGameOver = players.any((p) => p.score >= room.endConditionValue);
-            }
+            isGameOver = GameEndUtils.shouldEndAfterRound(
+              game: game,
+              room: room,
+              players: players,
+            );
           }
 
           return SafeArea(
@@ -117,9 +131,9 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 child: Column(
                   children: [
-                  _buildResultHeader(earnedScore, isPass, playerName),
+                  _buildResultHeader(game, earnedScore, isPass, playerName),
                   const SizedBox(height: 24),
-                  _buildScoreCard(earnedScore, multiplier, isPass),
+                  _buildScoreCard(audienceScore, earnedScore, multiplier, isPass),
                   const SizedBox(height: 24),
                   _buildLeaderboard(players, game),
                   const SizedBox(height: 24),
@@ -144,7 +158,17 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     );
   }
 
-  Widget _buildResultHeader(int score, bool isPass, String playerName) {
+  Widget _buildResultHeader(
+    GameEntity game,
+    int score,
+    bool isPass,
+    String playerName,
+  ) {
+    final moodEmoji = switch (game.lastRoundMood) {
+      'like' => '🎉',
+      'dislike' => '👎',
+      _ => '🤷',
+    };
     return Column(
       children: [
         Container(
@@ -162,7 +186,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           ),
           child: Center(
             child: Text(
-              score >= 0 ? '👏' : '🎭',
+              isPass ? '🎭' : moodEmoji,
               style: const TextStyle(fontSize: 40),
             ),
           ),
@@ -190,7 +214,12 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     );
   }
 
-  Widget _buildScoreCard(int score, int multiplier, bool isPass) {
+  Widget _buildScoreCard(
+    int audienceScore,
+    int score,
+    int multiplier,
+    bool isPass,
+  ) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -203,8 +232,8 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           if (!isPass) ...[
             _ScoreRow(
               label: 'Seyirci Puanı',
-              value: multiplier != 0 ? '${score ~/ multiplier}' : '$score',
-              color: score >= 0 ? Colors.green : AppColors.primary,
+              value: '$audienceScore',
+              color: audienceScore >= 0 ? Colors.green : AppColors.primary,
             ),
             const Divider(color: Colors.white10, height: 24),
             _ScoreRow(
@@ -226,6 +255,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
   }
 
   Widget _buildLeaderboard(List<PlayerEntity> players, GameEntity game) {
+    final performerId = game.lastRoundPlayerId ?? game.currentPlayerId;
     final sortedPlayers = List.of(players)
       ..sort((a, b) => b.score.compareTo(a.score));
     return Container(

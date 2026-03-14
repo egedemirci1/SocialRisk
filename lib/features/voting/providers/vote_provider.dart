@@ -54,16 +54,16 @@ class VoteController extends _$VoteController {
     );
   }
 
-  Future<int> calculateAndApplyScore({
+  Future<VoteResult> calculateAndApplyScore({
     required String gameId,
     required int taskMultiplier,
   }) async {
     final repo = ref.read(voteRepositoryProvider);
-    final finalScore = await repo.calculateVoteResult(gameId, taskMultiplier: taskMultiplier);
+    return repo.calculateVoteResult(gameId, taskMultiplier: taskMultiplier);
+  }
 
-    await repo.clearVotes(gameId);
-
-    return finalScore;
+  Future<void> clearVotes(String gameId) async {
+    await ref.read(voteRepositoryProvider).clearVotes(gameId);
   }
 }
 

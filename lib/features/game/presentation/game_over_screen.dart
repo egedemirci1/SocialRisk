@@ -8,6 +8,7 @@ import '../../room/providers/room_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../room/domain/room_entity.dart';
 
 /// Oyun sonu ekranı — Parti Temalı
 class GameOverScreen extends ConsumerStatefulWidget {
@@ -23,6 +24,14 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animController;
   late final Animation<double> _scaleAnimation;
+
+  static const List<int> _rankRewards = [200, 100, 50];
+  static const int _defaultReward = 20;
+
+  static int rewardForRank(int rank, int totalPlayers) {
+    if (rank <= _rankRewards.length) return _rankRewards[rank - 1];
+    return _defaultReward;
+  }
 
   @override
   void initState() {
@@ -56,8 +65,16 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
           final sorted = List.of(players)
             ..sort((a, b) => b.score.compareTo(a.score));
           final winner = sorted.isNotEmpty ? sorted.first : null;
-          final myScore = user != null
-              ? (players.where((p) => p.id == user.uid).firstOrNull?.score ?? 0)
+
+          final myPlayer = user != null
+              ? sorted.where((p) => p.id == user.uid).firstOrNull
+              : null;
+          final myRank = user != null
+              ? sorted.indexWhere((p) => p.id == user.uid) + 1
+              : 0;
+          final hasNegativeScore = myPlayer != null && myPlayer.score <= 0;
+          final myReward = (myRank > 0 && !hasNegativeScore)
+              ? rewardForRank(myRank, sorted.length)
               : 0;
 
           return SafeArea(
@@ -154,18 +171,27 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
-                                Icons.stars_rounded,
-                                color: AppColors.accent,
+                              Icon(
+                                hasNegativeScore
+                                    ? Icons.sentiment_very_dissatisfied_rounded
+                                    : Icons.stars_rounded,
+                                color: hasNegativeScore
+                                    ? AppColors.primary
+                                    : AppColors.accent,
                               ),
                               const SizedBox(width: 12),
                               Flexible(
                                   child: Text(
-                                    '+$myScore Puan Bakiyenize Eklendi',
+                                    hasNegativeScore
+                                        ? 'Eksilere düşmezsin be kardeşim\nHiç bakiye kazanamadın!'
+                                        : '+$myReward Puan Bakiyenize Eklendi',
                                     style: AppTextStyles.titleMedium.copyWith(
-                                      color: Colors.white,
+                                      color: hasNegativeScore
+                                          ? Colors.white70
+                                          : Colors.white,
                                       fontWeight: FontWeight.w700,
                                     ),
+                                    textAlign: TextAlign.center,
                                   ),
                               ),
                             ],

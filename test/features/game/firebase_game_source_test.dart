@@ -4,6 +4,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_risk/features/game/data/firebase_game_source.dart';
 import 'package:social_risk/features/game/data/game_model.dart';
+import 'package:social_risk/features/voting/domain/vote_repository.dart';
 import 'package:social_risk/core/constants/game_constants.dart';
 
 void main() {
@@ -91,7 +92,18 @@ void main() {
   group('FirebaseGameSource - Basic Updates', () {
     test('setSpinningTarget, acceptTask, proceedToVoting, endGame update status correctly', () async {
       const gameId = 'game123';
-      await fakeFirestore.collection('games').doc(gameId).set({'status': 'playing'});
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': 'room1',
+        'currentPlayerId': 'p1',
+        'turnOrder': ['p1'],
+        'status': 'playing',
+      });
+      await fakeFirestore
+          .collection('rooms')
+          .doc('room1')
+          .collection('players')
+          .doc('p1')
+          .set({'score': 10});
 
       await gameSource.setSpinningTarget(gameId: gameId, target: 'user1');
       var snap = await fakeFirestore.collection('games').doc(gameId).get();
@@ -115,7 +127,12 @@ void main() {
       const roomId = 'room1';
       const playerId = 'p1';
       
-      await fakeFirestore.collection('games').doc(gameId).set({'status': 'playing'});
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': playerId,
+        'turnOrder': [playerId],
+        'status': 'playing',
+      });
       await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc(playerId).set({'score': 100});
 
       await gameSource.setRoundResult(
@@ -123,12 +140,14 @@ void main() {
         roomId: roomId,
         playerId: playerId,
         score: 50,
+        audienceScore: 25,
         multiplier: 2,
       );
 
       final gSnap = await fakeFirestore.collection('games').doc(gameId).get();
       expect(gSnap.data()?['status'], 'results');
       expect(gSnap.data()?['lastRoundPlayerId'], playerId);
+      expect(gSnap.data()?['lastRoundAudienceScore'], 25);
 
       final pSnap = await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc(playerId).get();
       expect(pSnap.data()?['score'], 150);
@@ -254,6 +273,76 @@ void main() {
       expect(snap.data()?['currentRound'], 2);
       expect(snap.data()?['currentPlayerId'], 'p1');
     });
+
+    test('nextTurn distributes rewards when ending by round limit', () async {
+      const gameId = 'gameReward';
+      const roomId = 'roomReward';
+
+      await fakeFirestore.collection('rooms').doc(roomId).set({
+        'endConditionType': 'rounds',
+        'endConditionValue': 2,
+      });
+      await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc('p1').set({'name': 'P1', 'score': 50});
+      await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc('p2').set({'name': 'P2', 'score': 30});
+      await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc('p3').set({'name': 'P3', 'score': -5});
+
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': 'p2',
+        'turnOrder': ['p1', 'p2'],
+        'currentRound': 2,
+        'status': 'results',
+      });
+
+      await gameSource.nextTurn(gameId);
+      final snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['status'], 'finished');
+
+      final u1 = await fakeFirestore.collection('users').doc('p1').get();
+      expect(u1.data()?['walletPoints'], 200);
+
+      final u2 = await fakeFirestore.collection('users').doc('p2').get();
+      expect(u2.data()?['walletPoints'], 100);
+
+      // p3 has negative score — no reward
+      final u3 = await fakeFirestore.collection('users').doc('p3').get();
+      expect(u3.exists, false);
+    });
+
+    test('nextTurn strict no-consecutive uygular (2+ aktif oyuncuda A->A olmaz)', () async {
+      const gameId = 'gameNoConsecutive';
+      const roomId = 'roomNoConsecutive';
+
+      await fakeFirestore.collection('rooms').doc(roomId).set({
+        'endConditionType': 'rounds',
+        'endConditionValue': 10,
+      });
+      await fakeFirestore
+          .collection('rooms')
+          .doc(roomId)
+          .collection('players')
+          .doc('p1')
+          .set({'name': 'P1'});
+      await fakeFirestore
+          .collection('rooms')
+          .doc(roomId)
+          .collection('players')
+          .doc('p2')
+          .set({'name': 'P2'});
+
+      // Bilerek art arda p1 içeren sıra (kirli veri senaryosu)
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': 'p1',
+        'turnOrder': ['p1', 'p1', 'p2'],
+        'currentRound': 1,
+        'status': 'playing',
+      });
+
+      await gameSource.nextTurn(gameId);
+      final snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['currentPlayerId'], 'p2');
+    });
   });
 
   group('FirebaseGameSource - Scoring', () {
@@ -306,7 +395,8 @@ void main() {
       final voteSource = _FirebaseVoteSourceForTest(fakeFirestore);
       final result = await voteSource.calculateVoteResult(gameId, taskMultiplier: 1);
       
-      expect(result, 10); // Classic is ALWAYS 10
+      expect(result.totalScore, 10); // Classic is ALWAYS 10
+      expect(result.audienceScore, 10);
     });
 
     test('calculateVoteResult uses dynamic market value for Ekonomi Mode', () async {
@@ -324,7 +414,72 @@ void main() {
       final voteSource = _FirebaseVoteSourceForTest(fakeFirestore);
       final result = await voteSource.calculateVoteResult(gameId, taskMultiplier: 2);
       
-      expect(result, 30); // 15 (market) * 2 (multiplier)
+      expect(result.totalScore, 30); // 15 (market) * 2 (multiplier)
+      expect(result.audienceScore, 15);
+    });
+
+    test('calculateVoteResult neutral dinamik puan hesaplar (baseScore*mult~/2)', () async {
+      const gameId = 'neutralDynamic';
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'mode': 'economy',
+        'selectedCategory': 'Dijital',
+        'categoryMarketValues': {'Dijital': 20},
+      });
+      await fakeFirestore.collection('games').doc(gameId).collection('votes').doc('v1').set({
+        'voterId': 'v1',
+        'value': 'neutral',
+      });
+
+      final voteSource = _FirebaseVoteSourceForTest(fakeFirestore);
+      final result = await voteSource.calculateVoteResult(gameId, taskMultiplier: 3);
+      
+      // neutral = 20 * 3 = 60
+      expect(result.totalScore, 60);
+      expect(result.audienceScore, 20);
+    });
+
+    test('calculateVoteResult dislike sıfır puan verir', () async {
+      const gameId = 'dislikeZero';
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'mode': 'economy',
+        'selectedCategory': 'Bilgi',
+        'categoryMarketValues': {'Bilgi': 10},
+      });
+      await fakeFirestore.collection('games').doc(gameId).collection('votes').doc('v1').set({
+        'voterId': 'v1',
+        'value': 'dislike',
+      });
+
+      final voteSource = _FirebaseVoteSourceForTest(fakeFirestore);
+      final result = await voteSource.calculateVoteResult(gameId, taskMultiplier: 2);
+      
+      expect(result.totalScore, 0);
+      expect(result.audienceScore, 0);
+    });
+  });
+
+  group('Reward Distribution - rewardForRank', () {
+    int rewardForRank(int rank, int totalPlayers) {
+      const rankRewards = [200, 100, 50];
+      if (rank <= rankRewards.length) return rankRewards[rank - 1];
+      return 20;
+    }
+
+    test('ilk 3 oyuncuya doğru ödül verir', () {
+      expect(rewardForRank(1, 5), 200);
+      expect(rewardForRank(2, 5), 100);
+      expect(rewardForRank(3, 5), 50);
+    });
+
+    test('4. ve sonrası 20 alır', () {
+      expect(rewardForRank(4, 5), 20);
+      expect(rewardForRank(5, 5), 20);
+      expect(rewardForRank(10, 10), 20);
+    });
+
+    test('2 kişilik oyunda 1. 200, 2. 100 alır', () {
+      expect(rewardForRank(1, 2), 200);
+      expect(rewardForRank(2, 2), 100);
     });
   });
 }
@@ -334,7 +489,7 @@ class _FirebaseVoteSourceForTest {
   final FirebaseFirestore _firestore;
   _FirebaseVoteSourceForTest(this._firestore);
 
-  Future<int> calculateVoteResult(String gameId, {int taskMultiplier = 1}) async {
+  Future<VoteResult> calculateVoteResult(String gameId, {int taskMultiplier = 1}) async {
     final gameSnap = await _firestore.collection('games').doc(gameId).get();
     final gameData = gameSnap.data()!;
     final mode = gameData['mode'] as String?;
@@ -348,11 +503,19 @@ class _FirebaseVoteSourceForTest {
 
     final votesSnap = await _firestore.collection('games').doc(gameId).collection('votes').get();
     int total = 0;
+    int audience = 0;
     for (var doc in votesSnap.docs) {
       final val = doc.data()['value'] as String?;
-      if (val == 'like') total += (baseScore * taskMultiplier);
-      else if (val == 'dislike') total -= 10;
+      if (val == 'like') {
+        total += (baseScore * taskMultiplier);
+        audience += baseScore;
+      } else if (val == 'neutral') {
+        total += (baseScore * taskMultiplier);
+        audience += baseScore;
+      } else if (val == 'dislike') {
+        total += 0;
+      }
     }
-    return total;
+    return VoteResult(totalScore: total, audienceScore: audience);
   }
 }

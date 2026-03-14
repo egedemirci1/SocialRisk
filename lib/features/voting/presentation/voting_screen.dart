@@ -11,7 +11,9 @@ import '../../auth/providers/user_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../../game/providers/game_provider.dart';
 import '../providers/vote_provider.dart';
+import '../domain/vote_repository.dart';
 import '../../game/domain/game_entity.dart';
+import '../../game/domain/game_end_utils.dart';
 import '../../game/presentation/widgets/turn_counter_badge.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
@@ -34,6 +36,7 @@ class VotingScreen extends ConsumerStatefulWidget {
 }
 
 class _VotingScreenState extends ConsumerState<VotingScreen> {
+  static const Duration _voteDuration = Duration(seconds: 20);
   bool _isProcessing = false;
   bool _hasProcessed = false;
   bool _hasVoted = false;
@@ -48,18 +51,21 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
     setState(() => _isProcessing = true);
 
     try {
-      await ref.read(voteControllerProvider.notifier).applyTimedOutPenalties(
-        gameId: widget.gameId,
-        roomId: widget.roomCode,
-        penalty: 10,
-      );
+      final voteCtrl = ref.read(voteControllerProvider.notifier);
 
-      final earned = await ref
-          .read(voteControllerProvider.notifier)
-          .calculateAndApplyScore(
-            gameId: widget.gameId,
-            taskMultiplier: taskMultiplier,
-          );
+      final results = await Future.wait([
+        voteCtrl.applyTimedOutPenalties(
+          gameId: widget.gameId,
+          roomId: widget.roomCode,
+          penalty: 10,
+        ),
+        voteCtrl.calculateAndApplyScore(
+          gameId: widget.gameId,
+          taskMultiplier: taskMultiplier,
+        ),
+      ]);
+      final voteResult = results[1] as VoteResult;
+      final earned = voteResult.totalScore;
 
       final room = ref.read(watchRoomProvider(widget.roomCode)).value;
       final endConditionType =
@@ -73,17 +79,50 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             roomId: widget.roomCode,
             playerId: currentPlayerId,
             scoreToAdd: earned,
+            audienceScore: voteResult.audienceScore,
             taskMultiplier: taskMultiplier,
             endConditionValue: endConditionValue,
             endConditionType: endConditionType,
             currentRound: currentRound,
           );
 
+      final latestGame = ref.read(watchGameProvider(widget.gameId)).value;
+      final latestRoom = ref.read(watchRoomProvider(widget.roomCode)).value;
+      final latestPlayers = ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
+      if (latestGame != null && latestRoom != null) {
+        var shouldEnd = GameEndUtils.shouldEndAfterRound(
+          game: latestGame,
+          room: latestRoom,
+          players: latestPlayers,
+        );
+        if (!shouldEnd && latestRoom.endConditionType == EndConditionType.score) {
+          final currentPlayerScore = latestPlayers
+              .where((p) => p.id == currentPlayerId)
+              .firstOrNull
+              ?.score;
+          if (currentPlayerScore != null) {
+            shouldEnd = (currentPlayerScore + earned) >= latestRoom.endConditionValue;
+          }
+        }
+
+        if (shouldEnd) {
+          await ref.read(gameControllerProvider.notifier).endGame(widget.gameId);
+        }
+      }
+
+      // Oyları temizle (status değiştikten sonra, kritik yolda değil)
+      voteCtrl.clearVotes(widget.gameId);
+
       if (!mounted) return;
     } catch (e) {
       if (mounted) {
+        _hasProcessed = false;
         setState(() => _isProcessing = false);
         ToastUtils.showError(context, 'Hata: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isProcessing = false);
       }
     }
   }
@@ -103,6 +142,19 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
       if (!mounted) return;
       final currentStatus = next.value?.status;
       if (currentStatus == GameStatus.results) {
+        final game = next.value;
+        final room = ref.read(watchRoomProvider(widget.roomCode)).value;
+        final players = ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
+        if (game != null &&
+            room != null &&
+            GameEndUtils.shouldEndAfterRound(
+              game: game,
+              room: room,
+              players: players,
+            )) {
+          // Final turdaysak round-result'e gitme, host'un endGame çağrısını bekle.
+          return;
+        }
         context.go(
           '/round-result',
           extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
@@ -115,6 +167,39 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
     return gameAsync.when(
       data: (game) {
         if (game == null) {
+          return const Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (game.status == GameStatus.results) {
+          final room = ref.read(watchRoomProvider(widget.roomCode)).value;
+          final players = ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
+          final shouldEnd = room != null &&
+              GameEndUtils.shouldEndAfterRound(
+                game: game,
+                room: room,
+                players: players,
+              );
+          if (!shouldEnd) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                context.go(
+                  '/round-result',
+                  extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+                );
+              }
+            });
+          }
+          return const Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (game.status == GameStatus.finished) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) context.go('/game-over', extra: widget.roomCode);
+          });
           return const Scaffold(
             backgroundColor: Colors.transparent,
             body: Center(child: CircularProgressIndicator()),
@@ -216,7 +301,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                   padding: EdgeInsets.zero,
                   child: Column(
                     children: [
-                      const _VisualCountdownTimer(durationSeconds: 20),
+                      const _VisualCountdownTimer(duration: _voteDuration),
                       Expanded(
                         child: SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
@@ -304,13 +389,14 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                       // Oylama / bekleme alanı her zaman altta görünsün
                       Padding(
                         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-                        child: _isProcessing || _hasProcessed
+                        child: _isProcessing
                             ? _buildProcessingIndicator()
                             : isMyTurn
                                 ? _buildWaitingForOthers()
                                 : _hasVoted
                                     ? _buildVotedStatus()
                                     : VotingPanel(
+                                        timeLimit: _voteDuration,
                                         onVote: (value, {timedOut = false}) {
                                           if (user == null) return;
                                           setState(() => _hasVoted = true);
@@ -416,9 +502,9 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
 }
 
 class _VisualCountdownTimer extends StatefulWidget {
-  final int durationSeconds;
+  final Duration duration;
 
-  const _VisualCountdownTimer({required this.durationSeconds});
+  const _VisualCountdownTimer({required this.duration});
 
   @override
   State<_VisualCountdownTimer> createState() => _VisualCountdownTimerState();
@@ -434,7 +520,7 @@ class _VisualCountdownTimerState extends State<_VisualCountdownTimer>
   void initState() {
     super.initState();
     _progressController = AnimationController(
-        vsync: this, duration: Duration(seconds: widget.durationSeconds));
+        vsync: this, duration: widget.duration);
 
     _shakeController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 100));
@@ -448,7 +534,7 @@ class _VisualCountdownTimerState extends State<_VisualCountdownTimer>
     _progressController.forward();
     _progressController.addListener(() {
       final remaining =
-          (1.0 - _progressController.value) * widget.durationSeconds;
+          (1.0 - _progressController.value) * widget.duration.inSeconds;
       if (remaining <= 3.0 && !_shakeController.isAnimating) {
         _shakeController.repeat();
       }
@@ -468,7 +554,7 @@ class _VisualCountdownTimerState extends State<_VisualCountdownTimer>
       animation: Listenable.merge([_progressController, _shakeController]),
       builder: (context, child) {
         final progress = 1.0 - _progressController.value;
-        final remaining = progress * widget.durationSeconds;
+        final remaining = progress * widget.duration.inSeconds;
         Color barColor;
         if (remaining > 10) {
           barColor = Colors.greenAccent;

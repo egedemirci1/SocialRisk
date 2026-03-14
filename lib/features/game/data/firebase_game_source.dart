@@ -189,6 +189,7 @@ class FirebaseGameSource implements GameRepository {
     required String roomId,
     required String playerId,
     required int score,
+    required int audienceScore,
     required int multiplier,
   }) async {
     try {
@@ -211,6 +212,7 @@ class FirebaseGameSource implements GameRepository {
         final updates = <String, dynamic>{
           'status': 'results',
           'lastRoundScore': score,
+          'lastRoundAudienceScore': audienceScore,
           'lastRoundMultiplier': multiplier,
           'lastRoundPlayerId': playerId,
         };
@@ -267,7 +269,7 @@ class FirebaseGameSource implements GameRepository {
 
         // Klasik Mod Mantığı (Mevcut)
         // Aktif oyuncuları transaction içinden tek tek kontrol et
-        final activePlayerIds = <String>{};
+        final activePlayers = <({String id, int score})>[];
         for (final pid in game.turnOrder) {
           final pSnap = await transaction.get(
             _firestore
@@ -277,9 +279,13 @@ class FirebaseGameSource implements GameRepository {
                 .doc(pid),
           );
           if (pSnap.exists) {
-            activePlayerIds.add(pid);
+            activePlayers.add((
+              id: pid,
+              score: pSnap.data()?['score'] as int? ?? 0,
+            ));
           }
         }
+        final activePlayerIds = activePlayers.map((p) => p.id).toSet();
 
         final currentIndex = game.turnOrder.indexOf(game.currentPlayerId);
         String? nextPlayerId;
@@ -296,8 +302,22 @@ class FirebaseGameSource implements GameRepository {
           }
         }
 
+        // Strict no-consecutive: 2+ aktif oyuncu varsa aynı kişiye tekrar düşme.
+        if (nextPlayerId == game.currentPlayerId && activePlayerIds.length > 1) {
+          for (int i = 1; i <= game.turnOrder.length; i++) {
+            final altIndex = (nextIndex + i) % game.turnOrder.length;
+            final candidate = game.turnOrder[altIndex];
+            if (activePlayerIds.contains(candidate) && candidate != game.currentPlayerId) {
+              nextPlayerId = candidate;
+              nextIndex = altIndex;
+              break;
+            }
+          }
+        }
+
         // Kimse kalmadıysa oyunu bitir
         if (nextPlayerId == null) {
+          _distributeRewardsInTransaction(transaction, activePlayers);
           transaction.update(gameDocRef, {'status': 'finished'});
           return;
         }
@@ -313,6 +333,7 @@ class FirebaseGameSource implements GameRepository {
             final endVal = roomData['endConditionValue'] as int? ?? 10;
 
             if (endType == 'rounds' && game.currentRound >= endVal) {
+              _distributeRewardsInTransaction(transaction, activePlayers);
               transaction.update(gameDocRef, {'status': 'finished'});
               return;
             }
@@ -338,6 +359,29 @@ class FirebaseGameSource implements GameRepository {
       throw Exception('Sıra geçerken bağlantı hatası oluştu: ${e.message}');
     } catch (e) {
       throw Exception(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  static const List<int> _rankRewards = [200, 100, 50];
+  static const int _defaultReward = 20;
+
+  void _distributeRewardsInTransaction(
+    Transaction transaction,
+    List<({String id, int score})> players,
+  ) {
+    final sorted = List.of(players)..sort((a, b) => b.score.compareTo(a.score));
+    for (var i = 0; i < sorted.length; i++) {
+      final player = sorted[i];
+      if (player.score <= 0) continue;
+      final reward = i < _rankRewards.length ? _rankRewards[i] : _defaultReward;
+      transaction.set(
+        _firestore.collection('users').doc(player.id),
+        {
+          'walletPoints': FieldValue.increment(reward),
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
     }
   }
 
@@ -374,7 +418,42 @@ class FirebaseGameSource implements GameRepository {
 
   @override
   Future<void> endGame(String gameId) async {
-    await _gameDoc(gameId).update({'status': 'finished'});
+    final gameSnap = await _gameDoc(gameId).get();
+    if (!gameSnap.exists) return;
+
+    final game = GameModel.fromJson(gameSnap.data()!, gameSnap.id);
+    if (game.status == 'finished') return;
+
+    final playersSnap = await _firestore
+        .collection('rooms')
+        .doc(game.roomId)
+        .collection('players')
+        .get();
+
+    final players = playersSnap.docs
+        .map((doc) {
+          final data = doc.data();
+          return (
+            id: doc.id,
+            score: data['score'] as int? ?? 0,
+          );
+        })
+        .toList()
+      ..sort((a, b) => b.score.compareTo(a.score));
+
+    final batch = _firestore.batch();
+    for (var i = 0; i < players.length; i++) {
+      final player = players[i];
+      if (player.score <= 0) continue;
+      final reward = i < _rankRewards.length ? _rankRewards[i] : _defaultReward;
+      batch.set(_firestore.collection('users').doc(player.id), {
+        'walletPoints': FieldValue.increment(reward),
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    }
+
+    batch.update(_gameDoc(gameId), {'status': 'finished'});
+    await batch.commit();
   }
 
   @override
@@ -482,7 +561,9 @@ class FirebaseGameSource implements GameRepository {
         updatedPickCounts[category] = newPickCount;
 
         final updatedLocked = List<String>.from(game.lockedCategories);
-        if (newPickCount >= GameConstants.lockThreshold) {
+        final totalCategories = marketValues.keys.length;
+        final wouldLockAll = (updatedLocked.length + 1) >= totalCategories;
+        if (newPickCount >= GameConstants.lockThreshold && !wouldLockAll) {
           if (!updatedLocked.contains(category)) {
             updatedLocked.add(category);
           }

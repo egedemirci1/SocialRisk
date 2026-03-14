@@ -40,6 +40,7 @@ abstract class GameRepository {
     required String roomId,
     required String playerId,
     required int score,
+    required int audienceScore,
     required int multiplier,
   });
 

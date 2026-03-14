@@ -13,8 +13,10 @@ class GameEntity {
   final String? spinningTarget;
   final GameDifficulty difficulty;
   final int? lastRoundScore;
+  final int? lastRoundAudienceScore;
   final int? lastRoundMultiplier;
   final String? lastRoundPlayerId;
+  final String? lastRoundMood;
   // Tur içi zorluk seçimi (Risk/Ödül)
   final String? selectedCategory;
   final String? selectedDifficulty; // easy, medium, hard
@@ -39,8 +41,10 @@ class GameEntity {
     this.spinningTarget,
     this.difficulty = GameDifficulty.mixed,
     this.lastRoundScore,
+    this.lastRoundAudienceScore,
     this.lastRoundMultiplier,
     this.lastRoundPlayerId,
+    this.lastRoundMood,
     this.selectedCategory,
     this.selectedDifficulty,
     this.mode = GameMode.classic,

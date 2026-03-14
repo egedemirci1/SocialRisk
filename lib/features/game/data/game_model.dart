@@ -14,8 +14,10 @@ class GameModel {
   final String? spinningTarget;
   final String difficulty;
   final int? lastRoundScore;
+  final int? lastRoundAudienceScore;
   final int? lastRoundMultiplier;
   final String? lastRoundPlayerId;
+  final String? lastRoundMood;
   // Tur içi zorluk seçimi
   final String? selectedCategory;
   final String? selectedDifficulty;
@@ -41,8 +43,10 @@ class GameModel {
     this.spinningTarget,
     this.difficulty = 'mixed',
     this.lastRoundScore,
+    this.lastRoundAudienceScore,
     this.lastRoundMultiplier,
     this.lastRoundPlayerId,
+    this.lastRoundMood,
     this.selectedCategory,
     this.selectedDifficulty,
     this.mode = 'classic',
@@ -67,8 +71,10 @@ class GameModel {
       spinningTarget: json['spinningTarget'] as String?,
       difficulty: json['difficulty'] as String? ?? 'mixed',
       lastRoundScore: json['lastRoundScore'] as int?,
+      lastRoundAudienceScore: json['lastRoundAudienceScore'] as int?,
       lastRoundMultiplier: json['lastRoundMultiplier'] as int?,
       lastRoundPlayerId: json['lastRoundPlayerId'] as String?,
+      lastRoundMood: json['lastRoundMood'] as String?,
       selectedCategory: json['selectedCategory'] as String?,
       selectedDifficulty: json['selectedDifficulty'] as String?,
       mode: json['mode'] as String? ?? 'classic',
@@ -114,9 +120,12 @@ class GameModel {
       'mode': mode,
       if (spinningTarget != null) 'spinningTarget': spinningTarget,
       if (lastRoundScore != null) 'lastRoundScore': lastRoundScore,
+      if (lastRoundAudienceScore != null)
+        'lastRoundAudienceScore': lastRoundAudienceScore,
       if (lastRoundMultiplier != null)
         'lastRoundMultiplier': lastRoundMultiplier,
       if (lastRoundPlayerId != null) 'lastRoundPlayerId': lastRoundPlayerId,
+      if (lastRoundMood != null) 'lastRoundMood': lastRoundMood,
       if (selectedCategory != null) 'selectedCategory': selectedCategory,
       if (selectedDifficulty != null) 'selectedDifficulty': selectedDifficulty,
       'categoryMarketValues': categoryMarketValues,
@@ -153,8 +162,10 @@ class GameModel {
       usedTaskIds: usedTaskIds,
       spinningTarget: spinningTarget,
       lastRoundScore: lastRoundScore,
+      lastRoundAudienceScore: lastRoundAudienceScore,
       lastRoundMultiplier: lastRoundMultiplier,
       lastRoundPlayerId: lastRoundPlayerId,
+      lastRoundMood: lastRoundMood,
       selectedCategory: selectedCategory,
       selectedDifficulty: selectedDifficulty,
       mode: GameMode.values.firstWhere(

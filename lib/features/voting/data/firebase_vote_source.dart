@@ -38,13 +38,15 @@ class FirebaseVoteSource implements VoteRepository {
   }
 
   @override
-  Future<int> calculateVoteResult(
+  Future<VoteResult> calculateVoteResult(
     String gameId, {
     int taskMultiplier = 1,
   }) async {
     // Oyun modunu ve pazar değerini öğrenmek için oyunu çek
     final gameSnap = await _firestore.collection('games').doc(gameId).get();
-    if (!gameSnap.exists) return 0;
+    if (!gameSnap.exists) {
+      return const VoteResult(totalScore: 0, audienceScore: 0);
+    }
 
     final gameData = gameSnap.data()!;
     final mode = gameData['mode'] as String?;
@@ -60,6 +62,9 @@ class FirebaseVoteSource implements VoteRepository {
 
     final snapshot = await _votesRef(gameId).get();
     int totalScore = 0;
+    int audienceScore = 0;
+    var likes = 0;
+    var dislikes = 0;
 
     for (final doc in snapshot.docs) {
       final vote = VoteModel.fromJson(doc.data(), doc.id);
@@ -69,19 +74,34 @@ class FirebaseVoteSource implements VoteRepository {
 
       switch (vote.value) {
         case VoteValue.like:
-          // Beğendim: Dinamik (veya Klasik 10) taban puan * multiplier
           totalScore += (baseScore * taskMultiplier);
+          audienceScore += baseScore;
+          likes++;
           break;
         case VoteValue.neutral:
-          totalScore += 5;
+          totalScore += (baseScore * taskMultiplier);
+          audienceScore += baseScore;
           break;
         case VoteValue.dislike:
           totalScore += 0;
+          dislikes++;
           break;
       }
     }
 
-    return totalScore;
+    final mood = likes > dislikes
+        ? 'like'
+        : dislikes > likes
+            ? 'dislike'
+            : 'neutral';
+    await _firestore.collection('games').doc(gameId).update({
+      'lastRoundMood': mood,
+    });
+
+    return VoteResult(
+      totalScore: totalScore,
+      audienceScore: audienceScore,
+    );
   }
 
 

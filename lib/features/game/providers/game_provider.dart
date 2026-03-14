@@ -77,6 +77,7 @@ class GameController extends _$GameController {
     required String roomId,
     required String playerId,
     required int scoreToAdd,
+    required int audienceScore,
     required int taskMultiplier,
     required int endConditionValue,
     required EndConditionType endConditionType,
@@ -90,6 +91,7 @@ class GameController extends _$GameController {
       roomId: roomId,
       playerId: playerId,
       score: scoreToAdd,
+      audienceScore: audienceScore,
       multiplier: taskMultiplier,
     );
   }

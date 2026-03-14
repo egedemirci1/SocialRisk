@@ -52,6 +52,13 @@ class FakeRoomRepository implements RoomRepository {
   }) async {}
 
   @override
+  Future<void> sendLobbyEmote({
+    required String roomCode,
+    required String playerId,
+    required String emote,
+  }) async {}
+
+  @override
   Future<void> toggleVisibility({
     required String roomCode,
     required RoomVisibility visibility,

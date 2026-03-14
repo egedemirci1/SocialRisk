@@ -49,6 +49,9 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           .read(userRepositoryProvider)
           .getUserProfile(user.uid);
       final repo = ref.read(roomRepositoryProvider);
+      final effectiveMode = _selectedCategories.length == 1
+          ? GameMode.economy
+          : _selectedMode;
 
       final roomCode = await repo.createRoom(
         hostId: user.uid,
@@ -58,7 +61,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         visibility: RoomVisibility.open,
         categories: _selectedCategories,
         hostAvatarUrl: userProfile?.avatarUrl,
-        mode: _selectedMode,
+        mode: effectiveMode,
         useCustomDeck: _selectedCategories.contains('Özel'),
       );
 
@@ -370,6 +373,13 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 label: 'Çark',
                 isSelected: _selectedMode == GameMode.classic,
                 onTap: () {
+                  if (_selectedCategories.length == 1) {
+                    ToastUtils.showInfo(
+                      context,
+                      'Tek kategori seçildiğinde sadece Borsa modu kullanılabilir.',
+                    );
+                    return;
+                  }
                   HapticFeedback.lightImpact();
                   setState(() => _selectedMode = GameMode.classic);
                 },
@@ -475,10 +485,18 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                   }
                   setState(() {
                     if (isSelected) {
-                      if (_selectedCategories.length > 2) {
+                      if (_selectedCategories.length > 1) {
                         _selectedCategories.remove(category);
+                        if (_selectedCategories.length == 1 &&
+                            _selectedMode != GameMode.economy) {
+                          _selectedMode = GameMode.economy;
+                          ToastUtils.showInfo(
+                            context,
+                            'Tek kategori seçildi. Oyun modu otomatik Borsa moduna alındı (katsayı sabit kalır).',
+                          );
+                        }
                       } else {
-                        ToastUtils.showWarning(context, 'En az 2 kategori seçmelisiniz.');
+                        ToastUtils.showWarning(context, 'En az 1 kategori seçmelisiniz.');
                       }
                     } else {
                       _selectedCategories.add(category);

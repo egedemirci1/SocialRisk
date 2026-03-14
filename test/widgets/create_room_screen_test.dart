@@ -86,12 +86,12 @@ void main() {
       expect(find.text('5 Tur'), findsOneWidget);
     });
 
-    testWidgets('tap Ekonomi chip shows Patron Parti', (tester) async {
+    testWidgets('tap Borsa chip shows Patron Parti', (tester) async {
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(buildCreateRoomScreen());
       await tester.pump(const Duration(milliseconds: 500));
 
-      await tester.tap(find.text('Ekonomi').first, warnIfMissed: false);
+      await tester.tap(find.text('Borsa').first, warnIfMissed: false);
       await tester.pump(const Duration(milliseconds: 400));
 
       expect(find.text('Patron Parti'), findsOneWidget);

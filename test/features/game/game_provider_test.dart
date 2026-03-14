@@ -97,6 +97,7 @@ void main() {
           roomId: roomId,
           playerId: playerId,
           scoreToAdd: scoreToAdd,
+          audienceScore: 50,
           taskMultiplier: 2,
           endConditionValue: 500,
           endConditionType: EndConditionType.score,
@@ -104,6 +105,7 @@ void main() {
         );
         expect(fake.getPlayerScore(roomId, playerId), scoreToAdd);
         expect(fake.getGame(gameId)!.lastRoundScore, scoreToAdd);
+        expect(fake.getGame(gameId)!.lastRoundAudienceScore, 50);
         expect(fake.getGame(gameId)!.lastRoundMultiplier, 2);
         expect(fake.getGame(gameId)!.status, GameStatus.results);
       });

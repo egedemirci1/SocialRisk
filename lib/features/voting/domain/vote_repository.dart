@@ -1,5 +1,15 @@
 import '../../../shared/models/enums.dart';
 
+class VoteResult {
+  final int totalScore;
+  final int audienceScore;
+
+  const VoteResult({
+    required this.totalScore,
+    required this.audienceScore,
+  });
+}
+
 abstract class VoteRepository {
   Future<void> castVote({
     required String gameId,
@@ -10,7 +20,10 @@ abstract class VoteRepository {
 
   Stream<Map<String, VoteValue>> watchVotes(String gameId);
 
-  Future<int> calculateVoteResult(String gameId, {int taskMultiplier = 1});
+  Future<VoteResult> calculateVoteResult(
+    String gameId, {
+    int taskMultiplier = 1,
+  });
 
   Future<List<String>> applyTimedOutPenalties(
     String gameId,

@@ -38,6 +38,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   bool _isAccepting = false;
   bool _isPassing = false;
   bool _contentRevealed = false;
+  bool _isAutoPickingSingleCategory = false;
+  bool _autoPickFailed = false;
 
   late final AnimationController _cardController;
   late final Animation<double> _cardAnimation;
@@ -181,9 +183,16 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           });
         }
 
-        // Fallback: Eğer oyun zaten oylama aşamasındaysa hemen yönlendir
-        // (diğer oyuncunun stream gecikmesiyle task ekranında kalmasını önler)
-        if (game.status == GameStatus.voting) {
+        if (game.status == GameStatus.choosingDifficulty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.replace(
+                '/difficulty',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
+            }
+          });
+        } else if (game.status == GameStatus.voting) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               context.replace(
@@ -197,6 +206,15 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             if (mounted) {
               context.replace(
                 '/performing',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
+            }
+          });
+        } else if (game.status == GameStatus.results) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.replace(
+                '/round-result',
                 extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
               );
             }
@@ -251,7 +269,12 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                                       playerName,
                                     )
                                   : (roomAsync.value?.mode == GameMode.economy
-                                        ? _buildEconomyRedirect()
+                                        ? _buildEconomyRedirect(
+                                            game: game,
+                                            categories: roomAsync.value?.categories ?? const [],
+                                            isMyTurn: isMyTurn,
+                                            myUserId: user?.uid,
+                                          )
                                         : _buildWheelView(
                                             isMyTurn,
                                             playerName,
@@ -404,14 +427,54 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     );
   }
 
-  Widget _buildEconomyRedirect() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.replace(
-          '/economy-pick',
-          extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-        );
+  Widget _buildEconomyRedirect({
+    required GameEntity game,
+    required List<String> categories,
+    required bool isMyTurn,
+    required String? myUserId,
+  }) {
+    final isSingleCategory = categories.length == 1;
+
+    if (isSingleCategory) {
+      final selectedCategory = categories.first;
+      final canAutoPick =
+          isMyTurn &&
+          myUserId != null &&
+          !_isAutoPickingSingleCategory &&
+          !_autoPickFailed &&
+          game.currentTask == null &&
+          game.selectedCategory == null &&
+          game.status == GameStatus.playing;
+
+      if (canAutoPick) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          if (!mounted || _isAutoPickingSingleCategory) return;
+          setState(() => _isAutoPickingSingleCategory = true);
+          try {
+            await ref.read(gameControllerProvider.notifier).pickCategoryEconomy(
+                  gameId: widget.gameId,
+                  playerId: myUserId,
+                  category: selectedCategory,
+                );
+          } catch (_) {
+            if (mounted) setState(() => _autoPickFailed = true);
+          } finally {
+            if (mounted) {
+              setState(() => _isAutoPickingSingleCategory = false);
+            }
+          }
+        });
       }
+
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.replace(
+        '/economy-pick',
+        extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+      );
     });
     return const Center(child: CircularProgressIndicator());
   }

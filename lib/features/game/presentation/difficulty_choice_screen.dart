@@ -29,6 +29,30 @@ class DifficultyChoiceScreen extends ConsumerStatefulWidget {
 class _DifficultyChoiceScreenState
     extends ConsumerState<DifficultyChoiceScreen> {
   bool _isLoading = false;
+  bool _hasRedirected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _setupListener();
+    });
+  }
+
+  void _setupListener() {
+    ref.listen(watchGameProvider(widget.gameId), (prev, next) {
+      final game = next.value;
+      if (game == null || _hasRedirected) return;
+      if (game.status != GameStatus.choosingDifficulty) {
+        _hasRedirected = true;
+        context.replace(
+          '/task',
+          extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+        );
+      }
+    });
+  }
 
   Future<void> _selectDifficulty(String difficulty) async {
     if (_isLoading) return;
@@ -67,14 +91,21 @@ class _DifficultyChoiceScreenState
             .firstOrNull;
         final playerName = currentPlayer?.name ?? 'Oyuncu';
 
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted && game.status != GameStatus.choosingDifficulty) {
-            context.replace(
-              '/task',
-              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-            );
-          }
-        });
+        if (game.status != GameStatus.choosingDifficulty && !_hasRedirected) {
+          _hasRedirected = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.replace(
+                '/task',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
+            }
+          });
+          return const Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -206,66 +237,71 @@ class _DifficultyChoiceScreenState
                         color: AppColors.primary,
                         onTap: () => _selectDifficulty('hard'),
                       ),
+                      const Spacer(flex: 2),
                     ] else ...[
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: AppColors.accent.withValues(alpha: 0.15),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              decoration: BoxDecoration(
-                                color: AppColors.accent.withValues(alpha: 0.1),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                ),
+                      Expanded(
+                        child: Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: AppColors.accent.withValues(alpha: 0.15),
                               ),
-                              child: Text(
-                                'BEKLENİYOR',
-                                style: AppTextStyles.titleLarge.copyWith(
-                                  color: AppColors.accent,
-                                  letterSpacing: 2,
-                                  fontWeight: FontWeight.w900,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                              child: Column(
-                                children: [
-                                  const CircularProgressIndicator(color: AppColors.accent),
-                                  const SizedBox(height: 32),
-                                  Text(
-                                    '$playerName zorluk seviyesini seçiyor...',
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.accent.withValues(alpha: 0.1),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'BEKLENİYOR',
                                     style: AppTextStyles.titleLarge.copyWith(
-                                      color: Colors.white,
+                                      color: AppColors.accent,
+                                      letterSpacing: 2,
                                       fontWeight: FontWeight.w900,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                                ],
-                              ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                                  child: Column(
+                                    children: [
+                                      const CircularProgressIndicator(color: AppColors.accent),
+                                      const SizedBox(height: 32),
+                                      Text(
+                                        '$playerName zorluk seviyesini seçiyor...',
+                                        style: AppTextStyles.titleLarge.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
-                    const Spacer(flex: 2),
                   ],
                 ),
               ),

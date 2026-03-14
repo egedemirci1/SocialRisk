@@ -170,12 +170,14 @@ class FakeGameRepository implements GameRepository {
     required String roomId,
     required String playerId,
     required int score,
+    required int audienceScore,
     required int multiplier,
   }) async {
     final s = _state[gameId];
     if (s == null) return;
     s.status = GameStatus.results;
     s.lastRoundScore = score;
+    s.lastRoundAudienceScore = audienceScore;
     s.lastRoundMultiplier = multiplier;
     s.lastRoundPlayerId = playerId;
     
@@ -325,6 +327,7 @@ class _MutableGameState {
     this.spinningTarget,
     this.difficulty = GameDifficulty.mixed,
     this.lastRoundScore,
+    this.lastRoundAudienceScore,
     this.lastRoundMultiplier,
     this.lastRoundPlayerId,
     this.selectedCategory,
@@ -353,6 +356,7 @@ class _MutableGameState {
   String? spinningTarget;
   GameDifficulty difficulty;
   int? lastRoundScore;
+  int? lastRoundAudienceScore;
   int? lastRoundMultiplier;
   String? lastRoundPlayerId;
   String? selectedCategory;
@@ -380,6 +384,7 @@ class _MutableGameState {
       spinningTarget: e.spinningTarget,
       difficulty: e.difficulty,
       lastRoundScore: e.lastRoundScore,
+      lastRoundAudienceScore: e.lastRoundAudienceScore,
       lastRoundMultiplier: e.lastRoundMultiplier,
       lastRoundPlayerId: e.lastRoundPlayerId,
       selectedCategory: e.selectedCategory,
@@ -407,6 +412,7 @@ class _MutableGameState {
       spinningTarget: spinningTarget,
       difficulty: difficulty,
       lastRoundScore: lastRoundScore,
+      lastRoundAudienceScore: lastRoundAudienceScore,
       lastRoundMultiplier: lastRoundMultiplier,
       lastRoundPlayerId: lastRoundPlayerId,
       selectedCategory: selectedCategory,
