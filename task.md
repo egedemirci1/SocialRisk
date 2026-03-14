@@ -1,83 +1,48 @@
-# Sosyal Risk - Takım Görev Dağılımı (Modüler Çalışma)
+# Sosyal Risk - Hata Ayıklama & Geliştirme Planı (Modüler Çalışma)
 
-Birbirinizle çakışmaları (conflict) önlemek adına tüm görevleri "Görsel/UI" ve "Mantık/State" olarak ikiye ayırdık. 
-
----
-
-## 🎨 ATA (Arayüz, Metinler, Görseller ve Responsive)
-*Ağırlıklı Çalışma Alanları: UI/UX, Widget dizilimleri, Assets (Logolar, ikonlar), Metin/Dil dosyaları.*
-
-### Metin ve İsimlendirme Güncellemeleri
-- [x] "KATEGORİ" yazısı "Kategori" olarak güncellenecek (ve varsa bu tarz büyük harf hataları taranıp düzeltilecek).
-- [x] Sahnelerdeki ve butonlardaki tiyatro temalı eski terimler değiştirilecek:
-  - "Sahnedeki görev" -> "Görev"
-  - "Gösteriye Katıl" -> "Görevi Başlat"
-  - "Gösteri Başladı" -> "Görev Başladı"
-  - "Senaryonuz" -> "İçerik"
-  - "Senaryoyu sergilediyseniz" -> "Görevi tamamladıysanız performansınızı bitirin"
-  - "Performansı bitir" -> "Görevi Bitir"
-  - "Ekonomi Oyun modunun" adı -> "Borsa" olarak güncellenecek.
-  - Arayüzdeki "göreve özel" yazısı kaldırılacak.
-- [x] Puan metinlerindeki "+" işareti kaldırılacak ("+10 Puan" yerine "10 puan" / "Tahmini Kazan. 10 puan" şeklinde).
-- [x] Görev altındaki "3x Puan" gibi katsayı metinleri, Ata'nın hesapladığı net puan ile birleşip "30 puan", "20 puan" formatında sadece sonuç olarak yazılacak.
-
-### UI İyileştirmeleri ve Bug Fixler
-- [x] **İstatistikler Ekranı:** "Bakiye", "Rütbe", "Ev", "Koleksiyon" değerleri sağa yaslanacak. *(biraz uğraştırabilir)*
-- [x] **Profil Ekranı:** 
-  - İsim, profil fotoğrafına hizalanacak.
-  - Kalem ikonu ismin direkt yanına alınacak.
-  - Profil fotoğrafı çerçevesinin kare olma sorunu çözülüp fotoğrafı tam kaplaması sağlanacak.
-- [x] **Pop-uplar ve Boş Durumlar (Empty States):**
-  - Çıkış yap pop-up'ında "Hayır" ve "Sil Ve Çık" butonlarındaki harflerin hepsi büyük harf olmayacak.
-  - Eşyalar (Items) boş sekmesine "Henüz bir eşyanız yok, mağazadaki harika içeriklere göz atmak ister misiniz?" yazısı eklenecek ve altına "Mağaza"ya yönlendiren buton konulacak.
-- [x] **Lobi Ekranı:**
-  - Dönen yazıların içeriği ve rastgele çıkan diğer içerikler düzenlenecek.
-  - O an oynanacak oyun modunun bilgisi ana lobiye eklenecek.
-- [x] **Menü Yapısı:**
-  - Ana sayfadaki "Ayarlar" butonu "Menü" olacak ve tıklayınca alttan (Bottom Sheet) açılacak. Menü başlığı "Menü" olacak.
-  - Menü listesine "Ayarlar" eklenecek (Ses/Dil değişiklikleri buradan yapılacak).
-  - Menü ekranından "Profil" seçeneği kaldırılacak.
-  - Ayarlar/Menü alanının en altına "2026 Tüm Hakları Saklıdır" yazısı eklenecek.
-- [x] Çark modundaki katman renkleri yenilenecek (her kategoriye farklı renk atanacak).
-- [x] Emote (Tepki) ekranına mevcut 7 seçeneğe 1 tane daha eklenerek 8'e çıkartılacak
-- [x] Liderlik tablosunda kullanıcının kendi ismi vurgulu (highlighted) görünecek.
-- [x] Tüm cihazlarda genel Responsive kaymaları / boyutlandırmaları kontrol edilip çözülecek.
-- [x] Türkçe karakter ve lokalizasyon düzeltmeleri (Emote Gönder, Bekleme, Hata mesajları vb.)
-    - [x] Lobby ekranı (Gonder -> Gönder, Bekleme -> Bekleniyor)
-    - [x] Firebase Room Source (Exception mesajları)
-    - [x] Genel UI metinleri taraması ve düzeltilmesi
-- [x] "Özel Senaryolar" sayfasını kilitle ve "Yakında..." olarak işaretle (Store & Room Creation)
-- [x] Mağaza ve Profil ana başlıklarını kartlaştır (Premium UI)
-
-### Asset ve İçerik Görevleri
-- [x] Oyun logosu, logonun altındaki logotype ve mobil logolar güncellenecek.
-- [x] Mağazadaki "bilet (ticket)" logosu uygun/yeni bir ikonla değiştirilecek.
-- [ ] İçerik havuzu (sorular, görevler) Ege tarafından gözden geçirilip metinsel olarak düzenlenecek.
+Bu görev listesi, detaylı testlerin ardından bildirilen hata (bug) raporları ve UX iyileştirme talepleri doğrultusunda yapılandırılmıştır.
 
 ---
 
-## ⚙️ EGE (Oyun Mantığı, State Management ve Core Sistemler)
-*Ağırlıklı Çalışma Alanları: Provider/Bloc (State), Oyun Döngüsü, Matematik/Puan Hesaplamaları, Testler, Entegrasyonlar.*
+## 🎨 ATA (UI/UX, Responsive, Tasarım)
 
-### Oyun Mantığı ve Döngüsü (Game Loop)
-- [x] Oyun sonunda (son görev bitince) ara ekran atlanıp direkt sonuç ekranına (Liderlik/Puan tablosu) geçilecek.
-- [x] Tur bitimi sahnesinde çıkacak karakter ifadesi (Emote), görevin seyirci tarafından "Beğenilme/Beğenilmeme" durumuna göre dinamik olarak değiştirilecek.
-- [x] Çark modunda üst üste aynı kişiye görev gelmemesi için rastgele oyuncu seçimi mantığı (sıra mekanizması) kontrol edilip düzeltilecek.
-- [x] Tek kategori seçildiğinde, sistemin otomatik "Borsa Moduna" geçmesi ve kullanıcıya uyarı pop-up'ı çıkarılması logic'i yazılacak (Katsayının sabit kalacağına dair).
-- [x] Zamanlayıcı (Timer) senkronizasyonu: Geri sayım sayacında alt ve üst sayaçlar birbiriyle tutarlı (senkron) hale getirilecek.
-- [x] Çıkış onayındaki "Sil ve Çık" butonu için 10 saniyelik bir geri sayım engeli konulacak. Süre bitmeden buton aktifleşmeyecek.
+### 1. Responsive ve Ekran Taşma (Overflow) Sorunları
+- [ ] **Lobi Ekranı Kart Sıkışması:** Lobi ekranında 5'ten fazla oyuncu girince kartlar sığmıyor. 8 kişiye kadar sığacak şekilde oyuncu kartlarının boyutları dinamik (responsive) olarak ayarlanacak. Kartlar cihaz boyutuna göre ölçeklenmeli. Header kısmına da "Mevcut/Toplam (örn. 1/8)" kişi bilgisi eklenecek.
+- [ ] **Görev Sahnesi (Task Screen):** Küçük telefonlarda menü tasarımı sabit pixelle çizildiği için scroll'a giriyor. Görev kartının yüksekliği ve aşağıdaki izleyici avatarları yüzdelik dilimlerle (Flexible/Expanded) sınırlandırılacak.
+- [ ] **Oylama Ekranı (Voting Screen):** Beğen/Nötr/Beğenme butonları (VotingPanel) küçük ekranlarda sorunun/kartın üstüne taşıyor. "Eleştirme ve Oylama" yazısı responsive şekilde küçültülüp kartlaştırılacak ve butonların güvenli alanda (SafeArea) kalması sağlanacak.
+- [ ] **Tur Bitti Ekranı (Round Result):** Küçük telefonlarda elementler sıkışıyor ve scroll çıkıyor. Elementler (skorlar vb.) UI sınırlarına göre otomatik küçülecek (FittedBox/Expanded).
+- [ ] **Performans Sahnesi:** "Rezem oynuyor" veya "Senin sıran" yazıları boyutlandırma sınırları olmadığı için profil fotoğrafıyla (avatar) iç içe giriyor. İki element arasına boşluk ve esneklik (Flexible) eklenecek.
+- [ ] **Zorluk Seçimi (Sıcak Fırsat):** Borsa modunda kategori/zorluk seçerken en alttaki element overflow oluyor. Ayrıca kart içindeki "Sıcak Fırsat" (3x) yazısı diğer yazılarla çakışıyor, responsive hale getirilecek.
+- [ ] **Oyun Sonu Ekranı (Game Over):** Kupa logosu ve kazanan bilgisi yukarıdan (start align) çizilse ekranda daha fazla yer açılır. Aşağıdaki skor sıralaması listesi daha ferah konumlandırılacak.
+- [ ] **Çark Modu Görev Alanı:** Çark modunda görev sunulurken ekran küçükse gereksiz şekilde scroll çıkıyor, görev kartı ana ekrana sığacak şekilde ayarlanacak.
+- [ ] **Çerçevelerin Ölçeklenmesi:** Tıpkı lobide olduğu gibi oyun içi (ör. altta duran izleyiciler) çerçeve çizimleri de ekran bazlı responsive ölçeklenecek.
+- [ ] **Puan Durumu Tablosu (Leaderboard/Bottom Sheet):** Oyun içi puan durumu gösterildiği zaman oyuncu sayısı çoksa, o liste de responsive olarak lobideki mantıkla sıkışmadan çalışacak.
 
-### Borsa (Ekonomi) Modu Özel Mantık ve Fixler
-- [x] **Puan Dağılımı:** Maç sonu +5 hardcoded puan kaldırılacak; ilk 3 oyuncuya sırasıyla `200, 100, 50`, geri kalanlara `20'şer` puan verilme sistemi yazılacak.
-- [x] **Dinamik Görev Puanları:** Görev tamamlanınca verilen "10" hardcoded puan yerine, "Katsayı x Temel Puan" (örn: 12 puanlık oyunda 3x çarpan = 36) dinamik hesaplaması sisteme entegre edilecek.
-- [x] Tahmini kazanç metinlerine gidecek veriler dinamik hesaplanıp Ege'nin UI'ına sunulacak. Bütün Borsa modunun toplam puan hesaplaması ve senkron kaymaları düzeltilecek.
-- [x] **Tur Arızaları:** Borsa modunda bazı durumlarda turun ilerlememesi/hiç geçmemesi ve "oyunun bitmeme sorunu" kontrol edilip çözülecek (Turn-Skip bug'ı).
-- [x] Oyundan çıkıldığında "Odadan Ayrıldınız" tarzında oyuna uygun bir "toaster/snackbar" tetiklenecek.
-- [x] Kategori seçiminden sonra arkada zorluk seviyesi ekranının kısa süreli görünmesi/atlaması (UI state sıçraması / routing sorunu) engellenecek.
-- [x] **Borsa/Ekonomi Mantığı İçin Test Yazımı:** Yukarıdaki puan/tur hesaplamalarının bir daha bozulmaması adına `Mantık hesaplama bölümü için Test Scripti` yazılacak.
+### 2. Görsel / UI Düzeltmeleri
+- [ ] **Doğa Çerçevesi Dengesi:** "Doğa" çerçevesi tasarımı diğerlerinden büyük durduğu için biraz küçültülerek diğer çerçevelerle görsel denge yakalanacak.
+- [ ] **İçerik Ekleme Sekmesi:** İçerik ekleme sayfasında (CustomDeck) "İptal" ve "İçerik Ekle" butonları arasına boşluk (spacing) eklenecek.
+- [ ] **Kategori İsimleri Formatı:** Senaryo seçimindeki kategori adları "BILGI" şeklinde düz İngilizce ve büyük harf çıkıyor. Türkçe kuralına uygun (sadece ilk harf büyük "Bilgi") şekilde gösterilecek.
+- [ ] **Profil Fotoğrafı Konumu:** Sıra bize geldiğinde profil fotoğrafı aşırı yukarıda ve yapışık duruyor. Yeri hafifçe aşağıya (margin/padding) alınacak, üst limit korunacak.
 
-### Yeni Sistem Entegrasyonları (Altyapı)
-- [ ] **Achievement Sistemi:** Profil ekranında görünecek "Başarımlar (Achievements)" kontrol mekanizması ve database/state altyapısı kurulacak.
-- [ ] **Auth:** +18 içerik girişleri için Google Authentication yaş/izin check işlemi eklenecek.
-- [ ] **Localization (Yerelleştirme):** Oyuna çoklu dil desteği kazandıracak altyapı (örn. `easy_localization` vb.) entegre edilecek. (Metinleri daha sonra Ege doldurabilecek).
-- [ ] **Ses (Sound) Sistemi:** Yeni ses efektlerini (arka plan müziği, tık efektleri, başarı sesleri vb.) tetikleyecek "AudioPlayer" servis/altyapısı kurulacak.
+---
+
+## ⚙️ EGE (Backend, Oyun Döngüsü, State Management)
+
+### 1. Oyun Mantığı ve Döngüsü Bugları
+- [ ] **Sıra Atlamama Sorunu (Borsa 4 Kişi):** Borsa modunda 4 kişilik oyunda aynı oyuncuya tekrar sıra geliyor. *(Neden: Görevi reddedince `passTask` veya sıradaki oyuncu algoritması [nextTurn] takılı kalıp pointer'ı aynı kişide bırakıyor olabilir.)*
+- [ ] **Görev Reddedilince Ekonomi Etkisi:** Görev seçilmese de ekonomi puanı düşüyor/etkileniyor. Ayrıca Fiziksel görev 6 puan kalmasına rağmen kilitli görünüyor. *(Neden: Sadece 0 ve altına düşünce yetersiz bakiye kilidi girmeli. Timeout veya reddetme cezaları yanlış fonksiyonda uygulanıyor olabilir.)*
+- [ ] **-50 Katlanarak Artma Hatası:** Üst üste görev yapılmadığında eksi puanlar -50, -100, -150 diye kümülatif gidiyor. Hep -50 olarak kalmalı. *(Neden: Penalty değeri önceki cezaya toplanarak `score -= (base + currentPenalty)` yazılmış olabilir.)*
+- [ ] **Senkronizasyon / Oyunda Kalma Bug'ı (Kritik):** 4 kişilik oyunda (hem borsa hem çark) oyun sonunda sonuç ekranını (GameOver) sadece kurucu (Host) görüyor. Diğerleri yükleniyorda/voting'de/performing'de asılı kalıyor. *(Neden: Host oyunu bitirip `GameStatus.finished` gönderdiğinde clone state alan dinleyiciler (stream) routing yapamıyor. Voting/RoundResult state kontrollerindeki stream logic düzeltilmeli.)*
+- [ ] **Puanlama Matematiği Eksikliği (Kritik):** 4 kişilik oylamada (2 kararsız, 1 beğenmedim) -> *Bu normalde eksi puandır.* Ancak 2 kararsız 1 beğendim olunca oylama x3 katsayıyla 60 puan veriyor. *(Neden: Bonus matematiği yanlış dengelenmiş. Temel Puan * Çarpan mekanizması izleyici oylarıyla doğru ağırlıkta hesaplanmıyor.)*
+
+### 2. Admin ve Bildirim Entegrasyonları
+- [ ] **Yönetici Paneli Sınırları:** Yönetici paneli backend tarafında kontrol edilecek. Soru ekleme/çıkarma işlevleri durdurulup sadece temel panel özellikleri netleştirilecek.
+- [ ] **Odadan Ayrılma Bildirimi:** Partiden (odadan) biri çıkınca içerideki diğer kullanıcılara "X kişisi partiden ayrıldı" bildirimi (toast) gidecek. *(RoomStream listesi üzerinden diff alınarak yapılacak).*
+- [ ] **Sayfa Geçişlerinde Titreme (State Glitch):** Sayfa geçişlerinde eski sayfanın değişikliği anlık görüldükten sonra sayfa değişiyor. *(Neden: GoRouter sayfa iterken arkadaki state yenilenmesine render motoru tepki veriyor. Loader aralığı uzatılabilir).*
+- [ ] **Sahne Adı Hatası (Login):** Giriş yaparken "Lütfen sahne adınızı belirleyin" toast hatası yersiz tetikleniyorsa giderilecek.
+
+### 3. Yeni Özellik ve Check'ler
+- [ ] **Gelişmiş İstatistikler:** Kullanıcı modeline Toplam Oyun Sayısı, Kazanılan Şampiyonluk, En Yüksek Puan gibi rekor verileri (DB) eklenecek ve İstatistikler panelinde gösterilecek.
+- [ ] **Ayarlar Paneli İşlevselliği:** Açılan menüdeki ayarlar panelinin iç dinamikleri eklenecek.
+- [ ] **Rütbe (Rank) Sistemi Kontrolü:** "Çırak" rütbesi neye göre belirleniyor, diğer eşikler neler? Rank mekanizması kontrol edilip düzene oturtulacak.
+- [ ] **Özel Senaryo Testi:** Şuan mağazada "Yakında" olarak kilitli olan özel senaryo db yapılarının backend tarafında doğru kilitlenip kilitlenmediği test edilecek.
