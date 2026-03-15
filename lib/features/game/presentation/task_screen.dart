@@ -247,49 +247,55 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           ),
           body: LayoutBuilder(
             builder: (context, constraints) {
-              return SafeArea(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: task != null
-                            ? _buildTaskView(
-                                game,
-                                game.passStreak,
-                                task,
-                                roomAsync.value?.visibility ??
-                                    RoomVisibility.open,
-                                isMyTurn,
-                                playerName,
-                              )
-                            : (roomAsync.value?.mode == GameMode.economy
-                                  ? _buildEconomyRedirect(
-                                      game: game,
-                                      categories:
-                                          roomAsync.value?.categories ??
-                                          const [],
-                                      isMyTurn: isMyTurn,
-                                      myUserId: user?.uid,
-                                    )
-                                  : _buildWheelView(
+              return SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: ResponsiveWrapper(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              child: task != null
+                                  ? _buildTaskView(
+                                      game,
+                                      game.passStreak,
+                                      task,
+                                      roomAsync.value?.visibility ?? RoomVisibility.open,
                                       isMyTurn,
                                       playerName,
-                                      currentPlayer,
-                                      roomAsync.value?.categories ?? [],
-                                    )),
+                                    )
+                                  : (roomAsync.value?.mode == GameMode.economy
+                                        ? _buildEconomyRedirect(
+                                            game: game,
+                                            categories: roomAsync.value?.categories ?? const [],
+                                            isMyTurn: isMyTurn,
+                                            myUserId: user?.uid,
+                                          )
+                                        : _buildWheelView(
+                                            isMyTurn,
+                                            playerName,
+                                            currentPlayer,
+                                            roomAsync.value?.categories ?? [],
+                                          )),
+                            ),
+                          ),
+                          if (players.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 24, top: 8),
+                              child: SpectatorStrip(
+                                players: players,
+                                currentPlayerId: game.currentPlayerId,
+                                myPlayerId: user?.uid,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                    if (players.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12, top: 4),
-                        child: SpectatorStrip(
-                          players: players,
-                          currentPlayerId: game.currentPlayerId,
-                          myPlayerId: user?.uid,
-                        ),
-                      ),
-                  ],
+                  ),
                 ),
               );
             },
@@ -306,6 +312,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
       ),
     );
   }
+
 
   Widget _buildTopTitleCard({
     required String badge,
@@ -369,7 +376,9 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             const SizedBox(height: 10),
             Text(
               subtitle,
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.white54,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -389,31 +398,29 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         const SizedBox(height: 24),
         if (currentPlayer != null)
           PlayerSpotlight(player: currentPlayer, isMe: isMyTurn),
-        const SizedBox(height: 16),
+        const Spacer(),
         _buildTopTitleCard(
           badge: 'PARTİ BAŞLIYOR',
           title: '🎡 Görevini Belirle',
           subtitle: 'Sıran gelmeden önce görevini seç...',
         ),
-        const SizedBox(height: 24),
-        Expanded(
-          child: SpinWheel(
-            spinningTarget: ref
-                .watch(watchGameProvider(widget.gameId))
-                .value
-                ?.spinningTarget,
-            canSpin: isMyTurn,
-            playerName: playerName,
-            categories: categories,
-            onSpinRequest: () {
-              if (categories.isEmpty) return;
-              final randomCat = categories[_random.nextInt(categories.length)];
-              ref
-                  .read(gameControllerProvider.notifier)
-                  .setSpinningTarget(gameId: widget.gameId, target: randomCat);
-            },
-            onSpinComplete: _onWheelResult,
-          ),
+        const SizedBox(height: 44),
+        SpinWheel(
+          spinningTarget: ref
+              .watch(watchGameProvider(widget.gameId))
+              .value
+              ?.spinningTarget,
+          canSpin: isMyTurn,
+          playerName: playerName,
+          categories: categories,
+          onSpinRequest: () {
+            if (categories.isEmpty) return;
+            final randomCat = categories[_random.nextInt(categories.length)];
+            ref
+                .read(gameControllerProvider.notifier)
+                .setSpinningTarget(gameId: widget.gameId, target: randomCat);
+          },
+          onSpinComplete: _onWheelResult,
         ),
         const SizedBox(height: 16),
       ],
@@ -444,9 +451,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           if (!mounted || _isAutoPickingSingleCategory) return;
           setState(() => _isAutoPickingSingleCategory = true);
           try {
-            await ref
-                .read(gameControllerProvider.notifier)
-                .pickCategoryEconomy(
+            await ref.read(gameControllerProvider.notifier).pickCategoryEconomy(
                   gameId: widget.gameId,
                   playerId: myUserId,
                   category: selectedCategory,
@@ -485,159 +490,133 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     final isClosed = visibility == RoomVisibility.closed && !_contentRevealed;
     return Column(
       children: [
-        const SizedBox(height: 8),
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: AppColors.accent.withValues(alpha: 0.15),
+        const Spacer(),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.accent.withValues(alpha: 0.15)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(alpha: 0.1),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
-                  ),
-                  child: Text(
-                    'PARTİ BAŞLIYOR',
-                    style: AppTextStyles.titleLarge.copyWith(
-                      color: AppColors.accent,
-                      letterSpacing: 2,
-                      fontWeight: FontWeight.w900,
-                    ),
-                    textAlign: TextAlign.center,
+            ],
+          ),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withValues(alpha: 0.1),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: AppColors.accentGradient.begin,
-                              end: AppColors.accentGradient.end,
-                              colors: AppColors.accentGradient.colors
-                                  .map((c) => c.withValues(alpha: 0.15))
-                                  .toList(),
-                            ),
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(
-                              color: AppColors.accent.withValues(alpha: 0.4),
-                            ),
-                          ),
-                          child: Text(
-                            'Kategori: ${task.category} • ${task.difficulty == 'easy'
-                                ? 'KOLAY'
-                                : task.difficulty == 'medium'
-                                ? 'ORTA'
-                                : 'ZOR'}',
-                            style: AppTextStyles.labelSmall.copyWith(
-                              color: AppColors.accent,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTopTitleCard(
-                          badge: isClosed ? 'GİZLİ TUR' : 'GÖREV',
-                          title: isClosed
-                              ? 'Sıradaki Görev Gizli'
-                              : (isMyTurn
-                                    ? 'İçeriğin Burada:'
-                                    : '${playerName} içeriği:'),
-                        ),
-                        const SizedBox(height: 16),
-                        Expanded(
-                          child: ScaleTransition(
-                            scale: _cardAnimation,
-                            child: SingleChildScrollView(
-                              physics: const BouncingScrollPhysics(),
-                              child: GameCard(
-                                category: task.category,
-                                content: isClosed
-                                    ? 'Mevcut görevi görmek için kartı aç...'
-                                    : task.content,
-                                points:
-                                    (game.mode == GameMode.economy
-                                        ? (game.categoryMarketValues[task
-                                                  .category] ??
-                                              10)
-                                        : 10) *
-                                    task.multiplier,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        if (isClosed && isMyTurn)
-                          StageButton(
-                            label: 'Görevi Aç',
-                            backgroundColor: AppColors.accent,
-                            textColor: Colors.black,
-                            borderColor: AppColors.accent,
-                            onPressed: () =>
-                                setState(() => _contentRevealed = true),
-                          )
-                        else if (isMyTurn) ...[
-                          StageButton(
-                            label: 'Görevi Başlat',
-                            backgroundColor: AppColors.primary,
-                            textColor: Colors.white,
-                            borderColor: AppColors.accent,
-                            onPressed: _acceptTask,
-                            isLoading: _isAccepting,
-                          ),
-                          const SizedBox(height: 8),
-                          _AnimatedPassButton(
-                            passStreak: passStreak,
-                            isPassing: _isPassing,
-                            onPass: _passTask,
-                          ),
-                        ] else
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(
-                              '$playerName içeriği okuyor...',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: Colors.white30,
-                                fontStyle: FontStyle.italic,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                      ],
-                    ),
+                child: Text(
+                  'PARTİ BAŞLIYOR',
+                  style: AppTextStyles.titleLarge.copyWith(
+                    color: AppColors.accent,
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.w900,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: AppColors.accentGradient.begin,
+                          end: AppColors.accentGradient.end,
+                          colors: AppColors.accentGradient.colors
+                              .map((c) => c.withValues(alpha: 0.15))
+                              .toList(),
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
+                      ),
+                      child: Text(
+                        'Kategori: ${task.category} • ${task.difficulty == 'easy'
+                            ? 'KOLAY'
+                            : task.difficulty == 'medium'
+                            ? 'ORTA'
+                            : 'ZOR'}',
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: AppColors.accent,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 26),
+                    _buildTopTitleCard(
+                      badge: isClosed ? 'GİZLİ TUR' : 'GÖREV',
+                      title: isClosed
+                          ? 'Sıradaki Görev Gizli'
+                          : (isMyTurn ? 'İçeriğin Burada:' : '${playerName} içeriği:'),
+                    ),
+                    const SizedBox(height: 26),
+                    ScaleTransition(
+                      scale: _cardAnimation,
+                      child: GameCard(
+                        category: task.category,
+                        content: isClosed
+                            ? 'Mevcut görevi görmek için kartı aç...'
+                            : task.content,
+                        points: (game.mode == GameMode.economy 
+                                  ? (game.categoryMarketValues[task.category] ?? 10) 
+                                  : 10) * task.multiplier,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    if (isClosed && isMyTurn)
+                      StageButton(
+                        label: 'Görevi Aç',
+                        backgroundColor: AppColors.accent,
+                        textColor: Colors.black,
+                        borderColor: AppColors.accent,
+                        onPressed: () => setState(() => _contentRevealed = true),
+                      )
+                    else if (isMyTurn) ...[
+                      StageButton(
+                        label: 'Görevi Başlat',
+                        backgroundColor: AppColors.primary,
+                        textColor: Colors.white,
+                        borderColor: AppColors.accent,
+                        onPressed: _acceptTask,
+                        isLoading: _isAccepting,
+                      ),
+                      const SizedBox(height: 12),
+                      _AnimatedPassButton(
+                        passStreak: passStreak,
+                        isPassing: _isPassing,
+                        onPass: _passTask,
+                      ),
+                    ] else
+                      Text(
+                        '$playerName içeriği okuyor...',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: Colors.white30,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
+
       ],
     );
   }
@@ -668,9 +647,7 @@ class _AnimatedPassButtonState extends State<_AnimatedPassButton>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
+        vsync: this, duration: const Duration(milliseconds: 300));
     _shakeAnimation = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0.0, end: 8.0), weight: 1),
       TweenSequenceItem(tween: Tween(begin: 8.0, end: -8.0), weight: 2),
@@ -687,7 +664,7 @@ class _AnimatedPassButtonState extends State<_AnimatedPassButton>
 
   void _handlePress() {
     if (widget.isPassing) return;
-
+    
     if (!_isWarningSelected) {
       HapticFeedback.mediumImpact();
       setState(() => _isWarningSelected = true);
@@ -712,20 +689,14 @@ class _AnimatedPassButtonState extends State<_AnimatedPassButton>
       child: OutlinedButton(
         onPressed: widget.isPassing ? null : _handlePress,
         style: OutlinedButton.styleFrom(
-          foregroundColor: _isWarningSelected
-              ? Colors.redAccent
-              : Colors.red.withValues(alpha: 0.7),
+          foregroundColor: _isWarningSelected ? Colors.redAccent : Colors.red.withValues(alpha: 0.7),
           side: BorderSide(
             color: _isWarningSelected ? Colors.redAccent : Colors.white24,
             width: _isWarningSelected ? 2 : 1,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          backgroundColor: _isWarningSelected
-              ? Colors.red.withValues(alpha: 0.1)
-              : Colors.transparent,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          backgroundColor: _isWarningSelected ? Colors.red.withValues(alpha: 0.1) : Colors.transparent,
         ),
         child: Text(
           _isWarningSelected
@@ -741,3 +712,4 @@ class _AnimatedPassButtonState extends State<_AnimatedPassButton>
     );
   }
 }
+
