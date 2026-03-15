@@ -42,7 +42,7 @@ void main() {
 
       await fakeFirestore.collection('games').doc(gameId).set(initialData);
 
-      // Execute pick (10 -> 8, another gains 2)
+      // Execute pick (10 -> 8 decay; no rival transfer)
       await gameSource.pickCategoryEconomy(
         gameId: gameId,
         playerId: playerId,
@@ -51,13 +51,9 @@ void main() {
 
       final gameSnap = await fakeFirestore.collection('games').doc(gameId).get();
       final marketValues = Map<String, int>.from(gameSnap.data()?['categoryMarketValues']);
-      
-      // Seesaw check: Dijital drops by 2 (10 -> 8). Another must gain 2 (10 -> 12).
       expect(marketValues[category], 8);
-      
       final others = marketValues.entries.where((e) => e.key != category).map((e) => e.value).toList();
-      expect(others, contains(12));
-      expect(others, contains(10));
+      expect(others, everyElement(10));
       
       // Turn check: currentPlayerId should STAY 'p1'
       expect(gameSnap.data()?['currentPlayerId'], playerId);
@@ -152,6 +148,50 @@ void main() {
       final pSnap = await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc(playerId).get();
       expect(pSnap.data()?['score'], 150);
     });
+
+    test('setRoundResult only writes results (finish is done by Cloud Function)', () async {
+      const gameId = 'gameFinish';
+      const roomId = 'roomFinish';
+
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': 'p1',
+        'turnOrder': ['p1', 'p2'],
+        'status': 'playing',
+      });
+      await fakeFirestore
+          .collection('rooms')
+          .doc(roomId)
+          .collection('players')
+          .doc('p1')
+          .set({'score': 100});
+      await fakeFirestore
+          .collection('rooms')
+          .doc(roomId)
+          .collection('players')
+          .doc('p2')
+          .set({'score': 50});
+
+      await gameSource.setRoundResult(
+        gameId: gameId,
+        roomId: roomId,
+        playerId: 'p1',
+        score: 25,
+        audienceScore: 10,
+        multiplier: 2,
+      );
+
+      final gSnap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(gSnap.data()?['status'], 'results');
+
+      final pSnap = await fakeFirestore
+          .collection('rooms')
+          .doc(roomId)
+          .collection('players')
+          .doc('p1')
+          .get();
+      expect(pSnap.data()?['score'], 125);
+    });
   });
 
   group('FirebaseGameSource - Task Assignment', () {
@@ -233,12 +273,13 @@ void main() {
   });
 
   group('FirebaseGameSource - Turn & Round Management', () {
-    test('nextTurn skips offline players and increments round', () async {
+    test('nextTurn sırayla +1 ilerler, tur bitince round artar', () async {
       const gameId = 'game123';
       const roomId = 'room1';
-      
+
       await fakeFirestore.collection('rooms').doc(roomId).set({'endConditionType': 'rounds', 'endConditionValue': 5});
       await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc('p1').set({'name': 'P1'});
+      await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc('p2').set({'name': 'P2'});
       await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc('p3').set({'name': 'P3'});
 
       await fakeFirestore.collection('games').doc(gameId).set({
@@ -247,10 +288,15 @@ void main() {
         'turnOrder': ['p1', 'p2', 'p3'],
         'currentRound': 1,
         'status': 'playing',
+        'categoryPickOrder': [],
       });
 
       await gameSource.nextTurn(gameId);
       var snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['currentPlayerId'], 'p2');
+
+      await gameSource.nextTurn(gameId);
+      snap = await fakeFirestore.collection('games').doc(gameId).get();
       expect(snap.data()?['currentPlayerId'], 'p3');
 
       await gameSource.nextTurn(gameId);
@@ -296,52 +342,128 @@ void main() {
 
       await gameSource.nextTurn(gameId);
       final snap = await fakeFirestore.collection('games').doc(gameId).get();
-      expect(snap.data()?['status'], 'finished');
-
-      final u1 = await fakeFirestore.collection('users').doc('p1').get();
-      expect(u1.data()?['walletPoints'], 200);
-
-      final u2 = await fakeFirestore.collection('users').doc('p2').get();
-      expect(u2.data()?['walletPoints'], 100);
-
-      // p3 has negative score — no reward
-      final u3 = await fakeFirestore.collection('users').doc('p3').get();
-      expect(u3.exists, false);
+      expect(snap.data()?['status'], 'results');
     });
 
-    test('nextTurn strict no-consecutive uygular (2+ aktif oyuncuda A->A olmaz)', () async {
-      const gameId = 'gameNoConsecutive';
-      const roomId = 'roomNoConsecutive';
+    test('nextTurn sırayla +1 döngüsel ilerler (Borsa ile aynı mantık)', () async {
+      const gameId = 'gameSequential';
+      const roomId = 'roomSequential';
 
       await fakeFirestore.collection('rooms').doc(roomId).set({
         'endConditionType': 'rounds',
         'endConditionValue': 10,
       });
-      await fakeFirestore
-          .collection('rooms')
-          .doc(roomId)
-          .collection('players')
-          .doc('p1')
-          .set({'name': 'P1'});
-      await fakeFirestore
-          .collection('rooms')
-          .doc(roomId)
-          .collection('players')
-          .doc('p2')
-          .set({'name': 'P2'});
+      await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc('p1').set({'name': 'P1'});
+      await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc('p2').set({'name': 'P2'});
+      await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc('p3').set({'name': 'P3'});
 
-      // Bilerek art arda p1 içeren sıra (kirli veri senaryosu)
       await fakeFirestore.collection('games').doc(gameId).set({
         'roomId': roomId,
         'currentPlayerId': 'p1',
-        'turnOrder': ['p1', 'p1', 'p2'],
+        'turnOrder': ['p1', 'p2', 'p3'],
         'currentRound': 1,
         'status': 'playing',
+        'categoryPickOrder': [],
       });
 
       await gameSource.nextTurn(gameId);
-      final snap = await fakeFirestore.collection('games').doc(gameId).get();
+      var snap = await fakeFirestore.collection('games').doc(gameId).get();
       expect(snap.data()?['currentPlayerId'], 'p2');
+
+      await gameSource.nextTurn(gameId);
+      snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['currentPlayerId'], 'p3');
+
+      await gameSource.nextTurn(gameId);
+      snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['currentPlayerId'], 'p1');
+      expect(snap.data()?['currentRound'], 2);
+    });
+  });
+
+  group('FirebaseGameSource - removePlayerFromGame', () {
+    test('çıkan oyuncuyu turnOrder ve categoryPickOrder dan kaldırır', () async {
+      const gameId = 'gameLeave';
+      const roomId = 'roomLeave';
+
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': 'p1',
+        'turnOrder': ['p1', 'p2', 'p3'],
+        'categoryPickOrder': ['p1', 'p2', 'p3'],
+        'currentPickIndex': 0,
+        'status': 'playing',
+      });
+
+      await gameSource.removePlayerFromGame(gameId: gameId, playerId: 'p2');
+
+      final snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['turnOrder'], ['p1', 'p3']);
+      expect(snap.data()?['categoryPickOrder'], ['p1', 'p3']);
+      expect(snap.data()?['currentPlayerId'], 'p1');
+      expect(snap.data()?['currentPickIndex'], 0);
+    });
+
+    test('sıradaki oyuncu çıkarsa currentPlayerId sonrakine geçer', () async {
+      const gameId = 'gameLeaveCurrent';
+      const roomId = 'roomLeaveCurrent';
+
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': 'p2',
+        'turnOrder': ['p1', 'p2', 'p3'],
+        'categoryPickOrder': ['p1', 'p2', 'p3'],
+        'currentPickIndex': 1,
+        'status': 'playing',
+      });
+
+      await gameSource.removePlayerFromGame(gameId: gameId, playerId: 'p2');
+
+      final snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['turnOrder'], ['p1', 'p3']);
+      expect(snap.data()?['categoryPickOrder'], ['p1', 'p3']);
+      expect(snap.data()?['currentPlayerId'], 'p3');
+      expect(snap.data()?['currentPickIndex'], 1); // p3 yeni listede index 1
+    });
+
+    test('son kalan oyuncu çıkınca oyun biter', () async {
+      const gameId = 'gameLeaveLast';
+      const roomId = 'roomLeaveLast';
+
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': 'p1',
+        'turnOrder': ['p1', 'p2'],
+        'categoryPickOrder': [],
+        'status': 'playing',
+      });
+
+      await gameSource.removePlayerFromGame(gameId: gameId, playerId: 'p2');
+
+      var snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['turnOrder'], ['p1']);
+      expect(snap.data()?['status'], 'playing');
+
+      await gameSource.removePlayerFromGame(gameId: gameId, playerId: 'p1');
+
+      snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['status'], 'finished');
+    });
+
+    test('oyun playing değilse güncelleme yapmaz', () async {
+      const gameId = 'gameLeaveFinished';
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': 'r1',
+        'currentPlayerId': 'p1',
+        'turnOrder': ['p1', 'p2'],
+        'status': 'finished',
+      });
+
+      await gameSource.removePlayerFromGame(gameId: gameId, playerId: 'p2');
+
+      final snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['turnOrder'], ['p1', 'p2']);
+      expect(snap.data()?['status'], 'finished');
     });
   });
 
@@ -352,15 +474,86 @@ void main() {
       const playerId = 'p1';
       
       await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc(playerId).set({'score': 100, 'passStreak': 1});
-      await fakeFirestore.collection('games').doc(gameId).set({'roomId': roomId});
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': playerId,
+        'categoryPickOrder': [],
+      });
 
       await gameSource.passTask(gameId: gameId, roomId: roomId, playerId: playerId, basePenalty: 50);
 
       final pSnap = await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc(playerId).get();
-      // Streak 1 -> 2. Penalty for streak 2 is usually base * 2? 
-      // AppHelpers.calculatePenalty(50, 2) -> 100 probably.
       expect(pSnap.data()?['passStreak'], 2);
-      expect(pSnap.data()?['score'], lessThan(100));
+      expect(pSnap.data()?['score'], 50); // 100 - 50 sabit ceza (katlanmaz)
+    });
+
+    test('passTask ekonomi modunda 4 oyunculu sıra ilerler (aynı oyuncuya tekrar düşmez)', () async {
+      const gameId = 'economy4';
+      const roomId = 'room4';
+      const pickOrder = ['p1', 'p2', 'p3', 'p4'];
+
+      for (final pid in pickOrder) {
+        await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc(pid).set({'name': pid, 'score': 0, 'passStreak': 0});
+      }
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': 'p1',
+        'currentPickIndex': 0,
+        'categoryPickOrder': pickOrder,
+        'status': 'playing',
+        'currentRound': 1,
+      });
+
+      await gameSource.passTask(gameId: gameId, roomId: roomId, playerId: 'p1', basePenalty: 50);
+      var gameSnap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(gameSnap.data()?['currentPlayerId'], 'p2');
+      expect(gameSnap.data()?['currentPickIndex'], 1);
+
+      await fakeFirestore.collection('games').doc(gameId).update({'status': 'playing'});
+      await gameSource.passTask(gameId: gameId, roomId: roomId, playerId: 'p2', basePenalty: 50);
+      gameSnap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(gameSnap.data()?['currentPlayerId'], 'p3');
+      expect(gameSnap.data()?['currentPickIndex'], 2);
+
+      await fakeFirestore.collection('games').doc(gameId).update({'status': 'playing'});
+      await gameSource.passTask(gameId: gameId, roomId: roomId, playerId: 'p3', basePenalty: 50);
+      gameSnap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(gameSnap.data()?['currentPlayerId'], 'p4');
+      expect(gameSnap.data()?['currentPickIndex'], 3);
+
+      await fakeFirestore.collection('games').doc(gameId).update({'status': 'playing'});
+      await gameSource.passTask(gameId: gameId, roomId: roomId, playerId: 'p4', basePenalty: 50);
+      gameSnap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(gameSnap.data()?['currentPlayerId'], 'p1');
+      expect(gameSnap.data()?['currentPickIndex'], 0);
+      expect(gameSnap.data()?['currentRound'], 2);
+    });
+
+    test('passTask ardışık paslarda her seferinde sabit -50 (katlanarak artmaz)', () async {
+      const gameId = 'penalty50';
+      const roomId = 'room1';
+      const playerId = 'p1';
+      await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc(playerId).set({'score': 200, 'passStreak': 0});
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': playerId,
+        'categoryPickOrder': [],
+      });
+
+      await gameSource.passTask(gameId: gameId, roomId: roomId, playerId: playerId, basePenalty: 50);
+      var pSnap = await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc(playerId).get();
+      expect(pSnap.data()?['score'], 150);
+      expect(pSnap.data()?['passStreak'], 1);
+
+      await gameSource.passTask(gameId: gameId, roomId: roomId, playerId: playerId, basePenalty: 50);
+      pSnap = await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc(playerId).get();
+      expect(pSnap.data()?['score'], 100);
+      expect(pSnap.data()?['passStreak'], 2);
+
+      await gameSource.passTask(gameId: gameId, roomId: roomId, playerId: playerId, basePenalty: 50);
+      pSnap = await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc(playerId).get();
+      expect(pSnap.data()?['score'], 50);
+      expect(pSnap.data()?['passStreak'], 3);
     });
 
     test('updatePlayerScore increments score', () async {
@@ -418,7 +611,7 @@ void main() {
       expect(result.audienceScore, 15);
     });
 
-    test('calculateVoteResult neutral dinamik puan hesaplar (baseScore*mult~/2)', () async {
+    test('calculateVoteResult çoğunluk nötr ise tur puanının yarısı (oyuncu sayısı etkilemez)', () async {
       const gameId = 'neutralDynamic';
       await fakeFirestore.collection('games').doc(gameId).set({
         'mode': 'economy',
@@ -432,9 +625,7 @@ void main() {
 
       final voteSource = _FirebaseVoteSourceForTest(fakeFirestore);
       final result = await voteSource.calculateVoteResult(gameId, taskMultiplier: 3);
-      
-      // neutral = 20 * 3 = 60
-      expect(result.totalScore, 60);
+      expect(result.totalScore, 30);
       expect(result.audienceScore, 20);
     });
 
@@ -452,9 +643,42 @@ void main() {
 
       final voteSource = _FirebaseVoteSourceForTest(fakeFirestore);
       final result = await voteSource.calculateVoteResult(gameId, taskMultiplier: 2);
-      
       expect(result.totalScore, 0);
-      expect(result.audienceScore, 0);
+      expect(result.audienceScore, 10);
+    });
+
+    test('task.md puanlama: 2 kararsız 1 beğendim → çoğunluk nötr, 30/2=15 puan', () async {
+      const gameId = 'twoNeutralOneLike';
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'mode': 'classic',
+        'selectedCategory': null,
+        'categoryMarketValues': {},
+      });
+      await fakeFirestore.collection('games').doc(gameId).collection('votes').doc('v1').set({'voterId': 'v1', 'value': 'neutral'});
+      await fakeFirestore.collection('games').doc(gameId).collection('votes').doc('v2').set({'voterId': 'v2', 'value': 'neutral'});
+      await fakeFirestore.collection('games').doc(gameId).collection('votes').doc('v3').set({'voterId': 'v3', 'value': 'like'});
+
+      final voteSource = _FirebaseVoteSourceForTest(fakeFirestore);
+      final result = await voteSource.calculateVoteResult(gameId, taskMultiplier: 3);
+      expect(result.totalScore, 15);
+      expect(result.audienceScore, 10);
+    });
+
+    test('task.md puanlama: 2 kararsız 1 beğenmedim → çoğunluk nötr, 30/2=15 puan', () async {
+      const gameId = 'twoNeutralOneDislike';
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'mode': 'classic',
+        'selectedCategory': null,
+        'categoryMarketValues': {},
+      });
+      await fakeFirestore.collection('games').doc(gameId).collection('votes').doc('v1').set({'voterId': 'v1', 'value': 'neutral'});
+      await fakeFirestore.collection('games').doc(gameId).collection('votes').doc('v2').set({'voterId': 'v2', 'value': 'neutral'});
+      await fakeFirestore.collection('games').doc(gameId).collection('votes').doc('v3').set({'voterId': 'v3', 'value': 'dislike'});
+
+      final voteSource = _FirebaseVoteSourceForTest(fakeFirestore);
+      final result = await voteSource.calculateVoteResult(gameId, taskMultiplier: 3);
+      expect(result.totalScore, 15);
+      expect(result.audienceScore, 10);
     });
   });
 
@@ -491,31 +715,29 @@ class _FirebaseVoteSourceForTest {
 
   Future<VoteResult> calculateVoteResult(String gameId, {int taskMultiplier = 1}) async {
     final gameSnap = await _firestore.collection('games').doc(gameId).get();
-    final gameData = gameSnap.data()!;
+    final gameData = Map<String, dynamic>.from(gameSnap.data()!);
     final mode = gameData['mode'] as String?;
     final selectedCategory = gameData['selectedCategory'] as String?;
-    final marketValues = gameData['categoryMarketValues'] as Map<String, dynamic>? ?? {};
+    final raw = gameData['categoryMarketValues'];
+    final marketValues = raw != null ? Map<String, dynamic>.from(raw as Map) : <String, dynamic>{};
+    final hotCategory = gameData['hotCategory'] as String?;
 
     int baseScore = 10;
     if (mode == 'economy' && selectedCategory != null) {
-      baseScore = marketValues[selectedCategory] as int? ?? 10;
+      baseScore = selectedCategory == hotCategory ? 12 : (marketValues[selectedCategory] as int? ?? 10);
     }
 
     final votesSnap = await _firestore.collection('games').doc(gameId).collection('votes').get();
-    int total = 0;
-    int audience = 0;
+    int likes = 0, neutrals = 0, dislikes = 0;
     for (var doc in votesSnap.docs) {
       final val = doc.data()['value'] as String?;
-      if (val == 'like') {
-        total += (baseScore * taskMultiplier);
-        audience += baseScore;
-      } else if (val == 'neutral') {
-        total += (baseScore * taskMultiplier);
-        audience += baseScore;
-      } else if (val == 'dislike') {
-        total += 0;
-      }
+      if (val == 'like') likes++;
+      else if (val == 'neutral') neutrals++;
+      else if (val == 'dislike') dislikes++;
     }
-    return VoteResult(totalScore: total, audienceScore: audience);
+    final fullRoundScore = baseScore * taskMultiplier;
+    final mood = likes >= neutrals && likes >= dislikes ? 'like' : (dislikes >= likes && dislikes >= neutrals ? 'dislike' : 'neutral');
+    final total = mood == 'like' ? fullRoundScore : (mood == 'neutral' ? fullRoundScore ~/ 2 : 0);
+    return VoteResult(totalScore: total, audienceScore: baseScore);
   }
 }

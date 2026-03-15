@@ -48,7 +48,7 @@ final class RoomRepositoryProvider
   }
 }
 
-String _$roomRepositoryHash() => r'accb57bd0a312cebbef237fe0912153ff287eb18';
+String _$roomRepositoryHash() => r'89fc76cc7beefdbeb1991d35850e3d7f3efd53b2';
 
 @ProviderFor(watchRoom)
 final watchRoomProvider = WatchRoomFamily._();
@@ -226,7 +226,7 @@ final class RoomControllerProvider
   RoomController create() => RoomController();
 }
 
-String _$roomControllerHash() => r'daf0f32c448e5e2749a581ac19d07d534246af1b';
+String _$roomControllerHash() => r'36d4aeb742c08e0f5d0b201bf33c1a3da9ef842b';
 
 abstract class _$RoomController extends $AsyncNotifier<String?> {
   FutureOr<String?> build();

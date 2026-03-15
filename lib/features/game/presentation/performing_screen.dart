@@ -56,9 +56,27 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
       if (!mounted) return;
       final game = next.value;
       if (game == null) return;
+      final prevStatus = previous?.value?.status;
       final user = ref.read(currentUserProvider);
       final isMyTurn = game.currentPlayerId == user?.uid;
 
+      if (game.status == GameStatus.results && prevStatus != GameStatus.results) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            context.go(
+              '/round-result',
+              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+            );
+          }
+        });
+        return;
+      }
+      if (game.status == GameStatus.finished && prevStatus != GameStatus.finished) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) context.go('/game-over', extra: widget.roomCode);
+        });
+        return;
+      }
       if (!isMyTurn &&
           game.status == GameStatus.voting &&
           previous?.value?.status != GameStatus.voting) {
@@ -98,6 +116,30 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
         data: (game) {
           if (game == null) {
             return const Center(child: CircularProgressIndicator());
+          }
+
+          if (game.status == GameStatus.results) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                context.go(
+                  '/round-result',
+                  extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+                );
+              }
+            });
+            return const Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Center(child: CircularProgressIndicator(color: AppColors.accent)),
+            );
+          }
+          if (game.status == GameStatus.finished) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) context.go('/game-over', extra: widget.roomCode);
+            });
+            return const Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Center(child: CircularProgressIndicator(color: AppColors.accent)),
+            );
           }
 
           final isMyTurn = game.currentPlayerId == user?.uid;

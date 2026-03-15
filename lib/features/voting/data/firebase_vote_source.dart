@@ -52,48 +52,48 @@ class FirebaseVoteSource implements VoteRepository {
     final mode = gameData['mode'] as String?;
     final selectedCategory = gameData['selectedCategory'] as String?;
     final marketValues = gameData['categoryMarketValues'] as Map<String, dynamic>? ?? {};
+    final hotCategory = gameData['hotCategory'] as String?;
 
-    // 10 Taban Puanı Koruma Hattı (Classic vs Economy)
-    int baseScore = 10; // Varsayılan (Classic)
+    int baseScore = 10; // Çark modu (classic)
 
     if (mode == 'economy' && selectedCategory != null) {
-      baseScore = marketValues[selectedCategory] as int? ?? 10;
+      if (selectedCategory == hotCategory) {
+        baseScore = 12; // Sıcak fırsat (Borsa, her tur 1 kategori)
+      } else {
+        baseScore = marketValues[selectedCategory] as int? ?? 10;
+      }
     }
 
     final snapshot = await _votesRef(gameId).get();
-    int totalScore = 0;
-    int audienceScore = 0;
     var likes = 0;
+    var neutrals = 0;
     var dislikes = 0;
 
     for (final doc in snapshot.docs) {
       final vote = VoteModel.fromJson(doc.data(), doc.id);
-      if (vote.timedOut) {
-        continue;
-      }
-
+      if (vote.timedOut) continue;
       switch (vote.value) {
-        case VoteValue.like:
-          totalScore += (baseScore * taskMultiplier);
-          audienceScore += baseScore;
-          likes++;
-          break;
-        case VoteValue.neutral:
-          totalScore += (baseScore * taskMultiplier);
-          audienceScore += baseScore;
-          break;
-        case VoteValue.dislike:
-          totalScore += 0;
-          dislikes++;
-          break;
+        case VoteValue.like: likes++; break;
+        case VoteValue.neutral: neutrals++; break;
+        case VoteValue.dislike: dislikes++; break;
       }
     }
 
-    final mood = likes > dislikes
+    // Tur puanı = base × zorluk (oyuncu sayısı etkilemez). Çoğunluk tek sonucu belirler.
+    final fullRoundScore = baseScore * taskMultiplier;
+    final mood = likes >= neutrals && likes >= dislikes
         ? 'like'
-        : dislikes > likes
+        : dislikes >= likes && dislikes >= neutrals
             ? 'dislike'
             : 'neutral';
+
+    final totalScore = mood == 'like'
+        ? fullRoundScore
+        : mood == 'neutral'
+            ? fullRoundScore ~/ 2
+            : 0;
+    final audienceScore = baseScore;
+
     await _firestore.collection('games').doc(gameId).update({
       'lastRoundMood': mood,
     });

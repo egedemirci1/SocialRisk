@@ -8,7 +8,6 @@ import '../../room/providers/room_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
-import '../../room/domain/room_entity.dart';
 
 /// Oyun sonu ekranı — Parti Temalı
 class GameOverScreen extends ConsumerStatefulWidget {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:social_risk/core/constants/game_constants.dart';
 import 'package:social_risk/features/game/domain/game_entity.dart';
@@ -245,6 +246,23 @@ class FakeGameRepository implements GameRepository {
   }
 
   @override
+  Future<void> removePlayerFromGame({
+    required String gameId,
+    required String playerId,
+  }) async {
+    final s = _state[gameId];
+    if (s == null || s.status != GameStatus.playing) return;
+    s.turnOrder.remove(playerId);
+    s.categoryPickOrder.remove(playerId);
+    if (s.currentPlayerId == playerId) {
+      s.currentPlayerId = s.turnOrder.isNotEmpty ? s.turnOrder.first : playerId;
+      s.currentPickIndex = 0;
+    }
+    if (s.turnOrder.isEmpty) s.status = GameStatus.finished;
+    _emit(gameId);
+  }
+
+  @override
   Future<bool> checkScoreEndCondition({
     required String roomId,
     required int targetScore,
@@ -275,6 +293,8 @@ class FakeGameRepository implements GameRepository {
     s.currentPlayerId = pickOrder.isNotEmpty ? pickOrder.first : s.currentPlayerId;
     s.status = GameStatus.playing;
     s.mode = GameMode.economy;
+    final atTen = s.categoryMarketValues.keys.where((c) => (s.categoryMarketValues[c] ?? 0) == 10).toList();
+    s.hotCategory = atTen.isNotEmpty ? atTen[Random().nextInt(atTen.length)] : null;
     _emit(gameId);
   }
 
@@ -288,8 +308,8 @@ class FakeGameRepository implements GameRepository {
     if (s == null) throw Exception('Oyun bulunamadı!');
     if (s.lockedCategories.contains(category)) throw Exception('Bu kategori kilitli!');
     final updatedMarket = Map<String, int>.from(s.categoryMarketValues);
-    final currentValue = updatedMarket[category] ?? 1;
-    final newValue = (currentValue - GameConstants.marketDecayAmount).clamp(1, 10);
+    final currentValue = updatedMarket[category] ?? 10;
+    final newValue = (currentValue - GameConstants.marketDecayAmount).clamp(GameConstants.minMarketValue, GameConstants.maxMarketValue);
     updatedMarket[category] = newValue;
     s.categoryMarketValues = updatedMarket;
     
@@ -338,6 +358,7 @@ class _MutableGameState {
     List<String>? lockedCategories,
     List<String>? categoryPickOrder,
     this.currentPickIndex = 0,
+    this.hotCategory,
   })  : usedTaskIds = usedTaskIds ?? [],
         categoryMarketValues = categoryMarketValues ?? {},
         categoryPickCounts = categoryPickCounts ?? {},
@@ -367,6 +388,7 @@ class _MutableGameState {
   List<String> lockedCategories;
   List<String> categoryPickOrder;
   int currentPickIndex;
+  String? hotCategory;
 
   TaskEntity? pendingTask;
 
@@ -395,6 +417,7 @@ class _MutableGameState {
       lockedCategories: List.from(e.lockedCategories),
       categoryPickOrder: List.from(e.categoryPickOrder),
       currentPickIndex: e.currentPickIndex,
+      hotCategory: e.hotCategory,
     );
   }
 
@@ -423,6 +446,7 @@ class _MutableGameState {
       lockedCategories: lockedCategories,
       categoryPickOrder: categoryPickOrder,
       currentPickIndex: currentPickIndex,
+      hotCategory: hotCategory,
     );
   }
 }

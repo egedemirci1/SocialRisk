@@ -74,7 +74,7 @@ final class VoteControllerProvider
   VoteController create() => VoteController();
 }
 
-String _$voteControllerHash() => r'1afc81fabd70b36504ef161a847868f524303bb1';
+String _$voteControllerHash() => r'd099043f164fa348cf6032a8cf858ba0d5dea920';
 
 abstract class _$VoteController extends $AsyncNotifier<void> {
   FutureOr<void> build();

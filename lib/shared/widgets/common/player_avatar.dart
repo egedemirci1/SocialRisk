@@ -42,9 +42,9 @@ class PlayerAvatar extends ConsumerWidget {
 
   String? get _effect {
     if (!showEffect || score == 0) return null;
-    if (score >= 3000) return '??';
-    if (score >= 1500) return '?';
-    if (score >= 500) return '??';
+    if (score >= 3000) return '🔥';
+    if (score >= 1500) return '✨';
+    if (score >= 500) return '❄️';
     return null;
   }
 

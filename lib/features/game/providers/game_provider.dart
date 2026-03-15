@@ -1,9 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../data/firebase_game_source.dart';
-import '../domain/game_entity.dart';
 import '../domain/game_repository.dart';
 import '../../../core/constants/game_constants.dart';
-import '../../../shared/models/enums.dart';
 
 part 'game_provider.g.dart';
 
@@ -72,6 +70,7 @@ class GameController extends _$GameController {
         );
   }
 
+  /// Tur sonucunu yazar. Bitiş kararı Cloud Function'da verilir; istemci sadece status = 'results' yazar.
   Future<void> applyScore({
     required String gameId,
     required String roomId,
@@ -79,21 +78,15 @@ class GameController extends _$GameController {
     required int scoreToAdd,
     required int audienceScore,
     required int taskMultiplier,
-    required int endConditionValue,
-    required EndConditionType endConditionType,
-    required int currentRound,
   }) async {
-    final repo = ref.read(gameRepositoryProvider);
-
-    // Puanı ve sonuçları transaction ile tek seferde güncelle
-    await repo.setRoundResult(
-      gameId: gameId,
-      roomId: roomId,
-      playerId: playerId,
-      score: scoreToAdd,
-      audienceScore: audienceScore,
-      multiplier: taskMultiplier,
-    );
+    await ref.read(gameRepositoryProvider).setRoundResult(
+          gameId: gameId,
+          roomId: roomId,
+          playerId: playerId,
+          score: scoreToAdd,
+          audienceScore: audienceScore,
+          multiplier: taskMultiplier,
+        );
   }
 
   Future<void> nextTurn(String gameId) async {

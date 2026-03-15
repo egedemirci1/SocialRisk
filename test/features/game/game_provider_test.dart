@@ -99,9 +99,6 @@ void main() {
           scoreToAdd: scoreToAdd,
           audienceScore: 50,
           taskMultiplier: 2,
-          endConditionValue: 500,
-          endConditionType: EndConditionType.score,
-          currentRound: 1,
         );
         expect(fake.getPlayerScore(roomId, playerId), scoreToAdd);
         expect(fake.getGame(gameId)!.lastRoundScore, scoreToAdd);
@@ -178,6 +175,144 @@ void main() {
         expect(game.selectedCategory, category);
         expect(game.status, GameStatus.choosingDifficulty);
         expect(game.categoryMarketValues[category], lessThanOrEqualTo(1));
+      });
+    });
+
+    group('setSpinningTarget', () {
+      test('setSpinningTarget hedef kategoriyi oyuna yazar', () async {
+        const gameId = 'g1';
+        final initial = GameEntity(
+          gameId: gameId,
+          roomId: 'r1',
+          currentPlayerId: 'p1',
+          turnOrder: ['p1', 'p2'],
+          status: GameStatus.playing,
+        );
+        final fake = FakeGameRepository(initialGames: {gameId: initial});
+        final container = ProviderContainer(
+          overrides: [gameRepositoryProvider.overrideWithValue(fake)],
+        );
+        addTearDown(container.dispose);
+
+        final controller = container.read(gameControllerProvider.notifier);
+        await container.read(gameControllerProvider.future);
+
+        await controller.setSpinningTarget(gameId: gameId, target: 'Fiziksel');
+        expect(fake.getGame(gameId)!.spinningTarget, 'Fiziksel');
+
+        await controller.setSpinningTarget(gameId: gameId, target: null);
+        expect(fake.getGame(gameId)!.spinningTarget, isNull);
+      });
+    });
+
+    group('proceedToVoting', () {
+      test('proceedToVoting status voting yapar', () async {
+        const gameId = 'g1';
+        final initial = GameEntity(
+          gameId: gameId,
+          roomId: 'r1',
+          currentPlayerId: 'p1',
+          turnOrder: ['p1'],
+          status: GameStatus.performing,
+        );
+        final fake = FakeGameRepository(initialGames: {gameId: initial});
+        final container = ProviderContainer(
+          overrides: [gameRepositoryProvider.overrideWithValue(fake)],
+        );
+        addTearDown(container.dispose);
+
+        final controller = container.read(gameControllerProvider.notifier);
+        await container.read(gameControllerProvider.future);
+
+        await controller.proceedToVoting(gameId);
+        expect(fake.getGame(gameId)!.status, GameStatus.voting);
+      });
+    });
+
+    group('assignTaskByCategory', () {
+      test('assignTaskByCategory kategori ve choosingDifficulty ayarlar', () async {
+        const gameId = 'g1';
+        final initial = GameEntity(
+          gameId: gameId,
+          roomId: 'r1',
+          currentPlayerId: 'p1',
+          turnOrder: ['p1'],
+          status: GameStatus.playing,
+        );
+        final fake = FakeGameRepository(initialGames: {gameId: initial});
+        final container = ProviderContainer(
+          overrides: [gameRepositoryProvider.overrideWithValue(fake)],
+        );
+        addTearDown(container.dispose);
+
+        final controller = container.read(gameControllerProvider.notifier);
+        await container.read(gameControllerProvider.future);
+
+        await controller.assignTaskByCategory(gameId: gameId, category: 'Bilgi');
+        final game = fake.getGame(gameId)!;
+        expect(game.selectedCategory, 'Bilgi');
+        expect(game.status, GameStatus.choosingDifficulty);
+      });
+    });
+
+    group('initEconomyRound', () {
+      test('initEconomyRound economy modunu ve sıra listesini kurar', () async {
+        const gameId = 'g1';
+        const roomId = 'r1';
+        final initial = GameEntity(
+          gameId: gameId,
+          roomId: roomId,
+          currentPlayerId: 'p1',
+          turnOrder: ['p1', 'p2', 'p3'],
+          status: GameStatus.results,
+        );
+        final fake = FakeGameRepository(initialGames: {gameId: initial});
+        final container = ProviderContainer(
+          overrides: [gameRepositoryProvider.overrideWithValue(fake)],
+        );
+        addTearDown(container.dispose);
+
+        final controller = container.read(gameControllerProvider.notifier);
+        await container.read(gameControllerProvider.future);
+
+        await controller.initEconomyRound(gameId: gameId, roomId: roomId);
+        final game = fake.getGame(gameId)!;
+        expect(game.mode, GameMode.economy);
+        expect(game.status, GameStatus.playing);
+        expect(game.categoryPickOrder, ['p1', 'p2', 'p3']);
+        expect(game.currentPlayerId, 'p1');
+        expect(game.categoryMarketValues, isNotEmpty);
+      });
+    });
+
+    group('watchGameProvider', () {
+      test('watchGameProvider repo streaminden oyun alır', () async {
+        const gameId = 'g1';
+        final initial = GameEntity(
+          gameId: gameId,
+          roomId: 'r1',
+          currentPlayerId: 'p1',
+          turnOrder: ['p1', 'p2'],
+          status: GameStatus.playing,
+        );
+        final fake = FakeGameRepository(initialGames: {gameId: initial});
+        final container = ProviderContainer(
+          overrides: [gameRepositoryProvider.overrideWithValue(fake)],
+        );
+        addTearDown(container.dispose);
+
+        GameEntity? captured;
+        container.listen(watchGameProvider(gameId), (_, next) {
+          if (next.hasValue && next.value != null) captured = next.value;
+        });
+        container.read(watchGameProvider(gameId));
+        final controller = container.read(gameControllerProvider.notifier);
+        await container.read(gameControllerProvider.future);
+        await controller.nextTurn(gameId);
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        expect(captured, isNotNull, reason: 'watchGame stream should emit after nextTurn');
+        expect(captured!.gameId, gameId);
+        expect(captured!.currentPlayerId, 'p2');
       });
     });
 

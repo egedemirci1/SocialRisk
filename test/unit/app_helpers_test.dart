@@ -29,17 +29,18 @@ void main() {
         expect(AppHelpers.calculatePenalty(50, -1), 0);
       });
 
-      test('passStreak 1 iken basePenalty döndürmeli', () {
+      test('passStreak 1 iken basePenalty döndürmeli (hep sabit)', () {
         expect(AppHelpers.calculatePenalty(50, 1), 50);
       });
 
-      test('passStreak 3 iken basePenalty * 3 döndürmeli', () {
-        expect(AppHelpers.calculatePenalty(50, 3), 150);
+      test('passStreak 2 veya 3 iken yine basePenalty döndürmeli (katlanmaz)', () {
+        expect(AppHelpers.calculatePenalty(50, 2), 50);
+        expect(AppHelpers.calculatePenalty(50, 3), 50);
       });
 
-      test('farklı basePenalty değerleriyle doğru hesaplamalı', () {
-        expect(AppHelpers.calculatePenalty(100, 2), 200);
-        expect(AppHelpers.calculatePenalty(25, 4), 100);
+      test('farklı basePenalty ile sabit ceza', () {
+        expect(AppHelpers.calculatePenalty(100, 2), 100);
+        expect(AppHelpers.calculatePenalty(25, 4), 25);
       });
     });
 

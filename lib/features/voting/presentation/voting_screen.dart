@@ -13,7 +13,6 @@ import '../../game/providers/game_provider.dart';
 import '../providers/vote_provider.dart';
 import '../domain/vote_repository.dart';
 import '../../game/domain/game_entity.dart';
-import '../../game/domain/game_end_utils.dart';
 import '../../game/presentation/widgets/turn_counter_badge.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
@@ -67,48 +66,14 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
       final voteResult = results[1] as VoteResult;
       final earned = voteResult.totalScore;
 
-      final room = ref.read(watchRoomProvider(widget.roomCode)).value;
-      final endConditionType =
-          room?.endConditionType ?? EndConditionType.rounds;
-      final endConditionValue = room?.endConditionValue ?? 10;
-
-      await ref
-          .read(gameControllerProvider.notifier)
-          .applyScore(
+      await ref.read(gameControllerProvider.notifier).applyScore(
             gameId: widget.gameId,
             roomId: widget.roomCode,
             playerId: currentPlayerId,
             scoreToAdd: earned,
             audienceScore: voteResult.audienceScore,
             taskMultiplier: taskMultiplier,
-            endConditionValue: endConditionValue,
-            endConditionType: endConditionType,
-            currentRound: currentRound,
           );
-
-      final latestGame = ref.read(watchGameProvider(widget.gameId)).value;
-      final latestRoom = ref.read(watchRoomProvider(widget.roomCode)).value;
-      final latestPlayers = ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
-      if (latestGame != null && latestRoom != null) {
-        var shouldEnd = GameEndUtils.shouldEndAfterRound(
-          game: latestGame,
-          room: latestRoom,
-          players: latestPlayers,
-        );
-        if (!shouldEnd && latestRoom.endConditionType == EndConditionType.score) {
-          final currentPlayerScore = latestPlayers
-              .where((p) => p.id == currentPlayerId)
-              .firstOrNull
-              ?.score;
-          if (currentPlayerScore != null) {
-            shouldEnd = (currentPlayerScore + earned) >= latestRoom.endConditionValue;
-          }
-        }
-
-        if (shouldEnd) {
-          await ref.read(gameControllerProvider.notifier).endGame(widget.gameId);
-        }
-      }
 
       // Oyları temizle (status değiştikten sonra, kritik yolda değil)
       voteCtrl.clearVotes(widget.gameId);
@@ -140,26 +105,14 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
       next,
     ) {
       if (!mounted) return;
+      final prevStatus = previous?.value?.status;
       final currentStatus = next.value?.status;
-      if (currentStatus == GameStatus.results) {
-        final game = next.value;
-        final room = ref.read(watchRoomProvider(widget.roomCode)).value;
-        final players = ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
-        if (game != null &&
-            room != null &&
-            GameEndUtils.shouldEndAfterRound(
-              game: game,
-              room: room,
-              players: players,
-            )) {
-          // Final turdaysak round-result'e gitme, host'un endGame çağrısını bekle.
-          return;
-        }
+      if (currentStatus == GameStatus.results && prevStatus != GameStatus.results) {
         context.go(
           '/round-result',
           extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
         );
-      } else if (currentStatus == GameStatus.finished) {
+      } else if (currentStatus == GameStatus.finished && prevStatus != GameStatus.finished) {
         context.go('/game-over', extra: widget.roomCode);
       }
     });
@@ -174,24 +127,14 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
         }
 
         if (game.status == GameStatus.results) {
-          final room = ref.read(watchRoomProvider(widget.roomCode)).value;
-          final players = ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
-          final shouldEnd = room != null &&
-              GameEndUtils.shouldEndAfterRound(
-                game: game,
-                room: room,
-                players: players,
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.go(
+                '/round-result',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
               );
-          if (!shouldEnd) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                context.go(
-                  '/round-result',
-                  extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-                );
-              }
-            });
-          }
+            }
+          });
           return const Scaffold(
             backgroundColor: Colors.transparent,
             body: Center(child: CircularProgressIndicator()),

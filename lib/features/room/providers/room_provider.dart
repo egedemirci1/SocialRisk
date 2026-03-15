@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../auth/providers/user_provider.dart';
 import 'package:social_risk/core/providers/lifecycle_provider.dart';
+import '../../game/providers/game_provider.dart';
 import '../data/firebase_room_source.dart';
 import '../domain/room_entity.dart';
 import '../domain/room_repository.dart';
@@ -10,7 +11,7 @@ part 'room_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 RoomRepository roomRepository(Ref ref) {
-  return FirebaseRoomSource();
+  return FirebaseRoomSource(gameRepository: ref.read(gameRepositoryProvider));
 }
 
 @riverpod

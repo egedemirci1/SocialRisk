@@ -6,6 +6,7 @@ import '../../../core/constants/game_constants.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../shared/models/enums.dart';
 import '../../admin/data/task_firestore_source.dart';
+import '../../game/domain/game_repository.dart';
 import '../domain/room_entity.dart';
 import '../domain/room_repository.dart';
 import 'room_model.dart';
@@ -13,12 +14,15 @@ import 'room_model.dart';
 class FirebaseRoomSource implements RoomRepository {
   final FirebaseFirestore _firestore;
   final TaskFirestoreSource _taskSource;
+  final GameRepository? _gameRepository;
 
   FirebaseRoomSource({
     FirebaseFirestore? firestore,
     TaskFirestoreSource? taskSource,
+    GameRepository? gameRepository,
   })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _taskSource = taskSource ?? TaskFirestoreSource();
+        _taskSource = taskSource ?? TaskFirestoreSource(),
+        _gameRepository = gameRepository;
 
   CollectionReference<Map<String, dynamic>> get _roomsRef =>
       _firestore.collection('rooms');
@@ -167,6 +171,16 @@ class FirebaseRoomSource implements RoomRepository {
       final count = playersCountSnap.count ?? 0;
       if (count == 0) {
         await _deleteRoomAndRelatedData(roomCode, roomData);
+      } else {
+        final gameId = roomData['gameId'] as String?;
+        if (gameId != null &&
+            gameId.isNotEmpty &&
+            _gameRepository != null) {
+          await _gameRepository!.removePlayerFromGame(
+            gameId: gameId,
+            playerId: playerId,
+          );
+        }
       }
     } on FirebaseException catch (e) {
       throw Exception('Odadan ayrılırken hata oluştu: ${e.message}');

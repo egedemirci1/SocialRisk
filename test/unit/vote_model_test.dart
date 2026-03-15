@@ -30,14 +30,14 @@ void main() {
       expect(model.value, VoteValue.neutral);
     });
 
-    test('toJson value name döndürmeli', () {
+    test('toJson value, timedOut, penaltyApplied döndürmeli', () {
       expect(
         VoteModel(voterId: 'x', value: VoteValue.like).toJson(),
-        {'value': 'like'},
+        {'value': 'like', 'timedOut': false, 'penaltyApplied': false},
       );
       expect(
         VoteModel(voterId: 'x', value: VoteValue.dislike).toJson(),
-        {'value': 'dislike'},
+        {'value': 'dislike', 'timedOut': false, 'penaltyApplied': false},
       );
     });
 

@@ -28,6 +28,10 @@ class GameModel {
   final List<String> lockedCategories;
   final List<String> categoryPickOrder;
   final int currentPickIndex;
+  /// Borsa modunda bu tur için sıcak fırsat (12 puan) seçilmiş kategori.
+  final String? hotCategory;
+  /// Oyun bittiğinde sıralamaya göre oyuncu başına ödül (uid -> puan).
+  final Map<String, int> rewards;
   // Görev ön-yükleme havuzu: key = "category_difficulty", value = list of task maps
   final Map<String, List<Map<String, dynamic>>> taskPool;
 
@@ -55,6 +59,8 @@ class GameModel {
     this.lockedCategories = const [],
     this.categoryPickOrder = const [],
     this.currentPickIndex = 0,
+    this.hotCategory,
+    this.rewards = const {},
     this.taskPool = const {},
   });
 
@@ -87,8 +93,25 @@ class GameModel {
       lockedCategories: List<String>.from(json['lockedCategories'] ?? []),
       categoryPickOrder: List<String>.from(json['categoryPickOrder'] ?? []),
       currentPickIndex: json['currentPickIndex'] as int? ?? 0,
+      hotCategory: json['hotCategory'] as String?,
+      rewards: _parseRewardsMap(json['rewards']),
       taskPool: _parseTaskPool(json['taskPool']),
     );
+  }
+
+  static Map<String, int> _parseRewardsMap(dynamic raw) {
+    if (raw == null || raw is! Map) return {};
+    final map = <String, int>{};
+    for (final e in raw.entries) {
+      final k = e.key.toString();
+      final v = e.value;
+      if (v is int) {
+        map[k] = v;
+      } else if (v is num) {
+        map[k] = v.toInt();
+      }
+    }
+    return map;
   }
 
   /// taskPool alanını Firestore'dan güvenle parse eder
@@ -133,6 +156,7 @@ class GameModel {
       'lockedCategories': lockedCategories,
       'categoryPickOrder': categoryPickOrder,
       'currentPickIndex': currentPickIndex,
+      if (hotCategory != null) 'hotCategory': hotCategory,
       'taskPool': taskPool,
       'createdAt': FieldValue.serverTimestamp(),
     };
@@ -177,6 +201,8 @@ class GameModel {
       lockedCategories: lockedCategories,
       categoryPickOrder: categoryPickOrder,
       currentPickIndex: currentPickIndex,
+      hotCategory: hotCategory,
+      rewards: rewards,
     );
   }
 }

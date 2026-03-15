@@ -228,13 +228,16 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                         childAspectRatio: 1.1,
                         children: marketValues.keys.map((cat) {
                           final defaultVal =
-                              GameConstants.defaultMarketValues[cat] ?? 2;
-                          final currentVal = marketValues[cat] ?? defaultVal;
+                              GameConstants.defaultMarketValues[cat] ?? 10;
+                          final marketVal = marketValues[cat] ?? defaultVal;
+                          final isHot = game.hotCategory == cat;
+                          final displayValue = isHot ? GameConstants.hotCategoryBonus : marketVal;
                           final isLocked = lockedCats.contains(cat);
                           return _CategoryCard(
                             category: cat,
-                            currentValue: currentVal,
+                            currentValue: displayValue,
                             defaultValue: defaultVal,
+                            isHotCategory: isHot,
                             isLocked: isLocked,
                             isPickable: isMyPick && !isLocked && !_isPicking,
                             onTap: () => _pickCategory(cat),
@@ -264,12 +267,14 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
 class _CategoryCard extends StatelessWidget {
   final String category;
   final int currentValue, defaultValue;
+  final bool isHotCategory;
   final bool isLocked, isPickable;
   final VoidCallback onTap;
   const _CategoryCard({
     required this.category,
     required this.currentValue,
     required this.defaultValue,
+    required this.isHotCategory,
     required this.isLocked,
     required this.isPickable,
     required this.onTap,
@@ -300,7 +305,7 @@ class _CategoryCard extends StatelessWidget {
                   size: 32,
                 ),
               ),
-            if (!isLocked && currentValue > 10)
+            if (!isLocked && isHotCategory)
               Positioned(
                 top: 0,
                 right: 0,

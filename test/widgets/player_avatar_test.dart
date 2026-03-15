@@ -354,7 +354,7 @@ void main() {
           ),
         ),
       );
-      expect(find.byType(Positioned), findsNWidgets(2));
+      expect(find.byType(Positioned), findsNWidgets(3));
       expect(find.byType(CustomPaint), findsWidgets);
       final stackFinder = find.descendant(
         of: find.byType(PlayerAvatar),

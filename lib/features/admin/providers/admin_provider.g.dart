@@ -33,7 +33,7 @@ final class AdminControllerProvider
   AdminController create() => AdminController();
 }
 
-String _$adminControllerHash() => r'eb6e92025ff0335277a2115d863470242454ced7';
+String _$adminControllerHash() => r'e0cb51f7e1d832059b5e6fe4d680862453ebd188';
 
 abstract class _$AdminController extends $AsyncNotifier<void> {
   FutureOr<void> build();

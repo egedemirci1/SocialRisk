@@ -572,9 +572,11 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                         content: isClosed
                             ? 'Mevcut görevi görmek için kartı aç...'
                             : task.content,
-                        points: (game.mode == GameMode.economy 
-                                  ? (game.categoryMarketValues[task.category] ?? 10) 
-                                  : 10) * task.multiplier,
+                        points: (game.mode == GameMode.economy
+                                  ? (game.hotCategory == task.category
+                                      ? 12
+                                      : (game.categoryMarketValues[task.category] ?? 10)) * task.multiplier
+                                  : 10 * task.multiplier),
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -700,8 +702,8 @@ class _AnimatedPassButtonState extends State<_AnimatedPassButton>
         ),
         child: Text(
           _isWarningSelected
-              ? 'EMİN MİSİN? (-${50 * (widget.passStreak + 1)} Puan)'
-              : 'Görevi Reddet (-${50 * (widget.passStreak + 1)} Puan)',
+              ? 'EMİN MİSİN? (-50 Puan)'
+              : 'Görevi Reddet (-50 Puan)',
           style: AppTextStyles.labelSmall.copyWith(
             color: _isWarningSelected ? Colors.redAccent : Colors.white70,
             fontWeight: FontWeight.w900,

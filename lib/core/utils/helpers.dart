@@ -11,10 +11,11 @@ class AppHelpers {
     ).join();
   }
 
+  /// Pas geçme cezası: her zaman sabit basePenalty (katlanmaz).
+  /// Task: -50 katlanarak artma hatası — hep -50 kalmalı.
   static int calculatePenalty(int basePenalty, int passStreak) {
     if (passStreak <= 0) return 0;
-    // penalty = basePenalty * passStreak
-    return basePenalty * passStreak;
+    return basePenalty;
   }
 
   static String formatTimestamp(DateTime dateTime) {

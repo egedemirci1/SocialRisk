@@ -35,6 +35,7 @@ abstract class GameRepository {
     required int basePenalty,
   });
 
+  /// Tur sonucunu yazar (status = 'results'). Bitiş kararı Cloud Function'da verilir.
   Future<void> setRoundResult({
     required String gameId,
     required String roomId,
@@ -73,4 +74,11 @@ abstract class GameRepository {
     required String playerId,
     required String category,
   });
+
+  /// Oyuncu oyundan çıktığında sıra listelerinden kaldırır, gerekirse sırayı ilerletir.
+  Future<void> removePlayerFromGame({
+    required String gameId,
+    required String playerId,
+  });
+
 }

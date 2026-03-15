@@ -17,7 +17,6 @@ import '../../../shared/widgets/common/player_avatar.dart';
 import '../../room/domain/room_entity.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
-import '../domain/game_end_utils.dart';
 
 /// Tur sonu ekranı — Parti Temalı
 class RoundResultScreen extends ConsumerStatefulWidget {
@@ -59,6 +58,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
       watchGameProvider(widget.gameId),
       (previous, next) {
         if (!context.mounted) return;
+        final prevStatus = previous?.value?.status;
         final currentStatus = next.value?.status;
 
         if (currentStatus == GameStatus.playing ||
@@ -67,7 +67,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             '/task',
             extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
           );
-        } else if (currentStatus == GameStatus.finished) {
+        } else if (currentStatus == GameStatus.finished && prevStatus != GameStatus.finished) {
           context.go('/game-over', extra: widget.roomCode);
         }
       },
@@ -107,7 +107,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           final audienceScore = game.lastRoundAudienceScore ?? 0;
           final multiplier = game.lastRoundMultiplier ?? 1;
           final isPass = multiplier == 0;
-          bool isGameOver = game.status == GameStatus.finished;
+          final isGameOver = game.status == GameStatus.finished;
           final players = playersAsync.value ?? [];
           final currentPlayer = players
               .where(
@@ -115,15 +115,6 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
               )
               .firstOrNull;
           final playerName = currentPlayer?.name ?? 'Oyuncu';
-          final room = ref.watch(watchRoomProvider(widget.roomCode)).value;
-
-          if (room != null && !isGameOver) {
-            isGameOver = GameEndUtils.shouldEndAfterRound(
-              game: game,
-              room: room,
-              players: players,
-            );
-          }
 
           return SafeArea(
             child: SingleChildScrollView(

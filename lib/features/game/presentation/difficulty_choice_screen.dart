@@ -31,29 +31,6 @@ class _DifficultyChoiceScreenState
   bool _isLoading = false;
   bool _hasRedirected = false;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _setupListener();
-    });
-  }
-
-  void _setupListener() {
-    ref.listen(watchGameProvider(widget.gameId), (prev, next) {
-      final game = next.value;
-      if (game == null || _hasRedirected) return;
-      if (game.status != GameStatus.choosingDifficulty) {
-        _hasRedirected = true;
-        context.replace(
-          '/task',
-          extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-        );
-      }
-    });
-  }
-
   Future<void> _selectDifficulty(String difficulty) async {
     if (_isLoading) return;
     setState(() => _isLoading = true);
@@ -71,6 +48,30 @@ class _DifficultyChoiceScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(watchGameProvider(widget.gameId), (prev, next) {
+      if (!mounted || _hasRedirected) return;
+      final game = next.value;
+      if (game == null) return;
+      if (game.status == GameStatus.choosingDifficulty) return;
+      _hasRedirected = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (game.status == GameStatus.results) {
+          context.go(
+            '/round-result',
+            extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+          );
+        } else if (game.status == GameStatus.finished) {
+          context.go('/game-over', extra: widget.roomCode);
+        } else {
+          context.replace(
+            '/task',
+            extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+          );
+        }
+      });
+    });
+
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final roomAsync = ref.watch(watchRoomProvider(widget.roomCode));
 
@@ -148,96 +149,130 @@ class _DifficultyChoiceScreenState
                     ),
                     const SizedBox(height: 32),
                     if (isMyTurn) ...[
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: AppColors.accent.withValues(alpha: 0.15),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.surface,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: AppColors.accent.withValues(
+                                      alpha: 0.15,
+                                    ),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.accent.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(20),
+                                          topRight: Radius.circular(20),
+                                        ),
+                                      ),
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          'Zorluk Seviyesi',
+                                          style: AppTextStyles.titleLarge
+                                              .copyWith(
+                                                color: AppColors.accent,
+                                                letterSpacing: 2,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 24,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Text(
+                                              'RİSK VE ÖDÜL',
+                                              style: AppTextStyles.titleLarge
+                                                  .copyWith(
+                                                    color: Colors.white,
+                                                    letterSpacing: 2,
+                                                    fontWeight: FontWeight.w900,
+                                                  ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Performansının zorluğunu sen belirle...',
+                                            style: AppTextStyles.bodyMedium
+                                                .copyWith(
+                                                  color: Colors.white54,
+                                                  fontStyle: FontStyle.italic,
+                                                ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                              _buildDifficultyCard(
+                                title: 'AMATÖR',
+                                multiplier: '1x',
+                                estimatedPoints: game.mode == GameMode.economy && game.selectedCategory != null
+                                    ? (game.hotCategory == game.selectedCategory ? 12 : (game.categoryMarketValues[game.selectedCategory] ?? 10)) * 1
+                                    : 10,
+                                color: Colors.green,
+                                onTap: () => _selectDifficulty('easy'),
+                              ),
+                              const SizedBox(height: 16),
+                              _buildDifficultyCard(
+                                title: 'PROFESYONEL',
+                                multiplier: '2x',
+                                estimatedPoints: game.mode == GameMode.economy && game.selectedCategory != null
+                                    ? (game.hotCategory == game.selectedCategory ? 12 : (game.categoryMarketValues[game.selectedCategory] ?? 10)) * 2
+                                    : 20,
+                                color: Colors.orange,
+                                onTap: () => _selectDifficulty('medium'),
+                              ),
+                              const SizedBox(height: 16),
+                              _buildDifficultyCard(
+                                title: 'DUAYEN',
+                                multiplier: '3x',
+                                estimatedPoints: game.mode == GameMode.economy && game.selectedCategory != null
+                                    ? (game.hotCategory == game.selectedCategory ? 12 : (game.categoryMarketValues[game.selectedCategory] ?? 10)) * 3
+                                    : 30,
+                                color: AppColors.primary,
+                                onTap: () => _selectDifficulty('hard'),
+                              ),
+                              const SizedBox(height: 32),
+                            ],
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              decoration: BoxDecoration(
-                                color: AppColors.accent.withValues(alpha: 0.1),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                ),
-                              ),
-                              child: Text(
-                                'Zorluk Seviyesi',
-                                style: AppTextStyles.titleLarge.copyWith(
-                                  color: AppColors.accent,
-                                  letterSpacing: 2,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'RİSK VE ÖDÜL',
-                                    style: AppTextStyles.titleLarge.copyWith(
-                                      color: Colors.white,
-                                      letterSpacing: 2,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Performansının zorluğunu sen belirle...',
-                                    style: AppTextStyles.bodyMedium.copyWith(
-                                      color: Colors.white54,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                      const SizedBox(height: 48),
-                      _buildDifficultyCard(
-                        title: 'AMATÖR',
-                        multiplier: '1x',
-                        estimatedPoints: (game.categoryMarketValues[game.selectedCategory] ?? 10) * 1,
-                        color: Colors.green,
-                        onTap: () => _selectDifficulty('easy'),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildDifficultyCard(
-                        title: 'PROFESYONEL',
-                        multiplier: '2x',
-                        estimatedPoints: (game.categoryMarketValues[game.selectedCategory] ?? 10) * 2,
-                        color: Colors.orange,
-                        onTap: () => _selectDifficulty('medium'),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildDifficultyCard(
-                        title: 'DUAYEN',
-                        multiplier: '3x',
-                        estimatedPoints: (game.categoryMarketValues[game.selectedCategory] ?? 10) * 3,
-                        color: AppColors.primary,
-                        onTap: () => _selectDifficulty('hard'),
-                      ),
-                      const Spacer(flex: 2),
                     ] else ...[
                       Expanded(
                         child: Center(
@@ -335,11 +370,16 @@ class _DifficultyChoiceScreenState
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
+          border: Border.all(
+            color: color.withValues(alpha: 0.3),
+            width: 1.5,
+          ),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Text(
@@ -349,10 +389,16 @@ class _DifficultyChoiceScreenState
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -368,11 +414,14 @@ class _DifficultyChoiceScreenState
               ],
             ),
             const SizedBox(height: 12),
-            Text(
-              'Tahmini Kazanç: $estimatedPoints Puan',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.white70,
-                fontWeight: FontWeight.bold,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'Tahmini Kazanç: $estimatedPoints Puan',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],

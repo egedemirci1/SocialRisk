@@ -47,19 +47,17 @@ void main() {
         expect(AppHelpers.calculatePenalty(0, 5), 0);
       });
 
-      test('çok büyük passStreak değerinde taşma olmamalı', () {
-        // Dart int sınırsız (web hariç int64) ama mantıksal bir üst sınır
+      test('çok büyük passStreak değerinde yine basePenalty sabit (katlanmaz)', () {
         final result = AppHelpers.calculatePenalty(50, 1000);
-        expect(result, 50000);
+        expect(result, 50);
       });
 
       test('basePenalty ve passStreak ikisi de 0 iken 0 döndürmeli', () {
         expect(AppHelpers.calculatePenalty(0, 0), 0);
       });
 
-      test('negatif basePenalty, pozitif passStreak ile negatif sonuç döndürmeli', () {
-        // Negatif basePenalty edge case (pratikte olmaz ama fonksiyon onu engellemez)
-        expect(AppHelpers.calculatePenalty(-10, 2), -20);
+      test('negatif basePenalty, pozitif passStreak ile basePenalty sabit döner', () {
+        expect(AppHelpers.calculatePenalty(-10, 2), -10);
       });
 
       test('passStreak tam olarak -1 iken (sınır değeri) 0 döndürmeli', () {

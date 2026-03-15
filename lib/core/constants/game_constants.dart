@@ -45,9 +45,12 @@ class GameConstants {
   /// Her seçimde çarpan bu kadar düşer
   static const int marketDecayAmount = 2;
 
-  /// Ekonomi modu puan sınırları
-  static const int minMarketValue = 5;
-  static const int maxMarketValue = 25;
+  /// Ekonomi modu puan sınırları (depolanan değer 0–10; sıcak fırsat gösterimde 12)
+  static const int minMarketValue = 0;
+  static const int maxMarketValue = 10;
+
+  /// Sıcak fırsat kategorisi için puan (Borsa modunda her tur 1 kategori)
+  static const int hotCategoryBonus = 12;
 
   /// Bu kadar kez seçilince kategori kilitlenir
   static const int lockThreshold = 3;

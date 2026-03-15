@@ -97,9 +97,9 @@ void main() {
         }
       });
 
-      test('Ekonomi modu puan sınırları (min 5, max 25) doğru tanımlanmalı', () {
-        expect(GameConstants.minMarketValue, 5);
-        expect(GameConstants.maxMarketValue, 25);
+      test('Ekonomi modu puan sınırları (min 0, max 10) doğru tanımlanmalı', () {
+        expect(GameConstants.minMarketValue, 0);
+        expect(GameConstants.maxMarketValue, 10);
       });
 
       test('defaultPickCounts tüm değerleri 0 olmalı', () {

@@ -27,6 +27,10 @@ class GameEntity {
   final List<String> lockedCategories;
   final List<String> categoryPickOrder;
   final int currentPickIndex;
+  /// Borsa modunda bu tur için sıcak fırsat (12 puan) seçilmiş kategori; her tur yeniden seçilir.
+  final String? hotCategory;
+  /// Oyun bittiğinde sıralamaya göre oyuncu başına ödül (uid -> puan). Client sadece kendi ödülünü claim eder.
+  final Map<String, int> rewards;
 
   const GameEntity({
     required this.gameId,
@@ -53,6 +57,8 @@ class GameEntity {
     this.lockedCategories = const [],
     this.categoryPickOrder = const [],
     this.currentPickIndex = 0,
+    this.hotCategory,
+    this.rewards = const {},
   });
 }
 
