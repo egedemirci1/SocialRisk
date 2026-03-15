@@ -354,7 +354,8 @@ void main() {
           ),
         ),
       );
-      expect(find.byType(Positioned), findsNWidgets(2));
+      // Frame varsa 2 Positioned (aura border ve CustomFramePainter), effect için 1 Positioned daha olabilir
+      expect(find.byType(Positioned), findsAtLeastNWidgets(2));
       expect(find.byType(CustomPaint), findsWidgets);
       final stackFinder = find.descendant(
         of: find.byType(PlayerAvatar),

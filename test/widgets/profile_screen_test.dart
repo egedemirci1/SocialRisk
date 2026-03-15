@@ -142,7 +142,7 @@ void main() {
 
       expect(find.text('Mağaza'), findsOneWidget);
       expect(find.text('Tab Kullanıcı'), findsWidgets);
-      expect(find.byIcon(Icons.confirmation_number_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.shopping_bag_rounded), findsOneWidget);
     });
 
     testWidgets('Eşyalar sekmesine tıklanınca sekme içeriği değişir', (tester) async {
@@ -175,7 +175,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Henüz bir eşyanız yok'), findsOneWidget);
-      expect(find.text('Mağaza'), findsNothing);
+      // Eşyalar sekmesinde de Mağaza butonu var
+      expect(find.text('Mağaza'), findsOneWidget);
     });
 
     testWidgets('Performans sekmesine tıklanınca İstatistikler ve Bakiye görünür', (tester) async {

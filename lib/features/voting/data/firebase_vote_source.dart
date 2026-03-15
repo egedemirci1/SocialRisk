@@ -61,8 +61,6 @@ class FirebaseVoteSource implements VoteRepository {
     }
 
     final snapshot = await _votesRef(gameId).get();
-    int totalScore = 0;
-    int audienceScore = 0;
     var likes = 0;
     var dislikes = 0;
 
@@ -74,20 +72,21 @@ class FirebaseVoteSource implements VoteRepository {
 
       switch (vote.value) {
         case VoteValue.like:
-          totalScore += (baseScore * taskMultiplier);
-          audienceScore += baseScore;
           likes++;
           break;
         case VoteValue.neutral:
-          totalScore += (baseScore * taskMultiplier);
-          audienceScore += baseScore;
+          // Kararsız: çoğunluğa katılmaz, puan vermez
           break;
         case VoteValue.dislike:
-          totalScore += 0;
           dislikes++;
           break;
       }
     }
+
+    // Çoğunluk kararı: eşitlik → olumlu (lean positive)
+    final isPositive = likes >= dislikes;
+    int totalScore = isPositive ? baseScore * taskMultiplier * likes : 0;
+    int audienceScore = isPositive ? baseScore * likes : 0;
 
     final mood = likes > dislikes
         ? 'like'

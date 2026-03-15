@@ -13,8 +13,7 @@ class AppHelpers {
 
   static int calculatePenalty(int basePenalty, int passStreak) {
     if (passStreak <= 0) return 0;
-    // penalty = basePenalty * passStreak
-    return basePenalty * passStreak;
+    return basePenalty;
   }
 
   static String formatTimestamp(DateTime dateTime) {
