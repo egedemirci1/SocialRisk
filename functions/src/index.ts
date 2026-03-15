@@ -1,4 +1,4 @@
-import * as functions from "firebase-functions";
+import * as functions from "firebase-functions/v1";
 import * as admin from "firebase-admin";
 
 if (!admin.apps.length) admin.initializeApp();
@@ -26,7 +26,7 @@ interface PlayerScore {
  */
 export const onGameUpdated = functions.firestore
   .document("games/{gameId}")
-  .onUpdate(async (change, context) => {
+  .onUpdate(async (change: functions.Change<functions.firestore.DocumentSnapshot>, context: functions.EventContext) => {
     const gameId = context.params.gameId as string;
     const after = change.after.data();
     const status = after?.status;
@@ -49,13 +49,19 @@ export const onGameUpdated = functions.firestore
       .collection("players")
       .get();
 
+    // Oyuncu skorlarını veritabanından oku (onUpdate tetikleyicisi transaction commit edildikten sonra çalıştığı için skorlar zaten güncel)
     const players: PlayerScore[] = playersSnap.docs.map((doc) => {
       const d = doc.data();
       const raw = d.score;
       const score =
         typeof raw === "number" ? Math.floor(raw) : parseInt(String(raw), 10) || 0;
+      
       return { id: doc.id, score };
     });
+
+    // Tur bazlı bitiş kontrolü için lastRoundPlayerId'ye ihtiyacımız var
+    const lastRoundPlayerId =
+      (after?.lastRoundPlayerId ?? after?.currentPlayerId ?? "") as string;
 
     const turnOrder: string[] = Array.isArray(after?.turnOrder)
       ? after.turnOrder
@@ -73,8 +79,6 @@ export const onGameUpdated = functions.firestore
     );
     const currentRound =
       typeof after?.currentRound === "number" ? after.currentRound : 1;
-    const lastRoundPlayerId =
-      (after?.lastRoundPlayerId ?? after?.currentPlayerId ?? "") as string;
     const isLastActive =
       activeOrder.length > 0 &&
       activeOrder[activeOrder.length - 1] === lastRoundPlayerId;
@@ -83,11 +87,13 @@ export const onGameUpdated = functions.firestore
     if (endType === "rounds") {
       shouldEnd = currentRound >= endValue && isLastActive;
     } else {
+      // Veritabanından gelen güncel skorlarla bitiş kontrolü yap
       shouldEnd = players.some((p) => p.score >= endValue);
     }
 
     if (!shouldEnd) return;
 
+    // Veritabanından gelen güncel skorlarla sıralama yap
     const sorted = [...players].sort((a, b) => b.score - a.score);
     const rewards: Record<string, number> = {};
     sorted.forEach((p, i) => {

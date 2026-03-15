@@ -240,6 +240,17 @@ class FirebaseGameSource implements GameRepository {
           'lastRoundPlayerId': playerId,
         };
 
+        // Ekonomi Modu: Seçilmiş kategorinin değerini düşür (tur tamamlandığında)
+        if (game.categoryPickOrder.isNotEmpty && game.selectedCategory != null) {
+          final marketValues = Map<String, int>.from(game.categoryMarketValues);
+          final selectedCategory = game.selectedCategory!;
+          final currentValue = marketValues[selectedCategory] ?? 10;
+          final newValue = (currentValue - GameConstants.marketDecayAmount)
+              .clamp(GameConstants.minMarketValue, GameConstants.maxMarketValue);
+          marketValues[selectedCategory] = newValue;
+          updates['categoryMarketValues'] = marketValues;
+        }
+
         // Ekonomi Modu: Sıra Değişimi Hazırlığı
         if (game.categoryPickOrder.isNotEmpty) {
           final nextPickIndex = game.currentPickIndex + 1;
@@ -247,7 +258,10 @@ class FirebaseGameSource implements GameRepository {
             updates['currentPickIndex'] = 0;
             updates['currentRound'] = game.currentRound + 1;
             updates['currentPlayerId'] = game.categoryPickOrder[0];
-            final marketValues = Map<String, int>.from(game.categoryMarketValues);
+            // Yeni tur başlarken sıfır değerli kategorileri 10'a çek ve hotCategory seç
+            final marketValues = Map<String, int>.from(
+              updates['categoryMarketValues'] as Map<String, int>? ?? game.categoryMarketValues,
+            );
             for (final k in marketValues.keys.toList()) {
               if ((marketValues[k] ?? 0) == 0) marketValues[k] = 10;
             }
@@ -457,19 +471,13 @@ class FirebaseGameSource implements GameRepository {
           throw Exception('Bu kategori kilitli!');
         }
 
-        final marketValues = Map<String, int>.from(game.categoryMarketValues);
-        final oldValue = marketValues[category] ?? 10;
-        final newValue = (oldValue - GameConstants.marketDecayAmount)
-            .clamp(GameConstants.minMarketValue, GameConstants.maxMarketValue);
-        marketValues[category] = newValue;
-
         // Seçim sayısını güncelle ve kilitleme kontrolü yap
         final updatedPickCounts = Map<String, int>.from(game.categoryPickCounts);
         final newPickCount = (updatedPickCounts[category] ?? 0) + 1;
         updatedPickCounts[category] = newPickCount;
 
         final updatedLocked = List<String>.from(game.lockedCategories);
-        final totalCategories = marketValues.keys.length;
+        final totalCategories = game.categoryMarketValues.keys.length;
         final wouldLockAll = (updatedLocked.length + 1) >= totalCategories;
         if (newPickCount >= GameConstants.lockThreshold && !wouldLockAll) {
           if (!updatedLocked.contains(category)) {
@@ -478,7 +486,6 @@ class FirebaseGameSource implements GameRepository {
         }
 
         final updates = <String, dynamic>{
-          'categoryMarketValues': marketValues,
           'categoryPickCounts': updatedPickCounts,
           'lockedCategories': updatedLocked,
           'selectedCategory': category,
