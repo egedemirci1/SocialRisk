@@ -1,189 +1,132 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:social_risk/shared/models/enums.dart';
 
-/// Oy Hesaplama Mantığı – Çoğunluk Oylaması (Majority Voting)
+/// Oy Hesaplama Mantığı – Unit & Edge Case Testleri
 ///
-/// Kurallar:
-/// - like sayısı >= dislike sayısı → pozitif: baseScore * multiplier * likes
-/// - dislike sayısı > like sayısı → 0 puan
-/// - neutral oylar çoğunluğa katılmaz, puan vermez
+/// FirebaseVoteSource.calculateVoteResult fonksiyonunun mantığını
+/// Firebase bağımlılığı olmadan pure function olarak test eder.
 void main() {
-  // Pure function — firebase_vote_source.calculateVoteResult mantığını yansıtır
-  ({int totalScore, int audienceScore}) calculateVoteScore(
-    List<VoteValue> votes, {
-    int baseScore = 10,
-    int taskMultiplier = 1,
-  }) {
-    int likes = 0;
-    int dislikes = 0;
+  // Pure function olarak ayıklanan oy hesaplama mantığı
+  int calculateVoteScore(List<VoteValue> votes, {int taskMultiplier = 1}) {
+    int totalScore = 0;
     for (final vote in votes) {
       switch (vote) {
         case VoteValue.like:
-          likes++;
+          totalScore += (10 * taskMultiplier);
           break;
         case VoteValue.neutral:
+          totalScore += 0;
           break;
         case VoteValue.dislike:
-          dislikes++;
+          totalScore -= 10;
           break;
       }
     }
-    final isPositive = likes >= dislikes;
-    return (
-      totalScore: isPositive ? baseScore * taskMultiplier * likes : 0,
-      audienceScore: isPositive ? baseScore * likes : 0,
-    );
+    return totalScore;
   }
 
-  group('Çoğunluk Oylaması (Majority Voting)', () {
+  group('Vote Calculation Logic', () {
     // ─────────── Temel Senaryolar ───────────
     group('temel senaryolar', () {
-      test('hepsi like → baseScore * multiplier * likes', () {
-        final r = calculateVoteScore(List.filled(5, VoteValue.like));
-        expect(r.totalScore, 50); // 10 * 1 * 5
-        expect(r.audienceScore, 50);
+      test('hepsi like → 10 * oyuncu sayısı * çarpan', () {
+        final votes = List.filled(5, VoteValue.like);
+        expect(calculateVoteScore(votes), 50); // 5 * 10 * 1
       });
 
-      test('hepsi dislike → 0 (negatif çoğunluk)', () {
-        final r = calculateVoteScore(List.filled(5, VoteValue.dislike));
-        expect(r.totalScore, 0);
-        expect(r.audienceScore, 0);
+      test('hepsi dislike → -10 * oyuncu sayısı (çarpan etkisiz)', () {
+        final votes = List.filled(5, VoteValue.dislike);
+        expect(calculateVoteScore(votes), -50); // 5 * -10
       });
 
-      test('hepsi neutral → 0 (0 like >= 0 dislike → pozitif ama 0 like)', () {
-        final r = calculateVoteScore(List.filled(5, VoteValue.neutral));
-        expect(r.totalScore, 0);
-        expect(r.audienceScore, 0);
+      test('hepsi neutral → 0', () {
+        final votes = List.filled(5, VoteValue.neutral);
+        expect(calculateVoteScore(votes), 0);
       });
 
       test('boş oy listesi → 0', () {
-        final r = calculateVoteScore([]);
-        expect(r.totalScore, 0);
-        expect(r.audienceScore, 0);
+        expect(calculateVoteScore([]), 0);
       });
 
       test('tek oy – like', () {
-        final r = calculateVoteScore([VoteValue.like]);
-        expect(r.totalScore, 10);
+        expect(calculateVoteScore([VoteValue.like]), 10);
       });
 
       test('tek oy – dislike', () {
-        final r = calculateVoteScore([VoteValue.dislike]);
-        expect(r.totalScore, 0);
+        expect(calculateVoteScore([VoteValue.dislike]), -10);
       });
     });
 
     // ─────────── Çarpan (Multiplier) Testleri ───────────
     group('multiplier testleri', () {
       test('multiplier 2 ile like → 20 puan', () {
-        final r = calculateVoteScore([VoteValue.like], taskMultiplier: 2);
-        expect(r.totalScore, 20);
+        expect(calculateVoteScore([VoteValue.like], taskMultiplier: 2), 20);
       });
 
       test('multiplier 3 ile 3 like → 90 puan', () {
-        final r = calculateVoteScore(
-          List.filled(3, VoteValue.like),
-          taskMultiplier: 3,
-        );
-        expect(r.totalScore, 90);
+        final votes = List.filled(3, VoteValue.like);
+        expect(calculateVoteScore(votes, taskMultiplier: 3), 90);
       });
 
-      test('multiplier dislike çoğunluğunu etkilememeli → hâlâ 0', () {
-        final r = calculateVoteScore([VoteValue.dislike], taskMultiplier: 5);
-        expect(r.totalScore, 0);
+      test('multiplier dislike\'ı etkilememeli (sabit -10)', () {
+        expect(calculateVoteScore([VoteValue.dislike], taskMultiplier: 5), -10);
       });
 
-      test('multiplier neutral tek basına → 0', () {
-        final r = calculateVoteScore([VoteValue.neutral], taskMultiplier: 10);
-        expect(r.totalScore, 0);
+      test('multiplier neutral\'ı etkilememeli', () {
+        expect(calculateVoteScore([VoteValue.neutral], taskMultiplier: 10), 0);
       });
     });
 
-    // ─────────── Eşitlik ve Çoğunluk ───────────
-    group('eşitlik ve çoğunluk', () {
-      test('1 like + 1 dislike → eşitlik → pozitif lean → 10', () {
-        final r = calculateVoteScore([VoteValue.like, VoteValue.dislike]);
-        expect(r.totalScore, 10); // 10 * 1 * 1 like
-      });
-
-      test('1 like + 1 dislike, mult 2 → 20', () {
-        final r = calculateVoteScore(
-          [VoteValue.like, VoteValue.dislike],
-          taskMultiplier: 2,
-        );
-        expect(r.totalScore, 20);
-      });
-
-      test('2 neutral + 1 dislike → 0 (0 likes < 1 dislike)', () {
-        final r = calculateVoteScore([
-          VoteValue.neutral,
-          VoteValue.neutral,
-          VoteValue.dislike,
-        ]);
-        expect(r.totalScore, 0);
-      });
-
-      test('2 neutral + 1 like → 10 (1 like >= 0 dislike)', () {
-        final r = calculateVoteScore([
-          VoteValue.neutral,
-          VoteValue.neutral,
-          VoteValue.like,
-        ]);
-        expect(r.totalScore, 10);
-      });
-
-      test('3 like + 2 dislike → pozitif çoğunluk → 30', () {
-        final r = calculateVoteScore([
+    // ─────────── Karma Senaryolar ───────────
+    group('karma senaryolar', () {
+      test('3 like + 2 dislike + 1 neutral → 30 - 20 + 0 = 10', () {
+        final votes = [
           VoteValue.like, VoteValue.like, VoteValue.like,
           VoteValue.dislike, VoteValue.dislike,
-        ]);
-        expect(r.totalScore, 30); // 10 * 1 * 3
+          VoteValue.neutral,
+        ];
+        expect(calculateVoteScore(votes), 10);
       });
 
-      test('2 like + 3 dislike → negatif çoğunluk → 0', () {
-        final r = calculateVoteScore([
-          VoteValue.like, VoteValue.like,
-          VoteValue.dislike, VoteValue.dislike, VoteValue.dislike,
-        ]);
-        expect(r.totalScore, 0);
+      test('eşit like ve dislike → net negatif (dislike sabit, like çarpansız)', () {
+        final votes = [VoteValue.like, VoteValue.dislike]; // 10 - 10 = 0
+        expect(calculateVoteScore(votes), 0);
+      });
+
+      test('eşit like ve dislike, multiplier 2 → net pozitif (20 - 10)', () {
+        final votes = [VoteValue.like, VoteValue.dislike];
+        expect(calculateVoteScore(votes, taskMultiplier: 2), 10);
+      });
+
+      test('büyük oyuncu grubu – 8 oyuncu karışık oylar', () {
+        final votes = [
+          VoteValue.like, VoteValue.like, VoteValue.like, VoteValue.like,  // 4 like = 40
+          VoteValue.dislike, VoteValue.dislike,  // 2 dislike = -20
+          VoteValue.neutral, VoteValue.neutral,  // 2 neutral = 0
+        ];
+        expect(calculateVoteScore(votes), 20);
       });
     });
 
-    // ─────────── Büyük Grup Testleri ───────────
-    group('büyük grup', () {
-      test('8 oyuncu karışık: 4 like + 2 dislike + 2 neutral → 40', () {
-        final r = calculateVoteScore([
-          VoteValue.like, VoteValue.like, VoteValue.like, VoteValue.like,
-          VoteValue.dislike, VoteValue.dislike,
-          VoteValue.neutral, VoteValue.neutral,
-        ]);
-        // 4 >= 2 → pozitif → 10 * 1 * 4 = 40
-        expect(r.totalScore, 40);
-        expect(r.audienceScore, 40);
+    // ─────────── Uç Senaryolar ───────────
+    group('uç senaryolar', () {
+      test('çok büyük multiplier taşma yaratmamalı', () {
+        final result = calculateVoteScore([VoteValue.like], taskMultiplier: 999);
+        expect(result, 9990);
       });
 
-      test('1 like + 99 dislike → 0', () {
+      test('çok fazla oy (100 oyuncu simülasyonu)', () {
+        final votes = List.filled(100, VoteValue.like);
+        expect(calculateVoteScore(votes), 1000);
+      });
+
+      test('sadece neutral oylar, yüksek multiplier → hâlâ 0', () {
+        final votes = List.filled(50, VoteValue.neutral);
+        expect(calculateVoteScore(votes, taskMultiplier: 100), 0);
+      });
+
+      test('1 like + 99 dislike → net çok negatif', () {
         final votes = [VoteValue.like] + List.filled(99, VoteValue.dislike);
-        final r = calculateVoteScore(votes);
-        expect(r.totalScore, 0);
-      });
-
-      test('çok fazla oy (100 like)', () {
-        final r = calculateVoteScore(List.filled(100, VoteValue.like));
-        expect(r.totalScore, 1000);
-      });
-    });
-
-    // ─────────── Economy baseScore testi ───────────
-    group('economy baseScore', () {
-      test('economy baseScore 15 ile 2 like mult 2 → 60', () {
-        final r = calculateVoteScore(
-          [VoteValue.like, VoteValue.like],
-          baseScore: 15,
-          taskMultiplier: 2,
-        );
-        expect(r.totalScore, 60); // 15 * 2 * 2
-        expect(r.audienceScore, 30); // 15 * 2
+        expect(calculateVoteScore(votes), 10 - 990); // = -980
       });
     });
   });

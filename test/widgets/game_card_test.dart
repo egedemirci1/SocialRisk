@@ -12,7 +12,7 @@ void main() {
               child: GameCard(
                 category: 'Cesaret',
                 content: 'Test bir görev',
-                points: 20,
+                multiplier: 2,
               ),
             ),
           ),
@@ -21,7 +21,7 @@ void main() {
 
       expect(find.text('CESARET'), findsOneWidget);
       expect(find.text('Test bir görev'), findsOneWidget);
-      expect(find.text('20 puan'), findsOneWidget);
+      expect(find.text('2x Puan'), findsOneWidget);
     });
 
     testWidgets('shows correct icon for each category', (tester) async {
@@ -44,7 +44,6 @@ void main() {
                 child: GameCard(
                   category: entry.key,
                   content: 'Görev',
-                  points: 10,
                 ),
               ),
             ),
@@ -63,14 +62,13 @@ void main() {
               child: GameCard(
                 category: 'Bilgi',
                 content: 'Soru sor',
-                points: 10,
               ),
             ),
           ),
         ),
       );
 
-      expect(find.text('10 puan'), findsOneWidget);
+      expect(find.text('1x Puan'), findsOneWidget);
     });
 
     testWidgets('long content does not overflow when inside scrollable', (tester) async {
@@ -85,7 +83,7 @@ void main() {
               child: GameCard(
                 category: 'Cesaret',
                 content: longContent,
-                points: 10,
+                multiplier: 1,
               ),
             ),
           ),
@@ -109,7 +107,7 @@ void main() {
                   const GameCard(
                     category: 'Bilgi',
                     content: 'Scroll sonrası görev',
-                    points: 20,
+                    multiplier: 2,
                   ),
                 ],
               ),

@@ -28,7 +28,6 @@ class GameModel {
   final List<String> lockedCategories;
   final List<String> categoryPickOrder;
   final int currentPickIndex;
-  final String? lastPickedCategory;
   // Görev ön-yükleme havuzu: key = "category_difficulty", value = list of task maps
   final Map<String, List<Map<String, dynamic>>> taskPool;
 
@@ -56,7 +55,6 @@ class GameModel {
     this.lockedCategories = const [],
     this.categoryPickOrder = const [],
     this.currentPickIndex = 0,
-    this.lastPickedCategory,
     this.taskPool = const {},
   });
 
@@ -89,7 +87,6 @@ class GameModel {
       lockedCategories: List<String>.from(json['lockedCategories'] ?? []),
       categoryPickOrder: List<String>.from(json['categoryPickOrder'] ?? []),
       currentPickIndex: json['currentPickIndex'] as int? ?? 0,
-      lastPickedCategory: json['lastPickedCategory'] as String?,
       taskPool: _parseTaskPool(json['taskPool']),
     );
   }
@@ -136,7 +133,6 @@ class GameModel {
       'lockedCategories': lockedCategories,
       'categoryPickOrder': categoryPickOrder,
       'currentPickIndex': currentPickIndex,
-      if (lastPickedCategory != null) 'lastPickedCategory': lastPickedCategory,
       'taskPool': taskPool,
       'createdAt': FieldValue.serverTimestamp(),
     };
@@ -181,7 +177,6 @@ class GameModel {
       lockedCategories: lockedCategories,
       categoryPickOrder: categoryPickOrder,
       currentPickIndex: currentPickIndex,
-      lastPickedCategory: lastPickedCategory,
     );
   }
 }

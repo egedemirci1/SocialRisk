@@ -71,20 +71,6 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
           }
         });
       }
-
-      if (game.status == GameStatus.finished) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) context.go('/game-over', extra: widget.roomCode);
-        });
-      } else if (game.status == GameStatus.results &&
-                 previous?.value?.status != GameStatus.results) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            context.go('/round-result',
-                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode});
-          }
-        });
-      }
     });
 
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));

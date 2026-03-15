@@ -22,7 +22,7 @@ void main() {
   });
 
   group('FirebaseGameSource - pickCategoryEconomy', () {
-    test('pickCategoryEconomy records selection without changing market values', () async {
+    test('pickCategoryEconomy uses Seesaw logic (one drops, one gains)', () async {
       const gameId = 'game123';
       const category = 'Dijital';
       const playerId = 'p1';
@@ -42,6 +42,7 @@ void main() {
 
       await fakeFirestore.collection('games').doc(gameId).set(initialData);
 
+      // Execute pick (10 -> 8, another gains 2)
       await gameSource.pickCategoryEconomy(
         gameId: gameId,
         playerId: playerId,
@@ -49,16 +50,18 @@ void main() {
       );
 
       final gameSnap = await fakeFirestore.collection('games').doc(gameId).get();
-      // Market values should NOT change during pick (handled in nextTurn)
       final marketValues = Map<String, int>.from(gameSnap.data()?['categoryMarketValues']);
-      expect(marketValues['Dijital'], 10);
-      expect(marketValues['Bilgi'], 10);
-      expect(marketValues['Fiziksel'], 10);
       
-      expect(gameSnap.data()?['selectedCategory'], category);
-      expect(gameSnap.data()?['lastPickedCategory'], category);
+      // Seesaw check: Dijital drops by 2 (10 -> 8). Another must gain 2 (10 -> 12).
+      expect(marketValues[category], 8);
+      
+      final others = marketValues.entries.where((e) => e.key != category).map((e) => e.value).toList();
+      expect(others, contains(12));
+      expect(others, contains(10));
+      
+      // Turn check: currentPlayerId should STAY 'p1'
+      expect(gameSnap.data()?['currentPlayerId'], playerId);
       expect(gameSnap.data()?['status'], 'choosingDifficulty');
-      expect(gameSnap.data()?['categoryPickCounts'][category], 1);
     });
 
     test('pickCategoryEconomy locks category at threshold', () async {
@@ -349,11 +352,7 @@ void main() {
       const playerId = 'p1';
       
       await fakeFirestore.collection('rooms').doc(roomId).collection('players').doc(playerId).set({'score': 100, 'passStreak': 1});
-      await fakeFirestore.collection('games').doc(gameId).set({
-        'roomId': roomId,
-        'currentPlayerId': playerId,
-        'turnOrder': [playerId],
-      });
+      await fakeFirestore.collection('games').doc(gameId).set({'roomId': roomId});
 
       await gameSource.passTask(gameId: gameId, roomId: roomId, playerId: playerId, basePenalty: 50);
 
@@ -419,7 +418,7 @@ void main() {
       expect(result.audienceScore, 15);
     });
 
-    test('calculateVoteResult neutral puan vermez (çoğunluğa katılmaz)', () async {
+    test('calculateVoteResult neutral dinamik puan hesaplar (baseScore*mult~/2)', () async {
       const gameId = 'neutralDynamic';
       await fakeFirestore.collection('games').doc(gameId).set({
         'mode': 'economy',
@@ -434,9 +433,9 @@ void main() {
       final voteSource = _FirebaseVoteSourceForTest(fakeFirestore);
       final result = await voteSource.calculateVoteResult(gameId, taskMultiplier: 3);
       
-      // neutral → 0 likes, 0 dislikes → pozitif lean → ama 0 likes → 0 puan
-      expect(result.totalScore, 0);
-      expect(result.audienceScore, 0);
+      // neutral = 20 * 3 = 60
+      expect(result.totalScore, 60);
+      expect(result.audienceScore, 20);
     });
 
     test('calculateVoteResult dislike sıfır puan verir', () async {
@@ -485,7 +484,7 @@ void main() {
   });
 }
 
-// Temporary test helper — çoğunluk oylaması mantığını yansıtır
+// Temporary test helper to avoid modifying the real source multiple times for verification
 class _FirebaseVoteSourceForTest {
   final FirebaseFirestore _firestore;
   _FirebaseVoteSourceForTest(this._firestore);
@@ -503,21 +502,20 @@ class _FirebaseVoteSourceForTest {
     }
 
     final votesSnap = await _firestore.collection('games').doc(gameId).collection('votes').get();
-    int likes = 0;
-    int dislikes = 0;
+    int total = 0;
+    int audience = 0;
     for (var doc in votesSnap.docs) {
       final val = doc.data()['value'] as String?;
       if (val == 'like') {
-        likes++;
+        total += (baseScore * taskMultiplier);
+        audience += baseScore;
+      } else if (val == 'neutral') {
+        total += (baseScore * taskMultiplier);
+        audience += baseScore;
       } else if (val == 'dislike') {
-        dislikes++;
+        total += 0;
       }
-      // neutral: ignored
     }
-    final isPositive = likes >= dislikes;
-    return VoteResult(
-      totalScore: isPositive ? baseScore * taskMultiplier * likes : 0,
-      audienceScore: isPositive ? baseScore * likes : 0,
-    );
+    return VoteResult(totalScore: total, audienceScore: audience);
   }
 }

@@ -33,11 +33,11 @@ void main() {
     test('toJson value name döndürmeli', () {
       expect(
         VoteModel(voterId: 'x', value: VoteValue.like).toJson(),
-        {'value': 'like', 'timedOut': false, 'penaltyApplied': false},
+        {'value': 'like'},
       );
       expect(
         VoteModel(voterId: 'x', value: VoteValue.dislike).toJson(),
-        {'value': 'dislike', 'timedOut': false, 'penaltyApplied': false},
+        {'value': 'dislike'},
       );
     });
 

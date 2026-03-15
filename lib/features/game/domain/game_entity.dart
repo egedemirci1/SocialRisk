@@ -27,7 +27,6 @@ class GameEntity {
   final List<String> lockedCategories;
   final List<String> categoryPickOrder;
   final int currentPickIndex;
-  final String? lastPickedCategory;
 
   const GameEntity({
     required this.gameId,
@@ -54,7 +53,6 @@ class GameEntity {
     this.lockedCategories = const [],
     this.categoryPickOrder = const [],
     this.currentPickIndex = 0,
-    this.lastPickedCategory,
   });
 }
 

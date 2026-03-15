@@ -41,8 +41,6 @@ Bu görev listesi, detaylı testlerin ardından bildirilen hata (bug) raporları
 - [ ] **Sayfa Geçişlerinde Titreme (State Glitch):** Sayfa geçişlerinde eski sayfanın değişikliği anlık görüldükten sonra sayfa değişiyor. *(Neden: GoRouter sayfa iterken arkadaki state yenilenmesine render motoru tepki veriyor. Loader aralığı uzatılabilir).*
 - [ ] **Sahne Adı Hatası (Login):** Giriş yaparken "Lütfen sahne adınızı belirleyin" toast hatası yersiz tetikleniyorsa giderilecek.
 
-
-
 ### 3. Yeni Özellik ve Check'ler
 - [ ] **Gelişmiş İstatistikler:** Kullanıcı modeline Toplam Oyun Sayısı, Kazanılan Şampiyonluk, En Yüksek Puan gibi rekor verileri (DB) eklenecek ve İstatistikler panelinde gösterilecek.
 - [ ] **Ayarlar Paneli İşlevselliği:** Açılan menüdeki ayarlar panelinin iç dinamikleri eklenecek.

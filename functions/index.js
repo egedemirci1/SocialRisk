@@ -20,7 +20,7 @@ exports.onGameFinished = functions.firestore
     const before = change.before.data();
     const after = change.after.data();
 
-    // Sadece status 'finished' olduğunda tetikle (önceki durum finished değilse ve yeni durum finished ise)
+    // Sadece status 'finished' olduğunda tetikle
     if (before.status === "finished" || after.status !== "finished") {
       return null;
     }
