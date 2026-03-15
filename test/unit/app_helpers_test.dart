@@ -33,13 +33,13 @@ void main() {
         expect(AppHelpers.calculatePenalty(50, 1), 50);
       });
 
-      test('passStreak 3 iken basePenalty * 3 döndürmeli', () {
-        expect(AppHelpers.calculatePenalty(50, 3), 150);
+      test('passStreak 3 iken de sabit basePenalty döndürmeli', () {
+        expect(AppHelpers.calculatePenalty(50, 3), 50);
       });
 
-      test('farklı basePenalty değerleriyle doğru hesaplamalı', () {
-        expect(AppHelpers.calculatePenalty(100, 2), 200);
-        expect(AppHelpers.calculatePenalty(25, 4), 100);
+      test('farklı basePenalty değerleriyle sabit döndürmeli', () {
+        expect(AppHelpers.calculatePenalty(100, 2), 100);
+        expect(AppHelpers.calculatePenalty(25, 4), 25);
       });
     });
 

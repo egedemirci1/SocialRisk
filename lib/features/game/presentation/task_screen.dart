@@ -700,8 +700,8 @@ class _AnimatedPassButtonState extends State<_AnimatedPassButton>
         ),
         child: Text(
           _isWarningSelected
-              ? 'EMİN MİSİN? (-${50 * (widget.passStreak + 1)} Puan)'
-              : 'Görevi Reddet (-${50 * (widget.passStreak + 1)} Puan)',
+              ? 'EMİN MİSİN? (-50 Puan)'
+              : 'Görevi Reddet (-50 Puan)',
           style: AppTextStyles.labelSmall.copyWith(
             color: _isWarningSelected ? Colors.redAccent : Colors.white70,
             fontWeight: FontWeight.w900,
