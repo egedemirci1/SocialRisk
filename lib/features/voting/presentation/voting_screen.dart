@@ -88,25 +88,30 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
 
       final latestGame = ref.read(watchGameProvider(widget.gameId)).value;
       final latestRoom = ref.read(watchRoomProvider(widget.roomCode)).value;
-      final latestPlayers = ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
+      final latestPlayers =
+          ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
       if (latestGame != null && latestRoom != null) {
         var shouldEnd = GameEndUtils.shouldEndAfterRound(
           game: latestGame,
           room: latestRoom,
           players: latestPlayers,
         );
-        if (!shouldEnd && latestRoom.endConditionType == EndConditionType.score) {
+        if (!shouldEnd &&
+            latestRoom.endConditionType == EndConditionType.score) {
           final currentPlayerScore = latestPlayers
               .where((p) => p.id == currentPlayerId)
               .firstOrNull
               ?.score;
           if (currentPlayerScore != null) {
-            shouldEnd = (currentPlayerScore + earned) >= latestRoom.endConditionValue;
+            shouldEnd =
+                (currentPlayerScore + earned) >= latestRoom.endConditionValue;
           }
         }
 
         if (shouldEnd) {
-          await ref.read(gameControllerProvider.notifier).endGame(widget.gameId);
+          await ref
+              .read(gameControllerProvider.notifier)
+              .endGame(widget.gameId);
         }
       }
 
@@ -144,7 +149,8 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
       if (currentStatus == GameStatus.results) {
         final game = next.value;
         final room = ref.read(watchRoomProvider(widget.roomCode)).value;
-        final players = ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
+        final players =
+            ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
         if (game != null &&
             room != null &&
             GameEndUtils.shouldEndAfterRound(
@@ -175,8 +181,10 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
 
         if (game.status == GameStatus.results) {
           final room = ref.read(watchRoomProvider(widget.roomCode)).value;
-          final players = ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
-          final shouldEnd = room != null &&
+          final players =
+              ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
+          final shouldEnd =
+              room != null &&
               GameEndUtils.shouldEndAfterRound(
                 game: game,
                 room: room,
@@ -253,177 +261,193 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             gradient: RadialGradient(
               center: Alignment.topLeft,
               radius: 1.5,
-              colors: [
-                glowColor,
-                AppColors.background,
-              ],
+              colors: [glowColor, AppColors.background],
             ),
           ),
           child: Scaffold(
             backgroundColor: Colors.transparent,
             appBar: AppBar(
-            title: Text(
-              'ELEŞTİRİ & OYLAMA',
-              style: AppTextStyles.headlineMedium.copyWith(
-                color: AppColors.accent,
-                letterSpacing: 2,
-              ),
-            ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            centerTitle: true,
-            leading: ExitRoomButton(roomCode: widget.roomCode),
-            actions: [
-              if (roomAsync.value != null)
-                TurnCounterBadge(
-                  currentRound: game.currentRound,
-                  endConditionType: roomAsync.value!.endConditionType,
-                  endConditionValue: roomAsync.value!.endConditionValue,
-                ),
-              IconButton(
-                icon: const Icon(
-                  Icons.leaderboard_rounded,
-                  color: AppColors.accent,
-                ),
-                onPressed: () =>
-                    ScoreboardBottomSheet.show(context, widget.roomCode),
-              ),
-            ],
-          ),
-          body: SafeArea(
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: _FloatingPsychologicalTexts(),
-                ),
-                ResponsiveWrapper(
-                  maxWidth: 600,
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    children: [
-                      const _VisualCountdownTimer(duration: _voteDuration),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 16),
-                              PlayerAvatar(
-                                uid: game.currentPlayerId,
-                                displayName: performerName,
-                                radius: 50,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                performerName.toUpperCase(),
-                                style: AppTextStyles.displayMedium.copyWith(
-                                  color: Colors.white,
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                              // Ünvan gösterimi
-                              Builder(
-                                builder: (context) {
-                                  final profile = ref
-                                      .watch(
-                                        watchUserProfileProvider(game.currentPlayerId),
-                                      )
-                                      .value;
-                                  if (profile?.activeTitle == null) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  final cosmetics =
-                                      ref.watch(fetchCosmeticsProvider).value ?? [];
-                                  final titleItem = cosmetics
-                                      .where((c) => c.id == profile!.activeTitle)
-                                      .firstOrNull;
-                                  if (titleItem == null) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  return Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: Text(
-                                      '${titleItem.imageUrl} ${titleItem.name}',
-                                      style: AppTextStyles.labelSmall.copyWith(
-                                        color: AppColors.accent,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'performansını sergiledi:',
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                  color: Colors.white54,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              Container(
-                                padding: const EdgeInsets.all(24),
-                                decoration: BoxDecoration(
-                                  color: AppColors.surface,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: AppColors.accent.withValues(alpha: 0.1),
-                                  ),
-                                ),
-                                child: Text(
-                                  '"${game.currentTask?.content ?? ""}"',
-                                  style: AppTextStyles.titleLarge.copyWith(
-                                    color: Colors.white,
-                                    fontStyle: FontStyle.italic,
-                                    height: 1.5,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                            ],
-                          ),
-                        ),
-                      ),
-                      // Oylama / bekleme alanı her zaman altta görünsün
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-                        child: _isProcessing
-                            ? _buildProcessingIndicator()
-                            : isMyTurn
-                                ? _buildWaitingForOthers()
-                                : _hasVoted
-                                    ? _buildVotedStatus()
-                                    : VotingPanel(
-                                        timeLimit: _voteDuration,
-                                        onVote: (value, {timedOut = false}) {
-                                          if (user == null) return;
-                                          setState(() => _hasVoted = true);
-                                          if (timedOut && mounted) {
-                                            ToastUtils.showError(
-                                              context,
-                                              'S\u00fcre doldu. Oy vermedi\u011fin i\u00e7in -10 puan cezas\u0131 ald\u0131n.',
-                                            );
-                                          }
-                                          ref
-                                              .read(voteControllerProvider.notifier)
-                                              .castVote(
-                                                gameId: widget.gameId,
-                                                voterId: user.uid,
-                                                value: VoteValue.values.byName(value),
-                                                timedOut: timedOut,
-                                              );
-                                        },
-                                      ),
-                      ),
-                    ],
+              title: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  'ELEŞTİRİ & OYLAMA',
+                  style: AppTextStyles.headlineMedium.copyWith(
+                    color: AppColors.accent,
+                    letterSpacing: 2,
                   ),
                 ),
-      ],
-    ),
-  ),
-));
+              ),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              centerTitle: true,
+              leading: ExitRoomButton(roomCode: widget.roomCode),
+              actions: [
+                if (roomAsync.value != null)
+                  TurnCounterBadge(
+                    currentRound: game.currentRound,
+                    endConditionType: roomAsync.value!.endConditionType,
+                    endConditionValue: roomAsync.value!.endConditionValue,
+                  ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.leaderboard_rounded,
+                    color: AppColors.accent,
+                  ),
+                  onPressed: () =>
+                      ScoreboardBottomSheet.show(context, widget.roomCode),
+                ),
+              ],
+            ),
+            body: SafeArea(
+              child: Stack(
+                children: [
+                  Positioned.fill(child: _FloatingPsychologicalTexts()),
+                  ResponsiveWrapper(
+                    maxWidth: 600,
+                    padding: EdgeInsets.zero,
+                    child: Column(
+                      children: [
+                        const _VisualCountdownTimer(duration: _voteDuration),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 16),
+                                PlayerAvatar(
+                                  uid: game.currentPlayerId,
+                                  displayName: performerName,
+                                  radius: 50,
+                                ),
+                                const SizedBox(height: 16),
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    performerName.toUpperCase(),
+                                    style: AppTextStyles.displayMedium.copyWith(
+                                      color: Colors.white,
+                                      letterSpacing: 2,
+                                    ),
+                                  ),
+                                ),
+                                // Ünvan gösterimi
+                                Builder(
+                                  builder: (context) {
+                                    final profile = ref
+                                        .watch(
+                                          watchUserProfileProvider(
+                                            game.currentPlayerId,
+                                          ),
+                                        )
+                                        .value;
+                                    if (profile?.activeTitle == null) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    final cosmetics =
+                                        ref
+                                            .watch(fetchCosmeticsProvider)
+                                            .value ??
+                                        [];
+                                    final titleItem = cosmetics
+                                        .where(
+                                          (c) => c.id == profile!.activeTitle,
+                                        )
+                                        .firstOrNull;
+                                    if (titleItem == null) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          '${titleItem.imageUrl} ${titleItem.name}',
+                                          style: AppTextStyles.labelSmall
+                                              .copyWith(
+                                                color: AppColors.accent,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'performansını sergiledi:',
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: Colors.white54,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(24),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.surface,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: AppColors.accent.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    '"${game.currentTask?.content ?? ""}"',
+                                    style: AppTextStyles.titleLarge.copyWith(
+                                      color: Colors.white,
+                                      fontStyle: FontStyle.italic,
+                                      height: 1.5,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Oylama / bekleme alanı her zaman altta görünsün
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                          child: _isProcessing
+                              ? _buildProcessingIndicator()
+                              : isMyTurn
+                              ? _buildWaitingForOthers()
+                              : _hasVoted
+                              ? _buildVotedStatus()
+                              : VotingPanel(
+                                  timeLimit: _voteDuration,
+                                  onVote: (value, {timedOut = false}) {
+                                    if (user == null) return;
+                                    setState(() => _hasVoted = true);
+                                    if (timedOut && mounted) {
+                                      ToastUtils.showError(
+                                        context,
+                                        'S\u00fcre doldu. Oy vermedi\u011fin i\u00e7in -10 puan cezas\u0131 ald\u0131n.',
+                                      );
+                                    }
+                                    ref
+                                        .read(voteControllerProvider.notifier)
+                                        .castVote(
+                                          gameId: widget.gameId,
+                                          voterId: user.uid,
+                                          value: VoteValue.values.byName(value),
+                                          timedOut: timedOut,
+                                        );
+                                  },
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       },
       loading: () => const Scaffold(
         backgroundColor: Colors.transparent,
@@ -520,10 +544,14 @@ class _VisualCountdownTimerState extends State<_VisualCountdownTimer>
   void initState() {
     super.initState();
     _progressController = AnimationController(
-        vsync: this, duration: widget.duration);
+      vsync: this,
+      duration: widget.duration,
+    );
 
     _shakeController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 100));
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
     _shakeAnimation = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0.0, end: 4.0), weight: 1),
       TweenSequenceItem(tween: Tween(begin: 4.0, end: -4.0), weight: 2),
@@ -581,7 +609,7 @@ class _VisualCountdownTimerState extends State<_VisualCountdownTimer>
                       color: barColor.withValues(alpha: 0.5),
                       blurRadius: 8,
                       spreadRadius: remaining <= 3.0 ? 2 : 0,
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -600,7 +628,8 @@ class _FloatingPsychologicalTexts extends StatefulWidget {
 }
 
 class _FloatingPsychologicalTextsState
-    extends State<_FloatingPsychologicalTexts> with TickerProviderStateMixin {
+    extends State<_FloatingPsychologicalTexts>
+    with TickerProviderStateMixin {
   final List<String> _texts = [
     'Herkes senin kararını bekliyor...',
     'Zaman daralıyor!',
@@ -663,6 +692,3 @@ class _FloatingPsychologicalTextsState
     );
   }
 }
-
-
-

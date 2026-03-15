@@ -55,23 +55,23 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
 
-    ref.listen<AsyncValue<GameEntity?>>(
-      watchGameProvider(widget.gameId),
-      (previous, next) {
-        if (!context.mounted) return;
-        final currentStatus = next.value?.status;
+    ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
+      previous,
+      next,
+    ) {
+      if (!context.mounted) return;
+      final currentStatus = next.value?.status;
 
-        if (currentStatus == GameStatus.playing ||
-            currentStatus == GameStatus.choosingDifficulty) {
-          context.go(
-            '/task',
-            extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-          );
-        } else if (currentStatus == GameStatus.finished) {
-          context.go('/game-over', extra: widget.roomCode);
-        }
-      },
-    );
+      if (currentStatus == GameStatus.playing ||
+          currentStatus == GameStatus.choosingDifficulty) {
+        context.go(
+          '/task',
+          extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+        );
+      } else if (currentStatus == GameStatus.finished) {
+        context.go('/game-over', extra: widget.roomCode);
+      }
+    });
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -93,10 +93,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
               if (context.mounted) {
                 context.go(
                   '/task',
-                  extra: {
-                    'gameId': widget.gameId,
-                    'roomCode': widget.roomCode,
-                  },
+                  extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
                 );
               }
             });
@@ -126,28 +123,40 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           }
 
           return SafeArea(
-            child: SingleChildScrollView(
-              child: ResponsiveWrapper(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                child: Column(
-                  children: [
+            child: ResponsiveWrapper(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Column(
+                children: [
                   _buildResultHeader(game, earnedScore, isPass, playerName),
-                  const SizedBox(height: 24),
-                  _buildScoreCard(audienceScore, earnedScore, multiplier, isPass),
-                  const SizedBox(height: 24),
-                  _buildLeaderboard(players, game),
-                  const SizedBox(height: 24),
-                  if (game.currentTask != null)
-                    _TaskFeedbackSection(
-                      taskId: game.currentTask!.id,
-                      taskContent: game.currentTask!.content,
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        children: [
+                          _buildScoreCard(
+                            audienceScore,
+                            earnedScore,
+                            multiplier,
+                            isPass,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildLeaderboard(players, game),
+                          const SizedBox(height: 16),
+                          if (game.currentTask != null)
+                            _TaskFeedbackSection(
+                              taskId: game.currentTask!.id,
+                              taskContent: game.currentTask!.content,
+                            ),
+                        ],
+                      ),
                     ),
-                  const SizedBox(height: 32),
+                  ),
+                  const SizedBox(height: 16),
                   _buildActionButtons(isGameOver, game),
                 ],
               ),
             ),
-           ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -192,22 +201,23 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           ),
         ),
         const SizedBox(height: 16),
-        Text(
-          isPass ? 'GÖREV REDDEDİLDİ' : 'TUR BİTTİ',
-          style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.white,
-            letterSpacing: 2,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            isPass ? 'GÖREV REDDEDİLDİ' : 'TUR BİTTİ',
+            style: AppTextStyles.headlineMedium.copyWith(
+              color: Colors.white,
+              letterSpacing: 2,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
         Text(
           isPass
               ? '$playerName rolünü yapmayı reddetti.'
               : '$playerName performansını tamamladı.',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white54,
-          ),
+          style: AppTextStyles.bodyMedium.copyWith(color: Colors.white54),
           textAlign: TextAlign.center,
         ),
       ],
@@ -303,7 +313,9 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             borderColor: AppColors.accent.withValues(alpha: 0.3),
             onPressed: () async {
               if (isGameOver) {
-                await ref.read(gameControllerProvider.notifier).endGame(widget.gameId);
+                await ref
+                    .read(gameControllerProvider.notifier)
+                    .endGame(widget.gameId);
               } else {
                 await ref
                     .read(gameControllerProvider.notifier)
@@ -369,13 +381,18 @@ class _ScoreRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: AppTextStyles.titleMedium.copyWith(
-            color: Colors.white54,
-            fontWeight: FontWeight.w700,
+        Expanded(
+          child: Text(
+            label,
+            style: AppTextStyles.titleMedium.copyWith(
+              color: Colors.white54,
+              fontWeight: FontWeight.w700,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
+        const SizedBox(width: 8),
         Text(
           value,
           style: AppTextStyles.titleLarge.copyWith(
@@ -534,11 +551,7 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
     setState(() => _givenFeedback = like);
     ref
         .read(taskControllerProvider.notifier)
-        .submitFeedback(
-          taskId: widget.taskId,
-          userId: userId,
-          isLike: like,
-        );
+        .submitFeedback(taskId: widget.taskId, userId: userId, isLike: like);
   }
 }
 

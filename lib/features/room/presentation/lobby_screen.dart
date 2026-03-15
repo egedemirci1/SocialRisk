@@ -54,7 +54,10 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
       if (room == null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            ToastUtils.showError(context, 'Ev sahibi odadan ayrildigi icin oda kapatildi.');
+            ToastUtils.showError(
+              context,
+              'Ev sahibi odadan ayrildigi icin oda kapatildi.',
+            );
             context.go('/home');
           }
         });
@@ -69,7 +72,10 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
         if (gameId != null && gameId.isNotEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
-              context.go('/task', extra: {'gameId': gameId, 'roomCode': widget.roomCode});
+              context.go(
+                '/task',
+                extra: {'gameId': gameId, 'roomCode': widget.roomCode},
+              );
             }
           });
         }
@@ -86,24 +92,39 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text(
-          'Lobi',
-          style: AppTextStyles.headlineMedium.copyWith(
-            color: AppColors.accent,
-            letterSpacing: 1.5,
-          ),
+        title: Column(
+          children: [
+            Text(
+              'Lobi',
+              style: AppTextStyles.headlineMedium.copyWith(
+                color: AppColors.accent,
+                letterSpacing: 1.5,
+                height: 1.2,
+              ),
+            ),
+            if (playersAsync.value != null)
+              Text(
+                '${playersAsync.value!.length}/8 Oyuncu',
+                style: AppTextStyles.labelSmall.copyWith(
+                  color: AppColors.accent.withValues(alpha: 0.7),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+          ],
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded, color: AppColors.accent),
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            color: AppColors.accent,
+          ),
           onPressed: () async {
             if (user != null) {
-              await ref.read(roomControllerProvider.notifier).leaveRoom(
-                    roomCode: widget.roomCode,
-                    playerId: user.uid,
-                  );
+              await ref
+                  .read(roomControllerProvider.notifier)
+                  .leaveRoom(roomCode: widget.roomCode, playerId: user.uid);
             }
             if (context.mounted) context.pop();
           },
@@ -125,45 +146,73 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                   Expanded(
                     child: playersAsync.when(
                       data: (players) {
-                        final roomEmotes = room?.lobbyEmotes ?? const <String, LobbyEmoteEntity>{};
-                        return ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          itemCount: players.length,
-                          itemBuilder: (context, index) {
-                            final player = players[index];
-                            final isMe = player.id == user?.uid;
-                            final lobbyEmote = roomEmotes[player.id];
-                            return _PlayerTile(
-                              playerId: player.id,
-                              name: player.name,
-                              avatarUrl: player.avatarUrl,
-                              isReady: player.isReady,
-                              isCurrentPlayer: isMe,
-                              lobbyEmote: lobbyEmote?.emote,
-                              lobbyEmoteExpiresAt: lobbyEmote?.expiresAt,
-                              cosmetics: cosmetics,
-                              onLongPress: isMe
-                                  ? null
-                                  : () {
-                                      ReportDialog.show(
-                                        context,
-                                        ref,
-                                        targetUserId: player.id,
-                                        targetUserName: player.name,
-                                        targetUserAvatar: player.avatarUrl ?? '',
-                                      );
-                                    },
+                        final roomEmotes =
+                            room?.lobbyEmotes ??
+                            const <String, LobbyEmoteEntity>{};
+                        return LayoutBuilder(
+                          builder: (context, constraints) {
+                            final availableHeight = constraints.maxHeight;
+                            final isCompact =
+                                players.length > 5 &&
+                                availableHeight < players.length * 76.0;
+                            final estimatedHeight = isCompact ? 52.0 : 76.0;
+                            final needsScroll =
+                                (players.length * estimatedHeight >
+                                    availableHeight) ||
+                                players.length > 8;
+
+                            return ListView.builder(
+                              physics: needsScroll
+                                  ? const AlwaysScrollableScrollPhysics()
+                                  : const NeverScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 4,
+                              ),
+                              itemCount: players.length,
+                              itemBuilder: (context, index) {
+                                final player = players[index];
+                                final isMe = player.id == user?.uid;
+                                final lobbyEmote = roomEmotes[player.id];
+                                return _PlayerTile(
+                                  playerId: player.id,
+                                  name: player.name,
+                                  avatarUrl: player.avatarUrl,
+                                  isReady: player.isReady,
+                                  isCurrentPlayer: isMe,
+                                  lobbyEmote: lobbyEmote?.emote,
+                                  lobbyEmoteExpiresAt: lobbyEmote?.expiresAt,
+                                  cosmetics: cosmetics,
+                                  isCompact: isCompact,
+                                  onLongPress: isMe
+                                      ? null
+                                      : () {
+                                          ReportDialog.show(
+                                            context,
+                                            ref,
+                                            targetUserId: player.id,
+                                            targetUserName: player.name,
+                                            targetUserAvatar:
+                                                player.avatarUrl ?? '',
+                                          );
+                                        },
+                                );
+                              },
                             );
                           },
                         );
                       },
                       loading: () => const Center(
-                        child: CircularProgressIndicator(color: AppColors.accent),
+                        child: CircularProgressIndicator(
+                          color: AppColors.accent,
+                        ),
                       ),
                       error: (e, _) => Center(
                         child: Text(
                           'Hata: $e',
-                          style: AppTextStyles.titleMedium.copyWith(color: AppColors.primary),
+                          style: AppTextStyles.titleMedium.copyWith(
+                            color: AppColors.primary,
+                          ),
                         ),
                       ),
                     ),
@@ -182,7 +231,9 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                         final room = roomAsync.value;
                         final players = playersAsync.value ?? [];
                         final playerIds = players.map((p) => p.id).toList();
-                        final gameId = await ref.read(roomRepositoryProvider).startGameInRoom(
+                        final gameId = await ref
+                            .read(roomRepositoryProvider)
+                            .startGameInRoom(
                               roomCode: widget.roomCode,
                               playerIds: playerIds,
                               mode: room?.mode ?? GameMode.classic,
@@ -190,7 +241,13 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                             );
 
                         if (!context.mounted) return;
-                        context.go('/task', extra: {'gameId': gameId, 'roomCode': widget.roomCode});
+                        context.go(
+                          '/task',
+                          extra: {
+                            'gameId': gameId,
+                            'roomCode': widget.roomCode,
+                          },
+                        );
                       } catch (e) {
                         if (!context.mounted) return;
                         ToastUtils.showError(context, 'Hata: $e');
@@ -252,11 +309,16 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.accent.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: AppColors.accent.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
                     '$modeName MOD',
@@ -272,7 +334,11 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  icon: const Icon(Icons.copy_rounded, color: AppColors.accent, size: 24),
+                  icon: const Icon(
+                    Icons.copy_rounded,
+                    color: AppColors.accent,
+                    size: 24,
+                  ),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: widget.roomCode));
                     ToastUtils.showSuccess(context, 'Kod kopyalandı!');
@@ -299,7 +365,9 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: _LobbyCooldownButton(
         cooldownUntil: cooldownUntil,
-        onPressed: user == null ? null : () => _showEmotePicker(context, ref, user.uid),
+        onPressed: user == null
+            ? null
+            : () => _showEmotePicker(context, ref, user.uid),
       ),
     );
   }
@@ -351,7 +419,9 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                       onTap: () async {
                         Navigator.pop(context);
                         try {
-                          await ref.read(roomControllerProvider.notifier).sendLobbyEmote(
+                          await ref
+                              .read(roomControllerProvider.notifier)
+                              .sendLobbyEmote(
                                 roomCode: widget.roomCode,
                                 playerId: playerId,
                                 emote: emote,
@@ -359,9 +429,15 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                         } catch (e) {
                           final message = e.toString();
                           if (message.contains('Cooldown:')) {
-                            final seconds = message.split('Cooldown:').last.replaceAll('Exception: ', '');
+                            final seconds = message
+                                .split('Cooldown:')
+                                .last
+                                .replaceAll('Exception: ', '');
                             if (mounted) {
-                              ToastUtils.showError(context, 'Emote bekleme süresi: $seconds sn');
+                              ToastUtils.showError(
+                                context,
+                                'Emote bekleme süresi: $seconds sn',
+                              );
                             }
                             return;
                           }
@@ -395,7 +471,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
         data: (room) {
           final isHost = room?.hostId == user?.uid;
           final players = playersAsync.value ?? [];
-          final allReady = players.isNotEmpty &&
+          final allReady =
+              players.isNotEmpty &&
               players.every((p) => p.id == room?.hostId || p.isReady);
 
           return Column(
@@ -451,6 +528,7 @@ class _PlayerTile extends ConsumerWidget {
     this.lobbyEmoteExpiresAt,
     this.cosmetics = const [],
     this.onLongPress,
+    this.isCompact = false,
   });
 
   final String playerId;
@@ -462,6 +540,7 @@ class _PlayerTile extends ConsumerWidget {
   final DateTime? lobbyEmoteExpiresAt;
   final List<CosmeticItemEntity> cosmetics;
   final VoidCallback? onLongPress;
+  final bool isCompact;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -474,9 +553,9 @@ class _PlayerTile extends ConsumerWidget {
     return GestureDetector(
       onLongPress: onLongPress,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
+        padding: EdgeInsets.symmetric(vertical: isCompact ? 2.0 : 6.0),
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(isCompact ? 8.0 : 12.0),
           decoration: BoxDecoration(
             color: isCurrentPlayer
                 ? AppColors.accent.withValues(alpha: 0.1)
@@ -491,43 +570,60 @@ class _PlayerTile extends ConsumerWidget {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  PlayerAvatar(uid: playerId, displayName: name, radius: 20),
+                  PlayerAvatar(
+                    uid: playerId,
+                    displayName: name,
+                    radius: isCompact ? 16 : 20,
+                  ),
                   if (lobbyEmote != null && lobbyEmoteExpiresAt != null)
                     Positioned(
-                      top: -10,
-                      right: -16,
-                      child: _LobbyEmoteBubble(
-                        emote: lobbyEmote!,
-                        expiresAt: lobbyEmoteExpiresAt!,
+                      top: isCompact ? -8 : -10,
+                      right: isCompact ? -12 : -16,
+                      child: Transform.scale(
+                        scale: isCompact ? 0.8 : 1.0,
+                        child: _LobbyEmoteBubble(
+                          emote: lobbyEmote!,
+                          expiresAt: lobbyEmoteExpiresAt!,
+                        ),
                       ),
                     ),
                 ],
               ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name + (isCurrentPlayer ? ' (Sen)' : ''),
-                    style: AppTextStyles.titleLarge.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  if (activeTitleItem != null)
+              SizedBox(width: isCompact ? 8 : 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      activeTitleItem.name.toUpperCase(),
-                      style: AppTextStyles.labelSmall.copyWith(
-                        color: AppColors.accent,
-                        fontSize: 10,
+                      name + (isCurrentPlayer ? ' (Sen)' : ''),
+                      style: AppTextStyles.titleLarge.copyWith(
+                        color: Colors.white,
                         fontWeight: FontWeight.w900,
+                        fontSize: isCompact ? 16 : null,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                ],
+                    if (activeTitleItem != null)
+                      Text(
+                        activeTitleItem.name.toUpperCase(),
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: AppColors.accent,
+                          fontSize: isCompact ? 8 : 10,
+                          fontWeight: FontWeight.w900,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
               ),
-              const Spacer(),
+              SizedBox(width: isCompact ? 8 : 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: EdgeInsets.symmetric(
+                  horizontal: isCompact ? 6 : 8,
+                  vertical: isCompact ? 2 : 4,
+                ),
                 decoration: BoxDecoration(
                   color: isReady
                       ? Colors.green.withValues(alpha: 0.2)
@@ -538,7 +634,7 @@ class _PlayerTile extends ConsumerWidget {
                   isReady ? 'HAZIR' : 'BEKLİYOR',
                   style: AppTextStyles.labelSmall.copyWith(
                     color: isReady ? Colors.green : Colors.orange,
-                    fontSize: 10,
+                    fontSize: isCompact ? 8 : 10,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -615,20 +711,21 @@ class _LobbyCooldownButtonState extends State<_LobbyCooldownButton> {
       label: isCoolingDown
           ? 'Emote Bekleme ${remaining.inSeconds + 1}sn'
           : 'Emote Gönder',
-      icon: isCoolingDown ? Icons.hourglass_bottom_rounded : Icons.emoji_emotions_outlined,
+      icon: isCoolingDown
+          ? Icons.hourglass_bottom_rounded
+          : Icons.emoji_emotions_outlined,
       backgroundColor: isCoolingDown ? Colors.black26 : AppColors.surface,
       textColor: isCoolingDown ? Colors.white54 : AppColors.accent,
-      borderColor: isCoolingDown ? Colors.white12 : AppColors.accent.withValues(alpha: 0.3),
+      borderColor: isCoolingDown
+          ? Colors.white12
+          : AppColors.accent.withValues(alpha: 0.3),
       onPressed: isCoolingDown ? () {} : (widget.onPressed ?? () {}),
     );
   }
 }
 
 class _LobbyEmoteBubble extends StatefulWidget {
-  const _LobbyEmoteBubble({
-    required this.emote,
-    required this.expiresAt,
-  });
+  const _LobbyEmoteBubble({required this.emote, required this.expiresAt});
 
   final String emote;
   final DateTime expiresAt;
@@ -650,7 +747,8 @@ class _LobbyEmoteBubbleState extends State<_LobbyEmoteBubble> {
   @override
   void didUpdateWidget(covariant _LobbyEmoteBubble oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.expiresAt != widget.expiresAt || oldWidget.emote != widget.emote) {
+    if (oldWidget.expiresAt != widget.expiresAt ||
+        oldWidget.emote != widget.emote) {
       _isVisible = true;
       _scheduleHide();
     }
@@ -702,10 +800,7 @@ class _LobbyEmoteBubbleState extends State<_LobbyEmoteBubble> {
 }
 
 class _EmoteChoiceChip extends StatelessWidget {
-  const _EmoteChoiceChip({
-    required this.emote,
-    required this.onTap,
-  });
+  const _EmoteChoiceChip({required this.emote, required this.onTap});
 
   final String emote;
   final VoidCallback onTap;
@@ -738,7 +833,9 @@ class _ReadyToggleButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playersAsync = ref.watch(watchPlayersProvider(roomCode));
-    final me = (playersAsync.value ?? []).where((p) => p.id == playerId).firstOrNull;
+    final me = (playersAsync.value ?? [])
+        .where((p) => p.id == playerId)
+        .firstOrNull;
     final isReady = me?.isReady ?? false;
 
     return StageButton(
@@ -747,7 +844,9 @@ class _ReadyToggleButton extends ConsumerWidget {
       backgroundColor: isReady ? Colors.black26 : AppColors.primary,
       textColor: isReady ? Colors.white54 : Colors.white,
       borderColor: isReady ? Colors.white12 : AppColors.accent,
-      onPressed: () => ref.read(roomControllerProvider.notifier).toggleReady(
+      onPressed: () => ref
+          .read(roomControllerProvider.notifier)
+          .toggleReady(
             roomCode: roomCode,
             playerId: playerId,
             isReady: !isReady,
@@ -836,7 +935,8 @@ class _AnimatedHostStartButton extends StatefulWidget {
   });
 
   @override
-  State<_AnimatedHostStartButton> createState() => _AnimatedHostStartButtonState();
+  State<_AnimatedHostStartButton> createState() =>
+      _AnimatedHostStartButtonState();
 }
 
 class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
@@ -848,10 +948,14 @@ class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
-    _glowAnimation = Tween<double>(begin: 0.2, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
     );
+    _glowAnimation = Tween<double>(
+      begin: 0.2,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
     _shakeAnimation = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0.0, end: 5.0), weight: 1),
       TweenSequenceItem(tween: Tween(begin: 5.0, end: -5.0), weight: 2),
@@ -903,7 +1007,9 @@ class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.accent.withValues(alpha: _glowAnimation.value * 0.5),
+                  color: AppColors.accent.withValues(
+                    alpha: _glowAnimation.value * 0.5,
+                  ),
                   blurRadius: 20 * _glowAnimation.value,
                   spreadRadius: 5 * _glowAnimation.value,
                 ),

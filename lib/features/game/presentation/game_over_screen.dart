@@ -83,7 +83,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
-                  const Spacer(),
+                  const SizedBox(height: 24),
                   ScaleTransition(
                     scale: _scaleAnimation,
                     child: Column(
@@ -99,11 +99,14 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          winner?.name.toUpperCase() ?? '',
-                          style: AppTextStyles.headlineMedium.copyWith(
-                            color: Colors.white,
-                            letterSpacing: 2,
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            winner?.name.toUpperCase() ?? '',
+                            style: AppTextStyles.headlineMedium.copyWith(
+                              color: Colors.white,
+                              letterSpacing: 2,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -117,7 +120,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 32),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Row(
@@ -181,18 +184,18 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                               ),
                               const SizedBox(width: 12),
                               Flexible(
-                                  child: Text(
-                                    hasNegativeScore
-                                        ? 'Eksilere düşmezsin be kardeşim\nHiç bakiye kazanamadın!'
-                                        : '+$myReward Puan Bakiyenize Eklendi',
-                                    style: AppTextStyles.titleMedium.copyWith(
-                                      color: hasNegativeScore
-                                          ? Colors.white70
-                                          : Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                    textAlign: TextAlign.center,
+                                child: Text(
+                                  hasNegativeScore
+                                      ? 'Eksilere düşmezsin be kardeşim\nHiç bakiye kazanamadın!'
+                                      : '+$myReward Puan Bakiyenize Eklendi',
+                                  style: AppTextStyles.titleMedium.copyWith(
+                                    color: hasNegativeScore
+                                        ? Colors.white70
+                                        : Colors.white,
+                                    fontWeight: FontWeight.w700,
                                   ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
                             ],
                           ),
@@ -203,9 +206,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                           icon: Icons.home_rounded,
                           backgroundColor: AppColors.surface,
                           textColor: Colors.white,
-                          borderColor: AppColors.accent.withValues(
-                            alpha: 0.3,
-                          ),
+                          borderColor: AppColors.accent.withValues(alpha: 0.3),
                           onPressed: () => context.go('/home'),
                         ),
                       ],

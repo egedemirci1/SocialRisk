@@ -148,96 +148,138 @@ class _DifficultyChoiceScreenState
                     ),
                     const SizedBox(height: 32),
                     if (isMyTurn) ...[
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: AppColors.accent.withValues(alpha: 0.15),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.surface,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: AppColors.accent.withValues(
+                                      alpha: 0.15,
+                                    ),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.accent.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(20),
+                                          topRight: Radius.circular(20),
+                                        ),
+                                      ),
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          'Zorluk Seviyesi',
+                                          style: AppTextStyles.titleLarge
+                                              .copyWith(
+                                                color: AppColors.accent,
+                                                letterSpacing: 2,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 24,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Text(
+                                              'RİSK VE ÖDÜL',
+                                              style: AppTextStyles.titleLarge
+                                                  .copyWith(
+                                                    color: Colors.white,
+                                                    letterSpacing: 2,
+                                                    fontWeight: FontWeight.w900,
+                                                  ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Performansının zorluğunu sen belirle...',
+                                            style: AppTextStyles.bodyMedium
+                                                .copyWith(
+                                                  color: Colors.white54,
+                                                  fontStyle: FontStyle.italic,
+                                                ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                              _buildDifficultyCard(
+                                title: 'AMATÖR',
+                                multiplier: '1x',
+                                estimatedPoints:
+                                    (game.categoryMarketValues[game
+                                            .selectedCategory] ??
+                                        10) *
+                                    1,
+                                color: Colors.green,
+                                onTap: () => _selectDifficulty('easy'),
+                              ),
+                              const SizedBox(height: 16),
+                              _buildDifficultyCard(
+                                title: 'PROFESYONEL',
+                                multiplier: '2x',
+                                estimatedPoints:
+                                    (game.categoryMarketValues[game
+                                            .selectedCategory] ??
+                                        10) *
+                                    2,
+                                color: Colors.orange,
+                                onTap: () => _selectDifficulty('medium'),
+                              ),
+                              const SizedBox(height: 16),
+                              // Sıcak Fırsat tasarımı özel - Duayen (Hard)
+                              _buildDifficultyCard(
+                                title: 'DUAYEN',
+                                multiplier: '3x',
+                                estimatedPoints:
+                                    (game.categoryMarketValues[game
+                                            .selectedCategory] ??
+                                        10) *
+                                    3,
+                                color: AppColors.primary,
+                                isHotOffer: true,
+                                onTap: () => _selectDifficulty('hard'),
+                              ),
+                              const SizedBox(height: 32),
+                            ],
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              decoration: BoxDecoration(
-                                color: AppColors.accent.withValues(alpha: 0.1),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                ),
-                              ),
-                              child: Text(
-                                'Zorluk Seviyesi',
-                                style: AppTextStyles.titleLarge.copyWith(
-                                  color: AppColors.accent,
-                                  letterSpacing: 2,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'RİSK VE ÖDÜL',
-                                    style: AppTextStyles.titleLarge.copyWith(
-                                      color: Colors.white,
-                                      letterSpacing: 2,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Performansının zorluğunu sen belirle...',
-                                    style: AppTextStyles.bodyMedium.copyWith(
-                                      color: Colors.white54,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                      const SizedBox(height: 48),
-                      _buildDifficultyCard(
-                        title: 'AMATÖR',
-                        multiplier: '1x',
-                        estimatedPoints: (game.categoryMarketValues[game.selectedCategory] ?? 10) * 1,
-                        color: Colors.green,
-                        onTap: () => _selectDifficulty('easy'),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildDifficultyCard(
-                        title: 'PROFESYONEL',
-                        multiplier: '2x',
-                        estimatedPoints: (game.categoryMarketValues[game.selectedCategory] ?? 10) * 2,
-                        color: Colors.orange,
-                        onTap: () => _selectDifficulty('medium'),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildDifficultyCard(
-                        title: 'DUAYEN',
-                        multiplier: '3x',
-                        estimatedPoints: (game.categoryMarketValues[game.selectedCategory] ?? 10) * 3,
-                        color: AppColors.primary,
-                        onTap: () => _selectDifficulty('hard'),
-                      ),
-                      const Spacer(flex: 2),
                     ] else ...[
                       Expanded(
                         child: Center(
@@ -261,36 +303,49 @@ class _DifficultyChoiceScreenState
                               children: [
                                 Container(
                                   width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.accent.withValues(alpha: 0.1),
+                                    color: AppColors.accent.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(20),
                                       topRight: Radius.circular(20),
                                     ),
                                   ),
-                                  child: Text(
-                                    'BEKLENİYOR',
-                                    style: AppTextStyles.titleLarge.copyWith(
-                                      color: AppColors.accent,
-                                      letterSpacing: 2,
-                                      fontWeight: FontWeight.w900,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      'BEKLENİYOR',
+                                      style: AppTextStyles.titleLarge.copyWith(
+                                        color: AppColors.accent,
+                                        letterSpacing: 2,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 32,
+                                  ),
                                   child: Column(
                                     children: [
-                                      const CircularProgressIndicator(color: AppColors.accent),
+                                      const CircularProgressIndicator(
+                                        color: AppColors.accent,
+                                      ),
                                       const SizedBox(height: 32),
                                       Text(
                                         '$playerName zorluk seviyesini seçiyor...',
-                                        style: AppTextStyles.titleLarge.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w900,
-                                        ),
+                                        style: AppTextStyles.titleLarge
+                                            .copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w900,
+                                            ),
                                         textAlign: TextAlign.center,
                                       ),
                                     ],
@@ -325,58 +380,114 @@ class _DifficultyChoiceScreenState
     required String multiplier,
     required int estimatedPoints,
     required Color color,
+    bool isHotOffer = false,
     required VoidCallback onTap,
   }) {
     return InkWell(
       onTap: _isLoading ? null : onTap,
       borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
-        ),
-        child: Column(
-          children: [
-            Row(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: color.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: AppTextStyles.titleLarge.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: AppTextStyles.titleLarge.copyWith(
+                          color: color,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        multiplier,
+                        style: AppTextStyles.titleMedium.copyWith(
+                          color: color,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                const SizedBox(height: 12),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
                   child: Text(
-                    multiplier,
-                    style: AppTextStyles.titleMedium.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.w900,
+                    'Tahmini Kazanç: $estimatedPoints Puan',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: Colors.white70,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              'Tahmini Kazanç: $estimatedPoints Puan',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.white70,
-                fontWeight: FontWeight.bold,
+          ),
+          if (isHotOffer)
+            Positioned(
+              top: -12,
+              right: -12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.5),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.whatshot, color: Colors.white, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Sıcak Fırsat',
+                      style: AppTextStyles.labelSmall.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
