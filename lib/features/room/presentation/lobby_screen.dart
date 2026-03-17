@@ -214,7 +214,12 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     );
   }
 
-  Widget _buildRoomCodeBanner(BuildContext context, RoomEntity? room, int playerCount) {
+  Widget _buildRoomCodeBanner(
+    BuildContext context,
+    RoomEntity? room,
+    int playerCount,
+    _LobbyLayoutMetrics layout,
+  ) {
     final modeName = room?.mode == GameMode.economy ? 'BORSA' : 'KLASİK';
 
     return Padding(
@@ -325,6 +330,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     WidgetRef ref,
     User? user,
     RoomEntity? room,
+    _LobbyLayoutMetrics layout,
   ) {
     final activeEmote = user == null ? null : room?.lobbyEmotes[user.uid];
     final cooldownUntil = activeEmote?.sentAt.add(_lobbyEmoteCooldown);
@@ -421,10 +427,11 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     User? user,
     AsyncValue<dynamic> roomAsync,
     AsyncValue<List<dynamic>> playersAsync, {
+    required _LobbyLayoutMetrics layout,
     Future<void> Function()? onStartGame,
   }) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+      padding: EdgeInsets.fromLTRB(layout.screenPadding, 8, layout.screenPadding, layout.bottomPadding),
       child: roomAsync.when(
         data: (room) {
           final isHost = room?.hostId == user?.uid;
@@ -456,7 +463,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     color: (allReady && players.length >= 2)
                         ? AppColors.accent
                         : Colors.white30,
-                    fontSize: 12,
+                    fontSize: layout.isCompact ? 11 : 12,
                     fontWeight: (allReady && players.length >= 2)
                         ? FontWeight.bold
                         : FontWeight.normal,
@@ -474,6 +481,67 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   }
 }
 
+class _LobbyLayoutMetrics {
+  const _LobbyLayoutMetrics({
+    required this.isCompact,
+    required this.screenPadding,
+    required this.sectionGap,
+    required this.tightGap,
+    required this.bottomPadding,
+    required this.bannerPadding,
+    required this.bannerRadius,
+    required this.inlineGap,
+    required this.textGap,
+    required this.badgeHorizontalPadding,
+    required this.badgeVerticalPadding,
+    required this.badgeFontSize,
+    required this.badgeIconSize,
+    required this.copyIconSize,
+    required this.codeFontSize,
+    required this.codeLetterSpacing,
+  });
+
+  final bool isCompact;
+  final double screenPadding;
+  final double sectionGap;
+  final double tightGap;
+  final double bottomPadding;
+  final double bannerPadding;
+  final double bannerRadius;
+  final double inlineGap;
+  final double textGap;
+  final double badgeHorizontalPadding;
+  final double badgeVerticalPadding;
+  final double badgeFontSize;
+  final double badgeIconSize;
+  final double copyIconSize;
+  final double codeFontSize;
+  final double codeLetterSpacing;
+
+  factory _LobbyLayoutMetrics.from(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final isCompact = size.width < 390 || size.height < 780;
+
+    return _LobbyLayoutMetrics(
+      isCompact: isCompact,
+      screenPadding: isCompact ? 14 : 20,
+      sectionGap: isCompact ? 12 : 16,
+      tightGap: isCompact ? 10 : 12,
+      bottomPadding: isCompact ? 20 : 32,
+      bannerPadding: isCompact ? 12 : 16,
+      bannerRadius: isCompact ? 10 : 12,
+      inlineGap: isCompact ? 6 : 8,
+      textGap: isCompact ? 4 : 6,
+      badgeHorizontalPadding: isCompact ? 6 : 8,
+      badgeVerticalPadding: isCompact ? 3 : 4,
+      badgeFontSize: isCompact ? 9 : 10,
+      badgeIconSize: isCompact ? 12 : 14,
+      copyIconSize: isCompact ? 20 : 24,
+      codeFontSize: isCompact ? 22 : 24,
+      codeLetterSpacing: isCompact ? 2.5 : 4,
+    );
+  }
+}
 class _PlayerTile extends ConsumerWidget {
   const _PlayerTile({
     required this.playerId,
@@ -656,6 +724,8 @@ class _LobbyCooldownButtonState extends State<_LobbyCooldownButton> {
         : cooldownUntil.difference(DateTime.now());
     final isCoolingDown = remaining > Duration.zero;
 
+    final compact = MediaQuery.sizeOf(context).width < 390;
+
     return StageButton(
       label: isCoolingDown
           ? 'Emote Bekleme ${remaining.inSeconds + 1}sn'
@@ -665,6 +735,7 @@ class _LobbyCooldownButtonState extends State<_LobbyCooldownButton> {
       textColor: isCoolingDown ? Colors.white54 : AppColors.accent,
       borderColor: isCoolingDown ? Colors.white12 : AppColors.accent.withValues(alpha: 0.3),
       onPressed: isCoolingDown ? () {} : (widget.onPressed ?? () {}),
+      compact: compact,
     );
   }
 }
@@ -786,6 +857,8 @@ class _ReadyToggleButton extends ConsumerWidget {
     final me = (playersAsync.value ?? []).where((p) => p.id == playerId).firstOrNull;
     final isReady = me?.isReady ?? false;
 
+    final compact = MediaQuery.sizeOf(context).width < 390;
+
     return StageButton(
       label: isReady ? 'HENÜZ HAZIR DEĞİLİM' : 'PARTİYE HAZIRIM!',
       icon: isReady ? Icons.close_rounded : Icons.check_circle_outline_rounded,
@@ -797,12 +870,15 @@ class _ReadyToggleButton extends ConsumerWidget {
             playerId: playerId,
             isReady: !isReady,
           ),
+      compact: compact,
     );
   }
 }
 
 class _RotatingTooltips extends StatefulWidget {
-  const _RotatingTooltips();
+  const _RotatingTooltips({required this.compact});
+
+  final bool compact;
 
   @override
   State<_RotatingTooltips> createState() => _RotatingTooltipsState();
@@ -851,17 +927,17 @@ class _RotatingTooltipsState extends State<_RotatingTooltips> {
       },
       child: Container(
         key: ValueKey<int>(_currentIndex),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: widget.compact ? 12 : 16, vertical: widget.compact ? 6 : 8),
         decoration: BoxDecoration(
           color: AppColors.accent.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(MediaQuery.sizeOf(context).width < 390 ? 14 : 16),
           border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
         ),
         child: Text(
           _tips[_currentIndex],
           style: AppTextStyles.labelSmall.copyWith(
             color: AppColors.accent,
-            fontSize: 12,
+            fontSize: widget.compact ? 11 : 12,
             fontStyle: FontStyle.italic,
           ),
           textAlign: TextAlign.center,
@@ -929,6 +1005,8 @@ class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
   @override
   Widget build(BuildContext context) {
     if (!widget.isReady) {
+      final compact = MediaQuery.sizeOf(context).width < 390;
+
       return StageButton(
         label: 'OYUNU BAŞLAT',
         icon: Icons.play_arrow_rounded,
@@ -936,6 +1014,7 @@ class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
         textColor: Colors.white30,
         borderColor: Colors.white10,
         onPressed: () {},
+        compact: compact,
       );
     }
 
@@ -953,7 +1032,7 @@ class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
                   spreadRadius: 5 * _glowAnimation.value,
                 ),
               ],
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(MediaQuery.sizeOf(context).width < 390 ? 14 : 16),
             ),
             child: child,
           ),
@@ -966,8 +1045,22 @@ class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
         textColor: Colors.white,
         borderColor: AppColors.accent,
         onPressed: widget.onPressed,
+        compact: MediaQuery.sizeOf(context).width < 390,
       ),
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 

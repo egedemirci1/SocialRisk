@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/game_constants.dart';
-import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../../../shared/models/enums.dart';
+import '../../../shared/utils/toast_utils.dart';
+import '../../../shared/widgets/buttons/leave_room_button.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
-import '../../../shared/widgets/buttons/leave_room_button.dart';
 import '../providers/game_provider.dart';
-import '../../../shared/widgets/common/responsive_wrapper.dart';
-import '../../../shared/utils/toast_utils.dart';
-import '../../../core/constants/app_text_styles.dart';
 
-/// Ekonomi modu — Kategori seçim ekranı (Parti Temalı).
 class EconomyPickScreen extends ConsumerStatefulWidget {
   const EconomyPickScreen({
     super.key,
@@ -38,9 +38,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
     try {
       final user = ref.read(currentUserProvider);
       if (user == null) return;
-      await ref
-          .read(gameControllerProvider.notifier)
-          .pickCategoryEconomy(
+      await ref.read(gameControllerProvider.notifier).pickCategoryEconomy(
             gameId: widget.gameId,
             playerId: user.uid,
             category: category,
@@ -59,6 +57,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
     final user = ref.read(currentUserProvider);
+    final metrics = _EconomyPickMetrics.from(context);
 
     return gameAsync.when(
       data: (game) {
@@ -108,20 +107,21 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
             );
           }
         });
+
         final players = playersAsync.value ?? [];
-        final currentPlayer = players
-            .where((p) => p.id == game.currentPlayerId)
-            .firstOrNull;
+        final currentPlayer =
+            players.where((p) => p.id == game.currentPlayerId).firstOrNull;
         final currentPickerName = currentPlayer?.name ?? 'Oyuncu';
 
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
             title: Text(
-              'SENARYO SEÇİMİ',
+              'SENARYO SECIMI',
               style: AppTextStyles.headlineMedium.copyWith(
                 color: AppColors.accent,
-                letterSpacing: 2,
+                letterSpacing: metrics.titleLetterSpacing,
+                fontSize: metrics.titleFontSize,
               ),
             ),
             automaticallyImplyLeading: false,
@@ -142,10 +142,10 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
           ),
           body: SafeArea(
             child: ResponsiveWrapper(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: metrics.screenPadding),
               child: Column(
                 children: [
-                  const SizedBox(height: 16),
+                  SizedBox(height: metrics.sectionGap),
                   if (isSingleCategory)
                     const Expanded(
                       child: Center(
@@ -154,10 +154,10 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                     )
                   else ...[
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(metrics.infoPadding),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(metrics.infoRadius),
                         border: Border.all(
                           color: isMyPick
                               ? AppColors.accent.withValues(alpha: 0.3)
@@ -171,27 +171,31 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                                 ? Icons.star_rounded
                                 : Icons.hourglass_top_rounded,
                             color: isMyPick ? AppColors.accent : Colors.white24,
-                            size: 28,
+                            size: metrics.infoIconSize,
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: metrics.inlineGap),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   isMyPick
-                                      ? 'SIRADAKİ OYUNCU SENSİN!'
-                                      : '$currentPickerName SEÇİYOR...',
+                                      ? 'SIRADAKI OYUNCU SENSIN!'
+                                      : '$currentPickerName SECIYOR...',
                                   style: AppTextStyles.titleMedium.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 1,
+                                    fontSize: metrics.infoTitleFontSize,
                                   ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  'SEÇİM ${game.currentPickIndex + 1}/${game.categoryPickOrder.length}',
+                                  'SECIM ${game.currentPickIndex + 1}/${game.categoryPickOrder.length}',
                                   style: AppTextStyles.labelSmall.copyWith(
                                     color: Colors.white30,
+                                    fontSize: metrics.helperFontSize,
                                   ),
                                 ),
                               ],
@@ -200,49 +204,71 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: metrics.sectionGapLarge),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.trending_down_rounded,
                           color: AppColors.accent,
-                          size: 18,
+                          size: metrics.helperIconSize,
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'PARTİ DENEYİMİ',
-                          style: AppTextStyles.labelSmall.copyWith(
-                            color: Colors.white54,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1,
+                        SizedBox(width: metrics.textGap),
+                        Expanded(
+                          child: Text(
+                            'PARTI DENEYIMI',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: Colors.white54,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1,
+                              fontSize: metrics.helperFontSize,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: metrics.sectionGap),
                     Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 1.1,
-                        children: marketValues.keys.map((cat) {
-                          final defaultVal =
-                              GameConstants.defaultMarketValues[cat] ?? 10;
-                          final marketVal = marketValues[cat] ?? defaultVal;
-                          final isHot = game.hotCategory == cat;
-                          final displayValue = isHot ? GameConstants.hotCategoryBonus : marketVal;
-                          final isLocked = lockedCats.contains(cat);
-                          return _CategoryCard(
-                            category: cat,
-                            currentValue: displayValue,
-                            defaultValue: defaultVal,
-                            isHotCategory: isHot,
-                            isLocked: isLocked,
-                            isPickable: isMyPick && !isLocked && !_isPicking,
-                            onTap: () => _pickCategory(cat),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final crossAxisCount = constraints.maxWidth < 340 ? 1 : 2;
+                          final childAspectRatio = crossAxisCount == 1
+                              ? metrics.singleColumnAspectRatio
+                              : metrics.doubleColumnAspectRatio;
+
+                          return GridView.builder(
+                            padding: EdgeInsets.zero,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                              crossAxisSpacing: metrics.gridSpacing,
+                              mainAxisSpacing: metrics.gridSpacing,
+                              childAspectRatio: childAspectRatio,
+                            ),
+                            itemCount: marketValues.length,
+                            itemBuilder: (context, index) {
+                              final cat = marketValues.keys.elementAt(index);
+                              final defaultVal =
+                                  GameConstants.defaultMarketValues[cat] ?? 10;
+                              final marketVal = marketValues[cat] ?? defaultVal;
+                              final isHot = game.hotCategory == cat;
+                              final displayValue = isHot
+                                  ? GameConstants.hotCategoryBonus
+                                  : marketVal;
+                              final isLocked = lockedCats.contains(cat);
+
+                              return _CategoryCard(
+                                category: cat,
+                                currentValue: displayValue,
+                                defaultValue: defaultVal,
+                                isHotCategory: isHot,
+                                isLocked: isLocked,
+                                isPickable: isMyPick && !isLocked && !_isPicking,
+                                onTap: () => _pickCategory(cat),
+                                compact: metrics.isCompact,
+                              );
+                            },
                           );
-                        }).toList(),
+                        },
                       ),
                     ),
                   ],
@@ -265,11 +291,6 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
 }
 
 class _CategoryCard extends StatelessWidget {
-  final String category;
-  final int currentValue, defaultValue;
-  final bool isHotCategory;
-  final bool isLocked, isPickable;
-  final VoidCallback onTap;
   const _CategoryCard({
     required this.category,
     required this.currentValue,
@@ -278,17 +299,32 @@ class _CategoryCard extends StatelessWidget {
     required this.isLocked,
     required this.isPickable,
     required this.onTap,
+    required this.compact,
   });
+
+  final String category;
+  final int currentValue;
+  final int defaultValue;
+  final bool isHotCategory;
+  final bool isLocked;
+  final bool isPickable;
+  final VoidCallback onTap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
+    final padding = compact ? 12.0 : 16.0;
+    final titleSize = compact ? 14.0 : 16.0;
+    final valueSize = compact ? 18.0 : 20.0;
+    final helperSize = compact ? 10.0 : 12.0;
+
     return GestureDetector(
       onTap: isPickable ? onTap : null,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(padding),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(compact ? 10 : 12),
           border: Border.all(
             color: isPickable
                 ? AppColors.accent.withValues(alpha: 0.3)
@@ -302,7 +338,7 @@ class _CategoryCard extends StatelessWidget {
                 child: Icon(
                   Icons.lock_rounded,
                   color: Colors.white10,
-                  size: 32,
+                  size: compact ? 28 : 32,
                 ),
               ),
             if (!isLocked && isHotCategory)
@@ -311,16 +347,16 @@ class _CategoryCard extends StatelessWidget {
                 right: 0,
                 child: Column(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.local_fire_department_rounded,
                       color: Colors.orange,
-                      size: 20,
+                      size: compact ? 18 : 20,
                     ),
                     Text(
-                      'Sıcak Fırsat',
+                      'Sicak Firsat',
                       style: AppTextStyles.labelSmall.copyWith(
                         color: Colors.orange,
-                        fontSize: 8,
+                        fontSize: compact ? 7 : 8,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -337,11 +373,14 @@ class _CategoryCard extends StatelessWidget {
                     style: AppTextStyles.titleMedium.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
+                      letterSpacing: compact ? 0.6 : 1,
+                      fontSize: titleSize,
                     ),
                     textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: compact ? 8 : 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -352,24 +391,27 @@ class _CategoryCard extends StatelessWidget {
                               ? AppColors.primary
                               : AppColors.accent,
                           fontWeight: FontWeight.w900,
+                          fontSize: valueSize,
                         ),
                       ),
                       if (currentValue < defaultValue) ...[
                         const SizedBox(width: 4),
-                        const Icon(
+                        Icon(
                           Icons.trending_down_rounded,
                           color: AppColors.primary,
-                          size: 14,
+                          size: compact ? 12 : 14,
                         ),
                       ],
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: compact ? 2 : 4),
                   Text(
                     'TABAN PUAN',
                     style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white24,
+                      fontSize: helperSize,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -377,6 +419,71 @@ class _CategoryCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _EconomyPickMetrics {
+  const _EconomyPickMetrics({
+    required this.isCompact,
+    required this.screenPadding,
+    required this.sectionGap,
+    required this.sectionGapLarge,
+    required this.inlineGap,
+    required this.textGap,
+    required this.titleFontSize,
+    required this.titleLetterSpacing,
+    required this.infoPadding,
+    required this.infoRadius,
+    required this.infoIconSize,
+    required this.infoTitleFontSize,
+    required this.helperFontSize,
+    required this.helperIconSize,
+    required this.gridSpacing,
+    required this.singleColumnAspectRatio,
+    required this.doubleColumnAspectRatio,
+  });
+
+  final bool isCompact;
+  final double screenPadding;
+  final double sectionGap;
+  final double sectionGapLarge;
+  final double inlineGap;
+  final double textGap;
+  final double titleFontSize;
+  final double titleLetterSpacing;
+  final double infoPadding;
+  final double infoRadius;
+  final double infoIconSize;
+  final double infoTitleFontSize;
+  final double helperFontSize;
+  final double helperIconSize;
+  final double gridSpacing;
+  final double singleColumnAspectRatio;
+  final double doubleColumnAspectRatio;
+
+  factory _EconomyPickMetrics.from(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final isCompact = size.width < 390 || size.height < 780;
+
+    return _EconomyPickMetrics(
+      isCompact: isCompact,
+      screenPadding: isCompact ? 16 : 24,
+      sectionGap: isCompact ? 12 : 16,
+      sectionGapLarge: isCompact ? 20 : 32,
+      inlineGap: isCompact ? 10 : 12,
+      textGap: isCompact ? 6 : 8,
+      titleFontSize: isCompact ? 18 : 20,
+      titleLetterSpacing: isCompact ? 1.2 : 2,
+      infoPadding: isCompact ? 12 : 16,
+      infoRadius: isCompact ? 10 : 12,
+      infoIconSize: isCompact ? 24 : 28,
+      infoTitleFontSize: isCompact ? 14 : 16,
+      helperFontSize: isCompact ? 11 : 12,
+      helperIconSize: isCompact ? 16 : 18,
+      gridSpacing: isCompact ? 10 : 12,
+      singleColumnAspectRatio: 1.9,
+      doubleColumnAspectRatio: isCompact ? 0.92 : 1.1,
     );
   }
 }
