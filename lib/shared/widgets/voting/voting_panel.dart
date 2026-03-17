@@ -53,8 +53,14 @@ class _VotingPanelState extends State<VotingPanel>
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final isSmall = screenHeight < 700;
+    final containerPadding = isSmall ? 16.0 : 24.0;
+    final emojiSize = isSmall ? 20.0 : 24.0;
+    final innerGap = isSmall ? 16.0 : 24.0;
+
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(containerPadding),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -63,11 +69,14 @@ class _VotingPanelState extends State<VotingPanel>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            'PERFORMANS NASILDI?',
-            style: AppTextStyles.headlineMedium.copyWith(
-              color: Colors.white,
-              letterSpacing: 2,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              'PERFORMANS NASILDI?',
+              style: AppTextStyles.headlineMedium.copyWith(
+                color: Colors.white,
+                letterSpacing: 2,
+              ),
             ),
           ),
           const SizedBox(height: 8),
@@ -76,8 +85,9 @@ class _VotingPanelState extends State<VotingPanel>
             style: AppTextStyles.bodyMedium.copyWith(
               color: Colors.white54,
             ),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: innerGap),
 
           // Geri sayım çubuğu (Spotlight ışığı gibi sarıdan kırmızıya)
           AnimatedBuilder(
@@ -98,7 +108,7 @@ class _VotingPanelState extends State<VotingPanel>
               );
             },
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: innerGap),
 
           Row(
             children: [
@@ -110,6 +120,7 @@ class _VotingPanelState extends State<VotingPanel>
                   isSelected: _selectedVote == 'like',
                   isDisabled: _selectedVote != null && _selectedVote != 'like',
                   onTap: () => _castVote('like'),
+                  emojiSize: emojiSize,
                 ),
               ),
               const SizedBox(width: 12),
@@ -122,6 +133,7 @@ class _VotingPanelState extends State<VotingPanel>
                   isDisabled:
                       _selectedVote != null && _selectedVote != 'neutral',
                   onTap: () => _castVote('neutral'),
+                  emojiSize: emojiSize,
                 ),
               ),
               const SizedBox(width: 12),
@@ -134,6 +146,7 @@ class _VotingPanelState extends State<VotingPanel>
                   isDisabled:
                       _selectedVote != null && _selectedVote != 'dislike',
                   onTap: () => _castVote('dislike'),
+                  emojiSize: emojiSize,
                 ),
               ),
             ],
@@ -152,6 +165,7 @@ class _VoteButton extends StatelessWidget {
     required this.isSelected,
     required this.isDisabled,
     required this.onTap,
+    this.emojiSize = 24,
   });
 
   final String emoji;
@@ -160,6 +174,7 @@ class _VoteButton extends StatelessWidget {
   final bool isSelected;
   final bool isDisabled;
   final VoidCallback onTap;
+  final double emojiSize;
 
   @override
   Widget build(BuildContext context) {
@@ -180,16 +195,19 @@ class _VoteButton extends StatelessWidget {
           opacity: isDisabled ? 0.4 : 1.0,
           child: Column(
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 24)),
+              Text(emoji, style: TextStyle(fontSize: emojiSize)),
               const SizedBox(height: 8),
-              Text(
-                label,
-                style: AppTextStyles.labelSmall.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: isSelected ? color : Colors.white54,
-                  letterSpacing: 1,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  style: AppTextStyles.labelSmall.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: isSelected ? color : Colors.white54,
+                    letterSpacing: 1,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),

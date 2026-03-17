@@ -29,8 +29,10 @@ class SpectatorStrip extends ConsumerWidget {
 
     final cosmetics = ref.watch(fetchCosmeticsProvider).value ?? [];
 
+    final stripHeight = (MediaQuery.sizeOf(context).height * 0.11).clamp(70.0, 90.0);
+
     return SizedBox(
-      height: 90,
+      height: stripHeight,
       child: Center(
         child: ListView.separated(
           shrinkWrap: true,

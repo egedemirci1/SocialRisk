@@ -205,11 +205,14 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
           child: Scaffold(
             backgroundColor: Colors.transparent,
             appBar: AppBar(
-            title: Text(
-              'ELEŞTİRİ & OYLAMA',
-              style: AppTextStyles.headlineMedium.copyWith(
-                color: AppColors.accent,
-                letterSpacing: 2,
+            title: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'ELEŞTİRİ & OYLAMA',
+                style: AppTextStyles.headlineMedium.copyWith(
+                  color: AppColors.accent,
+                  letterSpacing: 2,
+                ),
               ),
             ),
             backgroundColor: Colors.transparent,
@@ -249,89 +252,101 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                         child: SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
                           padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 16),
-                              PlayerAvatar(
-                                uid: game.currentPlayerId,
-                                displayName: performerName,
-                                radius: 50,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                performerName.toUpperCase(),
-                                style: AppTextStyles.displayMedium.copyWith(
-                                  color: Colors.white,
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                              // Ünvan gösterimi
-                              Builder(
-                                builder: (context) {
-                                  final profile = ref
-                                      .watch(
-                                        watchUserProfileProvider(game.currentPlayerId),
-                                      )
-                                      .value;
-                                  if (profile?.activeTitle == null) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  final cosmetics =
-                                      ref.watch(fetchCosmeticsProvider).value ?? [];
-                                  final titleItem = cosmetics
-                                      .where((c) => c.id == profile!.activeTitle)
-                                      .firstOrNull;
-                                  if (titleItem == null) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  return Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: Text(
-                                      '${titleItem.imageUrl} ${titleItem.name}',
-                                      style: AppTextStyles.labelSmall.copyWith(
-                                        color: AppColors.accent,
-                                        fontWeight: FontWeight.w700,
+                          child: Builder(
+                            builder: (context) {
+                              final sh = MediaQuery.sizeOf(context).height;
+                              final isSmall = sh < 700;
+                              final avatarR = isSmall ? 38.0 : 50.0;
+                              return Column(
+                                children: [
+                                  SizedBox(height: isSmall ? 10 : 16),
+                                  PlayerAvatar(
+                                    uid: game.currentPlayerId,
+                                    displayName: performerName,
+                                    radius: avatarR,
+                                  ),
+                                  SizedBox(height: isSmall ? 10 : 16),
+                                  Text(
+                                    performerName.toUpperCase(),
+                                    style: AppTextStyles.displayMedium.copyWith(
+                                      color: Colors.white,
+                                      letterSpacing: 2,
+                                    ),
+                                  ),
+                                  // Ünvan gösterimi
+                                  Builder(
+                                    builder: (context) {
+                                      final profile = ref
+                                          .watch(
+                                            watchUserProfileProvider(game.currentPlayerId),
+                                          )
+                                          .value;
+                                      if (profile?.activeTitle == null) {
+                                        return const SizedBox.shrink();
+                                      }
+                                      final cosmetics =
+                                          ref.watch(fetchCosmeticsProvider).value ?? [];
+                                      final titleItem = cosmetics
+                                          .where((c) => c.id == profile!.activeTitle)
+                                          .firstOrNull;
+                                      if (titleItem == null) {
+                                        return const SizedBox.shrink();
+                                      }
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 4),
+                                        child: Text(
+                                          '${titleItem.imageUrl} ${titleItem.name}',
+                                          style: AppTextStyles.labelSmall.copyWith(
+                                            color: AppColors.accent,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'performansını sergiledi:',
+                                    style: AppTextStyles.bodyMedium.copyWith(
+                                      color: Colors.white54,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                  SizedBox(height: isSmall ? 16 : 24),
+                                  Container(
+                                    padding: EdgeInsets.all(isSmall ? 16 : 24),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.surface,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: AppColors.accent.withValues(alpha: 0.1),
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'performansını sergiledi:',
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                  color: Colors.white54,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              Container(
-                                padding: const EdgeInsets.all(24),
-                                decoration: BoxDecoration(
-                                  color: AppColors.surface,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: AppColors.accent.withValues(alpha: 0.1),
+                                    child: Text(
+                                      '"${game.currentTask?.content ?? ""}"',
+                                      style: AppTextStyles.titleLarge.copyWith(
+                                        color: Colors.white,
+                                        fontStyle: FontStyle.italic,
+                                        height: 1.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
-                                ),
-                                child: Text(
-                                  '"${game.currentTask?.content ?? ""}"',
-                                  style: AppTextStyles.titleLarge.copyWith(
-                                    color: Colors.white,
-                                    fontStyle: FontStyle.italic,
-                                    height: 1.5,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                            ],
+                                  SizedBox(height: isSmall ? 16 : 24),
+                                ],
+                              );
+                            },
                           ),
                         ),
                       ),
                       // Oylama / bekleme alanı her zaman altta görünsün
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+                        padding: EdgeInsets.fromLTRB(
+                          MediaQuery.sizeOf(context).height < 700 ? 16 : 24,
+                          MediaQuery.sizeOf(context).height < 700 ? 8 : 16,
+                          MediaQuery.sizeOf(context).height < 700 ? 16 : 24,
+                          MediaQuery.sizeOf(context).height < 700 ? 16 : 32,
+                        ),
                         child: _isProcessing
                             ? _buildProcessingIndicator()
                             : isMyTurn

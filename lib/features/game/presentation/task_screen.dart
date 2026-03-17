@@ -247,6 +247,9 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           ),
           body: LayoutBuilder(
             builder: (context, constraints) {
+              final screenHeight = MediaQuery.sizeOf(context).height;
+              final isSmall = screenHeight < 700;
+              final bottomSpacing = isSmall ? 12.0 : 24.0;
               return SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: ConstrainedBox(
@@ -285,7 +288,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                           ),
                           if (players.isNotEmpty)
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 24, top: 8),
+                              padding: EdgeInsets.only(bottom: bottomSpacing, top: 8),
                               child: SpectatorStrip(
                                 players: players,
                                 currentPlayerId: game.currentPlayerId,
@@ -488,6 +491,11 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     String playerName,
   ) {
     final isClosed = visibility == RoomVisibility.closed && !_contentRevealed;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final isSmall = screenHeight < 700;
+    final sectionGap = isSmall ? 16.0 : 26.0;
+    final bottomGap = isSmall ? 20.0 : 32.0;
+    final cardPadding = isSmall ? 16.0 : 24.0;
     return Column(
       children: [
         const Spacer(),
@@ -508,7 +516,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: isSmall ? 12 : 16),
                 decoration: BoxDecoration(
                   color: AppColors.accent.withValues(alpha: 0.1),
                   borderRadius: const BorderRadius.only(
@@ -516,18 +524,24 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                     topRight: Radius.circular(20),
                   ),
                 ),
-                child: Text(
-                  'PARTİ BAŞLIYOR',
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: AppColors.accent,
-                    letterSpacing: 2,
-                    fontWeight: FontWeight.w900,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'PARTİ BAŞLIYOR',
+                      style: AppTextStyles.titleLarge.copyWith(
+                        color: AppColors.accent,
+                        letterSpacing: 2,
+                        fontWeight: FontWeight.w900,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(cardPadding),
                 child: Column(
                   children: [
                     Container(
@@ -557,14 +571,14 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                       ),
                     ),
 
-                    const SizedBox(height: 26),
+                    SizedBox(height: sectionGap),
                     _buildTopTitleCard(
                       badge: isClosed ? 'GİZLİ TUR' : 'GÖREV',
                       title: isClosed
                           ? 'Sıradaki Görev Gizli'
                           : (isMyTurn ? 'İçeriğin Burada:' : '${playerName} içeriği:'),
                     ),
-                    const SizedBox(height: 26),
+                    SizedBox(height: sectionGap),
                     ScaleTransition(
                       scale: _cardAnimation,
                       child: GameCard(
@@ -579,7 +593,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                                   : 10 * task.multiplier),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: bottomGap),
                     if (isClosed && isMyTurn)
                       StageButton(
                         label: 'Görevi Aç',

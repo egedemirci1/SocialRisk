@@ -7,9 +7,9 @@ Bu görev listesi, detaylı testlerin ardından bildirilen hata (bug) raporları
 ## 🎨 ATA (UI/UX, Responsive, Tasarım)
 
 ### 1. Responsive ve Ekran Taşma (Overflow) Sorunları
-- [ ] **Lobi Ekranı Kart Sıkışması:** Lobi ekranında 5'ten fazla oyuncu girince kartlar sığmıyor. 8 kişiye kadar sığacak şekilde oyuncu kartlarının boyutları dinamik (responsive) olarak ayarlanacak. Kartlar cihaz boyutuna göre ölçeklenmeli. Header kısmına da "Mevcut/Toplam (örn. 1/8)" kişi bilgisi eklenecek.
-- [ ] **Görev Sahnesi (Task Screen):** Küçük telefonlarda menü tasarımı sabit pixelle çizildiği için scroll'a giriyor. Görev kartının yüksekliği ve aşağıdaki izleyici avatarları yüzdelik dilimlerle (Flexible/Expanded) sınırlandırılacak.
-- [ ] **Oylama Ekranı (Voting Screen):** Beğen/Nötr/Beğenme butonları (VotingPanel) küçük ekranlarda sorunun/kartın üstüne taşıyor. "Eleştirme ve Oylama" yazısı responsive şekilde küçültülüp kartlaştırılacak ve butonların güvenli alanda (SafeArea) kalması sağlanacak.
+- [x] **Lobi Ekranı Kart Sıkışması:** Lobi ekranında 5'ten fazla oyuncu girince kartlar sığmıyor. 8 kişiye kadar sığacak şekilde oyuncu kartlarının boyutları dinamik (responsive) olarak ayarlanacak. Kartlar cihaz boyutuna göre ölçeklenmeli. Header kısmına da "Mevcut/Toplam (örn. 1/8)" kişi bilgisi eklenecek.
+- [x] **Görev Sahnesi (Task Screen):** Küçük telefonlarda menü tasarımı sabit pixelle çizildiği için scroll'a giriyor. Görev kartının yüksekliği ve aşağıdaki izleyici avatarları yüzdelik dilimlerle (Flexible/Expanded) sınırlandırılacak.
+- [x] **Oylama Ekranı (Voting Screen):** Beğen/Nötr/Beğenme butonları (VotingPanel) küçük ekranlarda sorunun/kartın üstüne taşıyor. "Eleştirme ve Oylama" yazısı responsive şekilde küçültülüp kartlaştırılacak ve butonların güvenli alanda (SafeArea) kalması sağlanacak.
 - [ ] **Tur Bitti Ekranı (Round Result):** Küçük telefonlarda elementler sıkışıyor ve scroll çıkıyor. Elementler (skorlar vb.) UI sınırlarına göre otomatik küçülecek (FittedBox/Expanded).
 - [ ] **Performans Sahnesi:** "Rezem oynuyor" veya "Senin sıran" yazıları boyutlandırma sınırları olmadığı için profil fotoğrafıyla (avatar) iç içe giriyor. İki element arasına boşluk ve esneklik (Flexible) eklenecek.
 - [ ] **Zorluk Seçimi (Sıcak Fırsat):** Borsa modunda kategori/zorluk seçerken en alttaki element overflow oluyor. Ayrıca kart içindeki "Sıcak Fırsat" (3x) yazısı diğer yazılarla çakışıyor, responsive hale getirilecek.

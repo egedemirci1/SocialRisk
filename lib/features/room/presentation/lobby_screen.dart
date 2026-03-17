@@ -82,6 +82,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
     final cosmetics = cosmeticsAsync.value ?? [];
     final room = roomAsync.value;
+    final layout = _LobbyLayoutMetrics.from(context);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -117,17 +118,17 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
-                  _buildRoomCodeBanner(context, room),
+                  _buildRoomCodeBanner(context, room, playersAsync.value?.length ?? 0, layout),
 
-                  const SizedBox(height: 16),
-                  const _RotatingTooltips(),
-                  const SizedBox(height: 16),
+                  SizedBox(height: layout.sectionGap),
+                  _RotatingTooltips(compact: layout.isCompact),
+                  SizedBox(height: layout.sectionGap),
                   Expanded(
                     child: playersAsync.when(
                       data: (players) {
                         final roomEmotes = room?.lobbyEmotes ?? const <String, LobbyEmoteEntity>{};
                         return ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          padding: EdgeInsets.symmetric(horizontal: layout.screenPadding),
                           itemCount: players.length,
                           itemBuilder: (context, index) {
                             final player = players[index];
@@ -168,14 +169,15 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                       ),
                     ),
                   ),
-                  _buildEmoteBar(context, ref, user, room),
-                  const SizedBox(height: 12),
+                  _buildEmoteBar(context, ref, user, room, layout),
+                  SizedBox(height: layout.tightGap),
                   _buildActionSection(
                     context,
                     ref,
                     user,
                     roomAsync,
                     playersAsync,
+                    layout: layout,
                     onStartGame: () async {
                       setState(() => _isStartingGame = true);
                       try {
@@ -212,11 +214,11 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     );
   }
 
-  Widget _buildRoomCodeBanner(BuildContext context, RoomEntity? room) {
+  Widget _buildRoomCodeBanner(BuildContext context, RoomEntity? room, int playerCount) {
     final modeName = room?.mode == GameMode.economy ? 'BORSA' : 'KLASİK';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: layout.screenPadding),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -227,46 +229,78 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'ODA KODU',
-                  style: AppTextStyles.labelSmall.copyWith(
-                    color: Colors.white54,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1,
-                  ),
-                ),
-                Text(
-                  widget.roomCode,
-                  style: AppTextStyles.displayMedium.copyWith(
-                    color: AppColors.accent,
-                    letterSpacing: 4,
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
-                  ),
-                  child: Text(
-                    '$modeName MOD',
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'ODA KODU',
                     style: AppTextStyles.labelSmall.copyWith(
-                      color: AppColors.accent,
+                      color: Colors.white54,
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1,
                     ),
                   ),
+                  Text(
+                    widget.roomCode,
+                    style: AppTextStyles.displayMedium.copyWith(
+                      color: AppColors.accent,
+                      letterSpacing: 4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.accent.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
+                      ),
+                      child: Text(
+                        '$modeName MOD',
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: AppColors.accent,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.people_alt_rounded, color: Colors.white70, size: 14),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$playerCount/8',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: Colors.white70,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 IconButton(
@@ -296,7 +330,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     final cooldownUntil = activeEmote?.sentAt.add(_lobbyEmoteCooldown);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: layout.screenPadding),
       child: _LobbyCooldownButton(
         cooldownUntil: cooldownUntil,
         onPressed: user == null ? null : () => _showEmotePicker(context, ref, user.uid),
@@ -413,7 +447,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                     if (onStartGame != null) await onStartGame();
                   },
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: layout.tightGap),
                 Text(
                   (allReady && players.length >= 2)
                       ? 'Haydi, herkes seni bekliyor!'
@@ -471,12 +505,18 @@ class _PlayerTile extends ConsumerWidget {
         ? cosmetics.where((c) => c.id == profile!.activeTitle).firstOrNull
         : null;
 
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final isSmallScreen = screenHeight < 700;
+    final tilePadding = isSmallScreen ? 8.0 : 12.0;
+    final tileVerticalMargin = isSmallScreen ? 3.0 : 6.0;
+    final avatarRadius = isSmallScreen ? 16.0 : 20.0;
+
     return GestureDetector(
       onLongPress: onLongPress,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
+        padding: EdgeInsets.symmetric(vertical: tileVerticalMargin),
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(tilePadding),
           decoration: BoxDecoration(
             color: isCurrentPlayer
                 ? AppColors.accent.withValues(alpha: 0.1)
@@ -491,7 +531,7 @@ class _PlayerTile extends ConsumerWidget {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  PlayerAvatar(uid: playerId, displayName: name, radius: 20),
+                  PlayerAvatar(uid: playerId, displayName: name, radius: avatarRadius),
                   if (lobbyEmote != null && lobbyEmoteExpiresAt != null)
                     Positioned(
                       top: -10,
@@ -504,28 +544,33 @@ class _PlayerTile extends ConsumerWidget {
                 ],
               ),
               const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name + (isCurrentPlayer ? ' (Sen)' : ''),
-                    style: AppTextStyles.titleLarge.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  if (activeTitleItem != null)
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      activeTitleItem.name.toUpperCase(),
-                      style: AppTextStyles.labelSmall.copyWith(
-                        color: AppColors.accent,
-                        fontSize: 10,
+                      name + (isCurrentPlayer ? ' (Sen)' : ''),
+                      style: AppTextStyles.titleLarge.copyWith(
+                        color: Colors.white,
                         fontWeight: FontWeight.w900,
+                        fontSize: isSmallScreen ? 14 : null,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                ],
+                    if (activeTitleItem != null)
+                      Text(
+                        activeTitleItem.name.toUpperCase(),
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: AppColors.accent,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
@@ -925,3 +970,4 @@ class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
     );
   }
 }
+

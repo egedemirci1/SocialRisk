@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
 
-/// Etkileşimli buton (tıklandığında küçülme animasyonu)
+/// Etkilesimli buton (tiklandiginda kuculme animasyonu)
 class InteractiveButton extends StatefulWidget {
   const InteractiveButton({
     super.key,
@@ -54,7 +54,7 @@ class _InteractiveButtonState extends State<InteractiveButton>
   }
 }
 
-/// Parti Temalı Buton
+/// Parti Temali Buton
 class StageButton extends StatelessWidget {
   const StageButton({
     super.key,
@@ -66,6 +66,7 @@ class StageButton extends StatelessWidget {
     required this.borderColor,
     required this.onPressed,
     this.isLoading = false,
+    this.compact = false,
   });
 
   final String label;
@@ -76,19 +77,25 @@ class StageButton extends StatelessWidget {
   final Color borderColor;
   final VoidCallback onPressed;
   final bool isLoading;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
+    final height = compact ? 52.0 : 60.0;
+    final iconSize = compact ? 20.0 : 24.0;
+    final fontSize = compact ? 16.0 : 18.0;
+    final spacing = compact ? 8.0 : 12.0;
+
     return InteractiveButton(
       onTap: isLoading ? () {} : onPressed,
       child: Semantics(
         button: true,
         label: label.isNotEmpty ? label : 'Buton',
         child: Container(
-          height: 60,
+          height: height,
           decoration: BoxDecoration(
             color: backgroundColor,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(height / 2),
             boxShadow: [
               BoxShadow(
                 color: backgroundColor.withValues(alpha: 0.4),
@@ -109,28 +116,34 @@ class StageButton extends StatelessWidget {
                       ),
                     ),
                   )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      iconWidget ?? const SizedBox.shrink(),
-                      if (icon != null)
-                        Icon(icon, color: textColor, size: 24),
-                      if (label.isNotEmpty) ...[
-                        const SizedBox(width: 12),
-                        Flexible(
-                          child: Text(
-                            label,
-                            style: AppTextStyles.titleMedium.copyWith(fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: textColor,
-                              letterSpacing: 1.0,),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                : Padding(
+                    padding: EdgeInsets.symmetric(horizontal: compact ? 14 : 18),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (iconWidget != null) iconWidget!,
+                        if (icon != null) Icon(icon, color: textColor, size: iconSize),
+                        if (label.isNotEmpty) ...[
+                          if (icon != null || iconWidget != null)
+                            SizedBox(width: spacing),
+                          Flexible(
+                            child: Text(
+                              label,
+                              style: AppTextStyles.titleMedium.copyWith(
+                                fontSize: fontSize,
+                                fontWeight: FontWeight.w800,
+                                color: textColor,
+                                letterSpacing: compact ? 0.4 : 1.0,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                        ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
           ),
         ),
