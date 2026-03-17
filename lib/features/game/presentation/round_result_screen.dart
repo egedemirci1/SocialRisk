@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
+
 import '../../../core/constants/app_colors.dart';
-import '../../../shared/widgets/buttons/stage_button.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/models/enums.dart';
-import '../providers/game_provider.dart';
-import '../domain/game_entity.dart';
-import '../../room/providers/room_provider.dart';
+import '../../../shared/widgets/buttons/leave_room_button.dart';
+import '../../../shared/widgets/buttons/stage_button.dart';
+import '../../../shared/widgets/common/player_avatar.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../admin/providers/task_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
-import '../../admin/providers/task_provider.dart';
 import '../../economy/providers/economy_provider.dart';
-import '../../../shared/widgets/buttons/leave_room_button.dart';
-import 'package:lottie/lottie.dart';
-import '../../../shared/widgets/common/player_avatar.dart';
-import '../../room/domain/room_entity.dart';
-import '../../../core/constants/app_text_styles.dart';
-import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../room/providers/room_provider.dart';
+import '../domain/game_entity.dart';
+import '../providers/game_provider.dart';
 
-/// Tur sonu ekranı — Parti Temalı
 class RoundResultScreen extends ConsumerStatefulWidget {
   const RoundResultScreen({
     super.key,
@@ -53,25 +52,27 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
   Widget build(BuildContext context) {
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
+    final metrics = _RoundResultMetrics.from(context);
 
-    ref.listen<AsyncValue<GameEntity?>>(
-      watchGameProvider(widget.gameId),
-      (previous, next) {
-        if (!context.mounted) return;
-        final prevStatus = previous?.value?.status;
-        final currentStatus = next.value?.status;
+    ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
+      previous,
+      next,
+    ) {
+      if (!context.mounted) return;
+      final prevStatus = previous?.value?.status;
+      final currentStatus = next.value?.status;
 
-        if (currentStatus == GameStatus.playing ||
-            currentStatus == GameStatus.choosingDifficulty) {
-          context.go(
-            '/task',
-            extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-          );
-        } else if (currentStatus == GameStatus.finished && prevStatus != GameStatus.finished) {
-          context.go('/game-over', extra: widget.roomCode);
-        }
-      },
-    );
+      if (currentStatus == GameStatus.playing ||
+          currentStatus == GameStatus.choosingDifficulty) {
+        context.go(
+          '/task',
+          extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+        );
+      } else if (currentStatus == GameStatus.finished &&
+          prevStatus != GameStatus.finished) {
+        context.go('/game-over', extra: widget.roomCode);
+      }
+    });
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -87,22 +88,6 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (game.status == GameStatus.playing ||
-              game.status == GameStatus.choosingDifficulty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (context.mounted) {
-                context.go(
-                  '/task',
-                  extra: {
-                    'gameId': widget.gameId,
-                    'roomCode': widget.roomCode,
-                  },
-                );
-              }
-            });
-            return const Center(child: CircularProgressIndicator());
-          }
-
           final earnedScore = game.lastRoundScore ?? 0;
           final audienceScore = game.lastRoundAudienceScore ?? 0;
           final multiplier = game.lastRoundMultiplier ?? 1;
@@ -110,39 +95,46 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           final isGameOver = game.status == GameStatus.finished;
           final players = playersAsync.value ?? [];
           final currentPlayer = players
-              .where(
-                (p) => p.id == (game.lastRoundPlayerId ?? game.currentPlayerId),
-              )
+              .where((p) => p.id == (game.lastRoundPlayerId ?? game.currentPlayerId))
               .firstOrNull;
           final playerName = currentPlayer?.name ?? 'Oyuncu';
 
           return SafeArea(
-            child: SingleChildScrollView(
-              child: ResponsiveWrapper(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                child: Column(
-                  children: [
-                  _buildResultHeader(game, earnedScore, isPass, playerName),
-                  const SizedBox(height: 24),
-                  _buildScoreCard(audienceScore, earnedScore, multiplier, isPass),
-                  const SizedBox(height: 24),
-                  _buildLeaderboard(players, game),
-                  const SizedBox(height: 24),
-                  if (game.currentTask != null)
-                    _TaskFeedbackSection(
-                      taskId: game.currentTask!.id,
-                      taskContent: game.currentTask!.content,
+            child: ResponsiveWrapper(
+              padding: EdgeInsets.symmetric(horizontal: metrics.screenPadding),
+              child: Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.topCenter,
+                  child: SizedBox(
+                    width: metrics.contentWidth,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildResultHeader(game, earnedScore, isPass, playerName, metrics),
+                        SizedBox(height: metrics.sectionGap),
+                        _buildScoreCard(audienceScore, earnedScore, multiplier, isPass, metrics),
+                        SizedBox(height: metrics.sectionGap),
+                        _buildLeaderboard(players, game, metrics),
+                        SizedBox(height: metrics.sectionGap),
+                        if (game.currentTask != null)
+                          _TaskFeedbackSection(
+                            taskId: game.currentTask!.id,
+                            taskContent: game.currentTask!.content,
+                            compact: metrics.isCompact,
+                          ),
+                        SizedBox(height: metrics.bottomGap),
+                        _buildActionButtons(isGameOver, game, metrics),
+                      ],
                     ),
-                  const SizedBox(height: 32),
-                  _buildActionButtons(isGameOver, game),
-                ],
+                  ),
+                ),
               ),
             ),
-           ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text('Hata: $e')),
+        error: (e, _) => Center(child: Text('Hata: $e')),
       ),
       floatingActionButton: _buildConfetti(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -154,17 +146,19 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     int score,
     bool isPass,
     String playerName,
+    _RoundResultMetrics metrics,
   ) {
     final moodEmoji = switch (game.lastRoundMood) {
-      'like' => '🎉',
-      'dislike' => '👎',
-      _ => '🤷',
+      'like' => 'Y',
+      'dislike' => 'N',
+      _ => '?',
     };
+
     return Column(
       children: [
         Container(
-          width: 80,
-          height: 80,
+          width: metrics.headerIconSize,
+          height: metrics.headerIconSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: score >= 0
@@ -177,27 +171,29 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           ),
           child: Center(
             child: Text(
-              isPass ? '🎭' : moodEmoji,
-              style: const TextStyle(fontSize: 40),
+              isPass ? 'R' : moodEmoji,
+              style: TextStyle(fontSize: metrics.headerEmojiSize),
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: metrics.textGap),
         Text(
-          isPass ? 'GÖREV REDDEDİLDİ' : 'TUR BİTTİ',
+          isPass ? 'GOREV REDDEDILDI' : 'TUR BITTI',
           style: AppTextStyles.headlineMedium.copyWith(
             color: Colors.white,
             letterSpacing: 2,
+            fontSize: metrics.headerTitleSize,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: metrics.smallGap),
         Text(
           isPass
-              ? '$playerName rolünü yapmayı reddetti.'
-              : '$playerName performansını tamamladı.',
+              ? '$playerName rolunu yapmayi reddetti.'
+              : '$playerName performansini tamamladi.',
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white54,
+            fontSize: metrics.bodyFontSize,
           ),
           textAlign: TextAlign.center,
         ),
@@ -210,50 +206,57 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     int score,
     int multiplier,
     bool isPass,
+    _RoundResultMetrics metrics,
   ) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(metrics.cardPadding),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(metrics.cardRadius),
         border: Border.all(color: AppColors.accent.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
           if (!isPass) ...[
             _ScoreRow(
-              label: 'Seyirci Puanı',
+              label: 'Seyirci Puani',
               value: '$audienceScore',
               color: audienceScore >= 0 ? Colors.green : AppColors.primary,
+              compact: metrics.isCompact,
             ),
-            const Divider(color: Colors.white10, height: 24),
+            Divider(color: Colors.white10, height: metrics.dividerHeight),
             _ScoreRow(
-              label: 'Zorluk Çarpanı',
-              value: '×$multiplier',
+              label: 'Zorluk Carpani',
+              value: 'x$multiplier',
               color: Colors.white,
+              compact: metrics.isCompact,
             ),
-            const Divider(color: Colors.white10, height: 24),
+            Divider(color: Colors.white10, height: metrics.dividerHeight),
           ],
           _ScoreRow(
-            label: score >= 0 ? 'Kazanılan Puan' : 'Kaybedilen Puan',
+            label: score >= 0 ? 'Kazanilan Puan' : 'Kaybedilen Puan',
             value: '$score',
             color: AppColors.accent,
             isBold: true,
+            compact: metrics.isCompact,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildLeaderboard(List<PlayerEntity> players, GameEntity game) {
-    final performerId = game.lastRoundPlayerId ?? game.currentPlayerId;
+  Widget _buildLeaderboard(
+    List<dynamic> players,
+    GameEntity game,
+    _RoundResultMetrics metrics,
+  ) {
     final sortedPlayers = List.of(players)
       ..sort((a, b) => b.score.compareTo(a.score));
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(metrics.listPadding),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(metrics.cardRadius),
         border: Border.all(color: AppColors.accent.withValues(alpha: 0.1)),
       ),
       child: Column(
@@ -264,20 +267,30 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
               color: AppColors.accent,
               fontWeight: FontWeight.w900,
               letterSpacing: 1,
+              fontSize: metrics.labelFontSize,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: metrics.textGap),
           ...List.generate(sortedPlayers.length, (index) {
             final p = sortedPlayers[index];
             final isMe = p.id == game.currentPlayerId;
-            return _LeaderboardTile(player: p, rank: index + 1, isTarget: isMe);
+            return _LeaderboardTile(
+              player: p,
+              rank: index + 1,
+              isTarget: isMe,
+              compact: metrics.isCompact,
+            );
           }),
         ],
       ),
     );
   }
 
-  Widget _buildActionButtons(bool isGameOver, GameEntity game) {
+  Widget _buildActionButtons(
+    bool isGameOver,
+    GameEntity game,
+    _RoundResultMetrics metrics,
+  ) {
     return Consumer(
       builder: (context, ref, child) {
         final room = ref.watch(watchRoomProvider(widget.roomCode)).value;
@@ -285,7 +298,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
 
         if (isHost) {
           return StageButton(
-            label: isGameOver ? 'PARTİ BİTTİ' : 'SIRADAKİ GÖREV',
+            label: isGameOver ? 'PARTI BITTI' : 'SIRADAKI GOREV',
             icon: isGameOver
                 ? Icons.emoji_events_rounded
                 : Icons.arrow_forward_rounded,
@@ -296,37 +309,36 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
               if (isGameOver) {
                 await ref.read(gameControllerProvider.notifier).endGame(widget.gameId);
               } else {
-                await ref
-                    .read(gameControllerProvider.notifier)
-                    .nextTurn(widget.gameId);
+                await ref.read(gameControllerProvider.notifier).nextTurn(widget.gameId);
               }
             },
-          );
-        } else {
-          return Column(
-            children: [
-              const CircularProgressIndicator(color: AppColors.accent),
-              const SizedBox(height: 16),
-              Text(
-                isGameOver
-                    ? 'Final bekleniyor...'
-                    : 'Yöneticinin yeni tura geçmesi bekleniyor...',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: Colors.white30,
-                  fontStyle: FontStyle.italic,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+            compact: metrics.isCompact,
           );
         }
+
+        return Column(
+          children: [
+            const CircularProgressIndicator(color: AppColors.accent),
+            SizedBox(height: metrics.textGap),
+            Text(
+              isGameOver
+                  ? 'Final bekleniyor...'
+                  : 'Yoneticinin yeni tura gecmesi bekleniyor...',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.white30,
+                fontStyle: FontStyle.italic,
+                fontSize: metrics.bodyFontSize,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        );
       },
     );
   }
 
   Widget? _buildConfetti() {
-    final score =
-        ref.watch(watchGameProvider(widget.gameId)).value?.lastRoundScore ?? 0;
+    final score = ref.watch(watchGameProvider(widget.gameId)).value?.lastRoundScore ?? 0;
     if (score <= 0) return null;
     return IgnorePointer(
       child: Lottie.asset(
@@ -345,33 +357,41 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
 }
 
 class _ScoreRow extends StatelessWidget {
-  final String label, value;
-  final Color color;
-  final bool isBold;
   const _ScoreRow({
     required this.label,
     required this.value,
     required this.color,
+    required this.compact,
     this.isBold = false,
   });
+
+  final String label;
+  final String value;
+  final Color color;
+  final bool compact;
+  final bool isBold;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: AppTextStyles.titleMedium.copyWith(
-            color: Colors.white54,
-            fontWeight: FontWeight.w700,
+        Expanded(
+          child: Text(
+            label,
+            style: AppTextStyles.titleMedium.copyWith(
+              color: Colors.white54,
+              fontWeight: FontWeight.w700,
+              fontSize: compact ? 13 : 16,
+            ),
           ),
         ),
         Text(
           value,
           style: AppTextStyles.titleLarge.copyWith(
             color: color,
-            fontWeight: FontWeight.w900,
+            fontWeight: isBold ? FontWeight.w900 : FontWeight.w700,
+            fontSize: compact ? 16 : 18,
           ),
         ),
       ],
@@ -380,14 +400,17 @@ class _ScoreRow extends StatelessWidget {
 }
 
 class _LeaderboardTile extends ConsumerWidget {
-  final PlayerEntity player;
-  final int rank;
-  final bool isTarget;
   const _LeaderboardTile({
     required this.player,
     required this.rank,
     required this.isTarget,
+    required this.compact,
   });
+
+  final dynamic player;
+  final int rank;
+  final bool isTarget;
+  final bool compact;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -398,12 +421,10 @@ class _LeaderboardTile extends ConsumerWidget {
         : null;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(8),
+      margin: EdgeInsets.only(bottom: compact ? 6 : 8),
+      padding: EdgeInsets.all(compact ? 6 : 8),
       decoration: BoxDecoration(
-        color: isTarget
-            ? AppColors.accent.withValues(alpha: 0.05)
-            : Colors.black12,
+        color: isTarget ? AppColors.accent.withValues(alpha: 0.05) : Colors.black12,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isTarget
@@ -414,18 +435,19 @@ class _LeaderboardTile extends ConsumerWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 24,
+            width: compact ? 20 : 24,
             child: Text(
               '#$rank',
               style: AppTextStyles.labelSmall.copyWith(
                 color: AppColors.accent,
                 fontWeight: FontWeight.w900,
+                fontSize: compact ? 10 : 12,
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          PlayerAvatar(uid: player.id, displayName: player.name, radius: 15),
-          const SizedBox(width: 12),
+          SizedBox(width: compact ? 6 : 8),
+          PlayerAvatar(uid: player.id, displayName: player.name, radius: compact ? 13 : 15),
+          SizedBox(width: compact ? 8 : 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,7 +457,10 @@ class _LeaderboardTile extends ConsumerWidget {
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
+                    fontSize: compact ? 12 : 14,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 if (titleItem != null)
                   Text(
@@ -443,7 +468,10 @@ class _LeaderboardTile extends ConsumerWidget {
                     style: AppTextStyles.labelSmall.copyWith(
                       color: AppColors.accent,
                       fontWeight: FontWeight.w600,
+                      fontSize: compact ? 9 : 11,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
               ],
             ),
@@ -453,6 +481,7 @@ class _LeaderboardTile extends ConsumerWidget {
             style: AppTextStyles.titleMedium.copyWith(
               color: AppColors.accent,
               fontWeight: FontWeight.w900,
+              fontSize: compact ? 14 : 16,
             ),
           ),
         ],
@@ -462,12 +491,18 @@ class _LeaderboardTile extends ConsumerWidget {
 }
 
 class _TaskFeedbackSection extends ConsumerStatefulWidget {
-  final String taskId, taskContent;
-  const _TaskFeedbackSection({required this.taskId, required this.taskContent});
+  const _TaskFeedbackSection({
+    required this.taskId,
+    required this.taskContent,
+    required this.compact,
+  });
+
+  final String taskId;
+  final String taskContent;
+  final bool compact;
 
   @override
-  ConsumerState<_TaskFeedbackSection> createState() =>
-      _TaskFeedbackSectionState();
+  ConsumerState<_TaskFeedbackSection> createState() => _TaskFeedbackSectionState();
 }
 
 class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
@@ -476,7 +511,7 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(widget.compact ? 12 : 16),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -485,31 +520,34 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
       child: Column(
         children: [
           Text(
-            'SENARYOYU DEĞERLENDİR',
+            'SENARYOYU DEGERLENDIR',
             style: AppTextStyles.labelSmall.copyWith(
               color: Colors.white54,
               fontWeight: FontWeight.w900,
               letterSpacing: 1,
+              fontSize: widget.compact ? 10 : 12,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: widget.compact ? 10 : 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _FeedbackButton(
                 icon: Icons.thumb_up_rounded,
-                label: 'İYİ',
+                label: 'IYI',
                 isActive: _givenFeedback == true,
                 color: Colors.green,
                 onTap: () => _submit(true),
+                compact: widget.compact,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: widget.compact ? 10 : 12),
               _FeedbackButton(
                 icon: Icons.thumb_down_rounded,
-                label: 'KÖTÜ',
+                label: 'KOTU',
                 isActive: _givenFeedback == false,
                 color: AppColors.primary,
                 onTap: () => _submit(false),
+                compact: widget.compact,
               ),
             ],
           ),
@@ -523,9 +561,7 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
     final userId = ref.read(currentUserProvider)?.uid;
     if (userId == null) return;
     setState(() => _givenFeedback = like);
-    ref
-        .read(taskControllerProvider.notifier)
-        .submitFeedback(
+    ref.read(taskControllerProvider.notifier).submitFeedback(
           taskId: widget.taskId,
           userId: userId,
           isLike: like,
@@ -534,25 +570,31 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
 }
 
 class _FeedbackButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isActive;
-  final Color color;
-  final VoidCallback onTap;
   const _FeedbackButton({
     required this.icon,
     required this.label,
     required this.isActive,
     required this.color,
     required this.onTap,
+    required this.compact,
   });
+
+  final IconData icon;
+  final String label;
+  final bool isActive;
+  final Color color;
+  final VoidCallback onTap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: isActive ? null : onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 12 : 16,
+          vertical: compact ? 6 : 8,
+        ),
         decoration: BoxDecoration(
           color: isActive ? color.withValues(alpha: 0.1) : Colors.black26,
           borderRadius: BorderRadius.circular(8),
@@ -560,18 +602,81 @@ class _FeedbackButton extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: isActive ? color : Colors.white38, size: 16),
-            const SizedBox(width: 8),
+            Icon(icon, color: isActive ? color : Colors.white38, size: compact ? 14 : 16),
+            SizedBox(width: compact ? 6 : 8),
             Text(
               label,
               style: AppTextStyles.labelSmall.copyWith(
                 color: isActive ? color : Colors.white38,
                 fontWeight: FontWeight.w900,
+                fontSize: compact ? 10 : 12,
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _RoundResultMetrics {
+  const _RoundResultMetrics({
+    required this.isCompact,
+    required this.screenPadding,
+    required this.contentWidth,
+    required this.sectionGap,
+    required this.bottomGap,
+    required this.cardPadding,
+    required this.listPadding,
+    required this.cardRadius,
+    required this.headerIconSize,
+    required this.headerEmojiSize,
+    required this.headerTitleSize,
+    required this.bodyFontSize,
+    required this.labelFontSize,
+    required this.textGap,
+    required this.smallGap,
+    required this.dividerHeight,
+  });
+
+  final bool isCompact;
+  final double screenPadding;
+  final double contentWidth;
+  final double sectionGap;
+  final double bottomGap;
+  final double cardPadding;
+  final double listPadding;
+  final double cardRadius;
+  final double headerIconSize;
+  final double headerEmojiSize;
+  final double headerTitleSize;
+  final double bodyFontSize;
+  final double labelFontSize;
+  final double textGap;
+  final double smallGap;
+  final double dividerHeight;
+
+  factory _RoundResultMetrics.from(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final isCompact = size.width < 390 || size.height < 780;
+
+    return _RoundResultMetrics(
+      isCompact: isCompact,
+      screenPadding: isCompact ? 16 : 24,
+      contentWidth: isCompact ? 340 : 380,
+      sectionGap: isCompact ? 14 : 24,
+      bottomGap: isCompact ? 20 : 32,
+      cardPadding: isCompact ? 16 : 24,
+      listPadding: isCompact ? 12 : 16,
+      cardRadius: isCompact ? 10 : 12,
+      headerIconSize: isCompact ? 64 : 80,
+      headerEmojiSize: isCompact ? 30 : 40,
+      headerTitleSize: isCompact ? 20 : 24,
+      bodyFontSize: isCompact ? 12 : 14,
+      labelFontSize: isCompact ? 10 : 12,
+      textGap: isCompact ? 12 : 16,
+      smallGap: isCompact ? 6 : 8,
+      dividerHeight: isCompact ? 18 : 24,
     );
   }
 }

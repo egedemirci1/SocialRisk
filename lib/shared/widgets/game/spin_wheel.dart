@@ -27,6 +27,8 @@ class SpinWheel extends StatefulWidget {
     required this.onSpinComplete,
     this.playerName,
     required this.categories,
+    this.compact = false,
+    this.maxWheelSize = 280,
   });
 
   final String? spinningTarget;
@@ -35,6 +37,8 @@ class SpinWheel extends StatefulWidget {
   final ValueChanged<String> onSpinComplete;
   final String? playerName;
   final List<String> categories;
+  final bool compact;
+  final double maxWheelSize;
 
   @override
   State<SpinWheel> createState() => _SpinWheelState();
@@ -141,102 +145,147 @@ class _SpinWheelState extends State<SpinWheel>
       }
     });
   }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Pointer oku (üstte)
-        const Icon(
-          Icons.arrow_drop_down_rounded,
-          color: Colors.white,
-          size: 48,
-        ),
-
-        // Çark
-        SizedBox(
-          width: 280,
-          height: 280,
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              final angle = _animation.isCompleted || !_isSpinning
-                  ? _currentAngle
-                  : _animation.value;
-              return Transform.rotate(angle: angle, child: child);
-            },
-            child: CustomPaint(
-              size: const Size(280, 280),
-              painter: _WheelPainter(categories: _activeCategories),
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = widget.compact || constraints.maxHeight < 360;
+        final maxWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : widget.maxWheelSize;
+        final rawMaxHeight = constraints.maxHeight.isFinite
+            ? constraints.maxHeight
+            : widget.maxWheelSize + (compact ? 72.0 : 96.0);
+        final statusHeight = (rawMaxHeight * (compact ? 0.16 : 0.18))
+            .clamp(30.0, compact ? 46.0 : 58.0)
+            .toDouble();
+        final pointerSize = (rawMaxHeight * 0.08)
+            .clamp(18.0, compact ? 28.0 : 40.0)
+            .toDouble();
+        final gap =
+            (rawMaxHeight * 0.04).clamp(8.0, compact ? 12.0 : 18.0).toDouble();
+        final double wheelSize = min(
+          widget.maxWheelSize,
+          min(
+            maxWidth * 0.92,
+            rawMaxHeight - statusHeight - pointerSize - gap,
           ),
-        ),
+        ).clamp(140.0, widget.maxWheelSize).toDouble();
 
-        const SizedBox(height: 24),
-
-        // Çevir butonu
-        if (!_hasResult && widget.canSpin)
-          GestureDetector(
-            onTap: _isSpinning ? null : widget.onSpinRequest,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-              decoration: BoxDecoration(
-                gradient: _isSpinning
-                    ? null
-                    : const LinearGradient(
-                        colors: [AppColors.primary, AppColors.fire],
-                      ),
-                color: _isSpinning ? AppColors.surfaceElevated : null,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: _isSpinning
-                    ? null
-                    : [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.4),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    _isSpinning
-                        ? Icons.hourglass_top_rounded
-                        : Icons.casino_rounded,
-                    color: Colors.white,
-                    size: 22,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    _isSpinning ? 'Dönüyor...' : 'Çarkı Çevir!',
-                    style: AppTextStyles.titleMedium.copyWith(fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,),
-                  ),
-                ],
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.arrow_drop_down_rounded,
+              color: Colors.white,
+              size: pointerSize,
+            ),
+            SizedBox(
+              width: wheelSize,
+              height: wheelSize,
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  final angle = _animation.isCompleted || !_isSpinning
+                      ? _currentAngle
+                      : _animation.value;
+                  return Transform.rotate(angle: angle, child: child);
+                },
+                child: CustomPaint(
+                  size: Size.square(wheelSize),
+                  painter: _WheelPainter(categories: _activeCategories),
+                ),
               ),
             ),
-          )
-        else if (!_hasResult && !widget.canSpin && _isSpinning)
-          Text(
-            'Çark dönüyor...',
-            style: AppTextStyles.titleSmall.copyWith(fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.white70,),
-          )
-        else if (!_hasResult && !widget.canSpin)
-          Text(
-            '${widget.playerName ?? 'Oyuncu'}\'nun çarkı çevirmesi bekleniyor...',
-            style: AppTextStyles.titleSmall.copyWith(fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.white54,),
-          ),
-      ],
+            SizedBox(height: gap),
+            ConstrainedBox(
+              constraints: BoxConstraints(minHeight: statusHeight),
+              child: _buildStatusArea(compact: compact),
+            ),
+          ],
+        );
+      },
     );
+  }
+
+  Widget _buildStatusArea({required bool compact}) {
+    if (!_hasResult && widget.canSpin) {
+      return GestureDetector(
+        onTap: _isSpinning ? null : widget.onSpinRequest,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 24 : 32,
+            vertical: compact ? 12 : 14,
+          ),
+          decoration: BoxDecoration(
+            gradient: _isSpinning
+                ? null
+                : const LinearGradient(
+                    colors: [AppColors.primary, AppColors.fire],
+                  ),
+            color: _isSpinning ? AppColors.surfaceElevated : null,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: _isSpinning
+                ? null
+                : [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.4),
+                      blurRadius: compact ? 10 : 16,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                _isSpinning
+                    ? Icons.hourglass_top_rounded
+                    : Icons.casino_rounded,
+                color: Colors.white,
+                size: compact ? 18 : 22,
+              ),
+              SizedBox(width: compact ? 6 : 8),
+              Text(
+                _isSpinning ? 'Donuyor...' : 'Carki Cevir!',
+                style: AppTextStyles.titleMedium.copyWith(
+                  fontSize: compact ? 14 : 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (!_hasResult && !widget.canSpin && _isSpinning) {
+      return Text(
+        'Cark donuyor...',
+        style: AppTextStyles.titleSmall.copyWith(
+          fontSize: compact ? 12 : 14,
+          fontWeight: FontWeight.w500,
+          color: Colors.white70,
+        ),
+        textAlign: TextAlign.center,
+      );
+    }
+
+    if (!_hasResult && !widget.canSpin) {
+      return Text(
+        '${widget.playerName ?? 'Oyuncu'} carki ceviriyor...',
+        style: AppTextStyles.titleSmall.copyWith(
+          fontSize: compact ? 12 : 14,
+          fontWeight: FontWeight.w500,
+          color: Colors.white54,
+        ),
+        textAlign: TextAlign.center,
+      );
+    }
+
+    return const SizedBox.shrink();
   }
 }
 
