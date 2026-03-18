@@ -145,7 +145,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               SizedBox(
                 width: double.infinity,
                 child: StageButton(
-                  label: 'Partiyi Baslat',
+                    label: 'Partiyi Başlat',
                   icon: Icons.play_arrow_rounded,
                   backgroundColor: AppColors.primary,
                   textColor: AppColors.background,
@@ -447,14 +447,14 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           children: [
             Expanded(
               child: _ToggleChip(
-                label: 'Cark',
+                                  label: 'Çark',
                 isSelected: _selectedMode == GameMode.classic,
                 compact: metrics.isCompactWidth || metrics.isCompactHeight,
                 onTap: () {
                   if (_selectedCategories.length == 1) {
                     ToastUtils.showInfo(
                       context,
-                      'Tek kategori secildiginde sadece Borsa modu kullanilabilir.',
+                        'Tek kategori seçildiğinde sadece Borsa modu kullanılabilir.',
                     );
                     return;
                   }
@@ -519,8 +519,8 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                       SizedBox(height: metrics.textTightGap),
                       Text(
                         _selectedMode == GameMode.classic
-                            ? 'Sans carkini cevir ve rastgele kategoriden gelen riskli cezalarla yuzles. Puan toplamak icin tek sansin cesaret!'
-                            : 'Gorevleri tamamlayarak coin kazan; bu coinlerle baskalarina ceza kitle, risklerden kurtul. Kim daha acimasizsa o kazanir.',
+                              ? 'Şans çarkını çevir ve rastgele kategoriden gelen riskli cezalarla yüzleş. Puan toplamak için tek şansın cesaret!'
+                          : 'Görevleri tamamlayarak coin kazan; bu coinlerle başkalarına ceza kitle, risklerden kurtul. Kim daha acımasızsa o kazanır.',
                         style: AppTextStyles.labelSmall.copyWith(
                           fontSize: metrics.bodyFontSize,
                           color: Colors.white70,
@@ -576,13 +576,13 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                           _selectedMode = GameMode.economy;
                           ToastUtils.showInfo(
                             context,
-                            'Tek kategori secildi. Oyun modu otomatik Borsa moduna alindi.',
+                  'Tek kategori seçildi. Oyun modu otomatik Borsa moduna alındı.',
                           );
                         }
                       } else {
                         ToastUtils.showWarning(
                           context,
-                          'En az 1 kategori secmelisiniz.',
+                  'En az 1 kategori seçmelisiniz.',
                         );
                       }
                     } else {

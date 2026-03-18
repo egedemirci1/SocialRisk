@@ -334,7 +334,7 @@ class FirebaseRoomSource implements RoomRepository {
 
       return await _firestore.runTransaction((transaction) async {
         final freshRoomSnap = await transaction.get(roomRef);
-        if (!freshRoomSnap.exists) throw Exception('Oda bulunamadi!');
+    if (!freshRoomSnap.exists) throw Exception('Oda bulunamadı!');
 
         final gameRef = _firestore.collection('games').doc();
         final gameId = gameRef.id;

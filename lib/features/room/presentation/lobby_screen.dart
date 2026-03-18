@@ -375,7 +375,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Bir emote sec',
+                'Bir emote seç',
                   style: AppTextStyles.headlineMedium.copyWith(
                     color: Colors.white,
                     fontSize: 20,

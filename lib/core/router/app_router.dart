@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
@@ -23,6 +24,7 @@ import '../../features/admin/presentation/task_editor_screen.dart';
 import '../../features/admin/presentation/reported_photos_screen.dart';
 import '../../features/admin/providers/admin_provider.dart';
 import '../../features/admin/domain/task_item_entity.dart';
+import '../../features/debug/presentation/debug_playground_screen.dart';
 import '../../shared/widgets/guards/active_game_guard.dart';
 
 /// Listens to Firebase auth state so GoRouter re-evaluates redirect
@@ -51,6 +53,11 @@ final appRouter = GoRouter(
   redirect: (context, state) {
     final user = FirebaseAuth.instance.currentUser;
     final isOnLoginPage = state.matchedLocation == '/';
+    final isDebugPlayground = state.matchedLocation == '/debug-playground';
+
+    if (kDebugMode && isDebugPlayground) {
+      return null;
+    }
 
     if (user == null) {
       return isOnLoginPage ? null : '/';
@@ -265,6 +272,14 @@ final appRouter = GoRouter(
         state: state,
       ),
     ),
+    if (kDebugMode)
+      GoRoute(
+        path: '/debug-playground',
+        pageBuilder: (context, state) => _buildPageWithTransition(
+          child: const DebugPlaygroundScreen(),
+          state: state,
+        ),
+      ),
   ],
 );
 

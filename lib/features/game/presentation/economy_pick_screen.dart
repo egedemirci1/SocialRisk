@@ -117,7 +117,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
           backgroundColor: AppColors.background,
           appBar: AppBar(
             title: Text(
-              'SENARYO SECIMI',
+                                  'SENARYO SEÇİMİ',
               style: AppTextStyles.headlineMedium.copyWith(
                 color: AppColors.accent,
                 letterSpacing: metrics.titleLetterSpacing,
@@ -181,7 +181,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                                 Text(
                                   isMyPick
                                       ? 'SIRADAKI OYUNCU SENSIN!'
-                                      : '$currentPickerName SECIYOR...',
+                                      : '$currentPickerName SEÇİYOR...',
                                   style: AppTextStyles.titleMedium.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w900,
@@ -192,7 +192,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  'SECIM ${game.currentPickIndex + 1}/${game.categoryPickOrder.length}',
+                                    'SEÇİM ${game.currentPickIndex + 1}/${game.categoryPickOrder.length}',
                                   style: AppTextStyles.labelSmall.copyWith(
                                     color: Colors.white30,
                                     fontSize: metrics.helperFontSize,

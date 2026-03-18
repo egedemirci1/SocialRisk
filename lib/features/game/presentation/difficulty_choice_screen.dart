@@ -84,7 +84,7 @@ class _DifficultyChoiceScreenState
         if (game == null) {
           return const Scaffold(
             backgroundColor: Colors.transparent,
-            body: Center(child: Text('Oyun bulunamadi')),
+            body: Center(child: Text('Oyun bulunamadı')),
           );
         }
 
@@ -207,7 +207,7 @@ class _DifficultyChoiceScreenState
             children: [
               Expanded(
                 child: _buildDifficultyCard(
-                  title: 'AMATOR',
+                  title: 'AMATÖR',
                   multiplier: '1x',
                   estimatedPoints: game.mode == GameMode.economy &&
                           game.selectedCategory != null
@@ -304,7 +304,7 @@ class _DifficultyChoiceScreenState
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    'BEKLENIYOR',
+                    'BEKLENİYOR',
                     style: AppTextStyles.titleLarge.copyWith(
                       color: AppColors.accent,
                       letterSpacing: layout.heroLetterSpacing,
@@ -333,7 +333,7 @@ class _DifficultyChoiceScreenState
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        '$playerName zorluk seviyesini seciyor...',
+                        '$playerName zorluk seviyesini seçiyor...',
                         style: AppTextStyles.titleLarge.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
@@ -444,8 +444,8 @@ class _DifficultyChoiceScreenState
                             (bodyHeight < 76 ? 0.9 : 1.0),
                       );
                       final subtitleText = oneLineSubtitle
-                          ? 'Performansinin zorlugunu sen belirle'
-                          : 'Performansinin zorlugunu sen belirle...';
+                          ? 'Performansının zorluğunu sen belirle'
+                          : 'Performansının zorluğunu sen belirle...';
                       final bodySpacing = oneLineSubtitle
                           ? min(subtitleGap, 3.0)
                           : subtitleGap;
@@ -458,7 +458,7 @@ class _DifficultyChoiceScreenState
                             child: FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text(
-                                'RISK VE ODUL',
+                                'RİSK VE ÖDÜL',
                                 style: AppTextStyles.titleLarge.copyWith(
                                   color: Colors.white,
                                   letterSpacing: layout.heroLetterSpacing,
@@ -568,7 +568,7 @@ class _DifficultyChoiceScreenState
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
               child: Text(
-                'Tahmini Kazanc: $estimatedPoints Puan',
+                'Tahmini Kazanç: $estimatedPoints Puan',
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: Colors.white70,
                   fontWeight: FontWeight.bold,

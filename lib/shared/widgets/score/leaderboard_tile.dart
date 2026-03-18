@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 
-/// Sıralama listesi öğesi — Oyuncu adı, sıra, puan.
 class LeaderboardTile extends StatelessWidget {
   const LeaderboardTile({
     super.key,
@@ -10,141 +10,165 @@ class LeaderboardTile extends StatelessWidget {
     required this.playerName,
     required this.score,
     this.isCurrentPlayer = false,
+    this.compact = false,
   });
 
   final int rank;
   final String playerName;
   final int score;
   final bool isCurrentPlayer;
+  final bool compact;
 
   Color get _rankColor {
     switch (rank) {
       case 1:
         return AppColors.accent;
       case 2:
-        return const Color(0xFFC0C0C0); // Gümüş
+        return const Color(0xFFC0C0C0);
       case 3:
-        return const Color(0xFFCD7F32); // Bronz
+        return const Color(0xFFCD7F32);
       default:
         return Colors.white38;
     }
   }
 
-  String get _rankEmoji {
+  IconData? get _rankIcon {
     switch (rank) {
       case 1:
-        return '🥇';
+        return Icons.looks_one_rounded;
       case 2:
-        return '🥈';
+        return Icons.looks_two_rounded;
       case 3:
-        return '🥉';
+        return Icons.looks_3_rounded;
       default:
-        return '$rank';
+        return null;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: isCurrentPlayer
-              ? AppColors.primary.withValues(alpha: 0.1)
-              : AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: isCurrentPlayer
-              ? Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.4),
-                  width: 1.5,
-                )
-              : null,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              // Sıra
-              SizedBox(
-                width: 36,
-                child: rank <= 3
-                    ? Text(
-                        _rankEmoji,
-                        style: const TextStyle(fontSize: 22),
-                        textAlign: TextAlign.center,
-                      )
-                    : Text(
-                        '$rank',
-                        style: AppTextStyles.titleMedium.copyWith(fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: _rankColor,),
-                        textAlign: TextAlign.center,
-                      ),
-              ),
-              const SizedBox(width: 12),
+    final tilePaddingH = compact ? 12.0 : 16.0;
+    final tilePaddingV = compact ? 12.0 : 14.0;
+    final rankWidth = compact ? 30.0 : 36.0;
+    final avatarSize = compact ? 34.0 : 40.0;
+    final gap = compact ? 8.0 : 12.0;
+    final nameFont = compact ? 14.0 : 15.0;
+    final subFont = compact ? 10.0 : 11.0;
+    final scoreFont = compact ? 18.0 : 20.0;
 
-              // Avatar placeholder
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.surfaceElevated,
-                ),
-                child: const SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: Center(
-                    child: Icon(
-                      Icons.person_rounded,
-                      color: Colors.white38,
-                      size: 22,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: isCurrentPlayer
+            ? AppColors.primary.withValues(alpha: 0.1)
+            : AppColors.surface,
+        borderRadius: BorderRadius.circular(compact ? 10 : 12),
+        border: isCurrentPlayer
+            ? Border.all(
+                color: AppColors.primary.withValues(alpha: 0.4),
+                width: 1.5,
+              )
+            : null,
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: tilePaddingH,
+          vertical: tilePaddingV,
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: rankWidth,
+              child: _rankIcon != null
+                  ? Icon(
+                      _rankIcon,
+                      color: _rankColor,
+                      size: compact ? 18 : 22,
+                    )
+                  : Text(
+                      '$rank',
+                      style: AppTextStyles.titleMedium.copyWith(
+                        fontSize: compact ? 16 : 18,
+                        fontWeight: FontWeight.w800,
+                        color: _rankColor,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
+            ),
+            SizedBox(width: gap),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.surfaceElevated,
+              ),
+              child: SizedBox(
+                width: avatarSize,
+                height: avatarSize,
+                child: Center(
+                  child: Icon(
+                    Icons.person_rounded,
+                    color: Colors.white38,
+                    size: compact ? 18 : 22,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
-
-              // İsim
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+            ),
+            SizedBox(width: gap),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    playerName,
+                    style: AppTextStyles.titleLarge.copyWith(
+                      color: isCurrentPlayer ? AppColors.primary : Colors.white,
+                      fontSize: nameFont,
+                      fontWeight:
+                          isCurrentPlayer ? FontWeight.bold : FontWeight.normal,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (isCurrentPlayer)
                     Text(
-                      playerName,
-                      style: AppTextStyles.titleLarge.copyWith(
-                        color: isCurrentPlayer ? AppColors.primary : Colors.white,
-                        fontSize: 15,
-                        fontWeight: isCurrentPlayer ? FontWeight.bold : FontWeight.normal,
+                      'Sen',
+                      style: AppTextStyles.labelSmall.copyWith(
+                        color: AppColors.primary,
+                        fontSize: subFont,
                       ),
                     ),
-                    if (isCurrentPlayer)
-                      Text(
-                        'Sen',
-                        style: AppTextStyles.labelSmall.copyWith(
-                          color: AppColors.primary,
-                          fontSize: 11,
-                        ),
+                ],
+              ),
+            ),
+            SizedBox(width: compact ? 6 : 8),
+            ConstrainedBox(
+              constraints: BoxConstraints(minWidth: compact ? 54 : 64),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerRight,
+                child: Row(
+                  children: [
+                    Text(
+                      '$score',
+                      style: AppTextStyles.titleMedium.copyWith(
+                        fontSize: scoreFont,
+                        fontWeight: FontWeight.w800,
+                        color: _rankColor,
                       ),
+                    ),
+                    SizedBox(width: compact ? 3 : 4),
+                    Text(
+                      'puan',
+                      style: AppTextStyles.labelSmall.copyWith(
+                        color: Colors.white38,
+                        fontSize: subFont,
+                      ),
+                    ),
                   ],
                 ),
               ),
-
-              // Puan
-              Text(
-                '$score',
-                style: AppTextStyles.titleMedium.copyWith(fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: _rankColor,),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                'puan',
-                style: AppTextStyles.labelSmall.copyWith(
-                  color: Colors.white38,
-                  fontSize: 11,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

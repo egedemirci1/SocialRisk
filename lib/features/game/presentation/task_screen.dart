@@ -278,7 +278,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
       },
       loading: () => const Scaffold(
         backgroundColor: AppColors.background,
-        body: TheaterLoadingScreen(message: 'Parti Basliyor...'),
+        body: TheaterLoadingScreen(message: 'Parti Başlıyor...'),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.background,
@@ -432,8 +432,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                     width: contentWidth,
                     child: _buildTopTitleCard(
                       badge: 'PARTI BASLIYOR',
-                      title: 'Gorevini Belirle',
-                      subtitle: 'Siran gelmeden once gorevini sec...',
+                                  title: 'Görevini Belirle',
+                                  subtitle: 'Sıran gelmeden önce görevini seç...',
                       showSubtitle: !isVeryShort,
                       layout: layout,
                     ),
@@ -666,11 +666,11 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                                   child: SizedBox(
                                     width: layout.contentWidth * 0.8,
                                     child: _buildTopTitleCard(
-                                      badge: isClosed ? 'GIZLI TUR' : 'GOREV',
+                          badge: isClosed ? 'GİZLİ TUR' : 'GÖREV',
                                       title: isClosed
-                                          ? 'Siradaki Gorev Gizli'
+                                  ? 'Sıradaki Görev Gizli'
                                           : (isMyTurn
-                                              ? 'Icerigin Burada:'
+                                      ? 'İçeriğin Burada:'
                                               : '$playerName icerigi:'),
                                       layout: layout,
                                     ),
@@ -688,7 +688,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                                     child: GameCard(
                                       category: task.category,
                                       content: isClosed
-                                          ? 'Mevcut gorevi gormek icin karti ac...'
+                                  ? 'Mevcut görevi görmek için kartı aç...'
                                           : task.content,
                                       points: cardPoints,
                                       compact: layout.isCompact,
@@ -732,7 +732,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     if (isClosed && isMyTurn) {
       return Center(
         child: StageButton(
-          label: 'Gorevi Ac',
+                                label: 'Görevi Aç',
           backgroundColor: AppColors.accent,
           textColor: Colors.black,
           borderColor: AppColors.accent,
@@ -747,7 +747,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           StageButton(
-            label: 'Gorevi Baslat',
+                        label: 'Görevi Başlat',
             backgroundColor: AppColors.primary,
             textColor: Colors.white,
             borderColor: AppColors.accent,
@@ -868,7 +868,7 @@ class _AnimatedPassButtonState extends State<_AnimatedPassButton>
         child: Text(
           _isWarningSelected
               ? 'EMIN MISIN? (-50 Puan)'
-              : 'Gorevi Reddet (-50 Puan)',
+                    : 'Görevi Reddet (-50 Puan)',
           style: AppTextStyles.labelSmall.copyWith(
             color: _isWarningSelected ? Colors.redAccent : Colors.white70,
             fontWeight: FontWeight.w900,

@@ -1,15 +1,17 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../shared/widgets/score/leaderboard_tile.dart';
-import '../../../shared/widgets/buttons/stage_button.dart';
-import '../../auth/providers/auth_provider.dart';
-import '../../room/providers/room_provider.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../../shared/widgets/score/leaderboard_tile.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../room/providers/room_provider.dart';
 
-/// Oyun sonu ekranı — Parti Temalı
 class GameOverScreen extends ConsumerStatefulWidget {
   const GameOverScreen({super.key, required this.roomCode});
 
@@ -77,141 +79,187 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
               : 0;
 
           return SafeArea(
-            child: ResponsiveWrapper(
-              maxWidth: 600,
-              padding: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  const Spacer(),
-                  ScaleTransition(
-                    scale: _scaleAnimation,
-                    child: Column(
-                      children: [
-                        const Text('🏆', style: TextStyle(fontSize: 72)),
-                        const SizedBox(height: 16),
-                        Text(
-                          'KAZANAN',
-                          style: AppTextStyles.labelSmall.copyWith(
-                            color: AppColors.accent,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 4,
-                          ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final layout = _GameOverLayoutMetrics.from(constraints);
+
+                return ResponsiveWrapper(
+                  maxWidth: 720,
+                  padding: EdgeInsets.zero,
+                  child: Center(
+                    child: SizedBox(
+                      width: layout.contentWidth,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: layout.screenPadding,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          winner?.name.toUpperCase() ?? '',
-                          style: AppTextStyles.headlineMedium.copyWith(
-                            color: Colors.white,
-                            letterSpacing: 2,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${winner?.score ?? 0} PUAN',
-                          style: AppTextStyles.titleLarge.copyWith(
-                            color: AppColors.accent,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.leaderboard_rounded,
-                          color: Colors.white24,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'OYUNCU SIRALAMASI',
-                          style: AppTextStyles.labelSmall.copyWith(
-                            color: Colors.white54,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      itemCount: sorted.length,
-                      itemBuilder: (context, index) {
-                        final p = sorted[index];
-                        return LeaderboardTile(
-                          rank: index + 1,
-                          playerName: p.name,
-                          score: p.score,
-                          isCurrentPlayer: p.id == user?.uid,
-                        );
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColors.accent.withValues(alpha: 0.1),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                hasNegativeScore
-                                    ? Icons.sentiment_very_dissatisfied_rounded
-                                    : Icons.stars_rounded,
-                                color: hasNegativeScore
-                                    ? AppColors.primary
-                                    : AppColors.accent,
-                              ),
-                              const SizedBox(width: 12),
-                              Flexible(
-                                  child: Text(
-                                    hasNegativeScore
-                                        ? 'Eksilere düşmezsin be kardeşim\nHiç bakiye kazanamadın!'
-                                        : '+$myReward Puan Bakiyenize Eklendi',
-                                    style: AppTextStyles.titleMedium.copyWith(
-                                      color: hasNegativeScore
-                                          ? Colors.white70
-                                          : Colors.white,
-                                      fontWeight: FontWeight.w700,
+                        child: Column(
+                          children: [
+                            SizedBox(height: layout.topGap),
+                            Align(
+                              alignment: Alignment.topCenter,
+                              child: ScaleTransition(
+                                scale: _scaleAnimation,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.emoji_events_rounded, color: AppColors.accent, size: layout.trophyFontSize),
+                                    SizedBox(height: layout.winnerGap),
+                                    Text(
+                                      'KAZANAN',
+                                      style: AppTextStyles.labelSmall.copyWith(
+                                        color: AppColors.accent,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: layout.winnerLetterSpacing,
+                                        fontSize: layout.winnerLabelFontSize,
+                                      ),
                                     ),
-                                    textAlign: TextAlign.center,
-                                  ),
+                                    SizedBox(height: layout.winnerNameGap),
+                                    FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        winner?.name.toUpperCase() ?? '',
+                                        style: AppTextStyles.headlineMedium.copyWith(
+                                          color: Colors.white,
+                                          letterSpacing: 2,
+                                          fontSize: layout.winnerNameFontSize,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: layout.winnerScoreGap),
+                                    Text(
+                                      '${winner?.score ?? 0} PUAN',
+                                      style: AppTextStyles.titleLarge.copyWith(
+                                        color: AppColors.accent,
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: layout.winnerScoreFontSize,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                            SizedBox(height: layout.sectionGap),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: layout.listHeaderPadding,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.leaderboard_rounded,
+                                    color: Colors.white24,
+                                    size: layout.listHeaderIconSize,
+                                  ),
+                                  SizedBox(width: layout.listHeaderIconGap),
+                                  Flexible(
+                                    child: Text(
+                                      'OYUNCU SIRALAMASI',
+                                      style: AppTextStyles.labelSmall.copyWith(
+                                        color: Colors.white54,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 1,
+                                        fontSize: layout.listHeaderFontSize,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: layout.listGap),
+                            Expanded(
+                              child: ListView.separated(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: layout.listPadding,
+                                ),
+                                itemCount: sorted.length,
+                                separatorBuilder: (_, __) =>
+                                    SizedBox(height: layout.tileGap),
+                                itemBuilder: (context, index) {
+                                  final p = sorted[index];
+                                  return LeaderboardTile(
+                                    rank: index + 1,
+                                    playerName: p.name,
+                                    score: p.score,
+                                    isCurrentPlayer: p.id == user?.uid,
+                                    compact: layout.compactTiles,
+                                  );
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                layout.bottomPanelPadding,
+                                layout.bottomPanelTopGap,
+                                layout.bottomPanelPadding,
+                                layout.bottomPanelBottomGap,
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(layout.rewardPanelPadding),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.surface,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: AppColors.accent.withValues(alpha: 0.1),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          hasNegativeScore
+                                              ? Icons.sentiment_very_dissatisfied_rounded
+                                              : Icons.stars_rounded,
+                                          color: hasNegativeScore
+                                              ? AppColors.primary
+                                              : AppColors.accent,
+                                          size: layout.rewardIconSize,
+                                        ),
+                                        SizedBox(width: layout.rewardIconGap),
+                                        Flexible(
+                                          child: Text(
+                                            hasNegativeScore
+                                                ? 'Eksilere düşmezsin be kardeşim\nHiç bakiye kazanamadın!'
+                                                : '+$myReward Puan bakiyenize eklendi',
+                                            style: AppTextStyles.titleMedium.copyWith(
+                                              color: hasNegativeScore
+                                                  ? Colors.white70
+                                                  : Colors.white,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: layout.rewardTextFontSize,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: layout.actionGap),
+                                  StageButton(
+                                    label: 'LOBİYE DÖN',
+                                    icon: Icons.home_rounded,
+                                    backgroundColor: AppColors.surface,
+                                    textColor: Colors.white,
+                                    borderColor: AppColors.accent.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                    onPressed: () => context.go('/home'),
+                                    compact: layout.compactTiles,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        StageButton(
-                          label: 'LOBİYE DÖN',
-                          icon: Icons.home_rounded,
-                          backgroundColor: AppColors.surface,
-                          textColor: Colors.white,
-                          borderColor: AppColors.accent.withValues(
-                            alpha: 0.3,
-                          ),
-                          onPressed: () => context.go('/home'),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
           );
         },
@@ -221,3 +269,103 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
     );
   }
 }
+
+class _GameOverLayoutMetrics {
+  const _GameOverLayoutMetrics({
+    required this.contentWidth,
+    required this.screenPadding,
+    required this.topGap,
+    required this.trophyFontSize,
+    required this.winnerGap,
+    required this.winnerLetterSpacing,
+    required this.winnerLabelFontSize,
+    required this.winnerNameGap,
+    required this.winnerNameFontSize,
+    required this.winnerScoreGap,
+    required this.winnerScoreFontSize,
+    required this.sectionGap,
+    required this.listHeaderPadding,
+    required this.listHeaderIconSize,
+    required this.listHeaderIconGap,
+    required this.listHeaderFontSize,
+    required this.listGap,
+    required this.listPadding,
+    required this.tileGap,
+    required this.bottomPanelPadding,
+    required this.bottomPanelTopGap,
+    required this.bottomPanelBottomGap,
+    required this.rewardPanelPadding,
+    required this.rewardIconSize,
+    required this.rewardIconGap,
+    required this.rewardTextFontSize,
+    required this.actionGap,
+    required this.compactTiles,
+  });
+
+  final double contentWidth;
+  final double screenPadding;
+  final double topGap;
+  final double trophyFontSize;
+  final double winnerGap;
+  final double winnerLetterSpacing;
+  final double winnerLabelFontSize;
+  final double winnerNameGap;
+  final double winnerNameFontSize;
+  final double winnerScoreGap;
+  final double winnerScoreFontSize;
+  final double sectionGap;
+  final double listHeaderPadding;
+  final double listHeaderIconSize;
+  final double listHeaderIconGap;
+  final double listHeaderFontSize;
+  final double listGap;
+  final double listPadding;
+  final double tileGap;
+  final double bottomPanelPadding;
+  final double bottomPanelTopGap;
+  final double bottomPanelBottomGap;
+  final double rewardPanelPadding;
+  final double rewardIconSize;
+  final double rewardIconGap;
+  final double rewardTextFontSize;
+  final double actionGap;
+  final bool compactTiles;
+
+  factory _GameOverLayoutMetrics.from(BoxConstraints constraints) {
+    final width = constraints.maxWidth;
+    final height = constraints.maxHeight;
+    final compact = width < 390 || height < 760;
+
+    return _GameOverLayoutMetrics(
+      contentWidth: min(max(width * 0.9, 320.0), 620.0),
+      screenPadding: compact ? 12 : 20,
+      topGap: compact ? 10 : 20,
+      trophyFontSize: compact ? 54 : 72,
+      winnerGap: compact ? 8 : 16,
+      winnerLetterSpacing: compact ? 2.5 : 4,
+      winnerLabelFontSize: compact ? 11 : 12,
+      winnerNameGap: compact ? 6 : 8,
+      winnerNameFontSize: compact ? 26 : 32,
+      winnerScoreGap: compact ? 6 : 8,
+      winnerScoreFontSize: compact ? 20 : 24,
+      sectionGap: compact ? 22 : 36,
+      listHeaderPadding: compact ? 8 : 12,
+      listHeaderIconSize: compact ? 16 : 18,
+      listHeaderIconGap: compact ? 6 : 8,
+      listHeaderFontSize: compact ? 10 : 11,
+      listGap: compact ? 8 : 12,
+      listPadding: compact ? 8 : 12,
+      tileGap: compact ? 8 : 10,
+      bottomPanelPadding: compact ? 8 : 12,
+      bottomPanelTopGap: compact ? 8 : 10,
+      bottomPanelBottomGap: compact ? 18 : 28,
+      rewardPanelPadding: compact ? 12 : 16,
+      rewardIconSize: compact ? 18 : 20,
+      rewardIconGap: compact ? 10 : 12,
+      rewardTextFontSize: compact ? 15 : 16,
+      actionGap: compact ? 12 : 16,
+      compactTiles: compact,
+    );
+  }
+}
+

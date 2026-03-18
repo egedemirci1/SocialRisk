@@ -248,7 +248,7 @@ class _SpinWheelState extends State<SpinWheel>
               ),
               SizedBox(width: compact ? 6 : 8),
               Text(
-                _isSpinning ? 'Donuyor...' : 'Carki Cevir!',
+                        _isSpinning ? 'Dönüyor...' : 'Çarkı Çevir!',
                 style: AppTextStyles.titleMedium.copyWith(
                   fontSize: compact ? 14 : 16,
                   fontWeight: FontWeight.w700,
@@ -263,7 +263,7 @@ class _SpinWheelState extends State<SpinWheel>
 
     if (!_hasResult && !widget.canSpin && _isSpinning) {
       return Text(
-        'Cark donuyor...',
+                    'Çark dönüyor...',
         style: AppTextStyles.titleSmall.copyWith(
           fontSize: compact ? 12 : 14,
           fontWeight: FontWeight.w500,
@@ -275,7 +275,7 @@ class _SpinWheelState extends State<SpinWheel>
 
     if (!_hasResult && !widget.canSpin) {
       return Text(
-        '${widget.playerName ?? 'Oyuncu'} carki ceviriyor...',
+                  '${widget.playerName ?? 'Oyuncu'} çarkı çeviriyor...',
         style: AppTextStyles.titleSmall.copyWith(
           fontSize: compact ? 12 : 14,
           fontWeight: FontWeight.w500,

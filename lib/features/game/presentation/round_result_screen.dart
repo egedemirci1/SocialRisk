@@ -178,7 +178,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
         ),
         SizedBox(height: metrics.textGap),
         Text(
-          isPass ? 'GOREV REDDEDILDI' : 'TUR BITTI',
+                  isPass ? 'GÖREV REDDEDİLDİ' : 'TUR BİTTİ',
           style: AppTextStyles.headlineMedium.copyWith(
             color: Colors.white,
             letterSpacing: 2,
@@ -298,7 +298,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
 
         if (isHost) {
           return StageButton(
-            label: isGameOver ? 'PARTI BITTI' : 'SIRADAKI GOREV',
+                label: isGameOver ? 'PARTİ BİTTİ' : 'SIRADAKİ GÖREV',
             icon: isGameOver
                 ? Icons.emoji_events_rounded
                 : Icons.arrow_forward_rounded,
