@@ -15,6 +15,7 @@ import '../../../shared/widgets/common/responsive_wrapper.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../shared/widgets/game/spin_wheel.dart' hide AnimatedBuilder;
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
+import '../../../core/audio/audio_service.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../room/domain/room_entity.dart';
 import '../../room/providers/room_provider.dart';
@@ -49,6 +50,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   @override
   void initState() {
     super.initState();
+    // Oyun başladığında menü loop'unu durdur.
+    ref.read(audioServiceProvider).stopMusic();
     _cardController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),

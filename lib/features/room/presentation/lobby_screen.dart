@@ -21,6 +21,7 @@ import '../../economy/providers/economy_provider.dart';
 import '../domain/room_entity.dart';
 import '../providers/room_provider.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../../core/audio/audio_service.dart';
 
 const List<String> _lobbyEmotes = [
   '\u{1F602}',
@@ -45,6 +46,12 @@ class LobbyScreen extends ConsumerStatefulWidget {
 
 class _LobbyScreenState extends ConsumerState<LobbyScreen> {
   bool _isStartingGame = false;
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(audioServiceProvider).playMenuLoop();
+  }
 
   @override
   Widget build(BuildContext context) {

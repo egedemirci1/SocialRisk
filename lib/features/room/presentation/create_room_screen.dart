@@ -15,6 +15,7 @@ import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
 import '../../../shared/widgets/common/loading_overlay.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../../core/audio/audio_service.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
@@ -34,6 +35,12 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   final List<String> _selectedCategories =
       GameConstants.defaultCategoriesConst.toList();
   GameMode _selectedMode = GameMode.classic;
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(audioServiceProvider).playMenuLoop();
+  }
 
   Future<void> _createRoom() async {
     setState(() => _isCreating = true);

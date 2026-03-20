@@ -12,6 +12,7 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
+import '../../../core/audio/audio_service.dart';
 
 /// Partiye Katılma Ekranı — Parti Temalı
 class JoinRoomScreen extends ConsumerStatefulWidget {
@@ -33,6 +34,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
   @override
   void initState() {
     super.initState();
+    ref.read(audioServiceProvider).playMenuLoop();
     _controllers = List.generate(_codeLength, (_) => TextEditingController());
     _focusNodes = List.generate(_codeLength, (i) {
       final node = FocusNode();

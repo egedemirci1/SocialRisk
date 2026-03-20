@@ -17,6 +17,7 @@ import '../../../shared/widgets/common/social_risk_logo.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
+import '../../../core/audio/audio_service.dart';
 
 /// Ana menü ekranı — Parti Temalı
 class HomeScreen extends ConsumerStatefulWidget {
@@ -30,6 +31,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // Ana menü müziğini menü akışlarında loop'ta tut.
+    ref.read(audioServiceProvider).playMenuLoop();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final pending = PendingToast.instance.consume();
