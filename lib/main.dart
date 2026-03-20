@@ -8,9 +8,10 @@ import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:social_risk/core/constants/app_locale_options.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
-
 import 'package:social_risk/core/providers/lifecycle_provider.dart';
+import 'package:social_risk/core/providers/locale_provider.dart';
 import 'package:social_risk/shared/widgets/common/themed_background.dart';
 
 void main() async {
@@ -56,6 +57,7 @@ class SocialRiskApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Initialize Lifecycle Manager
     ref.watch(appLifecycleManagerProvider);
+    final localePreference = ref.watch(appLocaleProvider);
 
     return MaterialApp.router(
       title: 'Sosyal Risk',
@@ -72,7 +74,7 @@ class SocialRiskApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('tr'),
+      locale: resolveMaterialLocale(localePreference),
     );
   }
 }

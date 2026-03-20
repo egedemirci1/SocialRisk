@@ -94,10 +94,11 @@ class StageButton extends StatelessWidget {
           : () {
               // Ortak StageButton tıklamalarında buton click SFX çal.
               try {
-                ProviderScope.containerOf(
+                final audio = ProviderScope.containerOf(
                   context,
                   listen: false,
-                ).read(audioServiceProvider).playSfx(AppSfx.buttonClick);
+                ).read(audioServiceProvider);
+                audio.playSfx(AppSfx.buttonClick);
               } catch (_) {
                 // Provider bağlamı yoksa sessizce geç.
               }
