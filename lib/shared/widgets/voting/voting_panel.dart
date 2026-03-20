@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/audio/audio_service.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 
 /// Oylama paneli — Beğeni butonları (Parti Temalı).
-class VotingPanel extends StatefulWidget {
+class VotingPanel extends ConsumerStatefulWidget {
   const VotingPanel({
     super.key,
     required this.onVote,
@@ -16,10 +19,10 @@ class VotingPanel extends StatefulWidget {
   final Duration timeLimit;
 
   @override
-  State<VotingPanel> createState() => _VotingPanelState();
+  ConsumerState<VotingPanel> createState() => _VotingPanelState();
 }
 
-class _VotingPanelState extends State<VotingPanel>
+class _VotingPanelState extends ConsumerState<VotingPanel>
     with TickerProviderStateMixin {
   String? _selectedVote;
   late final AnimationController _timerController;
@@ -37,16 +40,26 @@ class _VotingPanelState extends State<VotingPanel>
         _castVote('neutral', timedOut: true);
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !widget.isEnabled) return;
+      ref.read(audioServiceProvider).startCountdownLoop();
+    });
   }
 
   @override
   void dispose() {
+    ref.read(audioServiceProvider).stopCountdown();
     _timerController.dispose();
     super.dispose();
   }
 
   void _castVote(String value, {bool timedOut = false}) {
     if (_selectedVote != null || !widget.isEnabled) return;
+    ref.read(audioServiceProvider).stopCountdown();
+    if (!timedOut) {
+      ref.read(audioServiceProvider).playSfx(AppSfx.buttonClick);
+    }
     setState(() => _selectedVote = value);
     widget.onVote(value, timedOut: timedOut);
   }

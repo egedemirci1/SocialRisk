@@ -1,7 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/category_constants.dart';
+import 'package:social_risk/core/audio/audio_service.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
 
 /// Kategori bilgisi — çark dilimi için renk, ikon ve isim.
@@ -18,7 +21,7 @@ class WheelCategory {
 }
 
 /// Dönen çark widget'ı. Kategori renk/ikon CategoryConstants'tan.
-class SpinWheel extends StatefulWidget {
+class SpinWheel extends ConsumerStatefulWidget {
   const SpinWheel({
     super.key,
     this.spinningTarget,
@@ -41,10 +44,10 @@ class SpinWheel extends StatefulWidget {
   final double maxWheelSize;
 
   @override
-  State<SpinWheel> createState() => _SpinWheelState();
+  ConsumerState<SpinWheel> createState() => _SpinWheelState();
 }
 
-class _SpinWheelState extends State<SpinWheel>
+class _SpinWheelState extends ConsumerState<SpinWheel>
     with SingleTickerProviderStateMixin {
   List<WheelCategory> get _activeCategories {
     if (widget.categories.isEmpty) {
@@ -83,6 +86,11 @@ class _SpinWheelState extends State<SpinWheel>
       duration: const Duration(milliseconds: 4000),
     );
     _animation = AlwaysStoppedAnimation(_currentAngle);
+    // İlk frame'de hedef zaten doluysa didUpdateWidget çalışmaz; animasyon + izleyici sesi.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || widget.spinningTarget == null) return;
+      _spinTo(widget.spinningTarget!);
+    });
   }
 
   @override
@@ -102,14 +110,21 @@ class _SpinWheelState extends State<SpinWheel>
 
   void _spinTo(String targetCategory) {
     if (_isSpinning) return;
+
+    final activeCats = _activeCategories;
+    final targetIndex = activeCats.indexWhere((c) => c.name == targetCategory);
+    if (targetIndex == -1) return;
+
     setState(() {
       _isSpinning = true;
       _hasResult = false;
     });
 
-    final activeCats = _activeCategories;
-    final targetIndex = activeCats.indexWhere((c) => c.name == targetCategory);
-    if (targetIndex == -1) return;
+    // Sıra sahibi: ses task_screen onSpinRequest'te (jest → Web ses politikası).
+    // İzleyici: hedef Firestore ile gelir; burada çal.
+    if (!widget.canSpin) {
+      ref.read(audioServiceProvider).playSfx(AppSfx.wheelSpinStart);
+    }
 
     final extraTurns = 3 + _random.nextInt(3); // 3-5 tur
     final sliceAngle = 2 * pi / activeCats.length;

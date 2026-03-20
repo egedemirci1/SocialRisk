@@ -461,6 +461,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                   maxWheelSize: wheelSize,
                   onSpinRequest: () {
                     if (categories.isEmpty) return;
+                    // Web: ses jest zincirinde kalmalı; Firestore dönüşünde çalınca engellenir.
+                    ref.read(audioServiceProvider).playSfx(AppSfx.wheelSpinStart);
                     final randomCat = categories[_random.nextInt(categories.length)];
                     ref.read(gameControllerProvider.notifier).setSpinningTarget(
                           gameId: widget.gameId,

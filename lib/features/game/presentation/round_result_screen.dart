@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
+import '../../../core/audio/audio_service.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/models/enums.dart';
@@ -35,6 +36,7 @@ class RoundResultScreen extends ConsumerStatefulWidget {
 class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _lottieController;
+  bool _voteOutcomeSfxPlayed = false;
 
   @override
   void initState() {
@@ -48,6 +50,20 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     super.dispose();
   }
 
+  /// `lastRoundMood`: dislike → failed; like / neutral → success (aynı dosya).
+  void _tryPlayVoteOutcomeSfx(GameEntity game) {
+    if (_voteOutcomeSfxPlayed) return;
+    final mood = game.lastRoundMood;
+    if (mood == null) return;
+    _voteOutcomeSfxPlayed = true;
+    final audio = ref.read(audioServiceProvider);
+    if (mood == 'dislike') {
+      audio.playSfx(AppSfx.voteResultDislike);
+    } else {
+      audio.playSfx(AppSfx.voteResultLike);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
@@ -59,6 +75,12 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
       next,
     ) {
       if (!context.mounted) return;
+      next.whenData((game) {
+        if (game != null) {
+          _tryPlayVoteOutcomeSfx(game);
+        }
+      });
+
       final prevStatus = previous?.value?.status;
       final currentStatus = next.value?.status;
 
@@ -87,6 +109,8 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           if (game == null) {
             return const Center(child: CircularProgressIndicator());
           }
+
+          _tryPlayVoteOutcomeSfx(game);
 
           final earnedScore = game.lastRoundScore ?? 0;
           final audienceScore = game.lastRoundAudienceScore ?? 0;

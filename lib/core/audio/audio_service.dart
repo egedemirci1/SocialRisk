@@ -5,23 +5,26 @@ import 'package:just_audio/just_audio.dart';
 enum AppSfx {
   buttonClick('assets/audio/sfx/button-click.mp3'),
   uiTapGeneric('assets/audio/sfx/ui_tap_generic.mp3'),
-  uiSuccess('assets/audio/sfx/ui_success.mp3'),
-  uiError('assets/audio/sfx/ui_error.mp3'),
+  uiSuccess('assets/audio/sfx/success.mp3'),
+  uiError('assets/audio/sfx/failed.mp3'),
   lobbyGameStart('assets/audio/sfx/lobby_game_start.mp3'),
   taskCardReveal('assets/audio/sfx/task_card_reveal.mp3'),
-  wheelSpinStart('assets/audio/sfx/wheel_spin_start.mp3'),
+  wheelSpinStart('assets/audio/sfx/wheel-spin.mp3'),
   wheelSpinStop('assets/audio/sfx/wheel_spin_stop.mp3'),
-  voteLike('assets/audio/sfx/vote_like.mp3'),
-  voteNeutral('assets/audio/sfx/vote_neutral.mp3'),
-  voteDislike('assets/audio/sfx/vote_dislike.mp3'),
-  voteResultLike('assets/audio/sfx/vote_result_like.mp3'),
-  voteResultNeutral('assets/audio/sfx/vote_result_neutral.mp3'),
-  voteResultDislike('assets/audio/sfx/vote_result_dislike.mp3'),
+  /// Oy butonları — hepsi `button-click` ile aynı dosya.
+  voteLike('assets/audio/sfx/button-click.mp3'),
+  voteNeutral('assets/audio/sfx/button-click.mp3'),
+  voteDislike('assets/audio/sfx/button-click.mp3'),
+  voteResultLike('assets/audio/sfx/success.mp3'),
+  voteResultNeutral('assets/audio/sfx/success.mp3'),
+  voteResultDislike('assets/audio/sfx/failed.mp3'),
   roundResultShow('assets/audio/sfx/round_result_show.mp3'),
   roundNextTurn('assets/audio/sfx/round_next_turn.mp3'),
   gameOverFanfare('assets/audio/sfx/game_over_fanfare.mp3'),
   waitingTurnChime('assets/audio/sfx/waiting_turn_chime.mp3'),
   difficultyConfirm('assets/audio/sfx/difficulty_confirm.mp3'),
+  /// Oylama vb. geri sayım (loop; `stopCountdown` ile kesilir).
+  countdown('assets/audio/sfx/countdown.mp3'),
   performingTimerWarning('assets/audio/sfx/performing_timer_warning.mp3'),
   performingTimerEnd('assets/audio/sfx/performing_timer_end.mp3');
 
@@ -40,12 +43,14 @@ class AudioService {
 
   AudioService()
       : _sfxPlayer = AudioPlayer(),
-        _musicPlayer = AudioPlayer() {
+        _musicPlayer = AudioPlayer(),
+        _countdownPlayer = AudioPlayer() {
     _musicPlayer.setLoopMode(LoopMode.one);
   }
 
   final AudioPlayer _sfxPlayer;
   final AudioPlayer _musicPlayer;
+  final AudioPlayer _countdownPlayer;
 
   bool _sfxEnabled = true;
   bool _musicEnabled = true;
@@ -68,6 +73,29 @@ class AudioService {
     } catch (e) {
       // Asset dosyaları aşamalı ekleneceği için sessiz fail.
       debugPrint('AudioService.playSfx failed: $e');
+    }
+  }
+
+  /// Geri sayım sesi (loop). Oy / süre bitince [stopCountdown] çağır.
+  Future<void> startCountdownLoop({double? volume}) async {
+    if (!_sfxEnabled) return;
+    try {
+      await _countdownPlayer.stop();
+      await _countdownPlayer.setLoopMode(LoopMode.one);
+      await _countdownPlayer.setVolume(volume ?? _sfxVolume);
+      await _countdownPlayer.setAsset(AppSfx.countdown.assetPath);
+      await _countdownPlayer.seek(Duration.zero);
+      await _countdownPlayer.play();
+    } catch (e) {
+      debugPrint('AudioService.startCountdownLoop failed: $e');
+    }
+  }
+
+  Future<void> stopCountdown() async {
+    try {
+      await _countdownPlayer.stop();
+    } catch (e) {
+      debugPrint('AudioService.stopCountdown failed: $e');
     }
   }
 
@@ -113,6 +141,7 @@ class AudioService {
   Future<void> setSfxVolume(double value) async {
     _sfxVolume = value.clamp(0, 1);
     await _sfxPlayer.setVolume(_sfxVolume);
+    await _countdownPlayer.setVolume(_sfxVolume);
   }
 
   Future<void> setMusicVolume(double value) async {
@@ -122,6 +151,7 @@ class AudioService {
 
   Future<void> dispose() async {
     await _sfxPlayer.dispose();
+    await _countdownPlayer.dispose();
     await _musicPlayer.dispose();
   }
 }
