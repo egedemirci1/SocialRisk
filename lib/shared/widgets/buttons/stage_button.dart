@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
+import 'package:social_risk/core/audio/audio_service.dart';
 
 /// Etkilesimli buton (tiklandiginda kuculme animasyonu)
 class InteractiveButton extends StatefulWidget {
@@ -87,7 +89,20 @@ class StageButton extends StatelessWidget {
     final spacing = compact ? 8.0 : 12.0;
 
     return InteractiveButton(
-      onTap: isLoading ? () {} : onPressed,
+      onTap: isLoading
+          ? () {}
+          : () {
+              // Ortak StageButton tıklamalarında buton click SFX çal.
+              try {
+                ProviderScope.containerOf(
+                  context,
+                  listen: false,
+                ).read(audioServiceProvider).playSfx(AppSfx.buttonClick);
+              } catch (_) {
+                // Provider bağlamı yoksa sessizce geç.
+              }
+              onPressed();
+            },
       child: Semantics(
         button: true,
         label: label.isNotEmpty ? label : 'Buton',

@@ -75,25 +75,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SizedBox(height: 20),
                 Text(
                   'Menü',
-                  style: AppTextStyles.headlineMedium.copyWith(color: Colors.white,
+                  style: AppTextStyles.headlineMedium.copyWith(
+                    color: Colors.white,
                     fontSize: 20,
-                    fontWeight: FontWeight.w700,),
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ListTile(
                   leading: const Icon(Icons.settings_rounded, color: AppColors.accent),
-                  title: Text('Ayarlar', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
-                  subtitle: Text('Ses ve dil seçenekleri', style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12)),
+                  title: Text(
+                    'Ayarlar',
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Ses ve Dil',
+                    style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
-                    ToastUtils.showSuccess(context, 'Ayarlar paneli yakında eklenecek');
+                    context.push('/settings');
                   },
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 ListTile(
                   leading: const Icon(Icons.shopping_bag_rounded, color: AppColors.accent),
-                  title: Text('Mağaza', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
-                  subtitle: Text('Kozmetikler ve içerikler', style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12)),
+                  title: Text(
+                    'Mağaza',
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Kozmetikler ve içerikler',
+                    style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
                     context.push('/store');
@@ -102,8 +122,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.menu_book_rounded, color: AppColors.accent),
-                  title: Text('İçeriklerim', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
-                  subtitle: Text('Kendi içeriklerini yönet', style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12)),
+                  title: Text(
+                    'İçeriklerim',
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Kendi içeriklerini yönet',
+                    style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
                     context.push('/custom-deck');
@@ -115,8 +144,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   leading: const Icon(Icons.logout_rounded, color: AppColors.error),
                   title: Text(
                     'Çıkış Yap',
-                    style: AppTextStyles.titleSmall.copyWith(color: AppColors.error,
-                      fontWeight: FontWeight.w700,),
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);

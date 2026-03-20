@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 
 enum AppSfx {
+  buttonClick('assets/audio/sfx/button-click.mp3'),
   uiTapGeneric('assets/audio/sfx/ui_tap_generic.mp3'),
   uiSuccess('assets/audio/sfx/ui_success.mp3'),
   uiError('assets/audio/sfx/ui_error.mp3'),
@@ -54,6 +55,8 @@ class AudioService {
 
   bool get sfxEnabled => _sfxEnabled;
   bool get musicEnabled => _musicEnabled;
+  double get sfxVolume => _sfxVolume;
+  double get musicVolume => _musicVolume;
 
   Future<void> playSfx(AppSfx sfx, {double? volume}) async {
     if (!_sfxEnabled) return;
@@ -100,6 +103,10 @@ class AudioService {
     _musicEnabled = enabled;
     if (!enabled) {
       await _musicPlayer.stop();
+      return;
+    }
+    if (_currentMusicAsset != null && !_musicPlayer.playing) {
+      await _musicPlayer.play();
     }
   }
 

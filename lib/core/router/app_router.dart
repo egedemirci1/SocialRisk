@@ -8,6 +8,7 @@ import '../../features/room/presentation/home_screen.dart';
 import '../../features/room/presentation/create_room_screen.dart';
 import '../../features/room/presentation/join_room_screen.dart';
 import '../../features/room/presentation/lobby_screen.dart';
+import '../../features/room/presentation/settings_screen.dart';
 import '../../features/game/presentation/task_screen.dart';
 import '../../features/game/presentation/performing_screen.dart';
 import '../../features/game/presentation/waiting_screen.dart';
@@ -96,6 +97,11 @@ final appRouter = GoRouter(
       path: '/store',
       pageBuilder: (context, state) =>
           _buildPageWithTransition(child: const StoreScreen(), state: state),
+    ),
+    GoRoute(
+      path: '/settings',
+      pageBuilder: (context, state) =>
+          _buildPageWithTransition(child: const SettingsScreen(), state: state),
     ),
     GoRoute(
       path: '/create-room',
