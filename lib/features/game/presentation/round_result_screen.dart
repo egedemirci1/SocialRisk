@@ -42,6 +42,10 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
   void initState() {
     super.initState();
     _lottieController = AnimationController(vsync: this);
+    Future.microtask(() {
+      if (!mounted) return;
+      ref.read(audioServiceProvider).playSfx(AppSfx.gameOver);
+    });
   }
 
   @override
@@ -213,7 +217,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
         SizedBox(height: metrics.smallGap),
         Text(
           isPass
-              ? '$playerName rolunu yapmayi reddetti.'
+              ? '$playerName rolünü yapmayı reddetti.'
               : '$playerName performansini tamamladi.',
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white54,
@@ -243,14 +247,14 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
         children: [
           if (!isPass) ...[
             _ScoreRow(
-              label: 'Seyirci Puani',
+              label: 'Seyirci Puanı',
               value: '$audienceScore',
               color: audienceScore >= 0 ? Colors.green : AppColors.primary,
               compact: metrics.isCompact,
             ),
             Divider(color: Colors.white10, height: metrics.dividerHeight),
             _ScoreRow(
-              label: 'Zorluk Carpani',
+              label: 'Zorluk Çarpanı',
               value: 'x$multiplier',
               color: Colors.white,
               compact: metrics.isCompact,
@@ -347,7 +351,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             Text(
               isGameOver
                   ? 'Final bekleniyor...'
-                  : 'Yoneticinin yeni tura gecmesi bekleniyor...',
+                  : 'Yöneticinin yeni tura geçmesi bekleniyor...',
               style: AppTextStyles.bodyMedium.copyWith(
                 color: Colors.white30,
                 fontStyle: FontStyle.italic,
@@ -544,7 +548,7 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
       child: Column(
         children: [
           Text(
-            'SENARYOYU DEGERLENDIR',
+            'SENARYOYU DEĞERLENDİR',
             style: AppTextStyles.labelSmall.copyWith(
               color: Colors.white54,
               fontWeight: FontWeight.w900,

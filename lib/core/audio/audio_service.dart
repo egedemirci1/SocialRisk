@@ -18,6 +18,7 @@ enum AppSfx {
   voteResultLike('assets/audio/sfx/success.mp3'),
   voteResultNeutral('assets/audio/sfx/success.mp3'),
   voteResultDislike('assets/audio/sfx/failed.mp3'),
+  gameOver('assets/audio/sfx/game-over.mp3'),
   roundResultShow('assets/audio/sfx/round_result_show.mp3'),
   roundNextTurn('assets/audio/sfx/round_next_turn.mp3'),
   gameOverFanfare('assets/audio/sfx/game_over_fanfare.mp3'),

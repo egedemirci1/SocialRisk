@@ -436,7 +436,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                     child: _buildTopTitleCard(
                       badge: 'PARTI BASLIYOR',
                                   title: 'Görevini Belirle',
-                                  subtitle: 'Sıran gelmeden önce görevini seç...',
+                                  subtitle: 'Görevini almak için çarkı çevir...',
                       showSubtitle: !isVeryShort,
                       layout: layout,
                     ),
@@ -676,7 +676,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                                   ? 'Sıradaki Görev Gizli'
                                           : (isMyTurn
                                       ? 'İçeriğin Burada:'
-                                              : '$playerName icerigi:'),
+                                              : '$playerName İçeriği:'),
                                       layout: layout,
                                     ),
                                   ),
@@ -773,7 +773,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
 
     return Center(
       child: Text(
-        '$playerName icerigi okuyor...',
+        '$playerName İçeriği okuyor...',
         style: AppTextStyles.bodyMedium.copyWith(
           color: Colors.white30,
           fontStyle: FontStyle.italic,

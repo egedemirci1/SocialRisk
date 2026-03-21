@@ -34,6 +34,18 @@ class _DifficultyChoiceScreenState
   bool _isLoading = false;
   bool _hasRedirected = false;
 
+  String _toTurkishUpper(String value) {
+    return value
+        .replaceAll('i', 'İ')
+        .replaceAll('ı', 'I')
+        .replaceAll('ş', 'Ş')
+        .replaceAll('ğ', 'Ğ')
+        .replaceAll('ü', 'Ü')
+        .replaceAll('ö', 'Ö')
+        .replaceAll('ç', 'Ç')
+        .toUpperCase();
+  }
+
   Future<void> _selectDifficulty(String difficulty) async {
     if (_isLoading) return;
     setState(() => _isLoading = true);
@@ -155,7 +167,7 @@ class _DifficultyChoiceScreenState
                                     ),
                                   ),
                                   child: Text(
-                                    'Kategori: ${game.selectedCategory?.toUpperCase() ?? "?"}',
+                                    'Kategori: ${game.selectedCategory != null ? _toTurkishUpper(game.selectedCategory!) : "?"}',
                                     style: AppTextStyles.titleMedium.copyWith(
                                       color: AppColors.accent,
                                       fontWeight: FontWeight.w900,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -32,6 +34,9 @@ class PerformingScreen extends ConsumerStatefulWidget {
 
 class _PerformingScreenState extends ConsumerState<PerformingScreen> {
   bool _isProceeding = false;
+  final Stopwatch _stopwatch = Stopwatch();
+  Timer? _stopwatchTicker;
+  Duration _elapsed = Duration.zero;
 
   Future<void> _proceedToVoting() async {
     setState(() => _isProceeding = true);
@@ -50,6 +55,49 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
     }
   }
 
+  void _toggleStopwatch() {
+    if (_stopwatch.isRunning) {
+      _stopwatch.stop();
+      _stopwatchTicker?.cancel();
+      setState(() => _elapsed = _stopwatch.elapsed);
+      return;
+    }
+    _stopwatch.start();
+    _stopwatchTicker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      setState(() => _elapsed = _stopwatch.elapsed);
+    });
+    setState(() => _elapsed = _stopwatch.elapsed);
+  }
+
+  void _resetStopwatch() {
+    _stopwatch.stop();
+    _stopwatch.reset();
+    _stopwatchTicker?.cancel();
+    if (mounted) {
+      setState(() => _elapsed = Duration.zero);
+    } else {
+      _elapsed = Duration.zero;
+    }
+  }
+
+  String _formatDuration(Duration duration) {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    if (hours > 0) {
+      return '$hours:$minutes:$seconds';
+    }
+    return '$minutes:$seconds';
+  }
+
+  @override
+  void dispose() {
+    _stopwatchTicker?.cancel();
+    _stopwatch.stop();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(watchGameProvider(widget.gameId), (previous, next) {
@@ -57,8 +105,14 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
       final game = next.value;
       if (game == null) return;
       final prevStatus = previous?.value?.status;
+      final prevTaskId = previous?.value?.currentTask?.id;
+      final nextTaskId = game.currentTask?.id;
       final user = ref.read(currentUserProvider);
       final isMyTurn = game.currentPlayerId == user?.uid;
+
+      if (prevTaskId != nextTaskId) {
+        _resetStopwatch();
+      }
 
       if (game.status == GameStatus.results && prevStatus != GameStatus.results) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -225,6 +279,81 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
+                                      if (isMyTurn) ...[
+                                        const SizedBox(height: 28),
+                                        Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 14,
+                                            vertical: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withValues(alpha: 0.18),
+                                            borderRadius: BorderRadius.circular(14),
+                                            border: Border.all(
+                                              color: AppColors.accent.withValues(alpha: 0.2),
+                                            ),
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                'KRONOMETRE',
+                                                style: AppTextStyles.labelSmall.copyWith(
+                                                  color: AppColors.accent,
+                                                  fontWeight: FontWeight.w900,
+                                                  letterSpacing: 1.2,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                _formatDuration(_elapsed),
+                                                style: AppTextStyles.headlineMedium.copyWith(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w900,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 12),
+                                              Wrap(
+                                                alignment: WrapAlignment.center,
+                                                spacing: 8,
+                                                runSpacing: 8,
+                                                children: [
+                                                  OutlinedButton.icon(
+                                                    onPressed: _toggleStopwatch,
+                                                    icon: Icon(
+                                                      _stopwatch.isRunning
+                                                          ? Icons.pause_rounded
+                                                          : Icons.play_arrow_rounded,
+                                                      size: 18,
+                                                    ),
+                                                    label: Text(
+                                                      _stopwatch.isRunning ? 'Durdur' : 'Başlat',
+                                                    ),
+                                                    style: OutlinedButton.styleFrom(
+                                                      foregroundColor: AppColors.accent,
+                                                      side: BorderSide(
+                                                        color: AppColors.accent.withValues(
+                                                          alpha: 0.5,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  OutlinedButton.icon(
+                                                    onPressed: _elapsed == Duration.zero
+                                                        ? null
+                                                        : _resetStopwatch,
+                                                    icon: const Icon(Icons.restart_alt_rounded, size: 18),
+                                                    label: const Text('Sıfırla'),
+                                                    style: OutlinedButton.styleFrom(
+                                                      foregroundColor: Colors.white70,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                       const SizedBox(height: 48),
                                       if (isMyTurn) ...[
                                         Text(

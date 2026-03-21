@@ -69,7 +69,7 @@ class PlayerSpotlight extends ConsumerWidget {
         ),
         SizedBox(height: veryShort ? 5 : (compact ? 8 : 12)),
         Text(
-          isMe ? 'Senin Siran!' : '${player.name} oynuyor',
+          isMe ? 'Senin Sıran!' : '${player.name} Oynuyor',
           style: AppTextStyles.headlineMedium.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,

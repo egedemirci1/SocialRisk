@@ -227,7 +227,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     int playerCount,
     _LobbyLayoutMetrics layout,
   ) {
-    final modeName = room?.mode == GameMode.economy ? 'BORSA' : 'KLASİK';
+    final modeName = room?.mode == GameMode.economy ? 'BORSA' : 'ÇARK';
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: layout.screenPadding),
@@ -278,7 +278,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                         border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
                       ),
                       child: Text(
-                        '$modeName MOD',
+                        '$modeName MODU',
                         style: AppTextStyles.labelSmall.copyWith(
                           color: AppColors.accent,
                           fontSize: 10,
