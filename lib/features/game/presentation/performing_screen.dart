@@ -91,6 +91,50 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
     return '$minutes:$seconds';
   }
 
+  Widget _buildCornerStopwatch() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(alpha: 0.88),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            _formatDuration(_elapsed),
+            style: AppTextStyles.titleMedium.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.4,
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            onPressed: _toggleStopwatch,
+            visualDensity: VisualDensity.compact,
+            constraints: const BoxConstraints.tightFor(width: 30, height: 30),
+            padding: EdgeInsets.zero,
+            iconSize: 18,
+            icon: Icon(
+              _stopwatch.isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
+              color: AppColors.accent,
+            ),
+          ),
+          IconButton(
+            onPressed: _elapsed == Duration.zero ? null : _resetStopwatch,
+            visualDensity: VisualDensity.compact,
+            constraints: const BoxConstraints.tightFor(width: 30, height: 30),
+            padding: EdgeInsets.zero,
+            iconSize: 18,
+            icon: const Icon(Icons.restart_alt_rounded, color: Colors.white70),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _stopwatchTicker?.cancel();
@@ -204,22 +248,24 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
               .where((p) => p.id == game.currentPlayerId)
               .firstOrNull;
 
-          return Column(
+          return Stack(
             children: [
-              Expanded(
-                child: ResponsiveWrapper(
-                  maxWidth: 600,
-                  padding: EdgeInsets.zero,
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (currentPlayer != null)
-                            PlayerSpotlight(player: currentPlayer, isMe: isMyTurn),
-                          const SizedBox(height: 32),
-                          Container(
+              Column(
+                children: [
+                  Expanded(
+                    child: ResponsiveWrapper(
+                      maxWidth: 600,
+                      padding: EdgeInsets.zero,
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (currentPlayer != null)
+                                PlayerSpotlight(player: currentPlayer, isMe: isMyTurn),
+                              const SizedBox(height: 32),
+                              Container(
                             decoration: BoxDecoration(
                               color: AppColors.surface,
                               borderRadius: BorderRadius.circular(20),
@@ -279,81 +325,6 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
-                                      if (isMyTurn) ...[
-                                        const SizedBox(height: 28),
-                                        Container(
-                                          width: double.infinity,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 14,
-                                            vertical: 12,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.black.withValues(alpha: 0.18),
-                                            borderRadius: BorderRadius.circular(14),
-                                            border: Border.all(
-                                              color: AppColors.accent.withValues(alpha: 0.2),
-                                            ),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                'KRONOMETRE',
-                                                style: AppTextStyles.labelSmall.copyWith(
-                                                  color: AppColors.accent,
-                                                  fontWeight: FontWeight.w900,
-                                                  letterSpacing: 1.2,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                _formatDuration(_elapsed),
-                                                style: AppTextStyles.headlineMedium.copyWith(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w900,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 12),
-                                              Wrap(
-                                                alignment: WrapAlignment.center,
-                                                spacing: 8,
-                                                runSpacing: 8,
-                                                children: [
-                                                  OutlinedButton.icon(
-                                                    onPressed: _toggleStopwatch,
-                                                    icon: Icon(
-                                                      _stopwatch.isRunning
-                                                          ? Icons.pause_rounded
-                                                          : Icons.play_arrow_rounded,
-                                                      size: 18,
-                                                    ),
-                                                    label: Text(
-                                                      _stopwatch.isRunning ? 'Durdur' : 'Başlat',
-                                                    ),
-                                                    style: OutlinedButton.styleFrom(
-                                                      foregroundColor: AppColors.accent,
-                                                      side: BorderSide(
-                                                        color: AppColors.accent.withValues(
-                                                          alpha: 0.5,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  OutlinedButton.icon(
-                                                    onPressed: _elapsed == Duration.zero
-                                                        ? null
-                                                        : _resetStopwatch,
-                                                    icon: const Icon(Icons.restart_alt_rounded, size: 18),
-                                                    label: const Text('Sıfırla'),
-                                                    style: OutlinedButton.styleFrom(
-                                                      foregroundColor: Colors.white70,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
                                       const SizedBox(height: 48),
                                       if (isMyTurn) ...[
                                         Text(
@@ -393,22 +364,32 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                 ),
                               ],
                             ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
+                  if (players.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 24, top: 8),
+                      child: SpectatorStrip(
+                        players: players,
+                        currentPlayerId: game.currentPlayerId,
+                        myPlayerId: user?.uid,
+                      ),
+                    ),
+                ],
+              ),
+              Positioned(
+                right: 12,
+                top: 10,
+                child: SafeArea(
+                  bottom: false,
+                  child: _buildCornerStopwatch(),
                 ),
               ),
-              if (players.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 24, top: 8),
-                  child: SpectatorStrip(
-                    players: players,
-                    currentPlayerId: game.currentPlayerId,
-                    myPlayerId: user?.uid,
-                  ),
-                ),
             ],
           );
         },
