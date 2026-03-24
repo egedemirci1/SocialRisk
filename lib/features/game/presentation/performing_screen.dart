@@ -91,9 +91,12 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
     return '$minutes:$seconds';
   }
 
-  Widget _buildCornerStopwatch() {
+  Widget _buildCornerStopwatch(bool isCompact) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: isCompact ? 7 : 10,
+        vertical: isCompact ? 5 : 8,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surface.withValues(alpha: 0.88),
         borderRadius: BorderRadius.circular(12),
@@ -108,15 +111,19 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
               color: Colors.white,
               fontWeight: FontWeight.w900,
               letterSpacing: 0.4,
+              fontSize: isCompact ? 12 : 16,
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: isCompact ? 4 : 8),
           IconButton(
             onPressed: _toggleStopwatch,
             visualDensity: VisualDensity.compact,
-            constraints: const BoxConstraints.tightFor(width: 30, height: 30),
+            constraints: BoxConstraints.tightFor(
+              width: isCompact ? 24 : 30,
+              height: isCompact ? 24 : 30,
+            ),
             padding: EdgeInsets.zero,
-            iconSize: 18,
+            iconSize: isCompact ? 14 : 18,
             icon: Icon(
               _stopwatch.isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
               color: AppColors.accent,
@@ -125,9 +132,12 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
           IconButton(
             onPressed: _elapsed == Duration.zero ? null : _resetStopwatch,
             visualDensity: VisualDensity.compact,
-            constraints: const BoxConstraints.tightFor(width: 30, height: 30),
+            constraints: BoxConstraints.tightFor(
+              width: isCompact ? 24 : 30,
+              height: isCompact ? 24 : 30,
+            ),
             padding: EdgeInsets.zero,
-            iconSize: 18,
+            iconSize: isCompact ? 14 : 18,
             icon: const Icon(Icons.restart_alt_rounded, color: Colors.white70),
           ),
         ],
@@ -248,94 +258,146 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
               .where((p) => p.id == game.currentPlayerId)
               .firstOrNull;
 
+          final size = MediaQuery.sizeOf(context);
+          final isTiny = size.height <= 680;   // iPhone SE = 667px
+          final veryShort = size.height <= 640;
+          final isCompact = size.width <= 360 || isTiny;
+
+          // vertical spacing that collapses on tiny screens
+          final vGap = isTiny ? 6.0 : (veryShort ? 8.0 : 16.0);
+          final hPad = isCompact ? 16.0 : 24.0;
+          final cardVPad = isTiny ? 8.0 : (veryShort ? 12.0 : 20.0);
+          final cardHPad = isTiny ? 14.0 : (veryShort ? 16.0 : 24.0);
+          final headerVPad = isTiny ? 8.0 : (veryShort ? 10.0 : 16.0);
+          final contentGap = isTiny ? 6.0 : (veryShort ? 8.0 : 16.0);
+
           return Stack(
             children: [
               Column(
                 children: [
-                  Expanded(
+                  // ── Top padding ──
+                  SizedBox(height: isTiny ? 4 : vGap),
+                  // ── Player spotlight ──
+                   Padding(
+                    padding: EdgeInsets.symmetric(horizontal: hPad),
                     child: ResponsiveWrapper(
                       maxWidth: 600,
                       padding: EdgeInsets.zero,
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      child: currentPlayer != null
+                          ? PlayerSpotlight(
+                              player: currentPlayer,
+                              isMe: isMyTurn,
+                              compact: isCompact,
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ),
+                  SizedBox(height: vGap),
+                  // ── Task card – takes all remaining space ──
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: hPad),
+                      child: ResponsiveWrapper(
+                        maxWidth: 600,
+                        padding: EdgeInsets.zero,
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: AppColors.accent.withValues(alpha: 0.15)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              if (currentPlayer != null)
-                                PlayerSpotlight(player: currentPlayer, isMe: isMyTurn),
-                              const SizedBox(height: 32),
+                              // header
                               Container(
-                            decoration: BoxDecoration(
-                              color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppColors.accent.withValues(alpha: 0.15)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.2),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.accent.withValues(alpha: 0.1),
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(20),
-                                      topRight: Radius.circular(20),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'GÖREV BAŞLADI',
-                                    style: AppTextStyles.titleLarge.copyWith(
-                                      color: AppColors.accent,
-                                      letterSpacing: 2,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                    textAlign: TextAlign.center,
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: headerVPad),
+                                decoration: BoxDecoration(
+                                  color:
+                                      AppColors.accent.withValues(alpha: 0.1),
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(24),
+                                child: Text(
+                                  'GÖREV BAŞLADI',
+                                  style: AppTextStyles.titleLarge.copyWith(
+                                    color: AppColors.accent,
+                                    letterSpacing: 2,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: isTiny ? 14 : null,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              // body – Expanded so it fills leftover height
+                              Expanded(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: cardHPad,
+                                    vertical: cardVPad,
+                                  ),
                                   child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        isMyTurn ? 'İÇERİK:' : 'SERGİLENEN İÇERİK:',
-                                        style: AppTextStyles.labelSmall.copyWith(
+                                        isMyTurn
+                                            ? 'İÇERİK:'
+                                            : 'SERGİLENEN İÇERİK:',
+                                        style:
+                                            AppTextStyles.labelSmall.copyWith(
                                           color: AppColors.accent,
                                           fontWeight: FontWeight.w900,
                                           letterSpacing: 1,
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        isClosed && !isMyTurn
-                                            ? 'GİZLİ İÇERİK'
-                                            : (task?.content ?? 'Rol belirtilmemiş'),
-                                        style: AppTextStyles.headlineMedium.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w900,
+                                      SizedBox(height: contentGap),
+                                      Expanded(
+                                        child: Center(
+                                          child: SingleChildScrollView(
+                                            child: Text(
+                                              isClosed && !isMyTurn
+                                                  ? 'GİZLİ İÇERİK'
+                                                  : (task?.content ??
+                                                      'Rol belirtilmemiş'),
+                                              style: AppTextStyles.headlineMedium
+                                                  .copyWith(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w900,
+                                                fontSize: isTiny ? 16 : null,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
                                         ),
-                                        textAlign: TextAlign.center,
                                       ),
-                                      const SizedBox(height: 48),
+                                      SizedBox(height: contentGap),
                                       if (isMyTurn) ...[
                                         Text(
                                           'Görevi tamamladıysanız performansınızı bitirin.',
-                                          style: AppTextStyles.bodyMedium.copyWith(
+                                          style: AppTextStyles.bodyMedium
+                                              .copyWith(
                                             color: Colors.white54,
                                             fontStyle: FontStyle.italic,
+                                            fontSize: isTiny ? 11 : null,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
-                                        const SizedBox(height: 24),
+                                        SizedBox(height: contentGap),
                                         StageButton(
                                           label: 'Görevi Bitir',
                                           icon: Icons.how_to_vote_rounded,
@@ -344,17 +406,20 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                           borderColor: AppColors.accent,
                                           onPressed: _proceedToVoting,
                                           isLoading: _isProceeding,
+                                          compact: isCompact,
                                         ),
                                       ] else ...[
                                         const CircularProgressIndicator(
                                           color: AppColors.accent,
                                         ),
-                                        const SizedBox(height: 24),
+                                        SizedBox(height: contentGap),
                                         Text(
                                           'Oyuncunun performansını sergilemesi bekleniyor...',
-                                          style: AppTextStyles.bodyMedium.copyWith(
+                                          style: AppTextStyles.bodyMedium
+                                              .copyWith(
                                             color: Colors.white54,
                                             fontStyle: FontStyle.italic,
+                                            fontSize: isTiny ? 11 : null,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
@@ -362,8 +427,6 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
                               ),
                             ],
                           ),
@@ -371,23 +434,29 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                       ),
                     ),
                   ),
+                  // ── Spectator strip ──
                   if (players.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 24, top: 8),
+                      padding: EdgeInsets.only(
+                        top: isTiny ? 4 : vGap,
+                        bottom: isTiny ? 8 : (veryShort ? 12 : 20),
+                      ),
                       child: SpectatorStrip(
                         players: players,
                         currentPlayerId: game.currentPlayerId,
                         myPlayerId: user?.uid,
+                        compact: isCompact,
                       ),
                     ),
                 ],
               ),
+              // ── Corner stopwatch ──
               Positioned(
                 right: 12,
                 top: 10,
                 child: SafeArea(
                   bottom: false,
-                  child: _buildCornerStopwatch(),
+                  child: _buildCornerStopwatch(isCompact),
                 ),
               ),
             ],

@@ -136,6 +136,8 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
         }
 
         final playerName = currentPlayer?.name ?? 'Ayrılan Oyuncu';
+        final sh = MediaQuery.sizeOf(context).height;
+        final compact = sh < 700;
 
         return Scaffold(
           backgroundColor: Colors.transparent,
@@ -162,12 +164,12 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
           ),
           body: Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
+              padding: EdgeInsets.symmetric(horizontal: compact ? 20 : 32),
               child: Container(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(compact ? 20 : 32),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(compact ? 16 : 24),
                   border: Border.all(
                     color: AppColors.accent.withValues(alpha: 0.2),
                   ),
@@ -186,30 +188,31 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                     ScaleTransition(
                       scale: _pulseAnimation,
                       child: Container(
-                        width: 100,
-                        height: 100,
+                        width: compact ? 64 : 100,
+                        height: compact ? 64 : 100,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AppColors.accent.withValues(alpha: 0.1),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             Icons.celebration_rounded,
                             color: AppColors.accent,
-                            size: 48,
+                            size: compact ? 32 : 48,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: compact ? 16 : 32),
                     Text(
                       'BEKLEME SIRASI',
                       style: AppTextStyles.headlineMedium.copyWith(
                         color: Colors.white,
                         letterSpacing: 4,
+                        fontSize: compact ? 16 : 20,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: compact ? 8 : 12),
                     Text(
                       game.status == GameStatus.performing
                           ? '$playerName performansını sergiliyor...'
@@ -220,9 +223,9 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 48),
+                    SizedBox(height: compact ? 24 : 48),
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(compact ? 10 : 16),
                       decoration: BoxDecoration(
                         color: AppColors.background.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(12),

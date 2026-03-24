@@ -29,16 +29,16 @@ class PlayerAvatar extends ConsumerWidget {
   final String? uid;
 
   static double _frameExtent(double radius) =>
-      (radius * 0.072).clamp(1.35, 4.5);
+      (radius * 0.036).clamp(0.8, 2.7);
 
   static double _frameStrokeWidth(double radius) =>
-      (radius * 0.045).clamp(1.35, 2.7);
+      (radius * 0.022).clamp(0.8, 1.6);
 
   static double _frameGlowBlur(double radius) =>
-      (radius * 0.225).clamp(3.6, 10.8);
+      (radius * 0.11).clamp(1.8, 5.4);
 
   static double _frameGlowSpread(double radius) =>
-      (radius * 0.054).clamp(0.45, 2.25);
+      (radius * 0.027).clamp(0.2, 1.1);
 
   String? get _effect {
     if (!showEffect || score == 0) return null;

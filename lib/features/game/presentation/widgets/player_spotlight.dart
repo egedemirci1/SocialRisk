@@ -67,7 +67,7 @@ class PlayerSpotlight extends ConsumerWidget {
             ),
           ),
         ),
-        SizedBox(height: veryShort ? 5 : (compact ? 8 : 12)),
+        SizedBox(height: veryShort ? 12 : (compact ? 18 : 26)),
         Text(
           isMe ? 'Senin Sıran!' : '${player.name} Oynuyor',
           style: AppTextStyles.headlineMedium.copyWith(

@@ -11,20 +11,25 @@ class AppColors {
   static const secondary = Color(0xFF14B8A6); // Temiz Turkuaz/Teal
   static const accent = Color(0xFF06B6D4); // Parlak Camgöbeği (Cyan)
 
-  // Oyun durumu renkleri
-  static const fire = Color(0xFFFF5252); // Enerjik Kırmızı
-  static const ice = Color(0xFF4DD0E1); // Ferah Mavi
-  static const glow = Color(0xFFFFF176); // Glow Sarısı
-
-  // Oylama renkleri
-  static const votePositive = Color(0xFF10B981); // Zümrüt Yeşili
-  static const voteNeutral = Color(0xFFF59E0B); // Amber
-  static const voteNegative = Color(0xFFEF4444); // Tok Kırmızı
-
+  // Oyun durumu renkleri (Kategorilerde de Kullanılır)
+  static const fire = Color(0xFFD32F2F); // Koyu Kırmızı (Mahrem)
+  static const ice = Color(0xFF0288D1); // Güçlü Mavi (Zihinsel)
+  static const glow = Color(0xFFFBC02D); // Koyu Altın Sarısı (İtiraf)
+  
+  // Oylama renkleri (Kategorilerde de Kullanılır)
+  static const votePositive = Color(0xFF059669); // Zümrüt Yeşili (Fiziksel)
+  static const voteNeutral = Color(0xFFD97706); // Koyu Amber (Ahlaki)
+  static const voteNegative = Color(0xFFDC2626); // Tok Kırmızı
+  
+  // Kategori Özel Renkleri
+  static const categoryDigital = Color(0xFFC2185B); // Koyu Pembe/Mor (Dijital)
+  static const categoryVisual = Color(0xFF7B1FA2); // Derin Mor (Görsel)
+  static const categoryKnowledge = Color(0xFF0097A7); // Çok Koyu Turkuaz (Bilgi)
+  
   // Ceza / Hata
-  static const error = Color(0xFFEF4444);
-  static const penalty = Color(0xFFEF4444);
-  static const passWarning = Color(0xFFF59E0B);
+  static const error = Color(0xFFDC2626);
+  static const penalty = Color(0xFFDC2626);
+  static const passWarning = Color(0xFFD97706);
 
   // Modern Gradyanlar (Aksiyonlar İçin)
   static const primaryGradient = LinearGradient(

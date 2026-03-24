@@ -19,8 +19,11 @@ class CustomFramePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final scale = size.shortestSide / _referenceTotalDiameter;
-    final r = _referencePaintRadius;
+    final baseScale = size.shortestSide / _referenceTotalDiameter;
+    // Çizimleri %30 daha da küçült:
+    final scale = baseScale * 0.70;
+    // Şekiller avatar'a tam yapışsın diye R ters oranda büyür:
+    final r = _referencePaintRadius / 0.70;
 
     // Canvas'ı döndür: 0 açısı tam alt nokta olsun (pi/2)
     canvas.save();

@@ -11,6 +11,7 @@ import '../../../shared/widgets/buttons/leave_room_button.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../../shared/widgets/common/social_risk_logo.dart';
 import '../../admin/providers/task_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
@@ -73,6 +74,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
     final metrics = _RoundResultMetrics.from(context);
+    final currentUser = ref.watch(currentUserProvider);
 
     ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
       previous,
@@ -130,32 +132,26 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           return SafeArea(
             child: ResponsiveWrapper(
               padding: EdgeInsets.symmetric(horizontal: metrics.screenPadding),
-              child: Center(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.topCenter,
-                  child: SizedBox(
-                    width: metrics.contentWidth,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildResultHeader(game, earnedScore, isPass, playerName, metrics),
-                        SizedBox(height: metrics.sectionGap),
-                        _buildScoreCard(audienceScore, earnedScore, multiplier, isPass, metrics),
-                        SizedBox(height: metrics.sectionGap),
-                        _buildLeaderboard(players, game, metrics),
-                        SizedBox(height: metrics.sectionGap),
-                        if (game.currentTask != null)
-                          _TaskFeedbackSection(
-                            taskId: game.currentTask!.id,
-                            taskContent: game.currentTask!.content,
-                            compact: metrics.isCompact,
-                          ),
-                        SizedBox(height: metrics.bottomGap),
-                        _buildActionButtons(isGameOver, game, metrics),
-                      ],
-                    ),
-                  ),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    _buildResultHeader(game, earnedScore, isPass, playerName, metrics),
+                    SizedBox(height: metrics.sectionGap),
+                    _buildScoreCard(audienceScore, earnedScore, multiplier, isPass, game.lastRoundMood, metrics),
+                    SizedBox(height: metrics.sectionGap),
+                    _buildLeaderboard(players, game, metrics, currentUser?.uid),
+                    SizedBox(height: metrics.sectionGap),
+                    if (game.currentTask != null)
+                      _TaskFeedbackSection(
+                        taskId: game.currentTask!.id,
+                        taskContent: game.currentTask!.content,
+                        compact: metrics.isCompact,
+                      ),
+                    SizedBox(height: metrics.bottomGap),
+                    _buildActionButtons(isGameOver, game, metrics),
+                    SizedBox(height: metrics.isCompact ? 16 : 32),
+                  ],
                 ),
               ),
             ),
@@ -176,35 +172,14 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     String playerName,
     _RoundResultMetrics metrics,
   ) {
-    final moodEmoji = switch (game.lastRoundMood) {
-      'like' => 'Y',
-      'dislike' => 'N',
-      _ => '?',
-    };
-
-    return Column(
-      children: [
-        Container(
-          width: metrics.headerIconSize,
-          height: metrics.headerIconSize,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: score >= 0
-                ? Colors.green.withValues(alpha: 0.1)
-                : AppColors.primary.withValues(alpha: 0.1),
-            border: Border.all(
-              color: score >= 0 ? Colors.green : AppColors.primary,
-              width: 2,
-            ),
+    return Transform.translate(
+      offset: const Offset(0, -30), // Pull the whole block up over the safe area padding
+      child: Column(
+        children: [
+          SocialRiskLogo(
+            height: metrics.isCompact ? 56 : 72,
           ),
-          child: Center(
-            child: Text(
-              isPass ? 'R' : moodEmoji,
-              style: TextStyle(fontSize: metrics.headerEmojiSize),
-            ),
-          ),
-        ),
-        SizedBox(height: metrics.textGap),
+          SizedBox(height: metrics.textGap * 2),
         Text(
                   isPass ? 'GÖREV REDDEDİLDİ' : 'TUR BİTTİ',
           style: AppTextStyles.headlineMedium.copyWith(
@@ -226,6 +201,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           textAlign: TextAlign.center,
         ),
       ],
+      ),
     );
   }
 
@@ -234,6 +210,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     int score,
     int multiplier,
     bool isPass,
+    String? mood,
     _RoundResultMetrics metrics,
   ) {
     return Container(
@@ -250,6 +227,17 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
               label: 'Seyirci Puanı',
               value: '$audienceScore',
               color: audienceScore >= 0 ? Colors.green : AppColors.primary,
+              compact: metrics.isCompact,
+            ),
+            Divider(color: Colors.white10, height: metrics.dividerHeight),
+            _ScoreRow(
+              label: 'Performans Sonucu',
+              value: mood == 'like'
+                  ? 'Beğenildi'
+                  : (mood == 'dislike' ? 'Beğenilmedi' : 'Kararsız'),
+              color: mood == 'like'
+                  ? Colors.green
+                  : (mood == 'dislike' ? Colors.red : Colors.orange),
               compact: metrics.isCompact,
             ),
             Divider(color: Colors.white10, height: metrics.dividerHeight),
@@ -277,6 +265,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
     List<dynamic> players,
     GameEntity game,
     _RoundResultMetrics metrics,
+    String? myUid,
   ) {
     final sortedPlayers = List.of(players)
       ..sort((a, b) => b.score.compareTo(a.score));
@@ -301,7 +290,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           SizedBox(height: metrics.textGap),
           ...List.generate(sortedPlayers.length, (index) {
             final p = sortedPlayers[index];
-            final isMe = p.id == game.currentPlayerId;
+            final isMe = p.id == myUid;
             return _LeaderboardTile(
               player: p,
               rank: index + 1,
@@ -462,8 +451,9 @@ class _LeaderboardTile extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          SizedBox(
-            width: compact ? 20 : 24,
+          // Rank badge — fixed minimum width so '#' and number never wrap
+          Container(
+            constraints: const BoxConstraints(minWidth: 28),
             child: Text(
               '#$rank',
               style: AppTextStyles.labelSmall.copyWith(
@@ -471,6 +461,8 @@ class _LeaderboardTile extends ConsumerWidget {
                 fontWeight: FontWeight.w900,
                 fontSize: compact ? 10 : 12,
               ),
+              maxLines: 1,
+              softWrap: false,
             ),
           ),
           SizedBox(width: compact ? 6 : 8),
@@ -686,25 +678,28 @@ class _RoundResultMetrics {
 
   factory _RoundResultMetrics.from(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final isCompact = size.width < 390 || size.height < 780;
+    // iPhone SE = 375x667. Trigger compact much earlier.
+    final isCompact = size.width < 400 || size.height < 700;
+    // Super compact for truly tiny screens
+    final isTiny = size.height < 680;
 
     return _RoundResultMetrics(
       isCompact: isCompact,
-      screenPadding: isCompact ? 16 : 24,
-      contentWidth: isCompact ? 340 : 380,
-      sectionGap: isCompact ? 14 : 24,
-      bottomGap: isCompact ? 20 : 32,
-      cardPadding: isCompact ? 16 : 24,
-      listPadding: isCompact ? 12 : 16,
-      cardRadius: isCompact ? 10 : 12,
-      headerIconSize: isCompact ? 64 : 80,
-      headerEmojiSize: isCompact ? 30 : 40,
-      headerTitleSize: isCompact ? 20 : 24,
-      bodyFontSize: isCompact ? 12 : 14,
-      labelFontSize: isCompact ? 10 : 12,
-      textGap: isCompact ? 12 : 16,
-      smallGap: isCompact ? 6 : 8,
-      dividerHeight: isCompact ? 18 : 24,
+      screenPadding: isCompact ? 12 : 24,
+      contentWidth: isCompact ? size.width - 24 : 380,
+      sectionGap: isTiny ? 8 : (isCompact ? 10 : 20),
+      bottomGap: isTiny ? 10 : (isCompact ? 14 : 28),
+      cardPadding: isTiny ? 10 : (isCompact ? 12 : 20),
+      listPadding: isTiny ? 8 : (isCompact ? 10 : 14),
+      cardRadius: isCompact ? 8 : 12,
+      headerIconSize: isTiny ? 40 : (isCompact ? 52 : 72),
+      headerEmojiSize: isCompact ? 24 : 40,
+      headerTitleSize: isTiny ? 16 : (isCompact ? 18 : 24),
+      bodyFontSize: isTiny ? 11 : (isCompact ? 12 : 14),
+      labelFontSize: isTiny ? 9 : (isCompact ? 10 : 12),
+      textGap: isTiny ? 6 : (isCompact ? 8 : 14),
+      smallGap: isTiny ? 3 : (isCompact ? 4 : 8),
+      dividerHeight: isTiny ? 14 : (isCompact ? 16 : 22),
     );
   }
 }

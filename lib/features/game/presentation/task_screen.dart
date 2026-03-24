@@ -17,7 +17,6 @@ import '../../../shared/widgets/game/spin_wheel.dart' hide AnimatedBuilder;
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../../../core/audio/audio_service.dart';
 import '../../auth/providers/auth_provider.dart';
-import '../../room/domain/room_entity.dart';
 import '../../room/providers/room_provider.dart';
 import '../domain/game_entity.dart';
 import '../providers/game_provider.dart';
@@ -402,7 +401,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         final wheelHeight = max(0.0, contentHeight - playerHeight - titleHeight);
         final wheelSize = min(
           layout.wheelSize,
-          max(isVeryShort ? 148.0 : 160.0, wheelHeight * (isDense ? 0.86 : 0.8)),
+          max(isVeryShort ? 100.0 : 160.0, wheelHeight * (isDense ? 0.76 : 0.8)),
         );
 
         return Column(
@@ -852,32 +851,37 @@ class _AnimatedPassButtonState extends State<_AnimatedPassButton>
           child: child,
         );
       },
-      child: OutlinedButton(
-        onPressed: widget.isPassing ? null : _handlePress,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: _isWarningSelected
-              ? Colors.redAccent
-              : Colors.red.withValues(alpha: 0.7),
-          side: BorderSide(
-            color: _isWarningSelected ? Colors.redAccent : Colors.white24,
-            width: _isWarningSelected ? 2 : 1,
+      child: SizedBox(
+        width: double.infinity,
+        child: OutlinedButton(
+          onPressed: widget.isPassing ? null : _handlePress,
+          style: OutlinedButton.styleFrom(
+            foregroundColor: _isWarningSelected
+                ? Colors.redAccent
+                : Colors.red.withValues(alpha: 0.7),
+            side: BorderSide(
+              color: _isWarningSelected ? Colors.redAccent : Colors.white24,
+              width: _isWarningSelected ? 2 : 1,
+            ),
+            padding: EdgeInsets.symmetric(
+              horizontal: widget.compact ? 12 : 24,
+              vertical: widget.compact ? 8 : 12,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
-          padding: EdgeInsets.symmetric(
-            horizontal: widget.compact ? 18 : 24,
-            vertical: widget.compact ? 10 : 12,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        child: Text(
-          _isWarningSelected
-              ? 'EMIN MISIN? (-50 Puan)'
-                    : 'Görevi Reddet (-50 Puan)',
-          style: AppTextStyles.labelSmall.copyWith(
-            color: _isWarningSelected ? Colors.redAccent : Colors.white70,
-            fontWeight: FontWeight.w900,
-            fontSize: widget.compact ? 10 : 12,
+          child: Text(
+            _isWarningSelected
+                ? 'EMİN MİSİN? (-50)'
+                : 'Görevi Reddet (-50 Puan)',
+            style: AppTextStyles.labelSmall.copyWith(
+              color: _isWarningSelected ? Colors.redAccent : Colors.white70,
+              fontWeight: FontWeight.w900,
+              fontSize: widget.compact ? 10 : 12,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ),
@@ -952,8 +956,8 @@ class _TaskLayoutMetrics {
 
   factory _TaskLayoutMetrics.from(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final isCompact = size.width < 400 || size.height < 820;
-    final isShort = size.height < 760;
+    final isCompact = size.width < 400 || size.height < 700;
+    final isShort = size.height < 720;
 
     return _TaskLayoutMetrics(
       isCompact: isCompact,

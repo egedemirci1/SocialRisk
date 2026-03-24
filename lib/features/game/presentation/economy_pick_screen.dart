@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -231,18 +233,42 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                     Expanded(
                       child: LayoutBuilder(
                         builder: (context, constraints) {
-                          final crossAxisCount = constraints.maxWidth < 340 ? 1 : 2;
-                          final childAspectRatio = crossAxisCount == 1
-                              ? metrics.singleColumnAspectRatio
-                              : metrics.doubleColumnAspectRatio;
+                          final crossAxisCount = constraints.maxWidth < 280
+                              ? 1
+                              : constraints.maxWidth < 500
+                                  ? 2
+                                  : constraints.maxWidth < 800
+                                      ? 3
+                                      : 4;
+
+                          final rowCount = (marketValues.length / crossAxisCount).ceil();
+                          final totalSpacingHeight =
+                              max(0.0, metrics.gridSpacing * (rowCount - 1));
+                          final totalSpacingWidth =
+                              max(0.0, metrics.gridSpacing * (crossAxisCount - 1));
+                          
+                          // Ekrandaki boş alana tam sığacak dinamik en/boy oranı formülü:
+                          final idealItemHeight =
+                              (constraints.maxHeight - totalSpacingHeight) / rowCount;
+                          final idealItemWidth =
+                              (constraints.maxWidth - totalSpacingWidth) / crossAxisCount;
+
+                          // Çok uzamasın diye makul bir max değere kilitlenebilir, ancak minimum değer 
+                          // kesinlikle eldeki yüksekliği aşmasına (scroll'a) izin vermeyecek.
+                          final dynamicAspectRatio = idealItemWidth / max(1.0, idealItemHeight);
+                          
+                          // Aşırı yassı olmasını engelle (eğer dikeyde çok boşluk varsa)
+                          // Ama scroll'a girmemesi için asla ideal hesabın ALTINA düşme
+                          final finalAspectRatio = max(dynamicAspectRatio, 1.1);
 
                           return GridView.builder(
+                            physics: const NeverScrollableScrollPhysics(), // Scroll tamamen imkansız
                             padding: EdgeInsets.zero,
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: crossAxisCount,
                               crossAxisSpacing: metrics.gridSpacing,
                               mainAxisSpacing: metrics.gridSpacing,
-                              childAspectRatio: childAspectRatio,
+                              childAspectRatio: finalAspectRatio,
                             ),
                             itemCount: marketValues.length,
                             itemBuilder: (context, index) {
@@ -271,6 +297,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                         },
                       ),
                     ),
+                    SizedBox(height: metrics.sectionGapLarge),
                   ],
                 ],
               ),
@@ -346,30 +373,39 @@ class _CategoryCard extends StatelessWidget {
                 top: 0,
                 right: 0,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.local_fire_department_rounded,
                       color: Colors.orange,
-                      size: compact ? 18 : 20,
+                      size: compact ? 16 : 18,
                     ),
                     Text(
-                      'Sicak Firsat',
+                      'Sicak\nFirsat',
                       style: AppTextStyles.labelSmall.copyWith(
                         color: Colors.orange,
-                        fontSize: compact ? 7 : 8,
+                        fontSize: compact ? 6 : 7,
                         fontWeight: FontWeight.bold,
+                        height: 1.1,
                       ),
+                      textAlign: TextAlign.right,
                     ),
                   ],
                 ),
               ),
+            // Extra top padding so hot deal badge never overlaps category name
             Opacity(
               opacity: isLocked ? 0.2 : 1.0,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    category.toUpperCase(),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: (!isLocked && isHotCategory) ? (compact ? 24.0 : 28.0) : 0,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      category.toUpperCase(),
                     style: AppTextStyles.titleMedium.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
@@ -416,9 +452,10 @@ class _CategoryCard extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
+    ),
     );
   }
 }
@@ -464,26 +501,28 @@ class _EconomyPickMetrics {
 
   factory _EconomyPickMetrics.from(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final isCompact = size.width < 390 || size.height < 780;
+    final isCompact = size.width < 390 || size.height < 700;
+    final isTiny = size.height < 680;
 
     return _EconomyPickMetrics(
       isCompact: isCompact,
-      screenPadding: isCompact ? 16 : 24,
-      sectionGap: isCompact ? 12 : 16,
-      sectionGapLarge: isCompact ? 20 : 32,
-      inlineGap: isCompact ? 10 : 12,
+      screenPadding: isTiny ? 12 : (isCompact ? 16 : 24),
+      sectionGap: isTiny ? 8 : (isCompact ? 12 : 20),
+      sectionGapLarge: isTiny ? 12 : (isCompact ? 18 : 28),
+      inlineGap: isTiny ? 6 : (isCompact ? 10 : 12),
       textGap: isCompact ? 6 : 8,
-      titleFontSize: isCompact ? 18 : 20,
-      titleLetterSpacing: isCompact ? 1.2 : 2,
-      infoPadding: isCompact ? 12 : 16,
-      infoRadius: isCompact ? 10 : 12,
-      infoIconSize: isCompact ? 24 : 28,
-      infoTitleFontSize: isCompact ? 14 : 16,
+      titleFontSize: isTiny ? 14 : (isCompact ? 16 : 20),
+      titleLetterSpacing: isCompact ? 1.0 : 2,
+      infoPadding: isTiny ? 12 : (isCompact ? 14 : 18),
+      infoRadius: isCompact ? 10 : 14,
+      infoIconSize: isTiny ? 20 : (isCompact ? 24 : 28),
+      infoTitleFontSize: isTiny ? 13 : (isCompact ? 14 : 16),
       helperFontSize: isCompact ? 11 : 12,
-      helperIconSize: isCompact ? 16 : 18,
-      gridSpacing: isCompact ? 10 : 12,
-      singleColumnAspectRatio: 1.9,
-      doubleColumnAspectRatio: isCompact ? 0.92 : 1.1,
+      helperIconSize: isCompact ? 14 : 18,
+      gridSpacing: isTiny ? 8 : (isCompact ? 12 : 16),
+      singleColumnAspectRatio: isTiny ? 3.5 : (isCompact ? 3.0 : 2.5),
+      // Miktar yassı tutularak tüm cihazlarda scrollsuz görünüm hedefleniyor
+      doubleColumnAspectRatio: isTiny ? 1.6 : (isCompact ? 1.45 : 1.35),
     );
   }
 }

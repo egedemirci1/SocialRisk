@@ -239,8 +239,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 32),
                         child: Column(
                           children: [
-                            const SizedBox(height: 20),
+                            Builder(
+                              builder: (ctx) {
+                                final sh = MediaQuery.sizeOf(ctx).height;
+                                return SizedBox(height: sh < 700 ? 16 : 28);
+                              },
+                            ),
                             const SocialRiskLogo(height: 100),
+                            Builder(
+                              builder: (ctx) {
+                                final sh = MediaQuery.sizeOf(ctx).height;
+                                return SizedBox(height: sh < 700 ? 24 : 32);
+                              },
+                            ),
                             const Spacer(flex: 2),
                             _buildWelcome(
                               context,

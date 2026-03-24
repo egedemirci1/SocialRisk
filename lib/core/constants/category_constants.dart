@@ -25,49 +25,49 @@ class CategoryConstants {
       id: 'Fiziksel',
       name: 'Fiziksel',
       icon: Icons.fitness_center_rounded,
-      color: AppColors.votePositive,
+      color: AppColors.votePositive, // Zümrüt Yeşili
     ),
     CategoryDefinition(
       id: 'Bilgi',
       name: 'Bilgi',
       icon: Icons.lightbulb_outline_rounded,
-      color: AppColors.accent,
+      color: AppColors.categoryKnowledge, // Koyu Turkuaz
     ),
     CategoryDefinition(
       id: 'Dijital',
       name: 'Dijital',
       icon: Icons.phone_android_rounded,
-      color: AppColors.primary,
+      color: AppColors.categoryDigital, // Koyu Pembe/Mor
     ),
     CategoryDefinition(
       id: 'İtiraf',
       name: 'İtiraf',
       icon: Icons.psychology_rounded,
-      color: AppColors.glow,
+      color: AppColors.voteNeutral, // Koyu Amber
     ),
     CategoryDefinition(
       id: 'Zihinsel',
       name: 'Zihinsel',
       icon: Icons.psychology_alt_rounded,
-      color: AppColors.ice,
+      color: AppColors.ice, // Güçlü Mavi
     ),
     CategoryDefinition(
       id: 'Ahlaki',
       name: 'Ahlaki',
       icon: Icons.balance_rounded,
-      color: AppColors.voteNeutral,
+      color: AppColors.glow, // Altın Sarısı
     ),
     CategoryDefinition(
       id: 'Görsel',
       name: 'Görsel',
       icon: Icons.theater_comedy_rounded,
-      color: AppColors.secondary,
+      color: AppColors.categoryVisual, // Derin Mor
     ),
     CategoryDefinition(
       id: 'Mahrem',
       name: 'Mahrem',
       icon: Icons.favorite_rounded,
-      color: AppColors.fire,
+      color: AppColors.fire, // Koyu Kırmızı
     ),
     CategoryDefinition(
       id: 'Özel',

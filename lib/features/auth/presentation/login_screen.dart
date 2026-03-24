@@ -145,6 +145,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
+    final sh = MediaQuery.sizeOf(context).height;
+    final compact = sh < 700;
+    final logoH = compact ? 120.0 : 180.0;
+    final headerGap = compact ? 24.0 : 64.0;
+    final bottomGap = compact ? 16.0 : 32.0;
+    final verticalPad = compact ? 24.0 : 48.0;
+
     return LoadingOverlay(
       isLoading: _isAnonymousLoading || _isGoogleLoading || _isAppleLoading,
       message: 'Partiye giriş yapılıyor...',
@@ -163,15 +170,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 400),
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: verticalPad,
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                      _buildHeader(),
-                      const SizedBox(height: 64),
-                      _buildLoginCard(),
-                      const SizedBox(height: 32),
-                      _buildSocialSection(),
+                      _buildHeader(logoH),
+                      SizedBox(height: headerGap),
+                      _buildLoginCard(compact),
+                      SizedBox(height: bottomGap),
+                      _buildSocialSection(compact),
                       ],
                     ),
                   ),
@@ -185,17 +195,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   );
   }
 
-  Widget _buildHeader() {
-    return const Column(
+  Widget _buildHeader(double logoHeight) {
+    return Column(
       children: [
-        SocialRiskLogo(height: 180),
+        SocialRiskLogo(height: logoHeight),
       ],
     );
   }
 
-  Widget _buildLoginCard() {
+  Widget _buildLoginCard(bool compact) {
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(compact ? 24 : 32),
       decoration: BoxDecoration(
         gradient: AppColors.surfaceGradient,
         borderRadius: BorderRadius.circular(24),
@@ -278,7 +288,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     );
   }
 
-  Widget _buildSocialSection() {
+  Widget _buildSocialSection(bool compact) {
     return Column(
       children: [
         Row(
@@ -297,7 +307,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             const Expanded(child: Divider(color: Colors.white10)),
           ],
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: compact ? 16 : 24),
         Row(
           children: [
             Expanded(
@@ -309,6 +319,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 borderColor: Colors.transparent,
                 onPressed: () => _signInSocial(_signInWithGoogle, 'google'),
                 isLoading: _isGoogleLoading,
+                compact: compact,
               ),
             ),
           ],
