@@ -4,7 +4,7 @@ class GameConstants {
   static const int minPlayers = 2;
   static const int maxPlayers = 8;
 
-  static const int defaultTargetScore = 500;
+  static const int defaultTargetScore = 250;
   static const int defaultMaxRounds = 10;
 
   static const int basePenalty = 50;

@@ -14,7 +14,6 @@ import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
 import '../../../shared/widgets/common/loading_overlay.dart';
-import '../../../shared/widgets/common/responsive_wrapper.dart';
 import '../../../core/audio/audio_service.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
@@ -28,9 +27,9 @@ class CreateRoomScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
-  bool _isScoreMode = true;
-  double _scoreTarget = 500;
-  double _roundTarget = 5;
+  bool _isScoreMode = false;
+  double _scoreTarget = GameConstants.defaultTargetScore.toDouble();
+  double _roundTarget = GameConstants.defaultMaxRounds.toDouble();
   bool _isCreating = false;
   final List<String> _selectedCategories =
       GameConstants.defaultCategoriesConst.toList();
@@ -294,8 +293,8 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           AppColors.accent;
     }
 
-    final scoreRatio = ((_scoreTarget - 50) / 450).clamp(0.0, 1.0);
-    final roundRatio = ((_roundTarget - 3) / 17).clamp(0.0, 1.0);
+    final scoreRatio = ((_scoreTarget - 50) / 200).clamp(0.0, 1.0);
+    final roundRatio = ((_roundTarget - 2) / 8).clamp(0.0, 1.0);
     final scoreColor = getSliderColor(scoreRatio);
     final roundColor = getSliderColor(roundRatio);
 
@@ -306,18 +305,18 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           children: [
             Expanded(
               child: _ToggleChip(
-                label: 'Puan',
-                isSelected: _isScoreMode,
-                onTap: () => setState(() => _isScoreMode = true),
+                label: 'Tur',
+                isSelected: !_isScoreMode,
+                onTap: () => setState(() => _isScoreMode = false),
                 compact: metrics.isCompactWidth || metrics.isCompactHeight,
               ),
             ),
             SizedBox(width: metrics.inlineGap),
             Expanded(
               child: _ToggleChip(
-                label: 'Tur',
-                isSelected: !_isScoreMode,
-                onTap: () => setState(() => _isScoreMode = false),
+                label: 'Puan',
+                isSelected: _isScoreMode,
+                onTap: () => setState(() => _isScoreMode = true),
                 compact: metrics.isCompactWidth || metrics.isCompactHeight,
               ),
             ),
@@ -346,8 +345,8 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             child: Slider(
               value: _scoreTarget,
               min: 50,
-              max: 500,
-              divisions: 9,
+              max: 250,
+              divisions: 4,
               onChanged: (value) {
                 if (value != _scoreTarget) {
                   HapticFeedback.selectionClick();
@@ -373,7 +372,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                     ),
                   ),
                   Text(
-                    '500',
+                    '250',
                     style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white38,
                       fontSize: metrics.helperFontSize,
@@ -404,9 +403,9 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             ),
             child: Slider(
               value: _roundTarget,
-              min: 3,
-              max: 20,
-              divisions: 17,
+              min: 2,
+              max: 10,
+              divisions: 8,
               onChanged: (value) {
                 if (value != _roundTarget) {
                   HapticFeedback.selectionClick();
@@ -425,14 +424,14 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '3',
+                    '2',
                     style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white38,
                       fontSize: metrics.helperFontSize,
                     ),
                   ),
                   Text(
-                    '20',
+                    '10',
                     style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white38,
                       fontSize: metrics.helperFontSize,
