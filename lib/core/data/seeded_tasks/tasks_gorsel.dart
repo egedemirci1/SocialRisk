@@ -1,119 +1,175 @@
-/// Görsel (Soyut Anlatım ve Taklit) — 100 soru, local seed. Konuşma yasak; çizim, mimik veya objelerle ifade.
+/// Görsel (Analiz, Mikro İfade ve İmaj Yargılaması) — Tam 120 görev.
+/// 4 Alt Kategori:
+/// 1. Mikro İfade ve Poker Face (İnsan Okuma & Duygu Gizleme)
+/// 2. İmaj ve Ön Yargı (Vitrini Oylama & Görsel Profil Analizi)
+/// 3. Görsel Hafıza Sabotajı (Detay Avcısı & Anlık Değişimler)
+/// 4. Beden Dili Doğaçlaması (Mimic & Vibe - Sessiz Taklit)
+/// Format: Oyuncular birbirlerinin dış görünüşünü, anlık tepkilerini veya sosyal medya vitrinlerini acımasızca analiz eder.
+/// Masa, yapılan analizin veya sergilenen görsel performansın isabetliliğini oylar.
+
 final List<Map<String, dynamic>> tasksGorsel = [
-  // ── EASY (34) ──
-  {'category': 'Görsel', 'content': 'Bir mesleği sadece hareketlerle anlat; konuşma yok.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir filmi veya diziyi çizerek anlat (konuşma yok).', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birini sadece mimiklerle taklit et; konuşma yok.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir spor dalını sadece hareketlerle göster.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir şarkıyı sadece el kol hareketleriyle anlat (söyleme).', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir duyguyu sadece yüz ifadesiyle göster.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Masadaki bir nesneyi kullanarak bir hayvanı canlandır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir ünlüyü sadece mimik ve hareketlerle taklit et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir yemek yapımını sadece hareketlerle anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir taşıtı sadece ses ve hareketle canlandır (konuşma yok).', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptaki en komik anıyı sadece çizerek anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir hayvanı sadece ses çıkararak canlandır (konuşma yok).', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir oyunu veya aktiviteyi sadece hareketlerle göster.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir nesneyi sadece çizerek anlat; grup tahmin etsin.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir film sahnesini sadece mimiklerle canlandır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin karakterini sadece hareketlerle taklit et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir doğa olayını (yağmur, rüzgar vb.) sadece hareketlerle göster.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir müzik aletini çalıyormuş gibi canlandır (sessiz).', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir yiyeceği yerken canlandır; grup ne yediğini tahmin etsin.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir ülkeyi sadece bir sembol veya hareketle anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Utanç verici bir anı sadece çizerek anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir TV programını sadece hareketlerle anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birini sadece yürüyüşüyle taklit et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir kaza veya komik anı sadece mimiklerle canlandır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir mevsimi sadece hareket ve mimikle anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir kitabı sadece 3 çizimle anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin en belirgin özelliğini sadece çizerek göster.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir reklamı sadece hareketlerle canlandır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir hayvanı sadece vücut hareketleriyle canlandır (ses yok).', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir yer (şehir, bina) sadece çizerek anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin tipik bir cümlesini sadece mimikle canlandır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir hikayeyi sadece 3 çizimle anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir teknoloji aletini kullanıyormuş gibi canlandır (sessiz).', 'difficulty': 'easy', 'type': 'action', 'tags': ['classic', 'family']},
-  // ── MEDIUM (33) ──
-  {'category': 'Görsel', 'content': 'Gruptan birinin utandığı bir anı sadece çizerek anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir filmi sadece 5 hareketle anlat; konuşma yok.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birini sadece konuşma tarzı ve hareketleriyle taklit et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir şarkıyı sadece dans ve hareketlerle anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Masadaki 3 nesneyi kullanarak bir hikaye anlat (konuşma yok).', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir ünlüyü sadece yüz ifadesi ve el hareketleriyle taklit et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Gruptaki en komik anıyı sadece mimik ve hareketlerle canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir duyguyu sadece vücut diliyle göster; ses ve konuşma yok.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin tipik bir davranışını sadece taklit et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir rüyayı sadece çizerek anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir kitap veya film sonunu sadece 3 çizimle anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir spor karşılaşmasını sadece hareketlerle canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birini sadece oturuş ve el hareketleriyle taklit et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir aşk sahnesini sadece mimiklerle canlandır (komik olabilir).', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir yeri (tatil, ev) sadece çizim ve hareketlerle anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir şarkıcıyı performansıyla taklit et (sessiz, sadece hareket).', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Utanç verici bir anı sadece mimik ve hareketlerle canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin sırrını (hafif) sadece çizerek ima et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir tartışmalı konuyu sadece 2 çizimle (karşıt) anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir hayvanı ve bir insanı birleştirip sadece hareketlerle canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin en çok güldüğü anı sadece taklit et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir film sahnesini sadece objelerle (masadaki) canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir duyguyu sadece çizerek anlat; grup tahmin etsin.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin tipik bir cümlesini sadece el ve yüz hareketleriyle canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir olayı kronolojik sırayla sadece 4 çizimle anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir ünlüyü ve onun tipik hareketini sadece taklit et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir fikri veya kavramı sadece soyut çizimlerle anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin kızdığı anı sadece mimiklerle canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir reklamı sadece sessiz sinema tarzında canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir şarkıyı sadece beden perküsyonu ve hareketle anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birine "Seni sadece çizerek anlat" de.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir korku sahnesini sadece mimik ve hareketlerle canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir ilişkiyi (arkadaşlık, aşk) sadece 2 çizimle anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['classic', 'adult']},
-  // ── HARD (33) ──
-  {'category': 'Görsel', 'content': 'Gruptan birinin en utandığı anı sadece çizerek anlat; grup kim olduğunu tahmin etsin.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir filmi baştan sona sadece 8 hareketle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birini sadece konuşma tarzı, hareket ve mimikle taklit et; grup tahmin etsin.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir şarkıyı sadece dans ve mimikle anlat; grup şarkıyı tahmin etsin.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Masadaki nesnelerle bir hikaye anlat; konuşma yok, sadece hareket ve düzenleme.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir ünlüyü sadece yüz, el ve duruşla taklit et; grup tahmin etsin.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Gruptaki en komik anıyı sadece mimik, hareket ve bir nesneyle canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir duyguyu sadece vücut dili ve bir nesneyle göster.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin tipik davranışını ve sözünü sadece taklit et; konuşma yok.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir rüyayı sadece çizim ve hareketlerle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir kitap veya film sonunu sadece 5 çizimle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir spor karşılaşmasının en kritik anını sadece hareketlerle canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birini sadece oturuş, el ve bakışla taklit et; grup tahmin etsin.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir aşk sahnesini sadece mimik ve hareketlerle (sessiz) canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir yeri (tatil, ev) sadece çizim ve 3 hareketle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir şarkıcıyı performansı ve tipik hareketiyle taklit et (sessiz).', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Utanç verici bir anı sadece mimik, hareket ve bir nesneyle canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin sırrını (hafif) sadece çizimle anlat; grup kim olduğunu tahmin etmesin.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir tartışmalı konuyu sadece 3 çizimle (farklı açılar) anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir hayvan ve bir insan karakterini birleştirip sadece hareketlerle canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin en çok güldüğü anı ve sözünü sadece taklit et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir film sahnesini sadece masadaki objelerle sessiz canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir duyguyu sadece soyut çizimle anlat; grup tahmin etsin.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin tipik cümlesini sadece el, yüz ve vücut diliyle canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir olayı kronolojik sırayla sadece 6 çizimle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir ünlüyü ve onun 2 tipik hareketini sadece taklit et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir fikri veya kavramı sadece soyut çizim ve bir hareketle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin kızdığı anı ve sözünü sadece mimiklerle canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir reklamı sessiz sinema tarzında baştan sona canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir şarkıyı sadece beden perküsyonu, hareket ve mimikle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birini sadece çizerek ve bir hareketle anlat; grup tahmin etsin.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir korku sahnesini sadece mimik, hareket ve ses (konuşma yok) ile canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir ilişkiyi (arkadaşlık veya aşk) sadece 4 çizimle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin en utandığı anı sadece çizim ve mimikle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir filmi sadece 10 hareket ve 2 çizimle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birini tamamen (konuşma tarzı, hareket, mimik, duruş) taklit et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir tartışmayı iki kişiyle sadece mimik, hareket ve bir nesneyle canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir şarkıyı sadece dans, mimik ve beden perküsyonuyla anlat; grup tahmin etsin.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Masadaki nesnelerle bir hikaye anlat; konuşma yok; sonunda grup özetlesin.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir ünlüyü sadece yüz, el, duruş ve tipik hareketiyle taklit et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Gruptaki en komik anıyı sadece mimik, hareket ve 2 nesneyle canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir haber veya olayı sadece 7 çizimle kronolojik anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir duyguyu sadece vücut dili, bir nesne ve bir çizimle göster.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birinin tipik davranışını ve 2 sözünü sadece taklit et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
-  {'category': 'Görsel', 'content': 'Bir rüyayı sadece çizim, hareket ve mimikle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Bir kitap veya film sonunu sadece 6 çizim ve 2 hareketle anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'family']},
-  {'category': 'Görsel', 'content': 'Gruptan birini sadece çizim ve bir hareketle anlat; konuşma yok.', 'difficulty': 'hard', 'type': 'action', 'tags': ['classic', 'adult']},
+
+  // ==========================================
+  // 1. MİKRO İFADE VE POKER FACE (İNSAN OKUMA)
+  // ==========================================
+
+  // ── MİKRO İFADE — EASY ──
+  {'category': 'Görsel', 'content': 'Karşındaki kişi gözlerini kapatıp geçmişteki çok utanç verici bir anını hayal edecek. Sadece yüzündeki mimik değişimlerini izleyerek o anın "pişmanlık" mı yoksa "gizli bir zevk" mi olduğunu tahmin et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birine hiç beklemediği, hafif kırıcı veya şaşırtıcı bir iltifat et. Yüzünde oluşan o ilk saliselik "mikro ifadeyi" yakala ve aslında ne hissettiğini gruba açıkla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadan birine ardışık 3 hızlı soru sor (biri yalan cevaplaması gereken bir soru olsun). Sadece göz bebeklerine veya kaş hareketlerine bakarak hangisinde yalan söylediğini bul.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptaki herkes sırayla "en sahte" gülümsemesini yapsın. Kimin gülüşünün göz kenarlarına ulaşmadığını (Duchenne gülümsemesi) analiz ederek en iyi "sahtekarı" seç.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat. Karşındaki kişi sana doğru sessizce yaklaşsın. Onun sana baktığını veya yaklaştığını sadece "görsel auran" veya altıncı hissinle ne kadar sürede fark edeceğini test et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişiye, onun en sevmediği yemeği veya en iğrendiği şeyi detaylıca anlat. Yüzünde oluşan o ufak "iğrenme" (dudak kıvrılması, burun kırışması) ifadesini anında yakala.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan biri ağzına çok acı veya ekşi bir şey atıp (veya hayal edip) hiç tepki vermemeye çalışsın. Yüzündeki hangi kasın onu ele verdiğini söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Bir arkadaşının gözlerinin içine bakarak onun şu an yorgun mu, heyecanlı mı yoksa sıkılmış mı olduğunu sadece göz altı torbaları ve göz kapağı düşüklüğünden analiz et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadaki birinin stresli veya yalan söylerken yaptığı o istemsiz "yatıştırıcı dokunuşu" (boyna dokunma, saçıyla oynama) ifşa et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan biri "Çok üzgünüm" desin ama yüzünde farklı bir duygu (mutluluk/kibir) barındırmaya çalışsın. Söylediği ile yüzü arasındaki o uyumsuzluğu yakala.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+
+  // ── MİKRO İFADE — MEDIUM ──
+  {'category': 'Görsel', 'content': 'Karşındakinin gözlerinin içine 30 saniye boyunca hiç kırpmadan ve ifadesiz bak. O seni güldürmeye veya sindirmeye çalışırken "taş gibi" kalabilirsen puan alırsın.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birine aniden çok spesifik ve şüpheli bir soru sor (Örn: "Dün gece o saatte kime mesaj atıyordun?"). O anki yutkunmasını, nefes alışını veya göz kaçırmasını FBI ajanı gibi analiz et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadaki herkesin "dinleme" yüz ifadesini incele. Kimin aslında seni dinlemediğini, sadece kendi konuşma sırasının gelmesini beklediğini mimikleriyle kanıtla.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birine onu çok kızdıracak bir fikir beyan et. Ağzından çıkan sözler sakin olsa bile, çenesinin kasılması veya burun deliklerinin açılması gibi "gizli öfke" belirtilerini ifşa et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişiyi 1 dakika boyunca sadece izle (hiç konuşmadan). Onun bu bakışma altındaki gerginliğini, omuzlarının nasıl düştüğünü veya nasıl savunmaya geçtiğini saniye saniye yorumla.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadaki birinin bir konuyu anlatırken ellerini nasıl kullandığını (illüstratör hareketler) analiz et. Bu el hareketlerinin onun hangi "gizli abartısını" veya "yalanını" örtbas ettiğini iddia et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin yüzünün sağ ve sol yarısını incele. Hangi tarafının daha "gerçek" duyguları yansıttığını (asimetrik mimikler) bul ve onun aslında ne hissettiğini söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptaki bir oyuncunun "göz teması kurma" süresini analiz et. Neden sürekli göz kaçırdığını veya neden agresif bir şekilde dik dik baktığını psikolojik olarak açıkla.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Bir hikaye anlatırken bilerek saçma bir detay ekle. Masada bu saçmalığı ilk fark edenin yüzündeki o "Ne diyor bu?" şeklindeki "kafa karışıklığı" mikrosunu yakala.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişiye sessizce ağzını okutarak bir kelime söyle. O anlamaya çalışırken yüzünde oluşan o yoğun odaklanma ve şaşkınlık ifadesini fotoğraf çeker gibi grubun hafızasına kazı.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'family']},
+
+  // ── MİKRO İFADE — HARD ──
+  {'category': 'Görsel', 'content': 'Masadaki (veya karşındaki) kişinin yüzündeki en belirgin 3 mikro ifadeyi (güderken göz kenarlarının kısılmaması, asimetrik dudak bükme vb.) analiz et ve bu ifadelerin onun karakterindeki hangi "gizli güvensizliği" temsil ettiğini yüzüne vur.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin tamamen "poker face" (ifadesiz) yapmasını iste. O yüzündeki tüm kasları gevşetse bile, alnındaki bir çizgiden veya dudak kenarındaki ufacık bir gerginlikten onun en büyük travmasını uydurarak ama mantıklıca analiz et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişiye, hayatında en utandığı anı sorma ama o anı düşünmesini iste. O düşünürken yüzünden saniyelik geçen "küçümseme", "korku" veya "iğrenme" ifadelerinden hangisinin baskın olduğunu oku.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin yalan söylediğinde veya gerildiğinde nefes alışverişinin (göğüs mü, diyafram mı) nasıl değiştiğini analiz et ve bunu onun "kontrol manyaklığına" bağla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Bir kişinin göz kırpma hızını (Blink rate) 1 dakika boyunca say. Bu sayının onun şu anki "zihinsel stresi" veya "masadan sıkılmışlığı" hakkında ne anlama geldiğini acımasızca yorumla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadaki bir kişinin ağız/dudak yapısını (sürekli dudak yalama, dudakları içeri kıvırma) analiz ederek, onun hangi konularda sürekli kendini sansürlediğini veya sustuğunu yüzüne söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişi gülümsediğinde, gülümsemenin sönme süresini (hızlıca mı ciddileşiyor, yavaş yavaş mı sönüyor) analiz et ve onun insanlara karşı ne kadar "sahte" bir tahammül sınırı olduğunu iddia et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Sadece bir oyuncunun yüz asimetrisine bakarak, hayatında mantığıyla mı yoksa duygularıyla mı daha çok karar verdiğini ve bu yüzden nerede çuvalladığını analiz et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin çene kaslarına odaklan. O konuşmuyorken çenesini ne kadar sıktığını analiz et ve onun içinde biriktirdiği ve kime/neye patlayacağı belli olmayan o gizli öfkeyi ifşa et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat. Karşındaki kişinin sadece ses tonundaki sarsılmaları ve nefes boşluklarını dinleyerek (yüzünü görmeden) onun "görsel olarak" şu an nasıl bir acizlik içinde olduğunu betimle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+
+
+  // ==========================================
+  // 2. İMAJ VE ÖN YARGI (VİTRİNİ OYLAMA)
+  // ==========================================
+
+  // ── İMAJ VE ÖN YARGI — EASY ──
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin (veya gruptan birinin) şu anki oturuşunu ve fiziksel duruşunu analiz et. Bu duruşun dışarıya "özgüven" mi yoksa "savunma mekanizması" mı sinyali verdiğini görsel kanıtlarla anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin seçtiği kıyafet rengini veya tarzını incele. Bunun o günkü ruh halini nasıl "maskelediğini" veya "açığa vurduğunu" eğlenceli bir şekilde yorumla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadan birinin ayakkabılarına bak. Sadece bu ayakkabıların durumundan (temizliği, tarzı, markası) yola çıkarak onun kişisel hayatındaki "tembellik" veya "takıntı" seviyesini analiz et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin saç tarzının (dağınık, aşırı yapılı vb.) onun kontrol takıntısıyla nasıl bir bağı olduğunu görsel bir okumayla açıkla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Bir kişinin kullandığı takıları veya saatini incele. Bu aksesuarların onun hangi eksikliğini (statü, farklı olma çabası vb.) kapatmaya çalıştığını analiz et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadan birinin çantasını veya cebindeki eşyaların kabarıklığını dışarıdan süz. O kişinin hayatındaki "hazırlıklı olma" veya "dağınıklık" kaosunu yorumla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptaki birinin ellerine ve tırnaklarına bak. Sadece bu görsel veriden onun ne kadar stresli veya özensiz/titiz bir insan olduğunu iddia et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin parfüm kokusu veya genel aurası ile kıyafetleri arasındaki uyumu/uyumsuzluğu yorumla. "Görünmek istediği kişi" ile "olduğu kişi" farkını söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadaki birinin gözlük çerçevesinden veya seçtiği ufak bir detaydan, onun kendini ne kadar "entelektüel" satmaya çalıştığını eleştir.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Bir kişinin dururken kollarını nerede tuttuğuna (bağlı, ceplerde, açık) bakarak, gruba karşı ne kadar kapalı veya kibirli olduğunu kanıtla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+
+  // ── İMAJ VE ÖN YARGI — MEDIUM ──
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin (veya gruptan birinin) Instagram profilindeki son 3 fotoğrafını yan yana getir. Bu fotoğrafların çizmeye çalıştığı "ideal insan" imajı ile masadaki "gerçek insan" arasındaki en büyük 3 görsel farkı/sahteliği yüzüne söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin sosyal medyada en çok kullandığı "pozunu" veya "filtresini" analiz et. Bunun onun hangi fiziksel veya psikolojik güvensizliğini saklamak için uydurulduğunu yüzüne vur.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadaki birinin yürüyüş tarzını veya odaya giriş şeklini görsel olarak yorumla. O adımların altındaki "beni görün" çırpınışını veya "korkaklığı" deşifre et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin kıyafetlerinde kullandığı "marka" detaylarını incele. Bu logoların veya tarzın, onun "ait olma" veya "sonradan görme" kompleksinin neresinden geldiğini analiz et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin telefonunu masaya koyuş şeklini, ekrana bakışını ve duruşunu izle. Cihazıyla olan bu görsel ilişkisinin onun nasıl bir "bağımlı" veya "gizli işler çeviren biri" olduğunu kanıtla.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Eğer bu masa bir lise sınıfı olsaydı, sadece dış görünüşlerine bakarak kimin "zorba", kimin "inek", kimin "ezik" olacağını görsel stereotiplerle eşleştir.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadan birinin yüzündeki estetik bir müdahaleyi veya makyajındaki ağır kapatıcılığı analiz et. Dış görünüşündeki bu değişimin, içindeki hangi karanlığı örtmeye çalıştığını psikolojik olarak uydur.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin profil fotoğrafını (WhatsApp vb.) aç. O karenin kesiminden, açısından ve ışığından; o kişinin ne kadar narsist veya ilgi delisi olduğunu adım adım eleştir.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Bir kişinin masadaki yemek yeme tarzını veya içkisini/kahvesini tutuş şeklini analiz et. Bu görselin onun cinsel hayatındaki veya ikili ilişkilerindeki "kontrolcülüğü" ile bağını kur.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin "cool" (havalı) görünmek için yaptığı ama senin gözünde tamamen "cringe" duran o o spesifik görsel çabayı (bir bakış, bir duruş) acımasızca eleştir.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+
+  // ── İMAJ VE ÖN YARGI — HARD ──
+  {'category': 'Görsel', 'content': 'Eğer karşındaki kişi bir suçlu olsaydı, sadece dış görünüşüne (yüz hatları, bakışları, tarzı) bakarak ne suç işlemiş olabileceğini ve neden "o suçlu tipine" tam uyduğunu görsel detaylarla (kaş yapısı, gülüşü vb.) analiz et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin tüm mal varlığını ve statüsünü kaybettiğini hayal et. Sadece görsel kemik yapısına ve aurasına bakarak, sokakta kaldığında ne kadar "acınası" veya "yırtıcı" görüneceğini betimle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin giyim tarzını ve imajını tamamen bir "sahtekarlık" olarak nitelendir. Aslında olmak istediği kişinin çok farklı olduğunu ama sırf toplum/aile baskısı yüzünden bu "ezik" veya "sıradan" görsel kostümü giydiğini yüzüne vur.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadaki birinin yüz hatlarında, onun genetik olarak "sadakatsiz" veya "bencil" olduğuna dair uydurma ama çok inandırıcı görsel (fizyonomik) analizler yap. (Örn: Çene yapısı bencilliği gösterir).', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin Instagram/X biosunu ve paylaştığı son sözü analiz et. Bu "derin" görsel/metinsel vitrinin altındaki o bomboş zekayı ve sığlığı acımasızca ifşa et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Eğer karşındaki kişinin iç organları veya beyni, dış görünüşü gibi görünseydi, ne kadar "çürümüş" veya "yapay" olacağını onun dış detaylarından yola çıkarak (estetikler, kıyafetler) anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Bir kişiye bakarak, onun hayatında sırf dış görünüşü yüzünden kaybettiği en büyük fırsatı ve insanların onu ilk gördüğünde içinden geçirdiği o "ilk ön yargılı küfrü" tahmin et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin en övündüğü fiziksel özelliğini (gözleri, saçı, kasları) hedef al. Bu özelliğin aslında onu nasıl "karikatür" gibi gösterdiğini ve sadece bunu kullanarak hayatı kurtarmaya çalışan bir asalak olduğunu iddia et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin gülüşünün altındaki hüznü değil, tam tersine "şeytaniliği" ve "kötülüğü" görsel olarak oku. O gülüşün hangi ihanetleri planlarken oluştuğunu senaryolaştır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadakilere birer "fiyat etiketi" biçseydin, sadece dış görünüşlerine, markalarına ve postürlerine bakarak kimin ne kadar "ucuz" veya "değerli" olduğunu görsel bir müzayede yönetiyormuş gibi anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+
+
+  // ==========================================
+  // 3. GÖRSEL HAFIZA SABOTAJI (DETAY AVCISI)
+  // ==========================================
+
+  // ── GÖRSEL HAFIZA — EASY ──
+  {'category': 'Görsel', 'content': 'Gözlerini kapat. Karşındaki kişinin (veya gruptan birinin) üzerindeki 3 detayı (saat hangi kolda, ayakkabı bağı ne renk, takısı var mı) eksiksiz say.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Masaya 10 saniye dikkatlice bak. Ardından arkanı dön. Gruptakiler sana masadaki 3 farklı nesnenin rengini sorsun, hepsini doğru bil.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat. Masadaki (veya odadaki) kişilerin tişört/gömlek renklerini soldan sağa sırayla hatasız say.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Odadaki en büyük tabloyu, aynayı veya ekranı gözün kapalıyken tüm detaylarıyla (içinde ne var, çerçevesi ne renk) tarif et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Arkanı dön. Gruptan biri masadaki eşyalardan birinin yerini çok hafif değiştirsin. Geri döndüğünde 5 saniye içinde hangi eşyanın yerinin değiştiğini bul.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat. Karşındaki kişinin saçının sağa mı sola mı ayrıldığını (veya toka/şapka detayını) doğru tahmin et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Masaya bakmadan, masada kaç adet bardak veya şişe olduğunu tam sayı olarak söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Arkanı dön ve gruptaki kişilerden kimin bacak bacak üstüne attığını (veya kollarını bağladığını) hafızandan söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Odaya ilk girdiğinde gözüne çarpan ilk nesnenin ne olduğunu ve onun odadaki yerini tarif et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat ve karşındaki kişinin göz rengini (kahverengi ise açık mı koyu mu) en ince detayına kadar anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+
+  // ── GÖRSEL HAFIZA — MEDIUM ──
+  {'category': 'Görsel', 'content': 'Masadaki tüm telefonları ekranları kapalı şekilde bir araya getir. Sadece kılıflarına veya üzerindeki çiziklere bakarak hangisinin kime ait olduğunu ve o telefonun üzerindeki "yıpranma payının" sahibinin karakteri (titiz mi, dağınık mı) hakkında ne dediğini anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat. Gruptakiler masadan bir objeyi tamamen saklasın. Gözünü açtığında kaybolan eşyanın ne olduğunu ve tam olarak nerede durduğunu 10 saniye içinde bul.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin kıyafetini 5 saniye incele, sonra gözünü kapat. Giydiği kıyafette kaç adet düğme, cep veya belirgin desen olduğunu söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Arkanı dön. Gruptaki kişilerden ikisi sessizce oturdukları yerleri değiştirsin. Sadece oluşan seslerden veya döndüğündeki genel görüntüden kimlerin yer değiştiğini anında bil.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat. Masadakilerden birinin anahtarlığını veya cüzdanını sana versinler (sadece dokunarak değil, hafızandan) bunun kime ait olduğunu görsel ipuçlarıyla kanıtla.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Mekanın kapısının veya pencerelerinin o an açık mı, yarım mı yoksa kapalı mı olduğunu; perdelerin durumunu o tarafa hiç bakmadan detaylıca anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat. Masada kimin içeceğinin veya yemeğinin en çok azaldığını, kiminkinin hiç dokunulmamış olduğunu görsel hafızanla sırala.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin telefon kilit ekranı duvar kağıdını (wallpaper) o görmeden hatırlamaya çalış. Eğer bilirsen onun psikolojisi hakkında bir çıkarım yap.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Arkanı dön. Karşındaki kişi mimiklerinde veya duruşunda tek bir şeyi (Örn: Kaşını kaldırmak, ağzını yamultmak) değiştirsin. Döndüğünde o "donmuş" yeni ifadedeki anormalliği bul.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': '15 saniye boyunca masadaki kaosa bak. Sonra gözünü kapat. Kimin telefonunun ekranının yukarı kiminkinin aşağı baktığını sırayla söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'family']},
+
+  // ── GÖRSEL HAFIZA — HARD ──
+  {'category': 'Görsel', 'content': 'Mekandan 10 saniyeliğine dışarı çık. O sırada masadakiler/karşındaki kişi üzerinde görsel bir şeyi değiştirsin (yüzük değiştirme, gömlek düğmesi açma vb.). Geri geldiğinde bu "minik görsel sahtekarlığı" 15 saniye içinde bulamazsan eksi puan alırsın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat. Gruptan biri kendi üzerindeki 3 görsel detayı (Örn: saatini çıkarır, yeleğini ilikler, gözlüğünü takar) değiştirsin. Gözünü açtığında üçünü de eksiksiz bul.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptakiler masadaki 5 farklı nesneyi karmaşık bir sıraya koysun. 10 saniye bak, sonra arkanı dön. Onlar sırayı bozsun. Geri dönüp o 5 nesneyi birebir eski dizilimine (milimetrik) getir.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat. Masadaki her oyuncunun ayakkabılarının rengini, modelini ve hatta bağcıklarının nasıl bağlandığını (temiz/kirli durumunu) görsel hafızandan deşifre et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Arkanı dön. Gruptan biri masadaki bir kitabın/telefonun/bardağın açısını (yönünü) çok hafif değiştirsin. Döndüğünde o "mikro" geometrik değişimi fark et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Odadaki "görünmeyen" veya "dikkat edilmeyen" bir detayı (Örn: Tavandaki lamba sayısı, yerdeki prizin rengi) bakmadan tam olarak bil.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat ve karşındaki kişinin ellerindeki benleri, yara izlerini veya yüzük detaylarını bir harita çizer gibi havada işaret ederek anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Arkanı dön. Masadaki herkes 10 saniye boyunca duruşlarını (postürlerini) abartılı şekilde değiştirsin. Geri döndüğünde herkesin "eski, normal" oturuşunu onlara zorla göstererek düzelt.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masaya hiç bakmadan, senin önünde duran eşyaların (bardak, çatal, telefon) tam olarak sana ne kadar mesafede (kaç cm) ve hangi açıyla durduğunu söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Gözlerini kapat. Gruptakiler sessizce birinin yüzündeki makyajı veya saçının bir tutamını çok ufak bozsun. Gözünü açtığında bu "görsel defoyu" 5 saniyede bul.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+
+
+  // ==========================================
+  // 4. BEDEN DİLİ DOĞAÇLAMASI (MİMİC & VİBE)
+  // ==========================================
+
+  // ── BEDEN DİLİ DOĞAÇLAMASI — EASY ──
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin en belirgin ve en komik bulduğun 2 fiziksel alışkanlığını (saçıyla oynaması, bacak sallaması, göz süzmesi vb.) kelime kullanmadan, abartarak taklit et ve gruptan onay al.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Konuşmak kesinlikle yasak. Masadan birinin tipik "telefonla konuşma" veya "mesajlaşma" postürünü o kadar iyi taklit et ki grup kimi yaptığını anında anlasın.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin (veya genel bir "kibirli" insan tipinin) mekana/odaya ilk giriş anındaki o yürüyüşünü ve aurasını sadece beden dilinle canlandır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Sessizce karşındaki kişinin "sıkıldığında" veya "gerildiğinde" girdiği o savunma pozisyonunu (kolları bağlama, göz kaçırma) bir ayna gibi ona geri yansıt.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Konuşmadan, sadece yüz ifadenle ve el hareketlerinle masadaki birine "Senin dediklerine inanmıyorum ama dinliyormuş gibi yapıyorum" imajını görsel olarak ver.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadan birinin yemek yerkenki veya bir şey içerkenki (kahve yudumlama vb.) o özel/garip ağız hareketini taklit et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Sadece beden dilini kullanarak karşındakine "Şu an burada olmak istemiyorum, seninle konuşmak işkence" hissini 15 saniye boyunca yaşat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin gülme krizine girdiğindeki o görsel çırpınışını (sessizce) taklit et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Konuşmak yok. Sadece bakışlarınla masadaki bir kişiye flörtöz bir sinyal gönder, diğerine "Seni mahvedeceğim" bakışı at. İkisi de hissiyatı doğru anlasın.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Bir arkadaşının fotoğraf çekilirken girdiği o en yapay, en "cringe" pozunu tam olarak onun kasıntılığıyla canlandır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['visual', 'adult']},
+
+  // ── BEDEN DİLİ DOĞAÇLAMASI — MEDIUM ──
+  {'category': 'Görsel', 'content': 'Hiç konuşmadan, sadece yüz ifadelerinle ve duruşunla; karşındaki kişiye olan "en derin eleştirini" (örneğin: onu kibirli, iki yüzlü veya aşırı saf bulduğunu) öyle bir anlat ki, o ne demek istediğini şıp diye anlasın.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Sessizce ayağa kalk. Masadan birinin bir tartışma sırasında (haklı çıkmaya çalışırken) girdiği o agresif veya mağdur beden dilini pandomim yaparak gruba sergile.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin flört ederken veya birinden hoşlandığında ne kadar "acınası" veya "komik" bir beden diline büründüğünü sessizce taklit ederek onu rezil et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadaki bir kişinin yalan söylerken veya köşeye sıkıştığında yaşadığı o saniyelik görsel "çöküş" veya "kaçış" anını ağır çekimde (slow motion) taklit et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Göz temasını hiç kesmeden, karşındaki kişinin "aura"sını emiyormuş ve ondan daha üstünmüşsün gibi bir beden diliyle (dominance) onu 30 saniye boyunca görsel olarak ez.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Konuşmak yasak. Karşındaki kişinin sarhoş olduğunda (veya çok yorgunken) dönüştüğü o kontrolden çıkmış, dağılmış görsel formunu masaya sun.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Gruptan birinin sır saklarkenki "Biliyorum ama söyleyemem" şeklindeki o şişkin ve komik yüz ifadesini canlandırarak onunla dalga geç.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Sadece el kol hareketlerinle (İtalyanlar gibi ama tamamen sessiz) karşındaki kişinin ne kadar mantıksız ve delice işler yaptığını anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin sabah uyandığındaki o aksi, şişmiş ve hayattan nefret eden görsel silüetini taklit et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'family']},
+  {'category': 'Görsel', 'content': 'Masadaki birinin heyecanlı bir dedikodu verirken girdiği o "sinsi" postürü, sadece yüz ve boyun hareketlerinle göster.', 'difficulty': 'medium', 'type': 'action', 'tags': ['visual', 'adult']},
+
+  // ── BEDEN DİLİ DOĞAÇLAMASI — HARD ──
+  {'category': 'Görsel', 'content': 'Masadaki (veya aranızdaki) en gergin anı hayal et. O anki her bir kişinin "panik anındaki görsel duruşunu" tek tek, hiç konuşmadan sergile. Kimin en "çaresiz" veya "korkak" göründüğünü beden diliyle kanıtla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Sadece gözlerini (bakışlarını) ve dudak seğirmelerini kullanarak, karşındakine "Senin tüm sırlarını biliyorum ve birazdan seni yok edeceğim" hissini görsel bir psikolojik işkence gibi 20 saniye yaşat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Hiç konuşmadan, sadece "maske düşürme" taklidi yap. Karşındaki kişinin dışarıya gösterdiği "melek/iyi insan" pozuyla, içindeki "şeytan/kötü insan" pozu arasındaki o keskin geçişi kendi yüzünde 2 saniyede canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin gizli bir fantezisini veya en derin suçluluk duygusunu yaşarken (veya yakalandığında) gireceği o yüz kızartıcı görsel durumu pandomimle gruba ifşa et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Masadaki 3 farklı kişinin oturma tarzlarını (beden dillerini) ardışık olarak 5\'er saniye içinde seri bir şekilde taklit et. Birinden diğerine geçerken adeta "ruh değiştiriyormuş" gibi görün.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Konuşmak kesinlikle yasak. Karşındaki kişinin senin hakkında içinden geçen o iğrenç/bencil düşünceyi, o kişinin bedenine bürünmüşsün gibi sadece yüz mimiklerinle dışa vur.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Bir cenazede veya çok acı bir olayda, aslında hiç üzülmeyen ama sadece elalem ne der diye "sahte üzüntü" (timsah gözyaşları) kasan gruptaki birini acımasızca taklit et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin para harcarken veya cimrilik yaparken (hesap öderken) girdiği o görsel "fiziksel kasılmayı" ve el titremesini tüm gruba sergile.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Sadece nefes alışveriş hızını, göğüs kafesi hareketini ve göz kaçırmalarını kullanarak; yalan söylerken köşeye sıkışmış birinin çaresizliğini sessizce canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']},
+  {'category': 'Görsel', 'content': 'Karşındaki kişinin kendi yansımasına (aynaya) bakarken içten içe hissettiği o "kendinden iğrenme" veya tam tersi "aşırı narsizm" anını, sadece bir nesneyi ayna gibi kullanarak sessizce oyna.', 'difficulty': 'hard', 'type': 'action', 'tags': ['visual', 'adult']}
+
 ];
