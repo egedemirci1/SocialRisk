@@ -170,4 +170,14 @@ class FirebaseUserSource implements UserRepository {
 
     await _userDoc(uid).delete();
   }
+
+  @override
+  Future<void> incrementUserStat(String uid, String statKey, int amount) async {
+    await _userDoc(uid).set({
+      'stats': {
+        statKey: FieldValue.increment(amount)
+      },
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
 }

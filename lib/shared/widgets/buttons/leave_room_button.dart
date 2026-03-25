@@ -36,7 +36,7 @@ class _LeaveCountdownDialog extends ConsumerStatefulWidget {
 }
 
 class _LeaveCountdownDialogState extends ConsumerState<_LeaveCountdownDialog> {
-  static const int _initialSeconds = 10;
+  static const int _initialSeconds = 3;
   late int _remaining;
   Timer? _timer;
 

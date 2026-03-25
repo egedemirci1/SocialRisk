@@ -12,6 +12,7 @@ class UserModel {
   final List<String> ownedCategories;
   final String? activeFrame;
   final String? activeTitle;
+  final Map<String, int> stats;
   final DateTime updatedAt;
 
   const UserModel({
@@ -19,11 +20,12 @@ class UserModel {
     required this.displayName,
     this.avatarUrl,
     this.walletPoints = 0,
-    this.rank = 'Newbie',
+    this.rank = 'Utangaç (Çaylak)',
     this.ownedCosmetics = const [],
     this.ownedCategories = GameConstants.defaultCategoriesConst,
     this.activeFrame,
     this.activeTitle,
+    this.stats = const {},
     required this.updatedAt,
   });
 
@@ -46,6 +48,9 @@ class UserModel {
           GameConstants.defaultCategories,
       activeFrame: json['activeFrame'] as String?,
       activeTitle: json['activeTitle'] as String?,
+      stats: json['stats'] != null 
+          ? Map<String, int>.from(json['stats'] as Map)
+          : const {},
       updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -60,6 +65,7 @@ class UserModel {
       'ownedCategories': ownedCategories,
       'activeFrame': activeFrame,
       'activeTitle': activeTitle,
+      'stats': stats,
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }
@@ -75,6 +81,7 @@ class UserModel {
       ownedCategories: ownedCategories,
       activeFrame: activeFrame,
       activeTitle: activeTitle,
+      stats: stats,
     );
   }
 }

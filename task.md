@@ -29,20 +29,16 @@ Bu görev listesi, detaylı testlerin ardından bildirilen hata (bug) raporları
 ## ⚙️ EGE (Backend, Oyun Döngüsü, State Management)
 
 ### 1. Oyun Mantığı ve Döngüsü Bugları
-- [X] **Sıra Atlamama Sorunu (Borsa 4 Kişi):** Borsa modunda 4 kişilik oyunda aynı oyuncuya tekrar sıra geliyor. *(Neden: Görevi reddedince `passTask` veya sıradaki oyuncu algoritması [nextTurn] takılı kalıp pointer'ı aynı kişide bırakıyor olabilir.)*
-- [] **Görev Reddedilince Ekonomi Etkisi:** Görev seçilmese de ekonomi puanı düşüyor/etkileniyor. Ayrıca Fiziksel görev 6 puan kalmasına rağmen kilitli görünüyor. *(Neden: Sadece 0 ve altına düşünce yetersiz bakiye kilidi girmeli. Timeout veya reddetme cezaları yanlış fonksiyonda uygulanıyor olabilir.)*
-- [X] **-50 Katlanarak Artma Hatası:** Üst üste görev yapılmadığında eksi puanlar -50, -100, -150 diye kümülatif gidiyor. Hep -50 olarak kalmalı. *(Neden: Penalty değeri önceki cezaya toplanarak `score -= (base + currentPenalty)` yazılmış olabilir.)*
+
 - [X] **Senkronizasyon / Oyunda Kalma Bug'ı (Kritik):** 4 kişilik oyunda (hem borsa hem çark) oyun sonunda sonuç ekranını (GameOver) sadece kurucu (Host) görüyor. Diğerleri yükleniyorda/voting'de/performing'de asılı kalıyor. *(Neden: Host oyunu bitirip `GameStatus.finished` gönderdiğinde clone state alan dinleyiciler (stream) routing yapamıyor. Voting/RoundResult state kontrollerindeki stream logic düzeltilmeli.)*
 - [X] **Puanlama Matematiği Eksikliği (Kritik):** 4 kişilik oylamada (2 kararsız, 1 beğenmedim) -> *Bu normalde eksi puandır.* Ancak 2 kararsız 1 beğendim olunca oylama x3 katsayıyla 60 puan veriyor. *(Neden: Bonus matematiği yanlış dengelenmiş. Temel Puan * Çarpan mekanizması izleyici oylarıyla doğru ağırlıkta hesaplanmıyor.)*
 
 ### 2. Admin ve Bildirim Entegrasyonları
 - [ ] **Yönetici Paneli Sınırları:** Yönetici paneli backend tarafında kontrol edilecek. Soru ekleme/çıkarma işlevleri durdurulup sadece temel panel özellikleri netleştirilecek.
-- [ ] **Odadan Ayrılma Bildirimi:** Partiden (odadan) biri çıkınca içerideki diğer kullanıcılara "X kişisi partiden ayrıldı" bildirimi (toast) gidecek. *(RoomStream listesi üzerinden diff alınarak yapılacak).*
-- [ ] **Sayfa Geçişlerinde Titreme (State Glitch):** Sayfa geçişlerinde eski sayfanın değişikliği anlık görüldükten sonra sayfa değişiyor. *(Neden: GoRouter sayfa iterken arkadaki state yenilenmesine render motoru tepki veriyor. Loader aralığı uzatılabilir).*
+
 - [ ] **Sahne Adı Hatası (Login):** Giriş yaparken "Lütfen sahne adınızı belirleyin" toast hatası yersiz tetikleniyorsa giderilecek.
 
 ### 3. Yeni Özellik ve Check'ler
 - [ ] **Gelişmiş İstatistikler:** Kullanıcı modeline Toplam Oyun Sayısı, Kazanılan Şampiyonluk, En Yüksek Puan gibi rekor verileri (DB) eklenecek ve İstatistikler panelinde gösterilecek.
-- [ ] **Ayarlar Paneli İşlevselliği:** Açılan menüdeki ayarlar panelinin iç dinamikleri eklenecek.
 - [ ] **Rütbe (Rank) Sistemi Kontrolü:** "Çırak" rütbesi neye göre belirleniyor, diğer eşikler neler? Rank mekanizması kontrol edilip düzene oturtulacak.
 - [ ] **Özel Senaryo Testi:** Şuan mağazada "Yakında" olarak kilitli olan özel senaryo db yapılarının backend tarafında doğru kilitlenip kilitlenmediği test edilecek.

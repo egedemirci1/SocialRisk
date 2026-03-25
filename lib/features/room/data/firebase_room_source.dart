@@ -39,10 +39,9 @@ class FirebaseRoomSource implements RoomRepository {
   ) async {
     try {
       final batch = _firestore.batch();
-      final gameId = roomData?['gameId'];
-      if (gameId != null && gameId.toString().isNotEmpty) {
-        batch.delete(_firestore.collection('games').doc(gameId.toString()));
-      }
+      
+      // Oyunlar Cloud Functions tarafindan silindigi icin client'ta games dokumanini silmiyoruz. (firestore.rules allow delete: if false)
+      
       final playersSnap = await _playersRef(roomCode).get();
       for (final doc in playersSnap.docs) {
         batch.delete(doc.reference);
@@ -410,14 +409,7 @@ class FirebaseRoomSource implements RoomRepository {
       int operationCount = 0;
 
       for (final doc in zombieRoomsQuery.docs) {
-        final roomData = doc.data();
-        final gameId = roomData['gameId'] as String?;
-
-        if (gameId != null && gameId.isNotEmpty) {
-          batch.delete(_firestore.collection('games').doc(gameId));
-          operationCount++;
-        }
-
+        // Oyunlar (games) kural gereği istemci tarafından silinmediğinden atlanıyor.
         final playersSnap = await _playersRef(doc.id).get();
         for (final playerDoc in playersSnap.docs) {
           batch.delete(playerDoc.reference);

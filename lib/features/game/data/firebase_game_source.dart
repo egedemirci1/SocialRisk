@@ -432,7 +432,14 @@ class FirebaseGameSource implements GameRepository {
     playerScores.sort((a, b) => b.value.compareTo(a.value));
 
     final pickOrder = playerScores.map((e) => e.key).toList();
-    final marketValues = Map<String, int>.from(GameConstants.defaultMarketValues);
+
+    final gameSnap = await _gameDoc(gameId).get();
+    if (!gameSnap.exists) return;
+    final game = GameModel.fromJson(gameSnap.data()!, gameSnap.id);
+
+    final marketValues = Map<String, int>.from(game.categoryMarketValues);
+    final pickCounts = { for (final c in marketValues.keys) c: 0 };
+    
     final atTen = marketValues.keys.where((c) => (marketValues[c] ?? 0) == 10).toList();
     final hotCategory = atTen.isNotEmpty ? atTen[_random.nextInt(atTen.length)] : null;
 
@@ -441,7 +448,7 @@ class FirebaseGameSource implements GameRepository {
       'currentPickIndex': 0,
       'lockedCategories': [],
       'categoryMarketValues': marketValues,
-      'categoryPickCounts': GameConstants.defaultPickCounts,
+      'categoryPickCounts': pickCounts,
       'currentTask': null,
       'selectedCategory': null,
       'selectedDifficulty': null,

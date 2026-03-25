@@ -48,4 +48,7 @@ class FakeUserRepository implements UserRepository {
 
   @override
   Future<void> deleteUserProfileAndAvatar(String uid) async {}
+
+  @override
+  Future<void> incrementUserStat(String uid, String statKey, int amount) async {}
 }

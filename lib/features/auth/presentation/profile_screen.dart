@@ -12,6 +12,7 @@ import '../../economy/providers/economy_provider.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../profile/presentation/widgets/achievements_widget.dart';
 
 /// Test override: null ise gerçek ImagePicker kullanılır; override ile () async => null verilerek iptal simüle edilir.
 final pickImageFromGalleryProvider = Provider<Future<XFile?> Function()?>((ref) => null);
@@ -630,7 +631,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 _StatRow(
                   icon: Icons.workspace_premium_rounded,
                   label: 'Rütbe',
-                  value: p?.rank ?? 'Çırak',
+                  value: p?.calculatedRank ?? 'Utangaç (Çaylak)',
                 ),
                 const SizedBox(height: 12),
                 _StatRow(
@@ -638,6 +639,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   label: 'Koleksiyon',
                   value: '${p?.ownedCosmetics.length ?? 0} ürün',
                 ),
+                if (p != null) AchievementsWidget(user: p),
               ],
             );
           },

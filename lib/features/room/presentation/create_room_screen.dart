@@ -68,7 +68,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         categories: _selectedCategories,
         hostAvatarUrl: userProfile?.avatarUrl,
         mode: effectiveMode,
-        useCustomDeck: _selectedCategories.contains('Ozel'),
+        useCustomDeck: _selectedCategories.contains('Özel'),
       );
 
       if (mounted && roomCode.isNotEmpty) {
@@ -566,13 +566,6 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               width: itemWidth,
               child: GestureDetector(
                 onTap: () {
-                  if (category == 'Ozel') {
-                    ToastUtils.showInfo(
-                      context,
-                      'Ozel senaryolar cok yakinda eklenecek!',
-                    );
-                    return;
-                  }
                   setState(() {
                     if (isSelected) {
                       if (_selectedCategories.length > 1) {
@@ -615,12 +608,10 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      category == 'Ozel' ? 'Ozel (Yakinda)' : category,
+                      category,
                       style: AppTextStyles.titleSmall.copyWith(
                         color: isSelected ? Colors.white : Colors.white54,
-                        fontSize: category == 'Ozel'
-                            ? metrics.categorySoonFontSize
-                            : metrics.categoryFontSize,
+                        fontSize: metrics.categoryFontSize,
                         fontWeight:
                             isSelected ? FontWeight.w900 : FontWeight.w500,
                       ),

@@ -219,7 +219,7 @@ class _DifficultyChoiceScreenState
             children: [
               Expanded(
                 child: _buildDifficultyCard(
-                  title: 'AMATÖR',
+                  title: 'KOLAY',
                   multiplier: '1x',
                   estimatedPoints: game.mode == GameMode.economy &&
                           game.selectedCategory != null
@@ -237,7 +237,7 @@ class _DifficultyChoiceScreenState
               SizedBox(height: layout.cardGap),
               Expanded(
                 child: _buildDifficultyCard(
-                  title: 'PROFESYONEL',
+                  title: 'ORTA',
                   multiplier: '2x',
                   estimatedPoints: game.mode == GameMode.economy &&
                           game.selectedCategory != null
@@ -255,7 +255,7 @@ class _DifficultyChoiceScreenState
               SizedBox(height: layout.cardGap),
               Expanded(
                 child: _buildDifficultyCard(
-                  title: 'DUAYEN',
+                  title: 'ZOR',
                   multiplier: '3x',
                   estimatedPoints: game.mode == GameMode.economy &&
                           game.selectedCategory != null
