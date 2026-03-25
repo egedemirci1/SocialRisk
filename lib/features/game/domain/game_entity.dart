@@ -68,6 +68,7 @@ class TaskEntity {
   final String content;
   final String difficulty; // easy, medium, hard
   final int multiplier;
+  final String? answer; // Sadece Bilgi kategorisi için doğru cevap
 
   const TaskEntity({
     required this.id,
@@ -75,5 +76,6 @@ class TaskEntity {
     required this.content,
     required this.difficulty,
     this.multiplier = 1,
+    this.answer,
   });
 }

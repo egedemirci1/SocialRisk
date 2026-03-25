@@ -9,6 +9,7 @@ class TaskItemEntity {
   final String difficulty; // easy, medium, hard
   final TaskType type;
   final List<String> tags; // classic, family, couple, adult, vb.
+  final String? answer; // Sadece Bilgi kategorisi için doğru cevap
   final int likes;
   final int dislikes;
   final bool isActive;
@@ -25,5 +26,6 @@ class TaskItemEntity {
     this.dislikes = 0,
     this.isActive = true,
     this.createdAt,
+    this.answer,
   });
 }

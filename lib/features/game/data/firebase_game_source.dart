@@ -49,6 +49,7 @@ class FirebaseGameSource implements GameRepository {
       content: task.content,
       difficulty: task.difficulty,
       multiplier: task.multiplier,
+      answer: task.answer,
     );
     await _gameDoc(gameId).update({
       'currentTask': taskModel.toJson(),
@@ -118,6 +119,7 @@ class FirebaseGameSource implements GameRepository {
         content: selectedTask['content'] as String? ?? '',
         difficulty: selectedTask['difficulty'] as String? ?? difficulty,
         multiplier: multiplier,
+        answer: selectedTask['answer'] as String?,
       );
 
       await _gameDoc(gameId).update({

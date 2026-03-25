@@ -213,6 +213,7 @@ class TaskModel {
   final String content;
   final String difficulty;
   final int multiplier;
+  final String? answer;
 
   const TaskModel({
     required this.id,
@@ -220,6 +221,7 @@ class TaskModel {
     required this.content,
     required this.difficulty,
     this.multiplier = 1,
+    this.answer,
   });
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
@@ -229,6 +231,7 @@ class TaskModel {
       content: json['content'] as String? ?? '',
       difficulty: json['difficulty'] as String? ?? 'easy',
       multiplier: json['multiplier'] as int? ?? 1,
+      answer: json['answer'] as String?,
     );
   }
 
@@ -239,6 +242,7 @@ class TaskModel {
       'content': content,
       'difficulty': difficulty,
       'multiplier': multiplier,
+      if (answer != null) 'answer': answer,
     };
   }
 
@@ -249,6 +253,7 @@ class TaskModel {
       content: content,
       difficulty: difficulty,
       multiplier: multiplier,
+      answer: answer,
     );
   }
 }
