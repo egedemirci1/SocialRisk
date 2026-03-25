@@ -333,46 +333,6 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                                     ),
                                   ),
                                   SizedBox(height: isSmall ? 12 : 16),
-                                  // Sadece Bilgi kategorisinde doğru cevabı göster
-                                  if (game.currentTask?.category == 'Bilgi' &&
-                                      game.currentTask?.answer != null)
-                                    Container(
-                                      padding: EdgeInsets.all(isSmall ? 12 : 16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.green.withValues(alpha: 0.1),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: Colors.green.withValues(alpha: 0.4),
-                                        ),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              const Text('✅', style: TextStyle(fontSize: 14)),
-                                              const SizedBox(width: 6),
-                                              Text(
-                                                'DOĞRU CEVAP',
-                                                style: AppTextStyles.labelSmall.copyWith(
-                                                  color: Colors.greenAccent,
-                                                  fontWeight: FontWeight.w900,
-                                                  letterSpacing: 1.5,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            game.currentTask!.answer!,
-                                            style: AppTextStyles.bodyMedium.copyWith(
-                                              color: Colors.white,
-                                              height: 1.4,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
                                   SizedBox(height: isSmall ? 16 : 24),
                                 ],
                               );

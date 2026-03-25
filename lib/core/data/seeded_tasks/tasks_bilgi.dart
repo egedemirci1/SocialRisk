@@ -1,153 +1,172 @@
-/// Bilgi — 120 soru, 4 alt kategori.
-/// Alt kategoriler:
-///   1. Genel Kültür (Blöf ve Cehalet)
-///   2. Popüler ve Çöp Kültür (Trash & Pop Culture)
-///   3. Oyuncu ve Grup Bilgisi (Social Trivia)
-///   4. Lanetli ve Tuhaf Bilgiler (Bizarre & Uncensored Facts)
-/// Her görev 'answer' alanında doğru cevabı taşır (oy ekranında gösterilir).
+/// Bilgi — Tam 120 görev, 4 alt kategori, her zorlukta 10'ar soru.
+/// Format: 'options' ve 'answer' içermez.
+/// Mantık: Sırası gelen oyuncu soruyu okur. Gerçek cevabı biliyorsa doğru şekilde anlatır.
+/// Eğer bilmiyorsa, o kadar iyi bir blöf yapar ki masayı bunun doğru olduğuna ikna etmeye çalışır.
+/// Masa performansa göre (👍 Doğru/İkna edici, 😐 Emin değiliz, 👎 Yanlış/Kötü salladı) oylar.
+
 final List<Map<String, dynamic>> tasksBilgi = [
 
-  // ── 1. GENEL KÜLTÜR — EASY ──
-  {'category': 'Bilgi', 'content': 'Ahtapotların kaç kalbi vardır?', 'answer': '3 kalbi vardır. Bilmiyorsan gruba tamamen uydurma bilimsel bir açıklama yap.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Penguenler sadece hangi yarımkürede yaşarlar?', 'answer': 'Güney Yarımküre.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Dünyadaki oksijenin büyük bir kısmı ağaçlardan değil, nereden gelir?', 'answer': 'Okyanuslardaki fitoplanktonlardan.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Kediler hangi tadı asla alamazlar?', 'answer': 'Tatlı. Tat alma reseptörleri buna uygun değildir.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Hangi gezegen Güneş Sistemi\'nde yan yatarak döner?', 'answer': 'Uranüs.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Salyangozlar kesintisiz ne kadar süre uyuyabilir?', 'answer': '3 yıla kadar.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Eiffel Kulesi yaz aylarında neden yaklaşık 15 cm uzar?', 'answer': 'Metalin sıcaktan genleşmesi.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'İnsan vücudundaki en güçlü kas hangisidir?', 'answer': 'Çene kası (Masseter).', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Hangi meyve aslında botanik olarak bir çiçektir?', 'answer': 'İncir.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': '"Mona Lisa" tablosundaki kadının neden kaşları yoktur?', 'answer': 'Rönesans döneminde kadınların kaşlarını tıraş etmesi modaydı.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
+  // ==========================================
+  // 1. GENEL KÜLTÜR (BİLİM, TARİH, DOĞA)
+  // ==========================================
 
-  // ── 1. GENEL KÜLTÜR — MEDIUM ──
-  {'category': 'Bilgi', 'content': 'Kangurular neden geri geri yürüyemez?', 'answer': 'Kuyrukları ve bacak kaslarının fizyolojik yapısı buna engel olur.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Su aygırlarının teri ne renktir ve ne işe yarar?', 'answer': 'Kırmızı/Pembe renktedir; güneş kremi ve antibiyotik görevi görür.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Bir günün, bir yılından daha uzun sürdüğü gezegen hangisidir?', 'answer': 'Venüs.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'İskambil kağıtlarındaki kupa papazının bıyığı neden yoktur?', 'answer': 'Eski bir matbaa hatası sonucu zamanla kaybolmuştur.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Bal neden binlerce yıl geçse bile bozulmaz?', 'answer': 'Düşük su içeriği ve yüksek asiditesi bakteri üremesini engeller.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Hangi hayvanın dili kendi vücudundan daha uzundur?', 'answer': 'Bukalemun.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Uzayda ağladığınızda gözyaşlarınıza ne olur?', 'answer': 'Yerçekimi olmadığı için dökülmez, yüzünüzde bir su topu olarak birikir.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Dünyanın en kısa savaşı hangi iki ülke arasında olmuş ve kaç dakika sürmüştür?', 'answer': 'İngiltere ve Zanzibar arasında, 38 dakika.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Gözleri beyninden daha büyük olan kuş hangisidir?', 'answer': 'Devekuşu.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Hangi memeli hayvanın sütü pembe renktedir?', 'answer': 'Hipopotam.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
+  // ── GENEL KÜLTÜR — EASY ──
+  {'category': 'Bilgi', 'content': 'Ahtapotların kaç kalbi vardır ve bu kalpler ne işe yarar? Gerçek anatomiyi anlat veya belgesel sunucusu edasıyla harika bir sallamasyon yap.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Kedilerin tat alma duyularında hangi temel tat tamamen eksiktir? Cevabı ver ve bir kedinin bu tadı alınca nasıl tepki vereceğini taklit et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Dünyadaki oksijenin büyük bir kısmı ağaçlardan gelmez. Peki nereden gelir? Gerçek cevabı biliyorsan açıkla, bilmiyorsan masayı ikna edecek kadar bilimsel bir yalan uydur.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Eyfel Kulesi yaz aylarında neden fiziksel olarak birkaç santim uzar? Fizik bilginle masayı aydınlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'İncir aslında botanik olarak bir meyve değildir. Peki nedir? Bu bitkinin oluşum sürecini ilginç bir şekilde anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Bukalemunların dili kendi vücut uzunluklarının ortalama kaç katıdır? Bilmiyorsan, evrimsel bir neden uydur.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Penguenler sadece dünyanın hangi yarımküresinde doğal olarak yaşarlar? Coğrafya bilginle masayı ikna et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Kangurular neden fiziksel olarak geri geri yürüyemezler? Ayak ve kuyruk yapılarını bilimselmiş gibi anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Salyangozlar kesintisiz olarak kaç yıl boyunca uyuyabilirler? Sence o kadar süre ne rüyası görüyorlardır?', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'İnsan DNA\'sı ile %60 oranında benzerlik gösteren o meşhur sarı meyve hangisidir? Mantığını açıkla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['trivia', 'family']},
 
-  // ── 1. GENEL KÜLTÜR — HARD ──
-  {'category': 'Bilgi', 'content': 'Wombat isimli hayvanların dışkısı neden küp şeklindedir?', 'answer': 'Bağırsak yapısı ve bölgelerini işaretlerken dışkının yuvarlanıp gitmemesi için.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Istakozların kanı ne renktir ve neden böyledir?', 'answer': 'Mavidir, çünkü demir değil bakır bazlı hemosiyanin proteini içerir.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Uçak pencerelerinin alt kısmında neden her zaman minik bir delik bulunur?', 'answer': 'Kabin içindeki ve dışındaki basıncı dengelemek için.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Hangi meyve içerdiği bir element yüzünden çok hafif derecede radyoaktiftir?', 'answer': 'Muz — potasyum izotopu içerir.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Hangi hayvanın ayak izleri, olay yeri incelemesinde polisleri yanıltabilecek kadar insan ayak izine benzer?', 'answer': 'Koala.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Uzay giysileri neden çoğunlukla beyaz renktedir?', 'answer': 'Güneş radyasyonunu yansıtmak ve uzayda yüksek görünürlük sağlamak için.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Dünyadaki tüm karıncaların toplam ağırlığını tüm insanlarınkiyle kıyaslarsak sonuç ne olur?', 'answer': 'Neredeyse birbirine eşittir.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Çikolata köpekler için neden zehirleyicidir?', 'answer': 'Teobromin adlı maddeyi sindirecek enzimleri olmadığı için.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'İnsan DNA\'sı ile bir muzun DNA\'sı yüzde kaç oranında aynıdır?', 'answer': 'Ortalama %50-60 civarı.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
-  {'category': 'Bilgi', 'content': 'Sivrisineklerin ağzında toplam kaç tane dişi/kesici ucu vardır?', 'answer': '47.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
+  // ── GENEL KÜLTÜR — MEDIUM ──
+  {'category': 'Bilgi', 'content': 'Bal neden binlerce yıl geçse bile asla bozulmaz? İşin kimyasını doğru açıkla ya da arıların gizli tarifini uydur.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': '"Mona Lisa" tablosundaki kadının neden kaşları yoktur? Dönemin modasını veya ressamın sırrını biliyorsan anlat, bilmiyorsan sanatsal bir komplo teorisi üret.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'İnsan vücudundaki en güçlü kas hangisidir? Cevabı tahmin et ve neden o kasın en güçlü olması gerektiğini mantıklı bir şekilde savun.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Bir günün, kendi bir yılından daha uzun sürdüğü o tuhaf gezegen hangisidir? Güneş sistemi bilginle masayı etkile.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Yerçekimsiz ortamda, uzayda ağladığınızda gözyaşlarınıza tam olarak ne olur? Sıvının davranışını masaya uygulamalı gibi tarif et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Su aygırlarının teri güneşte kuruduğunda ne renge dönüşür? Sence bu renk onların hangi evrimsel ihtiyacını karşılıyor?', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'İskambil kağıtlarındaki kupa papazının bıyığı neden yoktur? Tarihsel bir dedikodu mu yoksa basım hatası mı? Uydur veya gerçeği söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Zürafaların ses telleri yoktur. Peki iletişim kurmak için nasıl bir ses çıkarırlar veya titreşim yayarlar? Masaya bir zürafa sesi simülasyonu yap.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Devekuşlarının gözleri hangi iç organlarından daha büyüktür? Kuş anatomisi hakkında mantıklı bir açıklama getir.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Jüpiter\'deki "Büyük Kırmızı Leke" aslında nedir? Uzay bilimcisi edasıyla orada kopan kıyameti anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['trivia', 'family']},
 
-  // ── 2. POPÜLER VE ÇÖP KÜLTÜR — EASY ──
-  {'category': 'Bilgi', 'content': 'Türk magazininden: "Ne dedin sen ne dedin sen!" diyerek canlı yayında tokat atılan meşhur olayda tokatı yiyen ve atan ünlüleri say.', 'answer': 'Sevda Demirel (atan) — Hande Ataizi (yiyen).', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': '"Aşk-ı Memnu" dizisinde "Sen Bihter Ziyagil\'sin, aptallık etme!" repliği hangi karaktere aittir?', 'answer': 'Firdevs Yöreoğlu.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'İnternet dünyasında "Rickroll"lanmak tam olarak ne demektir?', 'answer': 'Bir linke tıklayıp beklenmedik şekilde Rick Astley\'in "Never Gonna Give You Up" klibinin açılması.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': '"Matrix" filminde gerçeği görmek için Neo\'nun hangi renk hapı seçmesi gerekmiştir?', 'answer': 'Kırmızı hap.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'family']},
-  {'category': 'Bilgi', 'content': '"Yaprak Dökümü"nde "Aman Ali Rıza Bey, ağzımızın tadı kaçmasın" lafını her olayda söyleyen karakter kimdir?', 'answer': 'Hayriye Hanım.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': '"G.O.R.A." filminde Cem Yılmaz\'ın canlandırdığı Erşan Kuneri karakterinin mesleği nedir?', 'answer': 'Film yapımcısı / Porno yönetmeni.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'Sosyal medyada "Doge" meme\'ine konu olan o meşhur köpeğin cinsi nedir?', 'answer': 'Shiba Inu.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'family']},
-  {'category': 'Bilgi', 'content': 'Acun Ilıcalı\'nın TV programlarında en çok tercih ettiği ikonik kıyafet kombini nedir?', 'answer': 'Siyah tişört.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'K-Pop\'un en büyük grubu olan ve hayranlarına "Army" denilen grup hangisidir?', 'answer': 'BTS.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'family']},
-  {'category': 'Bilgi', 'content': 'Türkiye\'deki evlilik programlarında yarışmacıların reddetme bahanesi olarak literatüre kazandırdığı o meşhur iki kelimelik tabir nedir?', 'answer': 'Elektrik alamadım.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
+  // ── GENEL KÜLTÜR — HARD ──
+  {'category': 'Bilgi', 'content': 'Tarihteki en kısa savaş sadece 38 dakika sürmüştür. Sence bu savaş hangi iki ülke arasında ve ne için çıkmış olabilir? Bilmiyorsan en absürt savaş sebebini uydur.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Wombat adlı Avustralya hayvanının dışkısı doğadaki tek "küp" şekilli dışkıdır. Neden küp şeklinde? Evrimsel faydasını blöf yaparak anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Istakozların kanı ne renktir ve oksijen taşıyan molekülleri demir yerine hangi elementi içerir? İkna edici bir yalan veya gerçek sun.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Uçak pencerelerinin en altındaki o minik delik tam olarak ne işe yarar? Havacılık mühendisi gibi masaya teknik bir açıklama yap.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Hangi popüler sarı meyve hafif derecede radyoaktiftir? İçindeki hangi mineral onu böyle yapar?', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Hangi hayvanın parmak izi, olay yerinde bırakıldığında polisleri kandıracak kadar insan parmak izine benzer?', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Astronotların uzay giysileri neden genellikle beyaz renklidir? Moda mıdır yoksa radyasyonla mı ilgilidir? Detaylandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Dünyadaki tüm karıncaların toplam ağırlığı, kabaca hangi canlı türünün toplam ağırlığına eşittir? Oran orantı kurarak salla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Çikolata köpekler için neden ölümcüldür? İçindeki o meşhur sindiremedikleri maddenin adını ve etkisini açıkla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
+  {'category': 'Bilgi', 'content': 'Bir sivrisineğin mikroskop altında görülebilen toplam kaç dişi (veya kesicisi) vardır? Aklındaki en çılgın rakamı söyle ve savun.', 'difficulty': 'hard', 'type': 'action', 'tags': ['trivia', 'family']},
 
-  // ── 2. POPÜLER VE ÇÖP KÜLTÜR — MEDIUM ──
-  {'category': 'Bilgi', 'content': '2009 MTV VMA\'da Taylor Swift\'in konuşmasını bölüp "En iyi klip Beyoncé\'nindi" diyerek sahneyi basan rapçi kimdir?', 'answer': 'Kanye West.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': '"Avrupa Yakası" dizisinde "Ben idare müdürü Burhan Altıntop!" repliğiyle bilinen karakterin memleketi neresidir?', 'answer': 'Tokat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'TikTok\'ta konuşmadan sadece el hareketleriyle insanların saçma çözümleriyle dalga geçen, dünyanın en çok takipçili fenomeni kimdir?', 'answer': 'Khaby Lame.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': '"Yalan Dünya" dizisinde Vasfiye Teyze\'nin her dramatik hikayeden sonra söylediği o meşhur sözü nedir?', 'answer': '"Ne çektin be!"', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'Kardashian ailesini milyarder yapan ve hayatlarını kayda alan reality show\'un tam adı nedir?', 'answer': 'Keeping Up with the Kardashians.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': '"Seni çöpe atacağım poşete yazık" gibi agresif arabeski sözler hangi Türk sanatçıya aittir?', 'answer': 'İbrahim Tatlıses.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'İnternet kültüründe sürekli şikayet eden, "müdürle görüşmek isteyen" ayrıcalıklı kadın tiplemesine ne isim verilir?', 'answer': 'Karen.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': '2014 Oscar töreninde Ellen DeGeneres\'in çektiği "Yıldızlar Selfie\'si"nde telefonu tutan aktör kimdi?', 'answer': 'Bradley Cooper.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': '"Breaking Bad" dizisinde Walter White\'ın ürettiği %99 saflıktaki metamfetaminin meşhur rengi nedir?', 'answer': 'Mavi.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': '"Kurtlar Vadisi"nde Süleyman Çakır öldüğünde Türkiye\'deki hayranları ne yaptı?', 'answer': 'Gazetelere taziye ilanı verdiler; gıyabi cenaze namazı kıldılar.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
 
-  // ── 2. POPÜLER VE ÇÖP KÜLTÜR — HARD ──
-  {'category': 'Bilgi', 'content': '"Gelinim Olur Musun?" programında aşık olduğu kadına sinirlenip canlı yayında kafasında su bardağı kıran yarışmacı kimdir?', 'answer': 'Caner Toygar.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'Fyre Festivali skandalında, on binlerce dolar ödeyen VIP misafirlere sunulan "lüks yemek" kutusunda ne vardı?', 'answer': 'İki dilim kaşar peyniri, ekmek ve salata.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'Britney Spears 2007\'deki ağır sinir krizi sırasında ne yaptı?', 'answer': 'Saçlarını tamamen kazıttı ve paparazzilerin arabasına şemsiyeyle saldırdı.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'Justin Bieber\'ın Almanya gümrüğünde el konulan egzotik evcil hayvanı neydi?', 'answer': 'Maymun (Mally).', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'İnternetin ilk viral videolarından, bilgisayar klavyesini paramparça eden çocuğun adı nedir?', 'answer': 'Angry German Kid.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'Kim Kardashian\'ın dünya çapında canlı yayınlanan ama sadece 72 gün süren evliliği kimin kadaydı?', 'answer': 'Kris Humphries.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'Game of Thrones\'un final sezonundaki bir sahnesinde masanın üzerinde unutulan ve olay olan kahve bardağı hangi markaya aitti?', 'answer': 'Starbucks.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': '"Çarkıfelek" programında Mehmet Ali Erbil\'in sürekli "Parmaktan sonra!" diyerek yaptığı garip başparmak hareketinin adı neydi?', 'answer': 'Dobroski.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'Türkiye\'de efsane kaynana Semra\'nın evlilik yarışmasında istemediği gelin adayının adı neydi?', 'answer': 'Sinem.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
-  {'category': 'Bilgi', 'content': 'Will Smith, 2022 Oscar töreninde Chris Rock\'a tokat attıktan sonra yerine oturup ona tam olarak ne bağırmıştır?', 'answer': '"Keep my wife\'s name out your f***ing mouth!" (Karımın adını o lanet ağzına alma!)', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
+  // ==========================================
+  // 2. POPÜLER KÜLTÜR (DİZİ, SİNEMA, MAGAZİN)
+  // ==========================================
 
-  // ── 3. OYUNCU VE GRUP BİLGİSİ — EASY ──
-  {'category': 'Bilgi', 'content': 'Solundaki oyuncunun hayatta en çok para harcadığı "en gereksiz" şey sence nedir? Önce sen tahmin et, ardından o gerçeği söylesin.', 'answer': 'Hedef kişi doğrular. Oylamayı isabete ve mizaha göre yapın.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Sağındaki oyuncunun telefonunda şu an arka planda çalışan ilk üç uygulamayı tahmin et. Gruptan onay al.', 'answer': 'Hedef kişi telefonunu kontrol eder ve doğrular.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Karşındaki kişinin sabah uyanır uyanmaz yaptığı, kimsenin bilmediği o ilk "gereksiz" ritüeli sence nedir? Olayı canlandır.', 'answer': 'Hedef kişi doğru mu yanlış mı olduğunu söyler.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': '"Bu masada risk almaktan en çok korkan kişi kim?" — herkes aynı anda birini işaret etsin. Seçtiğin kişinin nedenini açıkla.', 'answer': 'En çok oy alan kişi adresine doğru tartışın, eğlenceli olsun.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Solundaki oyuncu bir animasyon karakteri olsaydı, sence hangisi olurdu ve neden?', 'answer': 'Hedef kişi katılıp katılmadığını söyler.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'family']},
-  {'category': 'Bilgi', 'content': 'Sağındaki oyuncunun internette araştırdığı ama kimseye söylemeye utandığı o saçma konu sence ne olabilir?', 'answer': 'Hedef kişi gerçeği açıklar ya da reddeder.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Karşındaki kişinin bu gruptaki hangi özelliğini içten içe kıskandığını (iyi anlamda) yüzüne karşı söyle.', 'answer': 'Hedef kişinin tepkisine göre oylamayı yapın.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'family']},
-  {'category': 'Bilgi', 'content': 'Masadaki hangi oyuncu bir zombi istilasında ilk ısırılan olurdu? Eğlenceli bir ölüm senaryosu uydur.', 'answer': 'Grup oylar; en çok oy alan kişi itiraz edebilir!', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'family']},
-  {'category': 'Bilgi', 'content': 'Solundaki kişinin, insanların yanında havalı görünmek için hiç sevmediği halde seviyormuş gibi yaptığı şey sence nedir?', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Sağındaki oyuncunun "gizli bir yeteneği" olduğunu hayal et — bu sence ne kadar absürt bir şey olurdu?', 'answer': 'Hedef kişinin tepkisine göre oylamayı yapın.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'family']},
+  // ── POPÜLER KÜLTÜR — EASY ──
+  {'category': 'Bilgi', 'content': 'Türk televizyon tarihinin efsanesi: "Ne dedin sen!" tokat olayında, tokatı kim kime atmıştır? Olayın nasıl geliştiğini magazin muhabiri gibi anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Aşk-ı Memnu dizisinde Firdevs Yöreoğlu\'nun "Sen Bihter Ziyagil\'sin, aptallık etme!" repliğini ezberden ve en dramatik halinle masaya karşı oyna.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'İnternette "Rickroll"lanmak ne demektir? Bu kavramın nereden geldiğini hiç bilmeyen birine anlatır gibi açıkla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'family']},
+  {'category': 'Bilgi', 'content': 'Matrix filminde Neo\'ya sunulan hapların renkleri nelerdi ve hangisi ne işe yarıyordu? Seçimini yap ve masaya felsefesini yap.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'family']},
+  {'category': 'Bilgi', 'content': 'Yaprak Dökümü dizisinde "Aman Ali Rıza Bey ağzımızın tadı kaçmasın" repliğini söyleyen o ikonik karakterin adını ver.', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Cem Yılmaz\'ın G.O.R.A filmindeki efsanevi Erşan Kuneri karakterinin asıl mesleği nedir?', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'İnternet dünyasının meşhur "Doge" memesi (ve kripto parası) olan köpeğin cinsi nedir?', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'family']},
+  {'category': 'Bilgi', 'content': 'Acun Ilıcalı\'nın televizyonda ve normal hayatta giydiği, onunla bütünleşmiş o ikonik tişört rengi nedir?', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'family']},
+  {'category': 'Bilgi', 'content': 'Dünyaca ünlü K-Pop grubu BTS\'in çılgın hayran kitlesine verilen resmi isim nedir?', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'family']},
+  {'category': 'Bilgi', 'content': 'Eski Türk evlilik programlarında adayların birbirini reddederken kullandığı o meşhur 2 kelimelik "enerji" bahanesi nedir?', 'difficulty': 'easy', 'type': 'action', 'tags': ['popculture', 'adult']},
 
-  // ── 3. OYUNCU VE GRUP BİLGİSİ — MEDIUM ──
-  {'category': 'Bilgi', 'content': 'Karşındaki kişinin hayatta yediği en büyük "kazık" sence ne tür bir arkadaştan geldi? O anlatsın, sen isabet ettirmeye çalış.', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Sağındaki oyuncu eski sevgilisiyle barışmak istese, gururunu ayaklar altına alıp en fazla ne kadar alçalabilir? Dramatik bir senaryo çiz.', 'answer': 'Hedef kişinin tepkisine göre oylamayı yapın.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Masadaki herkes, solundaki kişinin ikili ilişkilerde yaptığı en belirgin "toksik" huyu tek kelimeyle söylesin.', 'answer': 'Hedef kişi en belirgin yanıtı seçer; grup oylar.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Solundaki kişi bir reality show\'a (Survivor vb.) katılsa kaçıncı gün elenirdi ve hangi huyu yüzünden sinir krizi geçirtirdi?', 'answer': 'Hedef kişi cevabı değerlendirir.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Karşındaki oyuncunun anne-babasının onu en çok eleştirdiği konu sence nedir? Tahminini onun yüzüne söyle.', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Sağındaki kişinin en son kime, hangi konuda beyaz yalan söylediğini tahmin et. Bakalım tutturabilecek misin?', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Masada parayı veya şöhreti bulduğu an arkadaşlarını "ilk satacak" kişi sence kim? Argümanını mantıklı bir çerçevede savun.', 'answer': 'Grup oylar; kazanan itiraz edebilir (veya onaylayabilir!).', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Solundaki oyuncunun lisedeyken giydiği veya sahip olduğu en rüküş, en "cringe" eşyayı tarif et.', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Karşındaki kişinin aşk hayatını anlatan bir film çekilseydi, filmin türü ne olurdu ve gişede ne kadar çuvallardı?', 'answer': 'Hedef kişinin tepkisine göre oylamayı yapın.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Sağındaki kişinin telefon rehberinde en çok hangi tarz saçma isimli numaralar vardır? Neden?', 'answer': 'Hedef kişi telefon rehberine bakıp doğrulayabilir.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
+  // ── POPÜLER KÜLTÜR — MEDIUM ──
+  {'category': 'Bilgi', 'content': 'Kanye West, 2009 müzik ödüllerinde sahneye atlayıp kimin konuşmasını bölmüştür? O anın utanç vericiliğini (cringe) masaya anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Avrupa Yakası dizisinin efsane karakteri Burhan Altıntop aslen nerelidir? Masaya biraz şivesinden örnek ver.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'TikTok\'ta hiç konuşmadan, sadece basit işleri karmaşık yapan insanlara elleriyle "işte bu kadar basit" hareketi yaparak ünlenen o adamın adı nedir?', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'family']},
+  {'category': 'Bilgi', 'content': 'Yalan Dünya dizisinde Vasfiye Teyze karakterinin her felaket sonrası söylediği o meşhur teselli/laf sokma cümlesi nedir?', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Kardashian ailesinin tüm hayatını sergilediği meşhur reality show toplamda kaç sezon sürmüştür? Yaklaşık bir sayı at.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': '"Seni çöpe atacağım poşete yazık" gibi efsanevi bir felsefi dizeye sahip olan şarkı hangi ünlü Türk sanatçıya aittir?', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Amerika\'da sürekli şikayet eden, her fırsatta "müdürle konuşmak isteyen" sorunlu orta yaşlı kadın tiplemesine internette hangi isim verilir?', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Breaking Bad dizisinde Walter White\'ın ürettiği ve onun imzası haline gelen o meşhur methin rengi neydi? Neden o renk olduğunu (veya senin uydurmanı) dinleyelim.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Kurtlar Vadisi dizisinde Süleyman Çakır öldüğünde, Türk halkı sokaklara dökülüp ne tür bir "gerçeküstü" ritüel gerçekleştirmiştir?', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Gelinim Olur Musun programında sinir krizi geçirip kendi kafasında bardak kıran o efsanevi yarışmacının adını söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['popculture', 'adult']},
 
-  // ── 3. OYUNCU VE GRUP BİLGİSİ — HARD ──
-  {'category': 'Bilgi', 'content': 'Sağındaki kişinin hayatında şu an "en çok ertelediği" o büyük ve korkutucu kararın ne olduğunu yüzüne karşı korkusuzca söyle.', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Solundaki oyuncunun en büyük fiziksel veya karakter kompleksinin ne olduğunu tahmin et. Grubun önünde ikna edici şekilde analiz et.', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Karşındaki oyuncuyla 1 ay aynı eve çıksan, onu evden kovmana sebep olacak en iğrenç veya sinir bozucu alışkanlığı ne olurdu?', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Herkes gözlerini kapatsın. "Bu masada geçmişinde ikili ilişkilerde en büyük rezilliği yaşayan kimdir?" sorusu sor; herkes eliyle birini göstersin.', 'answer': 'En çok oy alan anısını grup önünde anlatsın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Sağındaki kişinin aslında sana (veya bir başkasına) sinir olduğu ama ortalık karışmasın diye yüzüne güldüğü anı sence neydi?', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Solundaki kişinin hayatı boyunca asla ulaşamayacağı o "hayali" hedefi sence nedir? Neden yapamayacağını acımasızca açıkla.', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Karşındaki oyuncunun bu masada "gerçekten" en az sevdiği kişinin kim olduğunu tahmin et.', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Masadaki hangi oyuncunun sosyal medyada çizdiği "kusursuz imaj" ile gerçek karakteri arasındaki fark tam bir sahtekarlıktır? İspatla.', 'answer': 'Grup oylar; suçlanan kişi savunma yapar.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Sağındaki kişinin geçmiş ilişkilerinde yaptığı o "affedilmez" hatayı (veya toksik taktiği) tahmin et ve ona sor: "Haklı mıyım?"', 'answer': 'Hedef kişi doğrulayınca oylamayı yapın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
-  {'category': 'Bilgi', 'content': 'Solundaki kişinin bu masadakilere hiç anlatmadığı, "ayıp olur" diye çekindiği o tuhaf anısını bulmaya çalış. O sana sadece sıcak-soğuk diyerek yön versin.', 'answer': 'Hedef kişi sıcak-soğuk oynayarak yönlendirir; anı bulunca oylamayı yapın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
+  // ── POPÜLER KÜLTÜR — HARD ──
+  {'category': 'Bilgi', 'content': 'Game of Thrones\'un final sezonunda çekim sırasında masada unutulan ve olay olan bardağın markası neydi? Sence o seti kim, nasıl o halde unuttu?', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Tarihin en büyük sosyal medya dolandırıcılığı olan Fyre Festival\'de binlerce dolar ödeyen VIP misafirlere yemek kutusunda ne verilmişti? Masaya o menüyü pazarla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Britney Spears\'ın 2007 yılında geçirdiği sinir krizinde magazincilere karşı hangi eşyayla, nasıl bir saldırı yaptığını detaylarıyla anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Justin Bieber\'ın Almanya turnesinde gümrükte el konulan ve bir daha asla geri almadığı evcil hayvanı ne tür bir canlıydı?', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Eski YouTube döneminin en ünlü videolarından olan "Angry German Kid", bilgisayarın başında bağırarak hangi oyun donanımını parçalamıştır?', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Kim Kardashian\'ın Kris Humphries ile olan "yüzyılın aşkı" diye pazarlanan ve milyonlar harcanan o meşhur evliliği toplam kaç GÜN sürmüştür?', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': '2014 Oscar töreninde Twitter\'ı çökerten o meşhur selfie\'yi çeken (telefonu tutan) ünlü aktör kimdi? Masayla bir "Oscar Selfie"si pozu ver.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Will Smith\'in Oscar töreninde Chris Rock\'a tokat attıktan sonra sahneye doğru bağırarak kurduğu o meşhur İngilizce cümleyi tam olarak söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Mehmet Ali Erbil\'in parmaklarıyla yaptığı o anlamsız ama efsanevi şov hareketinin / kelimesinin adı nedir?', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
+  {'category': 'Bilgi', 'content': 'Aşk-ı Memnu dizisinde Adnan Bey, Bihter ve Behlül\'ü yakaladıktan sonra fenalaşıp merdivenlerden inerken ağzından dökülen son kelime ne olmuştur?', 'difficulty': 'hard', 'type': 'action', 'tags': ['popculture', 'adult']},
 
-  // ── 4. LANETLİ VE TUHAF BİLGİLER — EASY ──
-  {'category': 'Bilgi', 'content': 'Antik Roma döneminde insanların dişlerini beyazlatmak için kullandıkları, yurt dışından vergiyle ithal edilen sıvı neydi?', 'answer': 'İdrar.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Antik Mısırlılar mumyalama sırasında firavunun beynini kafatasından nereden çıkarırlardı?', 'answer': 'Burun deliklerinden uzun bir kancayla çekerlerdi.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Tembel hayvanlar (Sloths) haftada kaç kez tuvalete çıkar ve bu işlem sırasında başlarına ne gelir?', 'answer': 'Haftada 1 kez çıkarlar ve ağırlıklarının üçte birini kaybederler.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'family']},
-  {'category': 'Bilgi', 'content': 'Dünyada erkekleri hamile kalıp yavruları doğuran tek canlı türü hangisidir?', 'answer': 'Denizatı.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'family']},
-  {'category': 'Bilgi', 'content': '1830\'lu yıllarda "Ketçap" eczanelerde ne ilacı olarak satılıyordu?', 'answer': 'İshal, hazımsızlık ve mide rahatsızlıkları ilacı.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'family']},
-  {'category': 'Bilgi', 'content': 'Bir insan öksürdüğünde veya hapşırdığında saatte 160 km hıza ulaşarak havaya yayılan vücut salgısı nedir?', 'answer': 'Tükürük ve mukus damlacıkları.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Kelebekler bir çiçeğin poleninin tadını almak için vücutlarının neresini kullanırlar?', 'answer': 'Ayaklarını.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'family']},
-  {'category': 'Bilgi', 'content': 'Yüzümüzde yaşayan mikroskobik akarlar (Demodex) en çok ne zaman aktiftir ve yüzümüzde ne yaparlar?', 'answer': 'Biz uyurken geceleri ortaya çıkıp yüzümüzde çiftleşirler.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Karıncalar kendi aralarında savaştıklarında, yenilen koloninin karıncalarına ne yaparlar?', 'answer': 'Onları esir alıp köle olarak çalıştırırlar.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'family']},
-  {'category': 'Bilgi', 'content': 'Vampir yarasalar bir gece kan bulamazlarsa, diğer yarasalar hayatta kalmaları için ne yapar?', 'answer': 'Kendi emdikleri kanı diğer yarasanın ağzına kusarak beslerler.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'adult']},
 
-  // ── 4. LANETLİ VE TUHAF BİLGİLER — MEDIUM ──
-  {'category': 'Bilgi', 'content': 'Orta Çağ Avrupa\'sında tarlaya zarar veren domuzlar, fareler veya böceklere adalet sağlamak için ne yapılırdı?', 'answer': 'Mahkemeye çıkarılıp avukat tutularak resmi olarak yargılanırlardı.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': '"Yürüyen Ceset Sendromu" olan psikiyatrik hastalar neye inanırlar?', 'answer': 'Kendilerinin aslında ölü olduğuna ve iç organlarının çürüdüğüne.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': '19. yüzyılda İngiltere\'de kadınlar yanaklarını kırmızılaştırmak için makyaj malzemesi olarak ne kullanırdı?', 'answer': 'Zehirli arsenik ve ezilmiş kırmızı böcekler.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Uzaydan dönen astronotların ayak tabanlarına aylarca yerçekimsiz ortamda kaldıktan sonra ne olur?', 'answer': 'Altlarındaki sert deri tıpkı bir yılan derisi gibi soyulup dökülür.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': '1800\'lerde ölen insanların (özellikle Waterloo\'da) sağlam dişleri toplanarak ne yapılırdı?', 'answer': 'Zenginlere takma diş seti yapmak için kullanılırdı.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'İneklerin kendi aralarında "en iyi arkadaşları" var mıdır; o arkadaştan ayrıldıklarında ne olur?', 'answer': 'Vardır — didik strese girer, depresyon belirtisi gösterip süt vermeyi keserler.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'family']},
-  {'category': 'Bilgi', 'content': 'Dünyadaki yataklarımızda yaşayan milyonlarca ev tozu akarının ana besin kaynağı tam olarak nedir?', 'answer': 'İnsanların her gece yatağa döktüğü ölü deri hücreleri.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Yunuslar uyurken boğulmamak için nasıl bir yöntem izlerler?', 'answer': 'Beyinlerinin sadece bir yarısını uyutur, bir gözlerini açık tutarak uyurlar.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'family']},
-  {'category': 'Bilgi', 'content': 'Erkek penguenler beğendikleri dişiye kur yapmak için ne hediye ederler?', 'answer': 'Sahilde buldukları en pürüzsüz ve güzel çakıl taşını.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'family']},
-  {'category': 'Bilgi', 'content': 'Antik Roma\'da idrar; diş beyazlatmanın yanı sıra, amonyak sayesinde başka hangi günlük iş için toplanırdı?', 'answer': 'Halkın çamaşırlarını yıkamak için.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  // ==========================================
+  // 3. SOSYAL TRİVİA (MASA İÇİ TAHMİNLER & DİNAMİKLER)
+  // ==========================================
 
-  // ── 4. LANETLİ VE TUHAF BİLGİLER — HARD ──
-  {'category': 'Bilgi', 'content': '"Rat King" (Fare Kralı) denilen doğa olayı nedir?', 'answer': 'Onlarca farenin kuyruklarının birbirine dolanıp yapışarak dev bir canlı fare yumağı oluşturması.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Derin deniz fener balıklarının (Anglerfish) erkekleri dişileriyle nasıl çiftleşir?', 'answer': 'Erkeği dişinin vücuduna yapışır; zamanla kendi organları eriyerek sadece sperm üreten kalıcı bir parazit organa dönüşür.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Everest Dağı\'nda zirve yolunda ölen dağcıların cesetlerine ne olur?', 'answer': 'Kurtarılamadıkları için donup kalırlar; diğer dağcılar için yön bulma işareti olarak kullanılırlar.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': '"Teratoma" isimli garip tümörlerin içinde tıbben neler bulunabilir?', 'answer': 'Saç telleri, dişler, kemik ve hatta küçük beyin/göz dokuları.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': '"Kuru" adı verilen hastalık neden ortaya çıkmıştır ve nasıl öldürür?', 'answer': 'Ölü yakınlarının beyinlerini yedikleri için bulaşan; kurbanı krizler halinde güldürerek öldüren bir enfeksiyondur.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Viktorya döneminde ailelerin ölen sevdikleriyle çektirdiği "Post-mortem" fotoğraflarında cesetlere ne yapılırdı?', 'answer': 'Desteklerle ayakta durdurulur ve kapalı göz kapaklarına göz resmi çizilirdi.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': '1920\'lerde yüksek derecede radyoaktif olan "Radyum" elementi hangi günlük ürünlerin içine konurdu?', 'answer': 'Enerji içecekleri, diş macunu ve makyaj malzemeleri.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Koala yavruları, bağışıklık sistemi kazanmak için annelerinin ne ürettiğini yerler?', 'answer': 'Annelerinin özel olarak ürettiği bir dışkıyı yerler.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Giyotin ile kafa kesildikten sonra kesik başın bilincinin ve göz hareketlerinin ortalama kaç saniye daha açık kaldığı bilinmektedir?', 'answer': '15 ile 30 saniye arası.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
-  {'category': 'Bilgi', 'content': 'Fransız Kralı XIV. Louis\'in Versay Sarayı\'nda tuvalet olmadığı için yüzlerce soylu ihtiyaçlarını nasıl gideriyordu?', 'answer': 'Koridor köşelerine, perdelerin arkasına veya odalardaki şöminelere yapıyorlardı.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  // ── SOSYAL TRİVİA — EASY ──
+  {'category': 'Bilgi', 'content': 'Solundaki oyuncunun hayatta en çok para harcadığı "en gereksiz" şey sence nedir? Onu ne kadar iyi tanıdığını kanıtla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Masadan birinin lise yıllarındaki en belirgin özelliğini veya ergenlik tarzını tahmin et. Hedefin doğrularsa oyu kaparsın.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'family']},
+  {'category': 'Bilgi', 'content': 'Sağındaki oyuncunun telefonundaki en çok vakit geçirdiği uygulamanın hangisi olduğunu ve orada tam olarak ne yaptığını detaylıca tahmin et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Masadaki oyunculardan birinin yemekle alakalı sahip olduğu en garip takıntıyı veya midesiz komboyu ortaya çıkar.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Bu grupta sabahları uyandığında kesinlikle konuşulmaması gereken, en huysuz ve çekilmez kişi kim? Savunmanı yap.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Masadaki hangi oyuncunun trafikte veya gündelik hayatta en ufak şeye en abartılı ve çabuk sinirlenen kişi olduğunu düşünüyorsun?', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Eğer bu masadaki herkes bir zombi istilasında olsaydı, sence ilk avlanacak kişi kim olurdu ve neden? Olayı canlandır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Bu grupta yalan söylediğinde gözünden, sesinden veya mimiklerinden kendini anında ele veren en beceriksiz yalancı kim?', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Dışarı çıkmadan önce hazırlanırken aynaya bakarak en çok vakit kaybeden ve kendini en çok süzen kişi kim?', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Duştayken avazı çıktığı kadar bağıra bağıra konser vermeye en meyilli kişi sence kim? Hangi şarkıyı söylüyordur?', 'difficulty': 'easy', 'type': 'action', 'tags': ['social', 'adult']},
+
+  // ── SOSYAL TRİVİA — MEDIUM ──
+  {'category': 'Bilgi', 'content': 'Masadaki oyunculardan birinin gizli bir yeteneğini veya herkesin bilmediği tuhaf bir fobisini doğru bilmeye çalış.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Eğer bu masa bir Amerikan korku filminin oyuncu kadrosu olsaydı, sence seri katil kim çıkardı? Profilini analiz et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Şu an masadaki birinin en sevdiği ama itiraf etmekten utandığı (guilty pleasure) şarkıyı veya diziyi tahmin edip yüzüne vur.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Gecenin köründe, kafası iyiyken eski sevgilisine mesaj atma veya stalklama potansiyeli en yüksek olan kişiyi göster ve nedenini açıkla.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Bu grupta sosyal medyada gösterdiği hayatla gerçekte yaşadığı hayat arasında en büyük uçurum (en fake) olan kişi kim?', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Eline geçen en ufak sırrı, "Sadece sana söylüyorum" diyerek saniyeler içinde herkese yayma potansiyeli olan en dedikoducu kim?', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Büyük bir ikramiye kazandığında, arkadaşlarını anında unutup zenginliğin dibine vurarak değişecek ilk kişi sence kim?', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Grupta sürekli ısrarla savunduğu ama aslında tamamen yanlış ve mantıksız olan o "sabit fikri" kime ait? Yüzüne söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Kendi yemeğini söylemeyip veya bitirip, sürekli başkalarının tabağına çatal uzatan "otlakçı" oyuncuyu ifşa et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Buluşmalara sürekli geç kalan ve gelirken her seferinde sanki dünyayı kurtarmış gibi abartılı bahaneler üreten kişi kim?', 'difficulty': 'medium', 'type': 'action', 'tags': ['social', 'adult']},
+
+  // ── SOSYAL TRİVİA — HARD ──
+  {'category': 'Bilgi', 'content': 'Eğer bu masadan biri gizli bir suç şebekesi yönetiyor olsaydı bu kim olurdu ve paravan şirketi ne iş yapardı? Profilini çıkar.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Masadaki hangi oyuncunun geçmişte en epik "aşk acısı" veya "reddedilme" hikayesine sahip olduğunu düşünüyorsun? Tahmin et ve ondan onay bekle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Solundaki kişinin konuşurken en çok kullandığı ve artık duyduğunda sinirlerini bozan o "klişe" cümlesini veya kelimesini taklit ederek söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Eğer hayatta kalmak için bir arkadaşını feda etmesi veya satması gerekseydi, bu masada gözünü kırpmadan yapacak o "Makyavelist" kişi kim?', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Dünyayı ele geçirse ve diktatör olsa, bu masadan sence kim zevk için en saçma ve zalim yasaları çıkarırdı?', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'İş hayatında veya kendi çıkarı için gözünü kırpmadan en gaddar ve duygusuz kararları alabileceğini düşündüğün gizli psikopat kim?', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'İleride evlenirse, huysuzluğu, dengesizliği veya tahammülsüzlüğü yüzünden evliliği en çabuk bitecek oyuncuyu tahmin et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Masadaki insanlardan birinin sırlarını bilse, bunu kendi çıkarı için "gizlice şantaj aracı" olarak kullanma ihtimali en yüksek sinsi karakter kim?', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Bir olay patlak verdiğinde veya biri hata yaptığında, en kibirli ses tonuyla "Ben sana demiştim" demeyi en çok seven o ukala kişi kim?', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
+  {'category': 'Bilgi', 'content': 'Eğer arkasından iş çevrilirse, bu masada asla affetmeyecek ve en korkunç, en planlı intikamı alacak kişi sence kim?', 'difficulty': 'hard', 'type': 'action', 'tags': ['social', 'adult']},
+
+
+  // ==========================================
+  // 4. LANETLİ BİLGİLER (BİZARRE & RAHATSIZ EDİCİ)
+  // ==========================================
+
+  // ── LANETLİ BİLGİLER — EASY ──
+  {'category': 'Bilgi', 'content': 'Antik Roma\'da insanlar dişlerini beyazlatmak ve temizlemek için ağız gargarası olarak hangi iğrenç bedensel sıvıyı kullanırdı? Tahmin et!', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Kelebekler bir çiçeğin tadını vücutlarının hangi ilginç bölgesiyle alırlar? Biliyorsan söyle, bilmiyorsan en garip organı uydur.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'family']},
+  {'category': 'Bilgi', 'content': 'Eski Mısır\'da mumyalama yapılırken firavunların beyinleri kafatasından tam olarak hangi delikten ve nasıl çıkarılırdı? Süreci iğrenç detaylarıyla anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Ketçap, 1830\'larda aslında bir yiyecek sosu değil, ne olarak satılıyordu? O dönemdeki bir tüccar gibi bu ürünü masaya pazarla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'family']},
+  {'category': 'Bilgi', 'content': 'Doğada erkeklerin hamile kalıp doğum yaptığı tek canlı türü hangisidir? Evrimini hayal gücünle destekle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'family']},
+  {'category': 'Bilgi', 'content': 'Vampir yarasalar, mağaraya kan içemeden aç dönen bir arkadaşlarına yardım etmek için ne yaparlar? Bu "fedakarlığı" masaya iğrenerek anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Bir hamamböceğinin kafası kopsa bile ölene kadar ortalama ne kadar süre daha yaşayabilir? Ve sonunda kafasızlıktan değil, neyden ölür?', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'family']},
+  {'category': 'Bilgi', 'content': 'Karasinekler yemeğinize konduğunda aslında o an fiziksel olarak ne yapmaktadırlar? Mide bulandırıcı gerçeği masaya anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'family']},
+  {'category': 'Bilgi', 'content': 'Kedilerin kumunda bulunan ve insanlara geçerek beyinlerine yerleşen, risk almayı seven bir karaktere dönüştüren o parazitin adı nedir? Hastalığı uydur.', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Tembelhayvanların (Sloth) doğal ölümlerinin çok büyük bir kısmı, haftada bir kez yaptıkları hangi basit ihtiyaç molası sırasında gerçekleşir?', 'difficulty': 'easy', 'type': 'action', 'tags': ['bizarre', 'family']},
+
+  // ── LANETLİ BİLGİLER — MEDIUM ──
+  {'category': 'Bilgi', 'content': 'Orta Çağ Avrupa\'sında, tarlaya zarar veren böceklere ve farelere uygulanan o en absürt hukuki işlem neydi? Biliyorsan anlat, bilmiyorsan salla.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': '"Yürüyen Ceset Sendromu" (Cotard) isimli psikolojik rahatsızlığa sahip hastalar hayatlarıyla ilgili hangi korkunç illüzyona inanırlar?', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': '1800\'lerde, özellikle Waterloo Savaşı sonrasında takma dişler çoğunlukla neyden (ve kimlerden alınarak) yapılırdı? O dönemin dişçisi gibi anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'İnekler sürüdeki en yakın arkadaşları satıldığında veya ayrıldığında ne tür bir psikolojik çöküntü yaşarlar? Bunu insan ilişkilerine benzet.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'family']},
+  {'category': 'Bilgi', 'content': 'Antik Roma\'nın umumi tuvaletlerinde (Latrina) insanların temizlik için sırayla kullandıkları o iğrenç nesne neydi? Süreci anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Viktorya dönemi İngiltere\'sinde, ailesinden biri öldüğünde cenazeden önce yapılan o en ürpertici fotoğraf çekimi geleneği neydi?', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Kunduzların kalçalarındaki bezlerden salgılanan "Castoreum" adlı madde, eski yıllarda hangi tatlı aromasını vermek için yiyeceklerde kullanılıyordu?', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Timsahların avlarını yerken gerçekten gözyaşı dökmesinin altında yatan o acımasız biyolojik sebep nedir?', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Kargaların onlara taş atan veya kötü davranan insanları asla unutmadığı ve ne tür bir intikam aldığı biliniyor? Kargaların zekasını abartarak anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'family']},
+  {'category': 'Bilgi', 'content': 'Sevimli bildiğimiz ördekler, aşırı strese girdiklerinde veya kalabalık ortamda kaldıklarında birbirlerine ne tür bir vahşi eylem yaparlar?', 'difficulty': 'medium', 'type': 'action', 'tags': ['bizarre', 'adult']},
+
+  // ── LANETLİ BİLGİLER — HARD ──
+  {'category': 'Bilgi', 'content': '"Fare Kralı" (Rat King) adı verilen o iğrenç doğa olayının tam olarak ne olduğunu biliyor musun? Masanın midesini bulandırmaya çalış.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Everest Dağı tırmanış yolundaki donmuş cesetlerin günümüzde dağcılar için hangi ürpertici amaca hizmet ettiğini açıkla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Fransız İhtilali döneminde giyotinle kafası kesilen bir insanın bilinci ortalama kaç saniye daha açık kalır? Bilimsel gerçeği masaya sun.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Eski Fransa\'da, görkemli Versay Sarayı\'nda tuvalet odası olmadığı için asiller ve misafirler ihtiyaçlarını nerede ve nasıl gideriyorlardı?', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Dünyanın çeşitli yerlerindeki yamyam kabilelerin kayıtlarına göre, pişmiş insan etinin tadı ve dokusu hangi hayvanın etine benzemektedir?', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Kordiseps adlı lanetli mantar, ormanda hangi böceğin beynini ele geçirerek onu kelimenin tam anlamıyla bir zombiye dönüştürür? Süreci anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Mafyanın ceset yok etmek için domuzları kullanmasının sebebi, domuzların insan vücudunda diş ve saç hariç neleri de yiyebilmesidir?', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Uzay boşluğunda koruyucu kıyafetsiz bir şekilde ölen bir astronotun cesedi asla çürümez. Peki bakteriler çalışmadığı için cesede ne olur?', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': '18. yüzyılda diri diri gömülme korkusu nedeniyle mezar tabutlarına dışarıdan duyulabilecek şekilde bağlanan o güvenlik cihazı neydi?', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']},
+  {'category': 'Bilgi', 'content': 'Gıda örgütlerinin resmi kurallarına göre, marketten alınan bir kalıp çikolatanın içinde ortalama kaç adet parçalanmış "böcek" parçası olması yasal sınırdır?', 'difficulty': 'hard', 'type': 'action', 'tags': ['bizarre', 'adult']}
+
 ];
