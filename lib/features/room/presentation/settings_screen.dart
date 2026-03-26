@@ -8,6 +8,8 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../auth/providers/auth_provider.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -49,7 +51,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Ayarlar',
+          AppLocalizations.of(context)!.settingsTitle,
           style: AppTextStyles.headlineMedium.copyWith(color: AppColors.accent),
         ),
       ),
@@ -63,7 +65,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
                 children: [
                   _buildCard(
-                    title: 'Menü Müziği',
+                    title: AppLocalizations.of(context)!.menuMusic,
                     enabled: _musicEnabled,
                     volume: _musicVolume,
                     onToggle: (value) async {
@@ -79,7 +81,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   const SizedBox(height: 14),
                   _buildCard(
-                    title: 'Ses Efektleri',
+                    title: AppLocalizations.of(context)!.soundEffects,
                     enabled: _sfxEnabled,
                     volume: _sfxVolume,
                     onToggle: (value) async {
@@ -144,7 +146,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             subtitle: Text(
-              enabled ? 'Açık' : 'Kapalı',
+              enabled ? AppLocalizations.of(context)!.on : AppLocalizations.of(context)!.off,
               style: AppTextStyles.labelSmall.copyWith(color: Colors.white54),
             ),
             value: enabled,
@@ -187,7 +189,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Dil Seçimi',
+            AppLocalizations.of(context)!.languageSelection,
             style: AppTextStyles.titleMedium.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w700,
@@ -265,7 +267,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Bilgilendirme',
+            AppLocalizations.of(context)!.info,
             style: AppTextStyles.titleMedium.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w700,
@@ -276,11 +278,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.info_outline_rounded, color: AppColors.accent),
             title: Text(
-              'Credits / Hakkinda',
+              AppLocalizations.of(context)!.about,
               style: AppTextStyles.titleSmall.copyWith(color: Colors.white),
             ),
             subtitle: Text(
-              'Uygulama ve ekip bilgileri',
+              AppLocalizations.of(context)!.appAndTeamInfo,
               style: AppTextStyles.labelSmall.copyWith(color: Colors.white54),
             ),
             onTap: () {
@@ -296,11 +298,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.gavel_rounded, color: AppColors.accent),
             title: Text(
-              'Kullanim Kosullari',
+              AppLocalizations.of(context)!.termsOfUse,
               style: AppTextStyles.titleSmall.copyWith(color: Colors.white),
             ),
             subtitle: Text(
-              'Yasal sartlar ve kosullar',
+              AppLocalizations.of(context)!.legalTermsAndConditions,
               style: AppTextStyles.labelSmall.copyWith(color: Colors.white54),
             ),
             onTap: () {
@@ -308,41 +310,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 context: context,
                 builder: (ctx) => AlertDialog(
                   backgroundColor: const Color(0xFF1D1538),
-                  title: const Text('Kullanim Kosullari', style: TextStyle(color: Colors.white)),
-                  content: const SingleChildScrollView(
+                  title: Text(AppLocalizations.of(context)!.termsOfUse, style: const TextStyle(color: Colors.white)),
+                  content: SingleChildScrollView(
                     child: Text(
-                      'Son guncelleme: 2026\n\n'
-                      '1) Kabul ve Kapsam\n'
-                      'Bu uygulamayi kullanarak, burada belirtilen Kullanim Kosullari\'ni kabul etmis sayilirsiniz. '
-                      'Kosullari kabul etmiyorsaniz uygulamayi kullanmayiniz.\n\n'
-                      '2) Uygun Kullanim\n'
-                      'Kullanici; hile, taciz, nefret soylemi, tehdit, yasa disi icerik paylasimi, hesap guvenligini ihlal etme '
-                      've hizmeti bozacak otomasyon araclari kullanmama yukumlulugundedir.\n\n'
-                      '3) Hesap ve Guvenlik\n'
-                      'Hesabinizla yapilan islemlerden sorumlusunuz. Supheli erisim veya guvenlik ihlalini gecikmeden bildirmeniz gerekir.\n\n'
-                      '4) Icerik ve Topluluk Kurallari\n'
-                      'Kullanici tarafindan olusturulan icerikler (metin, gorsel vb.) topluluk kurallarina uygun olmalidir. '
-                      'Kurallari ihlal eden icerikler bildirimsiz kaldirilabilir, hesaplara gecici veya kalici kisit uygulanabilir.\n\n'
-                      '5) Fikri Mulkiyet\n'
-                      'Uygulama arayuzu, marka ogeleri ve yazilim bilesenleri ilgili hak sahiplerine aittir. '
-                      'Izinsiz kopyalama, dagitma veya tersine muhendislik yasaktir.\n\n'
-                      '6) Hizmette Degisiklik ve Kesinti\n'
-                      'Hizmet, teknik bakim, guvenlik veya is gereksinimleri nedeniyle degistirilebilir, kisitlanabilir veya gecici olarak durdurulabilir.\n\n'
-                      '7) Sorumlulugun Sinirlandirilmasi\n'
-                      'Uygulama \"oldugu gibi\" sunulur. Mevzuatin izin verdigi olcude, dolayli veya arizi zararlardan sorumluluk kabul edilmez.\n\n'
-                      '8) Hesap Sonlandirma\n'
-                      'Kullanim kosullari veya topluluk kurallarinin ihlali durumunda erisiminiz askiya alinabilir veya sonlandirilabilir.\n\n'
-                      '9) Kosullarin Guncellenmesi\n'
-                      'Kullanim Kosullari zaman zaman guncellenebilir. Guncel metin uygulama icinde yayimlandigi andan itibaren gecerlidir.\n\n'
-                      '10) Iletisim\n'
-                      'Yasal bildirimler ve destek talepleri icin uygulama ici iletisim kanallari kullanilmalidir.',
-                      style: TextStyle(color: Colors.white70),
+                      AppLocalizations.of(context)!.termsOfUseContent,
+                      style: const TextStyle(color: Colors.white70),
                     ),
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(ctx).pop(),
-                      child: const Text('Kapat'),
+                      child: Text(AppLocalizations.of(context)!.close),
                     ),
                   ],
                 ),

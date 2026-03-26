@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 import '../../../core/audio/audio_service.dart';
 import '../../../core/constants/app_colors.dart';
@@ -127,7 +128,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           final currentPlayer = players
               .where((p) => p.id == (game.lastRoundPlayerId ?? game.currentPlayerId))
               .firstOrNull;
-          final playerName = currentPlayer?.name ?? 'Oyuncu';
+          final playerName = currentPlayer?.name ?? AppLocalizations.of(context)!.playerDefaultName;
 
           return SafeArea(
             child: ResponsiveWrapper(
@@ -158,7 +159,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Hata: $e')),
+        error: (e, _) => Center(child: Text(AppLocalizations.of(context)!.error(e.toString()))),
       ),
       floatingActionButton: _buildConfetti(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -181,7 +182,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
           ),
           SizedBox(height: metrics.textGap * 2),
         Text(
-                  isPass ? 'GÖREV REDDEDİLDİ' : 'TUR BİTTİ',
+                  isPass ? AppLocalizations.of(context)!.taskRejected : AppLocalizations.of(context)!.roundOver,
           style: AppTextStyles.headlineMedium.copyWith(
             color: Colors.white,
             letterSpacing: 2,
@@ -192,8 +193,8 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
         SizedBox(height: metrics.smallGap),
         Text(
           isPass
-              ? '$playerName rolünü yapmayı reddetti.'
-              : '$playerName performansini tamamladi.',
+              ? AppLocalizations.of(context)!.playerRefusedRole(playerName)
+              : AppLocalizations.of(context)!.playerCompletedPerformance(playerName),
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white54,
             fontSize: metrics.bodyFontSize,
@@ -224,17 +225,17 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
         children: [
           if (!isPass) ...[
             _ScoreRow(
-              label: 'Seyirci Puanı',
+              label: AppLocalizations.of(context)!.audienceScore,
               value: '$audienceScore',
               color: audienceScore >= 0 ? Colors.green : AppColors.primary,
               compact: metrics.isCompact,
             ),
             Divider(color: Colors.white10, height: metrics.dividerHeight),
             _ScoreRow(
-              label: 'Performans Sonucu',
+              label: AppLocalizations.of(context)!.performanceResult,
               value: mood == 'like'
-                  ? 'Beğenildi'
-                  : (mood == 'dislike' ? 'Beğenilmedi' : 'Kararsız'),
+                  ? AppLocalizations.of(context)!.likedResult
+                  : (mood == 'dislike' ? AppLocalizations.of(context)!.dislikedResult : AppLocalizations.of(context)!.neutralResult),
               color: mood == 'like'
                   ? Colors.green
                   : (mood == 'dislike' ? Colors.red : Colors.orange),
@@ -242,7 +243,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             ),
             Divider(color: Colors.white10, height: metrics.dividerHeight),
             _ScoreRow(
-              label: 'Zorluk Çarpanı',
+              label: AppLocalizations.of(context)!.difficultyMultiplier,
               value: 'x$multiplier',
               color: Colors.white,
               compact: metrics.isCompact,
@@ -250,7 +251,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             Divider(color: Colors.white10, height: metrics.dividerHeight),
           ],
           _ScoreRow(
-            label: score >= 0 ? 'Kazanilan Puan' : 'Kaybedilen Puan',
+            label: score >= 0 ? AppLocalizations.of(context)!.gainedPoints : AppLocalizations.of(context)!.lostPoints,
             value: '$score',
             color: AppColors.accent,
             isBold: true,
@@ -279,7 +280,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
       child: Column(
         children: [
           Text(
-            'OYUNCU SIRALAMASI',
+            AppLocalizations.of(context)!.playerRanking,
             style: AppTextStyles.labelSmall.copyWith(
               color: AppColors.accent,
               fontWeight: FontWeight.w900,
@@ -315,7 +316,7 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
 
         if (isHost) {
           return StageButton(
-                label: isGameOver ? 'PARTİ BİTTİ' : 'SIRADAKİ GÖREV',
+                label: isGameOver ? AppLocalizations.of(context)!.partyOver : AppLocalizations.of(context)!.nextTask,
             icon: isGameOver
                 ? Icons.emoji_events_rounded
                 : Icons.arrow_forward_rounded,
@@ -339,8 +340,8 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             SizedBox(height: metrics.textGap),
             Text(
               isGameOver
-                  ? 'Final bekleniyor...'
-                  : 'Yöneticinin yeni tura geçmesi bekleniyor...',
+                  ? AppLocalizations.of(context)!.waitingForFinal
+                  : AppLocalizations.of(context)!.waitingForHostNextRound,
               style: AppTextStyles.bodyMedium.copyWith(
                 color: Colors.white30,
                 fontStyle: FontStyle.italic,
@@ -540,7 +541,7 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
       child: Column(
         children: [
           Text(
-            'SENARYOYU DEĞERLENDİR',
+            AppLocalizations.of(context)!.evaluateScenario,
             style: AppTextStyles.labelSmall.copyWith(
               color: Colors.white54,
               fontWeight: FontWeight.w900,
@@ -554,7 +555,7 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
             children: [
               _FeedbackButton(
                 icon: Icons.thumb_up_rounded,
-                label: 'IYI',
+                label: AppLocalizations.of(context)!.goodUpper,
                 isActive: _givenFeedback == true,
                 color: Colors.green,
                 onTap: () => _submit(true),
@@ -563,7 +564,7 @@ class _TaskFeedbackSectionState extends ConsumerState<_TaskFeedbackSection> {
               SizedBox(width: widget.compact ? 10 : 12),
               _FeedbackButton(
                 icon: Icons.thumb_down_rounded,
-                label: 'KOTU',
+                label: AppLocalizations.of(context)!.badUpper,
                 isActive: _givenFeedback == false,
                 color: AppColors.primary,
                 onTap: () => _submit(false),

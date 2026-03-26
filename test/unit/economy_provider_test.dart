@@ -92,7 +92,9 @@ void main() {
         const CosmeticItemEntity(
           id: 'frame_fire',
           name: 'Ateş',
+          nameEn: 'Fire',
           description: 'Çerçeve',
+          descriptionEn: 'Frame',
           imageUrl: '🔥',
           price: 500,
           type: 'frame',

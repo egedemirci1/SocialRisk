@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/category_constants.dart';
+import '../../../core/providers/locale_provider.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 class GameCard extends StatelessWidget {
   const GameCard({
@@ -66,7 +68,7 @@ class GameCard extends StatelessWidget {
                     SizedBox(width: compact ? 6 : 8),
                     Flexible(
                       child: Text(
-                        category.toUpperCase(),
+                        (CategoryConstants.byId(category)?.localizedName(LocaleProvider.of(context).languageCode) ?? category).toUpperCase(),
                         style: AppTextStyles.labelSmall.copyWith(
                           fontSize: titleFont,
                           fontWeight: FontWeight.w700,
@@ -129,7 +131,7 @@ class GameCard extends StatelessWidget {
                         ),
                         SizedBox(width: compact ? 3 : 4),
                         Text(
-                          '$points puan',
+                          AppLocalizations.of(context)!.pointsLowercase(points),
                           style: AppTextStyles.titleSmall.copyWith(
                             fontSize: badgeFont,
                             fontWeight: FontWeight.w800,

@@ -49,7 +49,9 @@ void main() {
       final entity = CosmeticItemEntity(
         id: 'c1',
         name: 'Çerçeve',
+        nameEn: 'Frame',
         description: 'Açıklama',
+        descriptionEn: 'Description',
         imageUrl: '🔥',
         price: 500,
         type: 'frame',
@@ -61,7 +63,9 @@ void main() {
       final entity = CosmeticItemEntity(
         id: 'cat_bilgi',
         name: 'Bilgi Kategorisi',
+        nameEn: 'Info Category',
         description: 'Bilgi soruları',
+        descriptionEn: 'Info questions',
         imageUrl: '💡',
         price: 0,
         type: 'category',

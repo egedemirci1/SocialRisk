@@ -16,6 +16,9 @@ import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/data/task_translations/task_translation_map.dart';
+import '../../../core/providers/locale_provider.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Gösteri (Performing) Ekranı — Parti Temalı
 class PerformingScreen extends ConsumerStatefulWidget {
@@ -332,7 +335,7 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                   ),
                                 ),
                                 child: Text(
-                                  'GÖREV BAŞLADI',
+                                  AppLocalizations.of(context)!.taskStarted,
                                   style: AppTextStyles.titleLarge.copyWith(
                                     color: AppColors.accent,
                                     letterSpacing: 2,
@@ -355,8 +358,8 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                     children: [
                                       Text(
                                         isMyTurn
-                                            ? 'İÇERİK:'
-                                            : 'SERGİLENEN İÇERİK:',
+                                            ? AppLocalizations.of(context)!.contentLabel
+                                            : AppLocalizations.of(context)!.displayedContentLabel,
                                         style:
                                             AppTextStyles.labelSmall.copyWith(
                                           color: AppColors.accent,
@@ -371,9 +374,12 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                           child: SingleChildScrollView(
                                             child: Text(
                                               isClosed && !isMyTurn
-                                                  ? 'GİZLİ İÇERİK'
-                                                  : (task?.content ??
-                                                      'Rol belirtilmemiş'),
+                                                  ? AppLocalizations.of(context)!.hiddenContentLabel
+                                                  : (TaskTranslationMap.getTranslation(
+                                                      task?.id ?? '',
+                                                      task?.content ?? AppLocalizations.of(context)!.taskNoRole,
+                                                      LocaleProvider.of(context).languageCode,
+                                                    )),
                                               style: AppTextStyles.headlineMedium
                                                   .copyWith(
                                                 color: Colors.white,
@@ -388,7 +394,7 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                       SizedBox(height: contentGap),
                                       if (isMyTurn) ...[
                                         Text(
-                                          'Görevi tamamladıysanız performansınızı bitirin.',
+                                          AppLocalizations.of(context)!.finishTaskInstruction,
                                           style: AppTextStyles.bodyMedium
                                               .copyWith(
                                             color: Colors.white54,
@@ -399,7 +405,7 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                         ),
                                         SizedBox(height: contentGap),
                                         StageButton(
-                                          label: 'Görevi Bitir',
+                                          label: AppLocalizations.of(context)!.finishTaskButton,
                                           icon: Icons.how_to_vote_rounded,
                                           backgroundColor: AppColors.primary,
                                           textColor: Colors.white,
@@ -414,7 +420,7 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                         ),
                                         SizedBox(height: contentGap),
                                         Text(
-                                          'Oyuncunun performansını sergilemesi bekleniyor...',
+                                          AppLocalizations.of(context)!.waitingForPerformance,
                                           style: AppTextStyles.bodyMedium
                                               .copyWith(
                                             color: Colors.white54,
@@ -464,9 +470,9 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
         },
         loading: () => Scaffold(
           backgroundColor: Colors.transparent,
-          body: const TheaterLoadingScreen(message: 'Oyuncu Bekleniyor...'),
+          body: TheaterLoadingScreen(message: AppLocalizations.of(context)!.waitingForPlayerCapital),
         ),
-        error: (e, _) => Center(child: Text('Hata: $e')),
+        error: (e, _) => Center(child: Text(AppLocalizations.of(context)!.error(e.toString()))),
       ),
     );
   }

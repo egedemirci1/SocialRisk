@@ -13,6 +13,7 @@ import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
 import '../../../core/audio/audio_service.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Partiye Katılma Ekranı — Parti Temalı
 class JoinRoomScreen extends ConsumerStatefulWidget {
@@ -65,7 +66,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
 
   Future<void> _joinRoom() async {
     if (!_isCodeComplete) {
-      ToastUtils.showWarning(context, 'Lütfen 6 haneli kodu gir');
+      ToastUtils.showWarning(context, AppLocalizations.of(context)!.pleaseEnter6DigitCode);
       return;
     }
 
@@ -82,14 +83,14 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
       await repo.joinRoom(
         roomCode: _roomCode,
         playerId: user.uid,
-        playerName: user.displayName ?? 'Oyuncu',
+        playerName: user.displayName ?? AppLocalizations.of(context)!.playerDefaultName,
         playerAvatarUrl: userProfile?.avatarUrl,
       );
 
       if (mounted) context.push('/lobby', extra: _roomCode);
     } catch (e) {
       if (mounted) {
-        ToastUtils.showError(context, 'Parti bulunamadı: ${e.toString()}');
+        ToastUtils.showError(context, AppLocalizations.of(context)!.partyNotFound(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isJoining = false);
@@ -100,7 +101,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
   Widget build(BuildContext context) {
     return LoadingOverlay(
       isLoading: _isJoining,
-      message: 'Partiye bağlanılıyor...',
+      message: AppLocalizations.of(context)!.connectingToParty,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
@@ -143,7 +144,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Partiye Katıl',
+                            AppLocalizations.of(context)!.joinPartyTitle,
                             style: AppTextStyles.displayMedium.copyWith(fontWeight: FontWeight.w900,
                               fontSize: 24,
                               color: Colors.white,
@@ -177,7 +178,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
                           ),
                           const SizedBox(height: 32),
                           Text(
-                            'Parti Kodunu Gir',
+                            AppLocalizations.of(context)!.enterPartyCode,
                             style: AppTextStyles.displayMedium.copyWith(
                               color: Colors.white,
                               letterSpacing: 1,
@@ -185,7 +186,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Arkadaşlarının paylaştığı 6 haneli parti kodunu girerek eğlenceye dahil ol.',
+                            AppLocalizations.of(context)!.enterPartyCodeDesc,
                             style: AppTextStyles.bodyMedium.copyWith(
                               color: Colors.white54,
                               fontSize: 12.5,
@@ -196,7 +197,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
                           _buildCodeInputs(),
                           const SizedBox(height: 60),
                           StageButton(
-                            label: 'Partiye Katıl',
+                            label: AppLocalizations.of(context)!.joinPartyTitle,
                             icon: Icons.login_rounded,
                             backgroundColor: AppColors.primary,
                             textColor: AppColors.background,

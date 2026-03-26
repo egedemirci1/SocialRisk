@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/category_constants.dart';
-import 'package:social_risk/core/audio/audio_service.dart';
-import 'package:social_risk/core/constants/app_text_styles.dart';
+import '../../../core/constants/app_text_styles.dart';
+import '../../../core/providers/locale_provider.dart';
+import '../../../core/audio/audio_service.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Kategori bilgisi — çark dilimi için renk, ikon ve isim.
 class WheelCategory {
@@ -50,16 +52,12 @@ class SpinWheel extends ConsumerStatefulWidget {
 class _SpinWheelState extends ConsumerState<SpinWheel>
     with SingleTickerProviderStateMixin {
   List<WheelCategory> get _activeCategories {
-    if (widget.categories.isEmpty) {
-      return CategoryConstants.defaultCategoriesOnly
-          .map((c) => WheelCategory(name: c.name, color: c.color, icon: c.icon))
-          .toList();
-    }
+    final languageCode = LocaleProvider.of(context).languageCode;
     return widget.categories
         .map((c) {
           final def = CategoryConstants.byId(c);
           if (def != null) {
-            return WheelCategory(name: def.name, color: def.color, icon: def.icon);
+            return WheelCategory(name: def.localizedName(languageCode), color: def.color, icon: def.icon);
           }
           return WheelCategory(
             name: c,
@@ -263,7 +261,7 @@ class _SpinWheelState extends ConsumerState<SpinWheel>
               ),
               SizedBox(width: compact ? 6 : 8),
               Text(
-                        _isSpinning ? 'Dönüyor...' : 'Çarkı Çevir!',
+                _isSpinning ? AppLocalizations.of(context)!.spinning : AppLocalizations.of(context)!.spinWheel,
                 style: AppTextStyles.titleMedium.copyWith(
                   fontSize: compact ? 14 : 16,
                   fontWeight: FontWeight.w700,
@@ -278,7 +276,7 @@ class _SpinWheelState extends ConsumerState<SpinWheel>
 
     if (!_hasResult && !widget.canSpin && _isSpinning) {
       return Text(
-                    'Çark dönüyor...',
+        AppLocalizations.of(context)!.spinning,
         style: AppTextStyles.titleSmall.copyWith(
           fontSize: compact ? 12 : 14,
           fontWeight: FontWeight.w500,
@@ -290,7 +288,7 @@ class _SpinWheelState extends ConsumerState<SpinWheel>
 
     if (!_hasResult && !widget.canSpin) {
       return Text(
-                  '${widget.playerName ?? 'Oyuncu'} çarkı çeviriyor...',
+        AppLocalizations.of(context)!.spinningPlayer(widget.playerName ?? AppLocalizations.of(context)!.playerDefaultName),
         style: AppTextStyles.titleSmall.copyWith(
           fontSize: compact ? 12 : 14,
           fontWeight: FontWeight.w500,

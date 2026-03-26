@@ -8,6 +8,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 import '../../../shared/widgets/score/leaderboard_tile.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
@@ -106,7 +107,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                                     Icon(Icons.emoji_events_rounded, color: AppColors.accent, size: layout.trophyFontSize),
                                     SizedBox(height: layout.winnerGap),
                                     Text(
-                                      'KAZANAN',
+                                      AppLocalizations.of(context)!.winnerCapital,
                                       style: AppTextStyles.labelSmall.copyWith(
                                         color: AppColors.accent,
                                         fontWeight: FontWeight.w900,
@@ -128,7 +129,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                                     ),
                                     SizedBox(height: layout.winnerScoreGap),
                                     Text(
-                                      '${winner?.score ?? 0} PUAN',
+                                      '${winner?.score ?? 0} ${AppLocalizations.of(context)!.pointsCapital}',
                                       style: AppTextStyles.titleLarge.copyWith(
                                         color: AppColors.accent,
                                         fontWeight: FontWeight.w900,
@@ -154,7 +155,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                                   SizedBox(width: layout.listHeaderIconGap),
                                   Flexible(
                                     child: Text(
-                                      'OYUNCU SIRALAMASI',
+                                      AppLocalizations.of(context)!.playerRanking,
                                       style: AppTextStyles.labelSmall.copyWith(
                                         color: Colors.white54,
                                         fontWeight: FontWeight.w900,
@@ -223,8 +224,8 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                                         Flexible(
                                           child: Text(
                                             hasNegativeScore
-                                                ? 'Eksilere düşmezsin be kardeşim\nHiç bakiye kazanamadın!'
-                                                : '+$myReward Puan bakiyenize eklendi',
+                                                ? AppLocalizations.of(context)!.negativeScoreMessage
+                                                : AppLocalizations.of(context)!.pointsAddedToBalance(myReward),
                                             style: AppTextStyles.titleMedium.copyWith(
                                               color: hasNegativeScore
                                                   ? Colors.white70
@@ -240,7 +241,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
                                   ),
                                   SizedBox(height: layout.actionGap),
                                   StageButton(
-                                    label: 'LOBİYE DÖN',
+                                    label: AppLocalizations.of(context)!.returnToLobby,
                                     icon: Icons.home_rounded,
                                     backgroundColor: AppColors.surface,
                                     textColor: Colors.white,
@@ -264,7 +265,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Hata: $e')),
+        error: (e, _) => Center(child: Text(AppLocalizations.of(context)!.error(e.toString()))),
       ),
     );
   }

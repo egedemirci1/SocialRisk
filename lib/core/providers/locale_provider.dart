@@ -15,3 +15,10 @@ class AppLocaleNotifier extends Notifier<Locale> {
 
 final appLocaleProvider =
     NotifierProvider<AppLocaleNotifier, Locale>(AppLocaleNotifier.new);
+
+/// Geriye dönük uyumluluk ve context üzerinden erişim için yardımcı sınıf.
+class LocaleProvider {
+  static Locale of(BuildContext context) {
+    return Localizations.localeOf(context);
+  }
+}

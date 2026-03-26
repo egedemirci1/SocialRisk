@@ -15,6 +15,8 @@ import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
 import '../../../shared/widgets/common/loading_overlay.dart';
 import '../../../core/audio/audio_service.dart';
+import '../../../core/providers/locale_provider.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
@@ -61,7 +63,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
 
       final roomCode = await repo.createRoom(
         hostId: user.uid,
-        hostName: user.displayName ?? 'Yonetmen',
+        hostName: user.displayName ?? AppLocalizations.of(context)!.hostDefaultName,
         endConditionType: endType,
         endConditionValue: endValue,
         visibility: RoomVisibility.open,
@@ -76,7 +78,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ToastUtils.showError(context, 'Hata: ${e.toString()}');
+        ToastUtils.showError(context, AppLocalizations.of(context)!.error(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isCreating = false);
@@ -111,7 +113,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Yeni Parti Kur',
+                AppLocalizations.of(context)!.newPartyHostTitle,
                 style: AppTextStyles.displayMedium.copyWith(
                   fontWeight: FontWeight.w900,
                   fontSize: metrics.titleFontSize,
@@ -129,21 +131,21 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               SizedBox(height: metrics.sectionGapLarge),
               _buildSection(
                 metrics: metrics,
-                title: 'Oyun Sonu',
+                title: AppLocalizations.of(context)!.endConditionLabel,
                 icon: Icons.flag_rounded,
                 child: _buildEndCondition(metrics),
               ),
               SizedBox(height: metrics.sectionGap),
               _buildSection(
                 metrics: metrics,
-                title: 'Oyun Modu',
+                title: AppLocalizations.of(context)!.gameModeLabel,
                 icon: Icons.celebration_rounded,
                 child: _buildGameMode(metrics),
               ),
               SizedBox(height: metrics.sectionGap),
               _buildSection(
                 metrics: metrics,
-                title: 'Kategoriler',
+                title: AppLocalizations.of(context)!.categoriesLabel,
                 icon: Icons.category_rounded,
                 child: _buildCategorySelector(metrics),
               ),
@@ -151,7 +153,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               SizedBox(
                 width: double.infinity,
                 child: StageButton(
-                    label: 'Partiyi Başlat',
+                    label: AppLocalizations.of(context)!.startPartyButton,
                   icon: Icons.play_arrow_rounded,
                   backgroundColor: AppColors.primary,
                   textColor: AppColors.background,
@@ -169,7 +171,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
 
     return LoadingOverlay(
       isLoading: _isCreating,
-      message: 'Parti kuruluyor...',
+      message: AppLocalizations.of(context)!.roomCreating,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
@@ -305,7 +307,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           children: [
             Expanded(
               child: _ToggleChip(
-                label: 'Tur',
+                label: AppLocalizations.of(context)!.roundLabel,
                 isSelected: !_isScoreMode,
                 onTap: () => setState(() => _isScoreMode = false),
                 compact: metrics.isCompactWidth || metrics.isCompactHeight,
@@ -314,7 +316,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             SizedBox(width: metrics.inlineGap),
             Expanded(
               child: _ToggleChip(
-                label: 'Puan',
+                label: AppLocalizations.of(context)!.pointLabel,
                 isSelected: _isScoreMode,
                 onTap: () => setState(() => _isScoreMode = true),
                 compact: metrics.isCompactWidth || metrics.isCompactHeight,
@@ -332,7 +334,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               fontWeight: FontWeight.w900,
               color: scoreColor,
             ),
-            child: Text('${_scoreTarget.toInt()} Puan'),
+            child: Text('${_scoreTarget.toInt()} ${AppLocalizations.of(context)!.points}'),
           ),
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
@@ -391,7 +393,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               fontWeight: FontWeight.w900,
               color: roundColor,
             ),
-            child: Text('${_roundTarget.toInt()} Tur'),
+            child: Text('${_roundTarget.toInt()} ${AppLocalizations.of(context)!.rounds}'),
           ),
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
@@ -453,14 +455,14 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
           children: [
             Expanded(
               child: _ToggleChip(
-                                  label: 'Çark',
+                  label: AppLocalizations.of(context)!.classicWheel,
                 isSelected: _selectedMode == GameMode.classic,
                 compact: metrics.isCompactWidth || metrics.isCompactHeight,
                 onTap: () {
                   if (_selectedCategories.length == 1) {
                     ToastUtils.showInfo(
                       context,
-                        'Tek kategori seçildiğinde sadece Borsa modu kullanılabilir.',
+                        AppLocalizations.of(context)!.singleCategoryEconomyWarn,
                     );
                     return;
                   }
@@ -472,7 +474,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
             SizedBox(width: metrics.inlineGap),
             Expanded(
               child: _ToggleChip(
-                label: 'Borsa',
+                label: AppLocalizations.of(context)!.economyMode,
                 isSelected: _selectedMode == GameMode.economy,
                 compact: metrics.isCompactWidth || metrics.isCompactHeight,
                 onTap: () {
@@ -514,8 +516,8 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                     children: [
                       Text(
                         _selectedMode == GameMode.classic
-                            ? 'Klasik Parti'
-                            : 'Patron Parti',
+                            ? AppLocalizations.of(context)!.classicModeTitle
+                            : AppLocalizations.of(context)!.economyModeTitle,
                         style: AppTextStyles.titleLarge.copyWith(
                           fontSize: metrics.infoTitleFontSize,
                           color: Colors.white,
@@ -525,8 +527,8 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                       SizedBox(height: metrics.textTightGap),
                       Text(
                         _selectedMode == GameMode.classic
-                              ? 'Şans çarkını çevir ve rastgele kategoriden gelen riskli cezalarla yüzleş. Puan toplamak için tek şansın cesaret!'
-                          : 'Görevleri tamamlayarak coin kazan; bu coinlerle başkalarına ceza kitle, risklerden kurtul. Kim daha acımasızsa o kazanır.',
+                              ? AppLocalizations.of(context)!.classicModeDesc
+                          : AppLocalizations.of(context)!.economyModeDesc,
                         style: AppTextStyles.labelSmall.copyWith(
                           fontSize: metrics.bodyFontSize,
                           color: Colors.white70,
@@ -546,7 +548,8 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   }
 
   Widget _buildCategorySelector(_CreateRoomMetrics metrics) {
-    final categories = CategoryConstants.allCategoryNames;
+    final categories = CategoryConstants.all;
+    final languageCode = LocaleProvider.of(context).languageCode;
     return LayoutBuilder(
       builder: (context, constraints) {
         final spacing = metrics.chipSpacing;
@@ -560,8 +563,9 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
         return Wrap(
           spacing: spacing,
           runSpacing: runSpacing,
-          children: categories.map((category) {
-            final isSelected = _selectedCategories.contains(category);
+          children: categories.map((categoryDef) {
+            final categoryId = categoryDef.id;
+            final isSelected = _selectedCategories.contains(categoryId);
             return SizedBox(
               width: itemWidth,
               child: GestureDetector(
@@ -569,23 +573,23 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                   setState(() {
                     if (isSelected) {
                       if (_selectedCategories.length > 1) {
-                        _selectedCategories.remove(category);
+                        _selectedCategories.remove(categoryId);
                         if (_selectedCategories.length == 1 &&
                             _selectedMode != GameMode.economy) {
                           _selectedMode = GameMode.economy;
                           ToastUtils.showInfo(
                             context,
-                  'Tek kategori seçildi. Oyun modu otomatik Borsa moduna alındı.',
+                  AppLocalizations.of(context)!.singleCategoryEconomyAutoChange,
                           );
                         }
                       } else {
                         ToastUtils.showWarning(
                           context,
-                  'En az 1 kategori seçmelisiniz.',
+                  AppLocalizations.of(context)!.minOneCategoryWarn,
                         );
                       }
                     } else {
-                      _selectedCategories.add(category);
+                      _selectedCategories.add(categoryId);
                     }
                   });
                 },
@@ -608,7 +612,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      category,
+                      categoryDef.localizedName(languageCode),
                       style: AppTextStyles.titleSmall.copyWith(
                         color: isSelected ? Colors.white : Colors.white54,
                         fontSize: metrics.categoryFontSize,

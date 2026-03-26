@@ -13,6 +13,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_text_styles.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Bekleme ekranı — Parti Temalı
 class WaitingScreen extends ConsumerStatefulWidget {
@@ -68,7 +69,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
         // Oyun silinmiş veya hata oluşmuş (Muhtemelen host çıktığı için)
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            ToastUtils.showError(context, 'Oyun sona erdi veya ev sahibi ayrıldı.');
+            ToastUtils.showError(context, AppLocalizations.of(context)!.gameEndedOrHostLeft);
             context.go('/home');
           }
         });
@@ -135,7 +136,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
           });
         }
 
-        final playerName = currentPlayer?.name ?? 'Ayrılan Oyuncu';
+        final playerName = currentPlayer?.name ?? AppLocalizations.of(context)!.leftPlayer;
         final sh = MediaQuery.sizeOf(context).height;
         final compact = sh < 700;
 
@@ -205,7 +206,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                     ),
                     SizedBox(height: compact ? 16 : 32),
                     Text(
-                      'BEKLEME SIRASI',
+                      AppLocalizations.of(context)!.waitingQueue,
                       style: AppTextStyles.headlineMedium.copyWith(
                         color: Colors.white,
                         letterSpacing: 4,
@@ -215,8 +216,8 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                     SizedBox(height: compact ? 8 : 12),
                     Text(
                       game.status == GameStatus.performing
-                          ? '$playerName performansını sergiliyor...'
-                          : '$playerName rolünü belirliyor...',
+                          ? AppLocalizations.of(context)!.playerIsPerforming(playerName)
+                          : AppLocalizations.of(context)!.playerIsDecidingRole(playerName),
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: Colors.white54,
                         fontStyle: FontStyle.italic,
@@ -243,7 +244,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            'Sıra bittiğinde oylama başlayacak',
+                            AppLocalizations.of(context)!.votingWillStartWhenTurnEnds,
                             style: AppTextStyles.labelSmall.copyWith(
                               color: Colors.white30,
                               fontWeight: FontWeight.w700,
@@ -259,13 +260,13 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
           ),
         );
       },
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         backgroundColor: Colors.transparent,
-        body: TheaterLoadingScreen(message: 'Parti Hazırlanıyor...'),
+        body: TheaterLoadingScreen(message: AppLocalizations.of(context)!.preparingParty),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: Colors.transparent,
-        body: Center(child: Text('Hata: $e')),
+        body: Center(child: Text(AppLocalizations.of(context)!.error(e.toString()))),
       ),
     );
   }

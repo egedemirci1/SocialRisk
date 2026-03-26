@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:lottie/lottie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/data/task_translations/task_translation_map.dart';
+import '../../../core/providers/locale_provider.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 import '../../../shared/models/enums.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
@@ -196,7 +200,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         final players = playersAsync.value ?? [];
         final currentPlayer =
             players.where((p) => p.id == game.currentPlayerId).firstOrNull;
-        final playerName = currentPlayer?.name ?? 'Oyuncu';
+        final playerName = currentPlayer?.name ?? AppLocalizations.of(context)!.playerDefaultName;
 
         if (task != null &&
             !_cardController.isAnimating &&
@@ -306,13 +310,13 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           ),
         );
       },
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         backgroundColor: AppColors.background,
-        body: TheaterLoadingScreen(message: 'Parti Başlıyor...'),
+        body: TheaterLoadingScreen(message: AppLocalizations.of(context)!.partyStarting),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.background,
-        body: Center(child: Text('Hata: $e')),
+        body: Center(child: Text(AppLocalizations.of(context)!.error(e.toString()))),
       ),
     );
   }
@@ -461,9 +465,9 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                   child: SizedBox(
                     width: contentWidth,
                     child: _buildTopTitleCard(
-                      badge: 'PARTI BASLIYOR',
-                                  title: 'Görevini Belirle',
-                                  subtitle: 'Görevini almak için çarkı çevir...',
+                      badge: AppLocalizations.of(context)!.partyStarting.toUpperCase(),
+                                  title: AppLocalizations.of(context)!.determineYourTask,
+                                  subtitle: AppLocalizations.of(context)!.spinWheelSubtitle,
                       showSubtitle: !isVeryShort,
                       layout: layout,
                     ),
@@ -639,7 +643,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
-                          'PARTI BASLIYOR',
+                          AppLocalizations.of(context)!.partyStarting.toUpperCase(),
                           style: AppTextStyles.titleLarge.copyWith(
                             color: AppColors.accent,
                             letterSpacing: 2,
@@ -678,7 +682,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                                       ),
                                     ),
                                     child: Text(
-                                      'Kategori: ${task.category}',
+                                      AppLocalizations.of(context)!.categoryVariable(task.category),
                                       style: AppTextStyles.labelSmall.copyWith(
                                         color: AppColors.accent,
                                         fontWeight: FontWeight.w900,
@@ -698,12 +702,12 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                                   child: SizedBox(
                                     width: layout.contentWidth * 0.8,
                                     child: _buildTopTitleCard(
-                          badge: isClosed ? 'GİZLİ TUR' : 'GÖREV',
+                           badge: isClosed ? AppLocalizations.of(context)!.hiddenRound : AppLocalizations.of(context)!.taskCapital,
                                       title: isClosed
-                                  ? 'Sıradaki Görev Gizli'
+                                  ? AppLocalizations.of(context)!.nextTaskHidden
                                           : (isMyTurn
-                                      ? 'İçeriğin Burada:'
-                                              : '$playerName İçeriği:'),
+                                      ? AppLocalizations.of(context)!.yourContentHere
+                                              : AppLocalizations.of(context)!.contentForPlayer(playerName)),
                                       layout: layout,
                                     ),
                                   ),
@@ -720,8 +724,12 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                                     child: GameCard(
                                       category: task.category,
                                       content: isClosed
-                                  ? 'Mevcut görevi görmek için kartı aç...'
-                                          : task.content,
+                                  ? AppLocalizations.of(context)!.openCardToViewTask
+                                          : TaskTranslationMap.getTranslation(
+                                              task.id,
+                                              task.content,
+                                              LocaleProvider.of(context).languageCode,
+                                            ),
                                       points: cardPoints,
                                       compact: layout.isCompact,
                                     ),
@@ -764,7 +772,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     if (isClosed && isMyTurn) {
       return Center(
         child: StageButton(
-                                label: 'Görevi Aç',
+                                label: AppLocalizations.of(context)!.openTask,
           backgroundColor: AppColors.accent,
           textColor: Colors.black,
           borderColor: AppColors.accent,
@@ -779,7 +787,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           StageButton(
-                        label: 'Görevi Başlat',
+                        label: AppLocalizations.of(context)!.startTask,
             backgroundColor: AppColors.primary,
             textColor: Colors.white,
             borderColor: AppColors.accent,
@@ -800,7 +808,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
 
     return Center(
       child: Text(
-        '$playerName İçeriği okuyor...',
+        AppLocalizations.of(context)!.readingContentSubtitle(playerName),
         style: AppTextStyles.bodyMedium.copyWith(
           color: Colors.white30,
           fontStyle: FontStyle.italic,
@@ -901,8 +909,8 @@ class _AnimatedPassButtonState extends State<_AnimatedPassButton>
           ),
           child: Text(
             _isWarningSelected
-                ? 'EMİN MİSİN? (-50)'
-                : 'Görevi Reddet (-50 Puan)',
+                ? AppLocalizations.of(context)!.areYouSurePoint
+                : AppLocalizations.of(context)!.rejectTaskPoint,
             style: AppTextStyles.labelSmall.copyWith(
               color: _isWarningSelected ? Colors.redAccent : Colors.white70,
               fontWeight: FontWeight.w900,

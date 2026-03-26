@@ -11,6 +11,7 @@ import '../../auth/providers/user_provider.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Mağaza Ekranı — Parti Temalı
 class StoreScreen extends ConsumerStatefulWidget {
@@ -30,13 +31,19 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     CosmeticItemEntity item,
   ) async {
     try {
+      final l = AppLocalizations.of(context)!;
       await ref
           .read(economyControllerProvider.notifier)
           .buyCosmetic(uid: uid, cosmeticId: item.id, price: item.price);
       if (!context.mounted) return;
-      ToastUtils.showSuccess(context, '${item.name} artık gardırobunuzda!');
+      
+      final isTr = Localizations.localeOf(context).languageCode == 'tr';
+      final itemName = isTr ? item.name : item.nameEn;
+      
+      ToastUtils.showSuccess(context, l.itemPurchased(itemName));
     } catch (e) {
       if (!context.mounted) return;
+      final l = AppLocalizations.of(context)!;
       final msg = e.toString().replaceAll('Exception: ', '');
       final lowerMsg = msg.toLowerCase();
       final isInsufficient =
@@ -45,7 +52,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           lowerMsg.contains('insufficient balance');
       ToastUtils.showError(
         context,
-        isInsufficient ? 'Yetersiz bakiye' : 'Hata: $msg',
+        isInsufficient ? l.insufficientBalance : l.buyError(msg),
       );
     }
   }
@@ -84,7 +91,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             ],
           ),
           child: Text(
-            'Mağaza',
+            AppLocalizations.of(context)!.store,
             style: AppTextStyles.headlineMedium.copyWith(
               color: AppColors.accent,
               letterSpacing: 2,
@@ -115,7 +122,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             ),
             error: (err, stack) => Center(
               child: Text(
-                'Hata: $err',
+                AppLocalizations.of(context)!.buyError(err.toString()),
                 style: AppTextStyles.titleMedium.copyWith(color: AppColors.primary),
               ),
             ),
@@ -214,7 +221,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
   }
 
   Widget _buildTabSelector() {
-    final tabs = ['Ünvanlar', 'Çerçeveler', 'Senaryolar'];
+    final l = AppLocalizations.of(context)!;
+    final tabs = [l.titlesTab, l.framesTab, l.scenariosTab];
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -264,6 +272,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     required List<CosmeticItemEntity> maskItems,
     required bool isAnonymous,
   }) {
+    final l = AppLocalizations.of(context)!;
+    final isTr = Localizations.localeOf(context).languageCode == 'tr';
     List<CosmeticItemEntity> displayItems;
     String title;
     String subtitle;
@@ -272,72 +282,28 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     switch (_selectedTab) {
       case 0:
         displayItems = roleItems;
-        title = 'Ünvanlar';
-        subtitle = 'Oyun içinde adınızın altında görünen özel etiketler.';
+        title = l.titlesTab;
+        subtitle = isTr 
+            ? 'Oyun içinde adınızın altında görünen özel etiketler.'
+            : 'Custom labels that appear under your name in-game.';
         icon = Icons.badge_rounded;
         break;
       case 1:
         displayItems = maskItems;
-        title = 'Çerçeveler';
-        subtitle = 'Profil fotoğrafınızın etrafında parlayan özel efektler.';
+        title = l.framesTab;
+        subtitle = isTr
+            ? 'Profil fotoğrafınızın etrafında parlayan özel efektler.'
+            : 'Special effects glowing around your profile picture.';
         icon = Icons.face_retouching_natural_rounded;
         break;
       default:
-        displayItems = [
-          const CosmeticItemEntity(
-            id: 'scenario_18',
-            name: 'Kapalı Gişe (+18)',
-            description:
-                'Yetişkinlere özel görevler çıkar. Oda ayarından aktif edilir.',
-            imageUrl: '🔞',
-            price: 1500,
-            type: 'category',
-          ),
-          const CosmeticItemEntity(
-            id: 'scenario_comedy',
-            name: 'Fars Komedisi',
-            description: 'Komik ve eğlenceli görevler ağırlıklı olarak çıkar.',
-            imageUrl: '🎭',
-            price: 800,
-            type: 'category',
-          ),
-          const CosmeticItemEntity(
-            id: 'scenario_tragedy',
-            name: 'Antik Trajedi',
-            description: 'Dramatik ve cesur görevler ağırlıklı olarak çıkar.',
-            imageUrl: '💀',
-            price: 1200,
-            type: 'category',
-          ),
-          const CosmeticItemEntity(
-            id: 'scenario_romance',
-            name: 'Aşkın Sahnesi',
-            description:
-                'Romantik ve duygusal görevler ağırlıklı olarak çıkar.',
-            imageUrl: '❤️',
-            price: 900,
-            type: 'category',
-          ),
-          const CosmeticItemEntity(
-            id: 'scenario_mystery',
-            name: 'Gizemli Parti',
-            description:
-                'Gerilim ve gizem temalı görevler ağırlıklı olarak çıkar.',
-            imageUrl: '🔍',
-            price: 1100,
-            type: 'category',
-          ),
-          const CosmeticItemEntity(
-            id: 'scenario_sci_fi',
-            name: 'Geleceğin Rolü',
-            description: 'Bilimkurgu temalı görevler ağırlıklı olarak çıkar.',
-            imageUrl: '🚀',
-            price: 1300,
-            type: 'category',
-          ),
-        ]..sort((a, b) => a.price.compareTo(b.price));
-        title = 'Özel Senaryolar';
-        subtitle = 'Oyundaki görev havuzunu belirleyen tema paketleri.';
+        // Note: Scenario items are also fetched via cosmeticsAsync in this screen's logic now
+        // But for hardcoded preview/locked state:
+        displayItems = roleItems.where((_) => false).toList(); // Empty placeholder
+        title = l.scenariosTab;
+        subtitle = isTr
+            ? 'Oyundaki görev havuzunu belirleyen tema paketleri.'
+            : 'Theme packs that determine the task pool in the game.';
         icon = Icons.menu_book_rounded;
     }
 
@@ -354,7 +320,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Henüz sergilenecek ürün yok.',
+                AppLocalizations.of(context)!.noItems,
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: Colors.white24,
                 ),
@@ -437,7 +403,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'YAKINDA...',
+                        l.comingSoon,
                         style: AppTextStyles.displayMedium.copyWith(
                           color: AppColors.accent,
                           fontSize: 24,
@@ -449,7 +415,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 40),
                         child: Text(
-                          'Özel Senaryolar ve Tema Paketleri Çok Yakında Sizlerle!',
+                          l.scenariosComingSoon,
                           textAlign: TextAlign.center,
                           style: AppTextStyles.labelSmall.copyWith(
                             color: Colors.white30,
@@ -525,7 +491,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.name,
+                  Localizations.localeOf(context).languageCode == 'tr' ? item.name : item.nameEn,
                   style: AppTextStyles.titleMedium.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -535,7 +501,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  item.description,
+                  Localizations.localeOf(context).languageCode == 'tr' ? item.description : item.descriptionEn,
                   style: AppTextStyles.labelSmall.copyWith(
                     color: Colors.white.withValues(alpha: 0.4),
                   ),
@@ -569,7 +535,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 14),
                   const SizedBox(width: 6),
                   Text(
-                    'SAHİP',
+                    AppLocalizations.of(context)!.ownedLabel,
                     style: AppTextStyles.labelSmall.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w900,

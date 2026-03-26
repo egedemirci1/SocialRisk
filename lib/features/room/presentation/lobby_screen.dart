@@ -5,14 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
+import '../../../core/audio/audio_service.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/data/task_translations/task_translation_map.dart';
+import '../../../core/providers/locale_provider.dart';
 import '../../../shared/models/enums.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../../shared/widgets/common/report_dialog.dart';
+import '../../../shared/widgets/common/responsive_wrapper.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
@@ -61,7 +66,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
       if (room == null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            ToastUtils.showError(context, 'Ev sahibi odadan ayrildigi icin oda kapatildi.');
+            ToastUtils.showError(context, AppLocalizations.of(context)!.roomClosedHostLeft);
             context.go('/home');
           }
         });
@@ -95,7 +100,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
-          'Lobi',
+          AppLocalizations.of(context)!.lobby,
           style: AppTextStyles.headlineMedium.copyWith(
             color: AppColors.accent,
             letterSpacing: 1.5,
@@ -170,7 +175,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                       ),
                       error: (e, _) => Center(
                         child: Text(
-                          'Hata: $e',
+                          AppLocalizations.of(context)!.error(e.toString()),
                           style: AppTextStyles.titleMedium.copyWith(color: AppColors.primary),
                         ),
                       ),
@@ -202,7 +207,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                         context.go('/task', extra: {'gameId': gameId, 'roomCode': widget.roomCode});
                       } catch (e) {
                         if (!context.mounted) return;
-                        ToastUtils.showError(context, 'Hata: $e');
+                        ToastUtils.showError(context, AppLocalizations.of(context)!.error(e.toString()));
                       } finally {
                         if (mounted) setState(() => _isStartingGame = false);
                       }
@@ -213,8 +218,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
             ),
           ),
           if (_isStartingGame)
-            const Positioned.fill(
-              child: TheaterLoadingScreen(message: 'Oyun Hazırlanıyor...'),
+            Positioned.fill(
+              child: TheaterLoadingScreen(message: AppLocalizations.of(context)!.preparingGame),
             ),
         ],
       ),
@@ -227,7 +232,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
     int playerCount,
     _LobbyLayoutMetrics layout,
   ) {
-    final modeName = room?.mode == GameMode.economy ? 'BORSA' : 'ÇARK';
+    final l = AppLocalizations.of(context)!;
+    final modeName = room?.mode == GameMode.economy ? l.marketModeCapital : l.wheelModeCapital;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: layout.screenPadding),
@@ -246,7 +252,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'ODA KODU',
+                    l.roomCode.toUpperCase(),
                     style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white54,
                       fontSize: 10,
@@ -278,7 +284,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                         border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
                       ),
                       child: Text(
-                        '$modeName MODU',
+                        modeName,
                         style: AppTextStyles.labelSmall.copyWith(
                           color: AppColors.accent,
                           fontSize: 10,
@@ -321,7 +327,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                   icon: const Icon(Icons.copy_rounded, color: AppColors.accent, size: 24),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: widget.roomCode));
-                    ToastUtils.showSuccess(context, 'Kod kopyalandı!');
+                    ToastUtils.showSuccess(context, l.codeCopied);
                   },
                 ),
               ],
@@ -382,7 +388,7 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                'Bir emote seç',
+                AppLocalizations.of(context)!.chooseAnEmote,
                   style: AppTextStyles.headlineMedium.copyWith(
                     color: Colors.white,
                     fontSize: 20,
@@ -408,17 +414,17 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                           if (message.contains('Cooldown:')) {
                             final seconds = message.split('Cooldown:').last.replaceAll('Exception: ', '');
                             if (mounted) {
-                            final context = this.context;
-                            if (context.mounted) {
-                              ToastUtils.showError(context, 'Emote bekleme süresi: $seconds sn');
-                            }
+                              final ctx = this.context;
+                              if (ctx.mounted) {
+                                ToastUtils.showError(ctx, AppLocalizations.of(ctx)!.sendEmoteCooldown(int.tryParse(seconds) ?? 0));
+                              }
                           }
                             return;
                           }
                           if (mounted) {
-                            final context = this.context;
-                            if (context.mounted) {
-                              ToastUtils.showError(context, 'Hata: $e');
+                            final ctx = this.context;
+                            if (ctx.mounted) {
+                              ToastUtils.showError(ctx, AppLocalizations.of(ctx)!.error(e.toString()));
                             }
                           }
                         }
@@ -470,8 +476,8 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                 SizedBox(height: layout.tightGap),
                 Text(
                   (allReady && players.length >= 2)
-                      ? 'Haydi, herkes seni bekliyor!'
-                      : 'Diğer oyuncuların hazırlanmasını bekleyin...',
+                      ? AppLocalizations.of(context)!.everyoneWaitingForYou
+                      : AppLocalizations.of(context)!.waitForOthersToReady,
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: (allReady && players.length >= 2)
                         ? AppColors.accent
@@ -630,7 +636,7 @@ class _PlayerTile extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name + (isCurrentPlayer ? ' (Sen)' : ''),
+                      name + (isCurrentPlayer ? AppLocalizations.of(context)!.youSuffix : ''),
                       style: AppTextStyles.titleLarge.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
@@ -661,7 +667,7 @@ class _PlayerTile extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  isReady ? 'HAZIR' : 'BEKLİYOR',
+                  isReady ? AppLocalizations.of(context)!.ready : AppLocalizations.of(context)!.notReady,
                   style: AppTextStyles.labelSmall.copyWith(
                     color: isReady ? Colors.green : Colors.orange,
                     fontSize: 10,
@@ -741,8 +747,8 @@ class _LobbyCooldownButtonState extends State<_LobbyCooldownButton> {
 
     return StageButton(
       label: isCoolingDown
-          ? 'Emote Bekleme ${remaining.inSeconds + 1}sn'
-          : 'Emote Gönder',
+          ? AppLocalizations.of(context)!.sendEmoteCooldown(remaining.inSeconds + 1)
+          : AppLocalizations.of(context)!.sendEmote,
       icon: isCoolingDown ? Icons.hourglass_bottom_rounded : Icons.emoji_emotions_outlined,
       backgroundColor: isCoolingDown ? Colors.black26 : AppColors.surface,
       textColor: isCoolingDown ? Colors.white54 : AppColors.accent,
@@ -873,7 +879,7 @@ class _ReadyToggleButton extends ConsumerWidget {
     final compact = MediaQuery.sizeOf(context).width < 390;
 
     return StageButton(
-      label: isReady ? 'PARTİYE HAZIRIM!' : 'HENÜZ HAZIR DEĞİLİM',
+      label: isReady ? AppLocalizations.of(context)!.readyForParty : AppLocalizations.of(context)!.notReadyYet,
       icon: isReady ? Icons.check_circle_outline_rounded : Icons.close_rounded,
       backgroundColor: isReady ? AppColors.primary : Colors.black26,
       textColor: isReady ? Colors.white : Colors.white54,
@@ -900,11 +906,11 @@ class _RotatingTooltips extends StatefulWidget {
 class _RotatingTooltipsState extends State<_RotatingTooltips> {
   int _currentIndex = 0;
   late final Timer _timer;
-  final List<String> _tips = [
-    'Parti başlasın! Hazır mısın?',
-    'Vereceğin cevaplar çok konuşulacak!',
-    'Diğer oyuncuların oyları kaderini belirleyecek.',
-    'Riskli görevler ve zor seçimler seni bekliyor.',
+  List<String> get _tips => [
+    AppLocalizations.of(context)!.lobbyTip1,
+    AppLocalizations.of(context)!.lobbyTip2,
+    AppLocalizations.of(context)!.lobbyTip3,
+    AppLocalizations.of(context)!.lobbyTip4,
   ];
 
   @override
@@ -1021,7 +1027,7 @@ class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
       final compact = MediaQuery.sizeOf(context).width < 390;
 
       return StageButton(
-        label: 'OYUNU BAŞLAT',
+        label: AppLocalizations.of(context)!.startGame,
         icon: Icons.play_arrow_rounded,
         backgroundColor: AppColors.surface,
         textColor: Colors.white30,
@@ -1052,7 +1058,7 @@ class _AnimatedHostStartButtonState extends State<_AnimatedHostStartButton>
         );
       },
       child: StageButton(
-        label: 'OYUNU BAŞLAT',
+        label: AppLocalizations.of(context)!.startGame,
         icon: Icons.play_arrow_rounded,
         backgroundColor: AppColors.primary,
         textColor: Colors.white,

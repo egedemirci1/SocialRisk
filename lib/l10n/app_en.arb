@@ -12,6 +12,7 @@
   "joinRoom": "Join Room",
   "profile": "Profile",
   "store": "Store",
+  "copyright": "© 2026 Social Risk",
   "lobby": "Lobby",
   "roomCode": "Room Code",
   "codeCopied": "Code copied!",
@@ -116,9 +117,274 @@
     }
   },
   "storeTitle": "Store & Wallet",
+  "storeSubtitle": "Cosmetics and contents",
   "cosmetics": "Cosmetics",
   "frames": "Frames",
   "badges": "Badges & Titles",
   "owned": "Owned",
-  "you": "You"
+  "you": "You",
+  "settingsTitle": "Settings",
+  "settingsSubtitle": "Sound and Language",
+  "menuMusic": "Menu Music",
+  "soundEffects": "Sound Effects",
+  "on": "On",
+  "off": "Off",
+  "languageSelection": "Language",
+  "newParty": "New Party",
+  "joinParty": "Join Party",
+  "myContent": "My Content",
+  "myContentSubtitle": "Manage your own contents",
+  "logOut": "Log Out",
+  "adminPanel": "Admin Panel",
+  "attention": "ATTENTION!",
+  "logoutWarning": "Are you sure you want to delete your account and log out? This action cannot be undone.",
+  "no": "No",
+  "deleteAndExit": "Delete and Exit",
+  "sendEmote": "Send Emote",
+  "emoteCooldown": "Emote Cooldown",
+  "partyStarting": "PARTY STARTING!",
+  "chooseTask": "Determine Task",
+  "spinWheelSubtitle": "Spin the wheel for a random category!",
+  "taskReveal": "Reveal Task",
+  "startTask": "Start Task",
+  "waitingForPlayerAction": "Waiting for player to perform...",
+  "finishTask": "Finish Task",
+  "taskResultTitle": "TASK DONE",
+  "taskResultSubtitle": "{playerName} completed the performance.",
+  "@taskResultSubtitle": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "taskRejectedTitle": "TASK REJECTED",
+  "taskRejectedSubtitle": "{playerName} refused to do the task.",
+  "@taskRejectedSubtitle": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "audienceScore": "Audience Score",
+  "performanceResult": "Performance Result",
+  "liked": "Liked",
+  "disliked": "Disliked",
+  "undecided": "Undecided",
+  "difficultyMultiplier": "Difficulty Multiplier",
+  "pointsWon": "Points Won",
+  "pointsLost": "Points Lost",
+  "playerRanking": "PLAYER RANKING",
+  "nextTask": "NEXT TASK",
+  "waitingForHostNextTurn": "Waiting for host to start the next turn...",
+  "rateScenario": "RATE SCENARIO",
+  "good": "GOOD",
+  "bad": "BAD",
+  "difficultyLevel": "Difficulty Level",
+  "riskAndReward": "RISK AND REWARD",
+  "chooseDifficultyOneLine": "Determine the difficulty of your performance",
+  "chooseDifficultyTwoLines": "Determine the difficulty of your performance...",
+  "estimatedGain": "Estimated Gain: {points} Points",
+  "@estimatedGain": {
+    "placeholders": {
+      "points": {"type": "int"}
+    }
+  },
+  "waitingDifficulty": "{playerName} is choosing difficulty level...",
+  "@waitingDifficulty": {
+    "placeholders": {
+      "playerName": {"type": "String"}
+    }
+  },
+  "categoriesLabel": "Categories",
+  "homeScreenLoading": "Loading home screen...",
+  "menu": "Menu",
+  "roomClosedHostLeft": "Room closed because the host left.",
+  "preparingGame": "Preparing Game...",
+  "wheelModeCapital": "WHEEL MODE",
+  "marketModeCapital": "MARKET MODE",
+  "chooseAnEmote": "Choose an Emote",
+  "sendEmoteCooldown": "Emote Cooldown {seconds}s",
+  "@sendEmoteCooldown": {
+    "placeholders": {
+      "seconds": {"type": "int"}
+    }
+  },
+  "everyoneWaitingForYou": "Come on, everyone is waiting for you!",
+  "waitForOthersToReady": "Wait for other players to get ready...",
+  "youSuffix": " (You)",
+  "hostDefaultName": "Director",
+  "roomCreating": "Creating Party...",
+  "newPartyHostTitle": "Create New Party",
+  "endConditionLabel": "End Condition",
+  "gameModeLabel": "Game Mode",
+  "startPartyButton": "Start Party",
+  "roundLabel": "Round",
+  "pointLabel": "Point",
+  "classicModeTitle": "Classic Party",
+  "economyModeTitle": "Boss Party",
+  "classicModeDesc": "Spin the wheel and face risky penalties from random categories. Your only chance to collect points is courage!",
+  "economyModeDesc": "Earn coins by doing tasks; use these coins to impose penalties on others and avoid risks. The most ruthless wins.",
+  "singleCategoryEconomyWarn": "When a single category is selected, only the Boss mode can be used.",
+  "singleCategoryEconomyAutoChange": "A single category was selected. The game mode was automatically changed to Boss mode.",
+  "minOneCategoryWarn": "You must select at least 1 category.",
+  "pleaseEnter6DigitCode": "Please enter the 6-digit code",
+  "playerDefaultName": "Player",
+  "partyNotFound": "Party not found: {error}",
+  "@partyNotFound": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "connectingToParty": "Connecting to party...",
+  "joinPartyTitle": "Join Party",
+  "enterPartyCode": "Enter Party Code",
+  "enterPartyCodeDesc": "Join the fun by entering the 6-digit party code shared by your friends.",
+  "determineYourTask": "Determine Your Task",
+  "hiddenRound": "HIDDEN ROUND",
+  "taskCapital": "TASK",
+  "nextTaskHidden": "Next Task is Hidden",
+  "yourContentHere": "Your Content is Here:",
+  "contentForPlayer": "{player} Content:",
+  "@contentForPlayer": {
+    "placeholders": {
+      "player": {"type": "String"}
+    }
+  },
+  "openCardToViewTask": "Open the card to view the current task...",
+  "openTask": "Reveal Task",
+  "rejectTaskPoint": "Reject Task (-50 Points)",
+  "areYouSurePoint": "ARE YOU SURE? (-50)",
+  "readingContentSubtitle": "{player} is reading the content...",
+  "@readingContentSubtitle": {
+    "placeholders": {
+      "player": {"type": "String"}
+    }
+  },
+  "categoryVariable": "Category: {category}",
+  "@categoryVariable": {
+    "placeholders": {
+      "category": {"type": "String"}
+    }
+  },
+  "gameNotFound": "Game Not Found",
+  "determineYourDifficulty": "Determine the difficulty of your performance...",
+  "determineYourDifficultyShort": "Determine your difficulty",
+  "waitingCapital": "WAITING",
+  "playerChoosingDifficulty": "{player} is choosing the difficulty level...",
+  "@playerChoosingDifficulty": {
+    "placeholders": {
+      "player": {"type": "String"}
+    }
+  },
+  "easyCapital": "EASY",
+  "mediumCapital": "MEDIUM",
+  "hardCapital": "HARD",
+  "estimatedEarningsPoint": "Estimated Earnings: {point} Points",
+  "@estimatedEarningsPoint": {
+    "placeholders": {
+      "point": {"type": "int"}
+    }
+  },
+  "taskStarted": "TASK STARTED",
+  "contentLabel": "CONTENT:",
+  "displayedContentLabel": "DISPLAYED CONTENT:",
+  "hiddenContentLabel": "HIDDEN CONTENT",
+  "taskNoRole": "Role not specified",
+  "finishTaskInstruction": "If you completed the task, please finish your performance.",
+  "finishTaskButton": "Finish Task",
+  "waitingForPerformance": "Waiting for the player to perform...",
+  "waitingForPlayerCapital": "Waiting for Player...",
+  "taskRejected": "TASK REJECTED",
+  "roundOver": "ROUND OVER",
+  "playerRefusedRole": "{player} refused to perform the role.",
+  "@playerRefusedRole": {
+    "placeholders": {
+      "player": {"type": "String"}
+    }
+  },
+  "playerCompletedPerformance": "{player} completed the performance.",
+  "@playerCompletedPerformance": {
+    "placeholders": {
+      "player": {"type": "String"}
+    }
+  },
+  "likedResult": "Liked",
+  "dislikedResult": "Disliked",
+  "neutralResult": "Neutral",
+  "gainedPoints": "Points Gained",
+  "lostPoints": "Points Lost",
+  "partyOver": "PARTY OVER",
+  "waitingForFinal": "Waiting for the final...",
+  "waitingForHostNextRound": "Waiting for the host to proceed to the next round...",
+  "evaluateScenario": "EVALUATE SCENARIO",
+  "goodUpper": "GOOD",
+  "badUpper": "BAD",
+  "winnerCapital": "WINNER",
+  "pointsCapital": "POINTS",
+  "negativeScoreMessage": "You can't go below zero my friend\nYou didn't earn any balance!",
+  "pointsAddedToBalance": "+{point} Points added to your balance",
+  "@pointsAddedToBalance": {
+    "placeholders": {
+      "point": {"type": "int"}
+    }
+  },
+  "returnToLobby": "RETURN TO LOBBY",
+  "scenarioSelection": "SCENARIO SELECTION",
+  "nextPickerIsYou": "YOU ARE THE NEXT PLAYER!",
+  "playerIsPicking": "{player} IS PICKING...",
+  "@playerIsPicking": {
+    "placeholders": {
+      "player": {"type": "String"}
+    }
+  },
+  "pickCount": "PICK {current}/{total}",
+  "@pickCount": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "partyExperience": "PARTY EXPERIENCE",
+  "hotDeal": "Hot\nDeal",
+  "basePoint": "BASE POINT",
+  "gameEndedOrHostLeft": "Game ended or host left.",
+  "leftPlayer": "Left Player",
+  "waitingQueue": "WAITING QUEUE",
+  "playerIsPerforming": "{player} is performing...",
+  "@playerIsPerforming": {
+    "placeholders": {
+      "player": {"type": "String"}
+    }
+  },
+  "playerIsDecidingRole": "{player} is deciding role...",
+  "@playerIsDecidingRole": {
+    "placeholders": {
+      "player": {"type": "String"}
+    }
+  },
+  "votingWillStartWhenTurnEnds": "Voting will start when the turn ends",
+  "preparingParty": "Preparing Party...",
+  "info": "Information",
+  "about": "Credits / About",
+  "appAndTeamInfo": "App and team information",
+  "termsOfUse": "Terms of Use",
+  "legalTermsAndConditions": "Legal terms and conditions",
+  "close": "Close",
+  "termsOfUseContent": "Last update: 2026\n\n1) Acceptance and Scope\nBy using this application, you agree to these Terms of Use. If you do not agree, do not use the application.\n\n2) Appropriate Use\nUsers are obligated not to use automation tools for cheating, harassment, hate speech, threats, sharing illegal content, violating account security, or disrupting service.\n\n3) Account and Security\nYou are responsible for actions taken with your account. You must report suspicious access or security breaches immediately.\n\n4) Content and Community Rules\nUser-generated content must comply with community rules. Violating content may be removed without notice, and accounts may face temporary or permanent restrictions.\n\n5) Intellectual Property\nApp interface, brand elements, and software components belong to respective owners. Unauthorized copying, distribution, or reverse engineering is prohibited.\n\n6) Service Changes and Interruptions\nService may be modified, restricted, or temporarily suspended for technical maintenance, security, or business requirements.\n\n7) Limitation of Liability\nThe application is provided \"as is\". To the extent permitted by law, liability for indirect or incidental damages is not accepted.\n\n8) Account Termination\nAccess may be suspended or terminated in case of violation of terms of use or community rules.\n\n9) Updating Terms\nTerms of Use may be updated from time to time. Current text is valid from the moment it is published in the app.\n\n10) Contact\nIn-app communication channels should be used for legal notices and support requests.",
+  "notReadyYet": "NOT READY YET",
+  "readyForParty": "READY FOR PARTY!",
+  "lobbyTip1": "Let the party begin! Are you ready?",
+  "lobbyTip2": "Your answers will be talked about a lot!",
+  "lobbyTip3": "Other players' votes will determine your fate.",
+  "lobbyTip4": "Risky tasks and tough choices await you.",
+  "spinning": "Spinning...",
+  "pointsLowercase": "{points} points",
+  "titlesTab": "Titles",
+  "framesTab": "Frames",
+  "scenariosTab": "Scenarios",
+  "ownedLabel": "OWNED",
+  "itemPurchased": "{name} is now in your wardrobe!",
+  "insufficientBalance": "Insufficient balance",
+  "buyError": "Error: {message}",
+  "noItems": "No items to display yet.",
+  "comingSoon": "COMING SOON...",
+  "scenariosComingSoon": "Special Scenarios and Theme Packs are Coming Soon!"
 }

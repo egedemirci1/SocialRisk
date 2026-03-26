@@ -328,7 +328,9 @@ void main() {
         (i) => CosmeticItemEntity(
           id: 'frame_$i',
           name: 'Çerçeve ${i + 1}',
+          nameEn: 'Frame ${i + 1}',
           description: 'Frame $i',
+          descriptionEn: 'Frame $i',
           imageUrl: '🖼️',
           price: 100,
           type: 'frame',
@@ -457,7 +459,9 @@ void main() {
         const CosmeticItemEntity(
           id: 'frame_fire',
           name: 'Ateş Çerçevesi',
+          nameEn: 'Fire Frame',
           description: '',
+          descriptionEn: '',
           imageUrl: '🔥',
           price: 500,
           type: 'frame',
@@ -512,7 +516,9 @@ void main() {
         const CosmeticItemEntity(
           id: 'frame_fire',
           name: 'Ateş Çerçevesi',
+          nameEn: 'Fire Frame',
           description: '',
+          descriptionEn: '',
           imageUrl: '🔥',
           price: 500,
           type: 'frame',

@@ -56,7 +56,9 @@ void main() {
         const CosmeticItemEntity(
           id: 'title_king',
           name: 'Kral',
+          nameEn: 'King',
           description: 'Unvan',
+          descriptionEn: 'Title',
           imageUrl: '👑',
           price: 1000,
           type: 'title',
@@ -156,7 +158,9 @@ void main() {
       const kral = CosmeticItemEntity(
         id: 'title_king',
         name: 'Kral',
+        nameEn: 'King',
         description: 'Tüm alanların hükümdarı.',
+        descriptionEn: 'Ruler of all realms.',
         imageUrl: '👑',
         price: 500,
         type: 'title',
@@ -207,7 +211,9 @@ void main() {
       const kral = CosmeticItemEntity(
         id: 'title_king',
         name: 'Kral',
+        nameEn: 'King',
         description: 'Unvan',
+        descriptionEn: 'Title',
         imageUrl: '👑',
         price: 500,
         type: 'title',
@@ -247,7 +253,9 @@ void main() {
         const CosmeticItemEntity(
           id: 'title_king',
           name: 'Kral',
+          nameEn: 'King',
           description: 'Unvan',
+          descriptionEn: 'Title',
           imageUrl: '👑',
           price: 1000,
           type: 'title',
@@ -255,7 +263,9 @@ void main() {
         const CosmeticItemEntity(
           id: 'frame_fire',
           name: 'Ateş Çerçevesi',
+          nameEn: 'Fire Frame',
           description: 'Ateş efekti',
+          descriptionEn: 'Fire effect',
           imageUrl: '🔥',
           price: 500,
           type: 'frame',
@@ -372,7 +382,9 @@ void main() {
       const kral = CosmeticItemEntity(
         id: 'title_king',
         name: 'Kral',
+        nameEn: 'King',
         description: 'Unvan',
+        descriptionEn: 'Title',
         imageUrl: '👑',
         price: 500,
         type: 'title',

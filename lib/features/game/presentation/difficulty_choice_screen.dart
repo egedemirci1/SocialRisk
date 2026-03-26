@@ -9,6 +9,7 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/models/enums.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../domain/game_entity.dart';
@@ -55,7 +56,7 @@ class _DifficultyChoiceScreenState
           .chooseDifficulty(gameId: widget.gameId, difficulty: difficulty);
     } catch (e) {
       if (mounted) {
-        ToastUtils.showError(context, 'Hata: $e');
+        ToastUtils.showError(context, AppLocalizations.of(context)!.error(e.toString()));
         setState(() => _isLoading = false);
       }
     }
@@ -100,9 +101,9 @@ class _DifficultyChoiceScreenState
     return gameAsync.when(
       data: (game) {
         if (game == null) {
-          return const Scaffold(
+          return Scaffold(
             backgroundColor: Colors.transparent,
-            body: Center(child: Text('Oyun bulunamadı')),
+            body: Center(child: Text(AppLocalizations.of(context)!.gameNotFound)),
           );
         }
 
@@ -111,7 +112,7 @@ class _DifficultyChoiceScreenState
         final players = roomAsync.value?.players ?? [];
         final currentPlayer =
             players.where((p) => p.id == game.currentPlayerId).firstOrNull;
-        final playerName = currentPlayer?.name ?? 'Oyuncu';
+        final playerName = currentPlayer?.name ?? AppLocalizations.of(context)!.playerDefaultName;
 
         if (game.status != GameStatus.choosingDifficulty && !_hasRedirected) {
           _hasRedirected = true;
@@ -173,7 +174,7 @@ class _DifficultyChoiceScreenState
                                     ),
                                   ),
                                   child: Text(
-                                    'Kategori: ${game.selectedCategory != null ? _toTurkishUpper(game.selectedCategory!) : "?"}',
+                                    '${AppLocalizations.of(context)!.categoryVariable(game.selectedCategory != null ? _toTurkishUpper(game.selectedCategory!) : "?")}',
                                     style: AppTextStyles.titleMedium.copyWith(
                                       color: AppColors.accent,
                                       fontWeight: FontWeight.w900,
@@ -207,7 +208,7 @@ class _DifficultyChoiceScreenState
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.background,
-        body: Center(child: Text('Hata: $e')),
+        body: Center(child: Text(AppLocalizations.of(context)!.error(e.toString()))),
       ),
     );
   }
@@ -225,7 +226,7 @@ class _DifficultyChoiceScreenState
             children: [
               Expanded(
                 child: _buildDifficultyCard(
-                  title: 'KOLAY',
+                  title: AppLocalizations.of(context)!.easyCapital,
                   multiplier: '1x',
                   estimatedPoints: game.mode == GameMode.economy &&
                           game.selectedCategory != null
@@ -243,7 +244,7 @@ class _DifficultyChoiceScreenState
               SizedBox(height: layout.cardGap),
               Expanded(
                 child: _buildDifficultyCard(
-                  title: 'ORTA',
+                  title: AppLocalizations.of(context)!.mediumCapital,
                   multiplier: '2x',
                   estimatedPoints: game.mode == GameMode.economy &&
                           game.selectedCategory != null
@@ -261,7 +262,7 @@ class _DifficultyChoiceScreenState
               SizedBox(height: layout.cardGap),
               Expanded(
                 child: _buildDifficultyCard(
-                  title: 'ZOR',
+                  title: AppLocalizations.of(context)!.hardCapital,
                   multiplier: '3x',
                   estimatedPoints: game.mode == GameMode.economy &&
                           game.selectedCategory != null
@@ -322,7 +323,7 @@ class _DifficultyChoiceScreenState
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    'BEKLENİYOR',
+                    AppLocalizations.of(context)!.waitingCapital,
                     style: AppTextStyles.titleLarge.copyWith(
                       color: AppColors.accent,
                       letterSpacing: layout.heroLetterSpacing,
@@ -351,7 +352,7 @@ class _DifficultyChoiceScreenState
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        '$playerName zorluk seviyesini seçiyor...',
+                        AppLocalizations.of(context)!.playerChoosingDifficulty(playerName),
                         style: AppTextStyles.titleLarge.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
@@ -433,7 +434,7 @@ class _DifficultyChoiceScreenState
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    'Zorluk Seviyesi',
+                    AppLocalizations.of(context)!.difficultyLevel,
                     style: AppTextStyles.titleLarge.copyWith(
                       color: AppColors.accent,
                       letterSpacing: layout.heroLetterSpacing,
@@ -462,8 +463,8 @@ class _DifficultyChoiceScreenState
                             (bodyHeight < 76 ? 0.9 : 1.0),
                       );
                       final subtitleText = oneLineSubtitle
-                          ? 'Performansının zorluğunu sen belirle'
-                          : 'Performansının zorluğunu sen belirle...';
+                          ? AppLocalizations.of(context)!.determineYourDifficultyShort
+                          : AppLocalizations.of(context)!.determineYourDifficulty;
                       final bodySpacing = oneLineSubtitle
                           ? min(subtitleGap, 3.0)
                           : subtitleGap;
@@ -586,7 +587,7 @@ class _DifficultyChoiceScreenState
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
               child: Text(
-                'Tahmini Kazanç: $estimatedPoints Puan',
+                AppLocalizations.of(context)!.estimatedEarningsPoint(estimatedPoints),
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: Colors.white70,
                   fontWeight: FontWeight.bold,

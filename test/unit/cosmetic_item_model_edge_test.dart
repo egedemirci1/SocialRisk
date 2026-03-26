@@ -79,7 +79,9 @@ void main() {
         const model = CosmeticItemModel(
           id: 'ent_1',
           name: 'Elmas Unvan',
+          nameEn: 'Diamond Title',
           description: 'Parlak bir unvan',
+          descriptionEn: 'Shiny title',
           imageUrl: 'https://img.url/diamond.png',
           price: 1000,
           type: 'title',

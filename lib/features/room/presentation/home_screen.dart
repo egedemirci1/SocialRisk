@@ -14,10 +14,12 @@ import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
 import '../../../core/audio/audio_service.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Ana menü ekranı — Parti Temalı
 class HomeScreen extends ConsumerStatefulWidget {
@@ -55,12 +57,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
+        final l = AppLocalizations.of(context)!;
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(
                   child: Container(
@@ -74,7 +78,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Menü',
+                  l.menu,
                   style: AppTextStyles.headlineMedium.copyWith(
                     color: Colors.white,
                     fontSize: 20,
@@ -85,14 +89,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ListTile(
                   leading: const Icon(Icons.settings_rounded, color: AppColors.accent),
                   title: Text(
-                    'Ayarlar',
+                    l.settingsTitle, // Changed from 'Ayarlar'
                     style: AppTextStyles.titleSmall.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   subtitle: Text(
-                    'Ses ve Dil',
+                    l.settingsSubtitle, // Changed from 'Ses ve Dil'
                     style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12),
                   ),
                   onTap: () {
@@ -104,14 +108,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ListTile(
                   leading: const Icon(Icons.shopping_bag_rounded, color: AppColors.accent),
                   title: Text(
-                    'Mağaza',
+                    l.store, // Changed from 'Mağaza'
                     style: AppTextStyles.titleSmall.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   subtitle: Text(
-                    'Kozmetikler ve içerikler',
+                    l.storeSubtitle, // Changed from 'Kozmetikler ve içerikler'
                     style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12),
                   ),
                   onTap: () {
@@ -123,14 +127,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ListTile(
                   leading: const Icon(Icons.menu_book_rounded, color: AppColors.accent),
                   title: Text(
-                    'İçeriklerim',
+                    l.myContent, // Changed from 'İçeriklerim'
                     style: AppTextStyles.titleSmall.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   subtitle: Text(
-                    'Kendi içeriklerini yönet',
+                    l.myContentSubtitle, // Changed from 'Kendi içeriklerini yönet'
                     style: AppTextStyles.labelSmall.copyWith(color: Colors.white54, fontSize: 12),
                   ),
                   onTap: () {
@@ -143,7 +147,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ListTile(
                   leading: const Icon(Icons.logout_rounded, color: AppColors.error),
                   title: Text(
-                    'Çıkış Yap',
+                    l.logOut, // Changed from 'Çıkış Yap'
                     style: AppTextStyles.titleSmall.copyWith(
                       color: AppColors.error,
                       fontWeight: FontWeight.w700,
@@ -158,7 +162,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SizedBox(height: 16),
                 Center(
                   child: Text(
-                    '2026 Tüm Hakları Saklıdır',
+                    l.copyright, // Changed from '2026 Tüm Hakları Saklıdır'
                     style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white38,
                       fontSize: 12,
@@ -169,13 +173,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ],
             ),
           ),
-        );
+        ),
+      );
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final user = ref.watch(currentUserProvider);
     final userProfileAsync = user != null
         ? ref.watch(watchUserProfileProvider(user.uid))
@@ -184,7 +190,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
 
     final profile = userProfileAsync.value;
-    final displayName = profile?.displayName ?? user?.displayName ?? 'Oyuncu';
+    final displayName = profile?.displayName ?? user?.displayName ?? l.player; // Changed from 'Oyuncu'
     final cosmetics = cosmeticsAsync.value ?? [];
 
     // Ana menü hazır olana kadar yükleme ekranında kal:
@@ -206,7 +212,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       return Scaffold(
         backgroundColor: AppColors.background,
         body: TheaterLoadingScreen(
-          message: 'Ana menü hazırlanıyor...',
+          message: l.homeScreenLoading, // Changed from 'Ana menü hazırlanıyor...'
           progress: loadingProgress,
         ),
       );
@@ -355,11 +361,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildActions(BuildContext context, WidgetRef ref, User? user) {
+    final l = AppLocalizations.of(context)!; // Added for l10n
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         StageButton(
-          label: 'Yeni Parti Başlat',
+          label: l.newParty, // Changed from 'Yeni Parti Başlat'
           icon: Icons.add_circle_outline_rounded,
           backgroundColor: AppColors.primary,
           textColor: AppColors.background,
@@ -368,7 +375,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         const SizedBox(height: 16),
         StageButton(
-          label: 'Partiye Katıl',
+          label: l.joinParty, // Changed from 'Partiye Katıl'
           icon: Icons.login_rounded,
           backgroundColor: AppColors.secondary,
           textColor: Colors.white,
@@ -380,7 +387,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             Expanded(
               child: StageButton(
-                label: 'Mağaza',
+                label: l.store, // Changed from 'Mağaza'
                 icon: Icons.shopping_bag_rounded,
                 backgroundColor: AppColors.surface,
                 textColor: AppColors.accent,
@@ -419,6 +426,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _handleLogout(BuildContext context, WidgetRef ref) async {
     final user = ref.read(currentUserProvider);
     if (user?.isAnonymous == true) {
+      final l = AppLocalizations.of(context)!;
       final confirm = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
@@ -441,9 +449,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ],
           ),
-          content: const Text(
-            'Misafir olarak oynuyorsun. Çıkış yaparsan puan, rütbe ve kozmetikler kalıcı olarak silinir.\n\nYine de çıkmak istiyor musun?',
-            style: TextStyle(color: Colors.white70),
+          content: Text(
+            l.logoutWarning,
+            style: const TextStyle(color: Colors.white70),
             textAlign: TextAlign.center,
           ),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
@@ -458,7 +466,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               onPressed: () => Navigator.pop(context, false),
-              child: Text('Hayır', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w800)),
+              child: Text(l.no, style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w800)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -468,7 +476,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               onPressed: () => Navigator.pop(context, true),
-              child: Text('Sil ve Çık', style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
+              child: Text(l.deleteAndExit, style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
             ),
           ],
         ),
@@ -492,13 +500,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildFooter(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         TextButton(
           onPressed: () => context.push('/profile'),
           child: Text(
-            'Profil',
+            l.profile,
             style: AppTextStyles.titleSmall.copyWith(color: AppColors.accent,
               fontSize: 14,
               fontWeight: FontWeight.w800,),
@@ -513,7 +522,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         TextButton(
           onPressed: () => _showSettingsSheet(context, ref),
           child: Text(
-            'Menü',
+            l.menu,
             style: AppTextStyles.titleSmall.copyWith(color: AppColors.accent,
               fontSize: 14,
               fontWeight: FontWeight.w800,),

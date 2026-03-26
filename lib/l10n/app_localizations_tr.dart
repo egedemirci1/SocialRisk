@@ -45,6 +45,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get store => 'Mağaza';
 
   @override
+  String get copyright => '© 2026 Sosyal Risk';
+
+  @override
   String get lobby => 'Lobi';
 
   @override
@@ -239,6 +242,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get storeTitle => 'Mağaza & Cüzdan';
 
   @override
+  String get storeSubtitle => 'Kozmetikler ve içerikler';
+
+  @override
   String get cosmetics => 'Kozmetikler';
 
   @override
@@ -252,4 +258,584 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get you => 'Sen';
+
+  @override
+  String get settingsTitle => 'Ayarlar';
+
+  @override
+  String get settingsSubtitle => 'Ses ve Dil';
+
+  @override
+  String get menuMusic => 'Menü Müziği';
+
+  @override
+  String get soundEffects => 'Ses Efektleri';
+
+  @override
+  String get on => 'Açık';
+
+  @override
+  String get off => 'Kapalı';
+
+  @override
+  String get languageSelection => 'Dil Seçimi';
+
+  @override
+  String get newParty => 'Yeni Parti Başlat';
+
+  @override
+  String get joinParty => 'Partiye Katıl';
+
+  @override
+  String get myContent => 'İçeriklerim';
+
+  @override
+  String get myContentSubtitle => 'Kendi içeriklerini yönet';
+
+  @override
+  String get logOut => 'Çıkış Yap';
+
+  @override
+  String get adminPanel => 'Yönetici Paneli';
+
+  @override
+  String get attention => 'DİKKAT!';
+
+  @override
+  String get logoutWarning =>
+      'Hesabınızı silmek ve çıkış yapmak istediğinize emin misiniz? Bu işlem geri alınamaz.';
+
+  @override
+  String get no => 'Hayır';
+
+  @override
+  String get deleteAndExit => 'Sil ve Çık';
+
+  @override
+  String get sendEmote => 'Emote Gönder';
+
+  @override
+  String get emoteCooldown => 'Emote Bekleme';
+
+  @override
+  String get partyStarting => 'PARTİ BAŞLIYOR!';
+
+  @override
+  String get chooseTask => 'Görevini Belirle';
+
+  @override
+  String get spinWheelSubtitle => 'Rastgele Kategori İçin Çarkı Çevir!';
+
+  @override
+  String get taskReveal => 'Görevi Aç';
+
+  @override
+  String get startTask => 'Görevi Başlat';
+
+  @override
+  String get waitingForPlayerAction =>
+      'Oyuncunun performansını sergilemesi bekleniyor...';
+
+  @override
+  String get finishTask => 'Görevi Bitir';
+
+  @override
+  String get taskResultTitle => 'TUR BİTTİ';
+
+  @override
+  String taskResultSubtitle(String playerName) {
+    return '$playerName performansını tamamladı.';
+  }
+
+  @override
+  String get taskRejectedTitle => 'GÖREV REDDEDİLDİ';
+
+  @override
+  String taskRejectedSubtitle(String playerName) {
+    return '$playerName rolünü yapmayı reddetti.';
+  }
+
+  @override
+  String get audienceScore => 'Seyirci Puanı';
+
+  @override
+  String get performanceResult => 'Performans Sonucu';
+
+  @override
+  String get liked => 'Beğenildi';
+
+  @override
+  String get disliked => 'Beğenilmedi';
+
+  @override
+  String get undecided => 'Kararsız';
+
+  @override
+  String get difficultyMultiplier => 'Zorluk Çarpanı';
+
+  @override
+  String get pointsWon => 'Kazanılan Puan';
+
+  @override
+  String get pointsLost => 'Kaybedilen Puan';
+
+  @override
+  String get playerRanking => 'OYUNCU SIRALAMASI';
+
+  @override
+  String get nextTask => 'SIRADAKİ GÖREV';
+
+  @override
+  String get waitingForHostNextTurn =>
+      'Yöneticinin yeni tura geçmesi bekleniyor...';
+
+  @override
+  String get rateScenario => 'SENARYOYU DEĞERLENDİR';
+
+  @override
+  String get good => 'İYİ';
+
+  @override
+  String get bad => 'KÖTÜ';
+
+  @override
+  String get difficultyLevel => 'Zorluk Seviyesi';
+
+  @override
+  String get riskAndReward => 'RİSK VE ÖDÜL';
+
+  @override
+  String get chooseDifficultyOneLine => 'Performansının zorluğunu sen belirle';
+
+  @override
+  String get chooseDifficultyTwoLines =>
+      'Performansının zorluğunu sen belirle...';
+
+  @override
+  String estimatedGain(int points) {
+    return 'Tahmini Kazanç: $points Puan';
+  }
+
+  @override
+  String waitingDifficulty(String playerName) {
+    return '$playerName zorluk seviyesini seçiyor...';
+  }
+
+  @override
+  String get categoriesLabel => 'Kategoriler';
+
+  @override
+  String get homeScreenLoading => 'Ana menü yükleniyor...';
+
+  @override
+  String get menu => 'Menü';
+
+  @override
+  String get roomClosedHostLeft =>
+      'Ev sahibi odadan ayrıldığı için oda kapatıldı.';
+
+  @override
+  String get preparingGame => 'Oyun Hazırlanıyor...';
+
+  @override
+  String get wheelModeCapital => 'ÇARK MODU';
+
+  @override
+  String get marketModeCapital => 'BORSA MODU';
+
+  @override
+  String get chooseAnEmote => 'Bir Emote Seç';
+
+  @override
+  String sendEmoteCooldown(int seconds) {
+    return 'Emote Bekleme ${seconds}sn';
+  }
+
+  @override
+  String get everyoneWaitingForYou => 'Haydi, herkes seni bekliyor!';
+
+  @override
+  String get waitForOthersToReady =>
+      'Diğer oyuncuların hazırlanmasını bekleyin...';
+
+  @override
+  String get youSuffix => ' (Sen)';
+
+  @override
+  String get hostDefaultName => 'Yönetmen';
+
+  @override
+  String get roomCreating => 'Parti Kuruluyor...';
+
+  @override
+  String get newPartyHostTitle => 'Yeni Parti Kur';
+
+  @override
+  String get endConditionLabel => 'Oyun Sonu';
+
+  @override
+  String get gameModeLabel => 'Oyun Modu';
+
+  @override
+  String get startPartyButton => 'Partiyi Başlat';
+
+  @override
+  String get roundLabel => 'Tur';
+
+  @override
+  String get pointLabel => 'Puan';
+
+  @override
+  String get classicModeTitle => 'Klasik Parti';
+
+  @override
+  String get economyModeTitle => 'Patron Parti';
+
+  @override
+  String get classicModeDesc =>
+      'Şans çarkını çevir ve rastgele kategoriden gelen riskli cezalarla yüzleş. Puan toplamak için tek şansın cesaret!';
+
+  @override
+  String get economyModeDesc =>
+      'Görevleri tamamlayarak coin kazan; bu coinlerle başkalarına ceza kitle, risklerden kurtul. Kim daha acımasızsa o kazanır.';
+
+  @override
+  String get singleCategoryEconomyWarn =>
+      'Tek kategori seçildiğinde sadece Borsa modu kullanılabilir.';
+
+  @override
+  String get singleCategoryEconomyAutoChange =>
+      'Tek kategori seçildi. Oyun modu otomatik Borsa moduna alındı.';
+
+  @override
+  String get minOneCategoryWarn => 'En az 1 kategori seçmelisiniz.';
+
+  @override
+  String get pleaseEnter6DigitCode => 'Lütfen 6 haneli kodu gir';
+
+  @override
+  String get playerDefaultName => 'Oyuncu';
+
+  @override
+  String partyNotFound(String error) {
+    return 'Parti bulunamadı: $error';
+  }
+
+  @override
+  String get connectingToParty => 'Partiye bağlanılıyor...';
+
+  @override
+  String get joinPartyTitle => 'Partiye Katıl';
+
+  @override
+  String get enterPartyCode => 'Parti Kodunu Gir';
+
+  @override
+  String get enterPartyCodeDesc =>
+      'Arkadaşlarının paylaştığı 6 haneli parti kodunu girerek eğlenceye dahil ol.';
+
+  @override
+  String get determineYourTask => 'Görevini Belirle';
+
+  @override
+  String get hiddenRound => 'GİZLİ TUR';
+
+  @override
+  String get taskCapital => 'GÖREV';
+
+  @override
+  String get nextTaskHidden => 'Sıradaki Görev Gizli';
+
+  @override
+  String get yourContentHere => 'İçeriğin Burada:';
+
+  @override
+  String contentForPlayer(String player) {
+    return '$player İçeriği:';
+  }
+
+  @override
+  String get openCardToViewTask => 'Mevcut görevi görmek için kartı aç...';
+
+  @override
+  String get openTask => 'Görevi Aç';
+
+  @override
+  String get rejectTaskPoint => 'Görevi Reddet (-50 Puan)';
+
+  @override
+  String get areYouSurePoint => 'EMİN MİSİN? (-50)';
+
+  @override
+  String readingContentSubtitle(String player) {
+    return '$player İçeriği okuyor...';
+  }
+
+  @override
+  String categoryVariable(String category) {
+    return 'Kategori: $category';
+  }
+
+  @override
+  String get gameNotFound => 'Oyun bulunamadı';
+
+  @override
+  String get determineYourDifficulty =>
+      'Performansının zorluğunu sen belirle...';
+
+  @override
+  String get determineYourDifficultyShort =>
+      'Performansının zorluğunu sen belirle';
+
+  @override
+  String get waitingCapital => 'BEKLENİYOR';
+
+  @override
+  String playerChoosingDifficulty(String player) {
+    return '$player zorluk seviyesini seçiyor...';
+  }
+
+  @override
+  String get easyCapital => 'KOLAY';
+
+  @override
+  String get mediumCapital => 'ORTA';
+
+  @override
+  String get hardCapital => 'ZOR';
+
+  @override
+  String estimatedEarningsPoint(int point) {
+    return 'Tahmini Kazanç: $point Puan';
+  }
+
+  @override
+  String get taskStarted => 'GÖREV BAŞLADI';
+
+  @override
+  String get contentLabel => 'İÇERİK:';
+
+  @override
+  String get displayedContentLabel => 'SERGİLENEN İÇERİK:';
+
+  @override
+  String get hiddenContentLabel => 'GİZLİ İÇERİK';
+
+  @override
+  String get taskNoRole => 'Rol belirtilmemiş';
+
+  @override
+  String get finishTaskInstruction =>
+      'Görevi tamamladıysanız performansınızı bitirin.';
+
+  @override
+  String get finishTaskButton => 'Görevi Bitir';
+
+  @override
+  String get waitingForPerformance =>
+      'Oyuncunun performansını sergilemesi bekleniyor...';
+
+  @override
+  String get waitingForPlayerCapital => 'Oyuncu Bekleniyor...';
+
+  @override
+  String get taskRejected => 'GÖREV REDDEDİLDİ';
+
+  @override
+  String get roundOver => 'TUR BİTTİ';
+
+  @override
+  String playerRefusedRole(String player) {
+    return '$player rolünü yapmayı reddetti.';
+  }
+
+  @override
+  String playerCompletedPerformance(String player) {
+    return '$player performasını tamamladı.';
+  }
+
+  @override
+  String get likedResult => 'Beğenildi';
+
+  @override
+  String get dislikedResult => 'Beğenilmedi';
+
+  @override
+  String get neutralResult => 'Kararsız';
+
+  @override
+  String get gainedPoints => 'Kazanılan Puan';
+
+  @override
+  String get lostPoints => 'Kaybedilen Puan';
+
+  @override
+  String get partyOver => 'PARTİ BİTTİ';
+
+  @override
+  String get waitingForFinal => 'Final bekleniyor...';
+
+  @override
+  String get waitingForHostNextRound =>
+      'Yöneticinin yeni tura geçmesi bekleniyor...';
+
+  @override
+  String get evaluateScenario => 'SENARYOYU DEĞERLENDİR';
+
+  @override
+  String get goodUpper => 'İYİ';
+
+  @override
+  String get badUpper => 'KÖTÜ';
+
+  @override
+  String get winnerCapital => 'KAZANAN';
+
+  @override
+  String get pointsCapital => 'PUAN';
+
+  @override
+  String get negativeScoreMessage =>
+      'Eksilere düşmezsin be kardeşim\nHiç bakiye kazanamadın!';
+
+  @override
+  String pointsAddedToBalance(int point) {
+    return '+$point Puan bakiyenize eklendi';
+  }
+
+  @override
+  String get returnToLobby => 'LOBİYE DÖN';
+
+  @override
+  String get scenarioSelection => 'SENARYO SEÇİMİ';
+
+  @override
+  String get nextPickerIsYou => 'SIRADAKİ OYUNCU SENSİN!';
+
+  @override
+  String playerIsPicking(String player) {
+    return '$player SEÇİYOR...';
+  }
+
+  @override
+  String pickCount(int current, int total) {
+    return 'SEÇİM $current/$total';
+  }
+
+  @override
+  String get partyExperience => 'PARTİ DENEYİMİ';
+
+  @override
+  String get hotDeal => 'Sıcak\nFırsat';
+
+  @override
+  String get basePoint => 'TABAN PUAN';
+
+  @override
+  String get gameEndedOrHostLeft => 'Oyun sona erdi veya ev sahibi ayrıldı.';
+
+  @override
+  String get leftPlayer => 'Ayrılan Oyuncu';
+
+  @override
+  String get waitingQueue => 'BEKLEME SIRASI';
+
+  @override
+  String playerIsPerforming(String player) {
+    return '$player performansını sergiliyor...';
+  }
+
+  @override
+  String playerIsDecidingRole(String player) {
+    return '$player rolünü belirliyor...';
+  }
+
+  @override
+  String get votingWillStartWhenTurnEnds => 'Sıra bittiğinde oylama başlayacak';
+
+  @override
+  String get preparingParty => 'Parti Hazırlanıyor...';
+
+  @override
+  String get info => 'Bilgilendirme';
+
+  @override
+  String get about => 'Credits / Hakkında';
+
+  @override
+  String get appAndTeamInfo => 'Uygulama ve ekip bilgileri';
+
+  @override
+  String get termsOfUse => 'Kullanım Koşulları';
+
+  @override
+  String get legalTermsAndConditions => 'Yasal şartlar ve koşullar';
+
+  @override
+  String get close => 'Kapat';
+
+  @override
+  String get termsOfUseContent =>
+      'Son güncelleme: 2026\n\n1) Kabul ve Kapsam\nBu uygulamayi kullanarak, burada belirtilen Kullanım Koşulları\\\'nı kabul etmiş sayılırsınız. Koşulları kabul etmiyorsanız uygulamayı kullanmayınız.\n\n2) Uygun Kullanım\nKullanıcı; hile, taciz, nefret söylemi, tehdit, yasa dışı içerik paylaşımı, hesap güvenliğini ihlal etme ve hizmeti bozacak otomasyon araçları kullanmama yükümlülüğündedir.\n\n3) Hesap ve Güvenlik\nHesabınızla yapılan işlemlerden sorumlusunuz. Şüpheli erişim veya güvenlik ihlalini gecikmeden bildirmeniz gerekir.\n\n4) İçerik ve Topluluk Kuralları\nKullanıcı tarafından oluşturulan içerikler (metin, görsel vb.) topluluk kurallarına uygun olmalıdır. Kuralları ihlal eden içerikler bildirimsiz kaldırılabilir, hesaplara geçici veya kalıcı kısıt uygulanabilir.\n\n5) Fikri Mülkiyet\nUygulama arayüzü, marka öğeleri ve yazılım bileşenleri ilgili hak sahiplerine aittir. İzinsiz kopyalama, dağıtma veya tersine mühendislik yasaktır.\n\n6) Hizmette Değişiklik ve Kesinti\nHizmet, teknik bakım, güvenlik veya iş gereksinimleri nedeniyle değiştirilebilir, kısıtlanabilir veya geçici olarak durdurulabilir.\n\n7) Sorumluluğun Sınırlandırılması\nUygulama \"olduğu gibi\" sunulur. Mevzuatın izin verdiği ölçüde, dolaylı veya arızi zararlardan sorumluluk kabul edilmez.\n\n8) Hesap Sonlandırma\nKullanım koşulları veya topluluk kurallarının ihlali durumunda erişiminiz askıya alınabilir veya sonlandırılabilir.\n\n9) Koşulların Güncellenmesi\nKullanım Koşulları zaman zaman güncellenebilir. Güncel metin uygulama içinde yayımlandığı andan itibaren geçerlidir.\n\n10) İletişim\nYasal bildirimler ve destek talepleri için uygulama içi iletişim kanalları kullanılmalıdır.';
+
+  @override
+  String get notReadyYet => 'HENÜZ HAZIR DEĞİLİM';
+
+  @override
+  String get readyForParty => 'PARTİYE HAZIRIM!';
+
+  @override
+  String get lobbyTip1 => 'Parti başlasın! Hazır mısın?';
+
+  @override
+  String get lobbyTip2 => 'Vereceğin cevaplar çok konuşulacak!';
+
+  @override
+  String get lobbyTip3 => 'Diğer oyuncuların oyları kaderini belirleyecek.';
+
+  @override
+  String get lobbyTip4 => 'Riskli görevler ve zor seçimler seni bekliyor.';
+
+  @override
+  String get spinning => 'Dönüyor...';
+
+  @override
+  String pointsLowercase(Object points) {
+    return '$points puan';
+  }
+
+  @override
+  String get titlesTab => 'Ünvanlar';
+
+  @override
+  String get framesTab => 'Çerçeveler';
+
+  @override
+  String get scenariosTab => 'Senaryolar';
+
+  @override
+  String get ownedLabel => 'SAHİP';
+
+  @override
+  String itemPurchased(Object name) {
+    return '$name artık gardırobunuzda!';
+  }
+
+  @override
+  String get insufficientBalance => 'Yetersiz bakiye';
+
+  @override
+  String buyError(Object message) {
+    return 'Hata: $message';
+  }
+
+  @override
+  String get noItems => 'Henüz sergilenecek ürün yok.';
+
+  @override
+  String get comingSoon => 'YAKINDA...';
+
+  @override
+  String get scenariosComingSoon =>
+      'Özel Senaryolar ve Tema Paketleri Çok Yakında Sizlerle!';
 }

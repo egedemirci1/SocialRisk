@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/category_constants.dart';
+import '../../../core/providers/locale_provider.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/game_constants.dart';
 import '../../../shared/models/enums.dart';
@@ -47,7 +50,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
           );
     } catch (e) {
       if (mounted) {
-        ToastUtils.showError(context, 'Hata: $e');
+        ToastUtils.showError(context, AppLocalizations.of(context)!.error(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _isPicking = false);
@@ -59,6 +62,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
     final user = ref.read(currentUserProvider);
+    final locale = ref.watch(appLocaleProvider);
     final metrics = _EconomyPickMetrics.from(context);
 
     return gameAsync.when(
@@ -113,13 +117,13 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
         final players = playersAsync.value ?? [];
         final currentPlayer =
             players.where((p) => p.id == game.currentPlayerId).firstOrNull;
-        final currentPickerName = currentPlayer?.name ?? 'Oyuncu';
+        final currentPickerName = currentPlayer?.name ?? AppLocalizations.of(context)!.playerDefaultName;
 
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
             title: Text(
-                                  'SENARYO SEÇİMİ',
+                                  AppLocalizations.of(context)!.scenarioSelection,
               style: AppTextStyles.headlineMedium.copyWith(
                 color: AppColors.accent,
                 letterSpacing: metrics.titleLetterSpacing,
@@ -182,8 +186,8 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                               children: [
                                 Text(
                                   isMyPick
-                                      ? 'SIRADAKI OYUNCU SENSIN!'
-                                      : '$currentPickerName SEÇİYOR...',
+                                      ? AppLocalizations.of(context)!.nextPickerIsYou
+                                      : AppLocalizations.of(context)!.playerIsPicking(currentPickerName),
                                   style: AppTextStyles.titleMedium.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w900,
@@ -194,7 +198,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                    'SEÇİM ${game.currentPickIndex + 1}/${game.categoryPickOrder.length}',
+                                    AppLocalizations.of(context)!.pickCount(game.currentPickIndex + 1, game.categoryPickOrder.length),
                                   style: AppTextStyles.labelSmall.copyWith(
                                     color: Colors.white30,
                                     fontSize: metrics.helperFontSize,
@@ -217,7 +221,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                         SizedBox(width: metrics.textGap),
                         Expanded(
                           child: Text(
-                            'PARTI DENEYIMI',
+                            AppLocalizations.of(context)!.partyExperience,
                             style: AppTextStyles.labelSmall.copyWith(
                               color: Colors.white54,
                               fontWeight: FontWeight.w900,
@@ -311,7 +315,7 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.background,
-        body: Center(child: Text('Hata: $e')),
+        body: Center(child: Text(AppLocalizations.of(context)!.error(e.toString()))),
       ),
     );
   }
@@ -382,7 +386,7 @@ class _CategoryCard extends StatelessWidget {
                       size: compact ? 16 : 18,
                     ),
                     Text(
-                      'Sicak\nFirsat',
+                      AppLocalizations.of(context)!.hotDeal,
                       style: AppTextStyles.labelSmall.copyWith(
                         color: Colors.orange,
                         fontSize: compact ? 6 : 7,
@@ -405,7 +409,7 @@ class _CategoryCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      category.toUpperCase(),
+                    CategoryConstants.byId(category)?.localizedName(LocaleProvider.of(context).languageCode).toUpperCase() ?? category.toUpperCase(),
                     style: AppTextStyles.titleMedium.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
@@ -442,7 +446,7 @@ class _CategoryCard extends StatelessWidget {
                   ),
                   SizedBox(height: compact ? 2 : 4),
                   Text(
-                    'TABAN PUAN',
+                    AppLocalizations.of(context)!.basePoint,
                     style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white24,
                       fontSize: helperSize,

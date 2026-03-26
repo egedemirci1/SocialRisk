@@ -37,7 +37,9 @@ void main() {
       final model = CosmeticItemModel(
         id: 'title_king',
         name: 'Kral',
+        nameEn: 'King',
         description: 'Kral unvanı',
+        descriptionEn: 'King title',
         imageUrl: '👑',
         price: 1000,
         type: 'title',
