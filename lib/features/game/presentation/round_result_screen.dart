@@ -232,6 +232,13 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             ),
             Divider(color: Colors.white10, height: metrics.dividerHeight),
             _ScoreRow(
+              label: AppLocalizations.of(context)!.difficultyMultiplier,
+              value: 'x$multiplier',
+              color: Colors.white,
+              compact: metrics.isCompact,
+            ),
+            Divider(color: Colors.white10, height: metrics.dividerHeight),
+            _ScoreRow(
               label: AppLocalizations.of(context)!.performanceResult,
               value: mood == 'like'
                   ? AppLocalizations.of(context)!.likedResult
@@ -239,13 +246,6 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
               color: mood == 'like'
                   ? Colors.green
                   : (mood == 'dislike' ? Colors.red : Colors.orange),
-              compact: metrics.isCompact,
-            ),
-            Divider(color: Colors.white10, height: metrics.dividerHeight),
-            _ScoreRow(
-              label: AppLocalizations.of(context)!.difficultyMultiplier,
-              value: 'x$multiplier',
-              color: Colors.white,
               compact: metrics.isCompact,
             ),
             Divider(color: Colors.white10, height: metrics.dividerHeight),

@@ -279,16 +279,18 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
                               final cat = marketValues.keys.elementAt(index);
                               final defaultVal =
                                   GameConstants.defaultMarketValues[cat] ?? 10;
-                              final marketVal = marketValues[cat] ?? defaultVal;
-                              final isHot = game.hotCategory == cat;
-                              final displayValue = isHot
-                                  ? GameConstants.hotCategoryBonus
-                                  : marketVal;
+                              final marketVal =
+                                  GameConstants.economyResolvedStoredBaseValue(
+                                category: cat,
+                                storedValues: marketValues,
+                              );
+                              final isHot =
+                                  marketValues.length > 2 && game.hotCategory == cat;
                               final isLocked = lockedCats.contains(cat);
 
                               return _CategoryCard(
                                 category: cat,
-                                currentValue: displayValue,
+                                currentValue: marketVal,
                                 defaultValue: defaultVal,
                                 isHotCategory: isHot,
                                 isLocked: isLocked,

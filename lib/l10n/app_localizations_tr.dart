@@ -106,7 +106,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get economyMode => 'Ekonomi';
 
   @override
-  String get economyDesc => 'Strateji — puan lideri önce seçer, pazar daralır!';
+  String get economyDesc =>
+      'Bu modda kategorilerin puanları tur tur değişir. Değişen değerlere göre en doğru seçimi yap!';
 
   @override
   String get visibilityMode => 'Görünürlük Modu';
@@ -497,7 +498,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get economyModeDesc =>
-      'Görevleri tamamlayarak coin kazan; bu coinlerle başkalarına ceza kitle, risklerden kurtul. Kim daha acımasızsa o kazanır.';
+      'Görevleri tamamlayarak coin kazan; bu coinlerle başkalarına ceza kitle, risklerden kurtul. Kim daha acımasızsa o kazanır. (En az 3 kategoride aktifleşir)';
 
   @override
   String get singleCategoryEconomyWarn =>
@@ -760,7 +761,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get info => 'Bilgilendirme';
 
   @override
-  String get about => 'Credits / Hakkında';
+  String get about => 'Hakkında';
 
   @override
   String get appAndTeamInfo => 'Uygulama ve ekip bilgileri';

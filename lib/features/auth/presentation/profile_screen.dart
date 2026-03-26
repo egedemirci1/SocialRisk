@@ -40,7 +40,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         content: TextField(
           controller: controller,
-          maxLength: 24,
+          maxLength: 16,
           style: const TextStyle(color: Colors.white),
           decoration: const InputDecoration(
             labelText: 'Yeni Oyuncu Adı',
@@ -392,6 +392,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           borderColor: AppColors.accent.withValues(alpha: 0.5),
           onPressed: () => context.push('/store'),
         ),
+        const SizedBox(height: 24),
+        _QuickStatsWidget(user: user),
       ],
     );
   }
@@ -631,7 +633,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 _StatRow(
                   icon: Icons.workspace_premium_rounded,
                   label: 'Rütbe',
-                  value: p?.calculatedRank ?? 'Utangaç (Çaylak)',
+                  value: p?.calculatedRankTr ?? 'Çaylak',
                 ),
                 const SizedBox(height: 12),
                 _StatRow(
@@ -744,6 +746,78 @@ class _TabItem extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _QuickStatsWidget extends StatelessWidget {
+  final UserEntity user;
+  const _QuickStatsWidget({super.key, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    final gamesPlayed = user.stats['games_played'] ?? 0;
+    final gamesWon = user.stats['games_won'] ?? 0;
+    final winRate = gamesPlayed > 0 ? (gamesWon / gamesPlayed * 100).round() : 0;
+    final totalPoints = user.walletPoints;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: AppColors.surfaceGradient,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.sports_esports_rounded, color: AppColors.accent, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                'Hızlı İstatistikler',
+                style: AppTextStyles.titleSmall.copyWith(
+                  color: AppColors.accent,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildStatItem(Icons.casino_rounded, '$gamesPlayed', 'Oyun'),
+              _buildStatItem(Icons.trending_up_rounded, '$winRate%', 'Kazanma'),
+              _buildStatItem(Icons.star_rounded, '$totalPoints', 'Puan'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(IconData icon, String value, String label) {
+    return Column(
+      children: [
+        Icon(icon, color: AppColors.accent, size: 20),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: AppTextStyles.titleMedium.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        Text(
+          label,
+          style: AppTextStyles.labelSmall.copyWith(
+            color: Colors.white38,
+            fontSize: 10,
+          ),
+        ),
+      ],
     );
   }
 }

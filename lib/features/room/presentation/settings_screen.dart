@@ -24,6 +24,100 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late double _musicVolume;
   late double _sfxVolume;
 
+  bool get _isTr => Localizations.localeOf(context).languageCode == 'tr';
+
+  void _showDeveloperTeamDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1D1538),
+        title: Text(
+          _isTr ? 'Geliştirici Ekip' : 'Developer Team',
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Ata Dinmezer',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Text(
+              _isTr ? 'Geliştirici' : 'Developer',
+              style: const TextStyle(color: Colors.white70),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Mehmet Ege Demirci',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Text(
+              _isTr ? 'Geliştirici' : 'Developer',
+              style: const TextStyle(color: Colors.white70),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'İhsan Eken',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Text(
+              _isTr ? 'Sanat Yönetmeni' : 'Art Director',
+              style: const TextStyle(color: Colors.white70),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(AppLocalizations.of(context)!.close),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAboutDialogCustom() {
+    final appName = AppLocalizations.of(context)!.appTitle;
+    final legalese = _isTr
+        ? '2026 Tüm Hakları Saklıdır'
+        : '2026 All rights reserved.';
+
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1D1538),
+        title: Text(appName, style: const TextStyle(color: Colors.white)),
+        content: Text(
+          legalese,
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(AppLocalizations.of(context)!.close),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _showDeveloperTeamDialog();
+            },
+            child: Text(_isTr ? 'Geliştirici Ekip' : 'Developer Team'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -286,12 +380,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               style: AppTextStyles.labelSmall.copyWith(color: Colors.white54),
             ),
             onTap: () {
-              showAboutDialog(
-                context: context,
-                applicationName: 'Social Risk',
-                applicationVersion: '1.0.0',
-                applicationLegalese: '2026 Social Risk Team',
-              );
+              _showAboutDialogCustom();
             },
           ),
           ListTile(

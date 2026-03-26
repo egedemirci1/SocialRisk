@@ -107,7 +107,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get economyDesc =>
-      'Strategy — score leader picks first, market contracts!';
+      'In this mode, category point values change each round. Adapt your picks to the new values!';
 
   @override
   String get visibilityMode => 'Visibility Mode';
@@ -496,7 +496,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get economyModeDesc =>
-      'Earn coins by doing tasks; use these coins to impose penalties on others and avoid risks. The most ruthless wins.';
+      'Earn coins by doing tasks; use these coins to impose penalties on others and avoid risks. The most ruthless wins. (Activates with at least 3 categories)';
 
   @override
   String get singleCategoryEconomyWarn =>
@@ -758,7 +758,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get info => 'Information';
 
   @override
-  String get about => 'Credits / About';
+  String get about => 'About';
 
   @override
   String get appAndTeamInfo => 'App and team information';

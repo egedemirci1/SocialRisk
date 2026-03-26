@@ -8,6 +8,46 @@ if (!admin.apps.length)
 const db = admin.firestore();
 const RANK_REWARDS = [200, 100, 50];
 const DEFAULT_REWARD = 20;
+const DEFAULT_ECONOMY_BASE_VALUE = 10;
+const ECONOMY_PENALTY_AMOUNT = 2;
+const HOT_CATEGORY_BONUS = DEFAULT_ECONOMY_BASE_VALUE + ECONOMY_PENALTY_AMOUNT;
+const ECONOMY_PENALTY_VALUE = DEFAULT_ECONOMY_BASE_VALUE - ECONOMY_PENALTY_AMOUNT;
+function economyResolvedStoredBaseValue(category, storedValues) {
+    if (Object.keys(storedValues).length <= 2)
+        return DEFAULT_ECONOMY_BASE_VALUE;
+    const value = storedValues[category];
+    return typeof value === "number" ? value : DEFAULT_ECONOMY_BASE_VALUE;
+}
+function economyPenaltyCategoryForNextTurn(categoryCount, selectedCategory, currentHotCategory) {
+    if (categoryCount <= 2 || !selectedCategory)
+        return null;
+    if (selectedCategory === currentHotCategory)
+        return null;
+    return selectedCategory;
+}
+function pickEconomyHotCategory(categories, excludedCategories = []) {
+    if (categories.length <= 2)
+        return null;
+    const excluded = new Set(excludedCategories);
+    const candidates = categories.filter((category) => !excluded.has(category));
+    if (candidates.length === 0)
+        return null;
+    return candidates[Math.floor(Math.random() * candidates.length)];
+}
+function buildEconomyTurnValues(categories, hotCategory, penalizedCategory) {
+    return Object.fromEntries(categories.map((category) => {
+        let value = DEFAULT_ECONOMY_BASE_VALUE;
+        if (categories.length > 2) {
+            if (hotCategory === category) {
+                value = HOT_CATEGORY_BONUS;
+            }
+            else if (penalizedCategory === category) {
+                value = ECONOMY_PENALTY_VALUE;
+            }
+        }
+        return [category, value];
+    }));
+}
 // Her 6 saatte bir boş odaları temizle
 exports.cleanupEmptyRooms = functions.pubsub
     .schedule('every 6 hours')
@@ -211,7 +251,7 @@ exports.finalizeVotingRound = functions.https.onCall(async (data, context) => {
     }
     const gameRef = db.collection("games").doc(gameId);
     const result = await db.runTransaction(async (transaction) => {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e;
         const gameSnap = await transaction.get(gameRef);
         if (!gameSnap.exists) {
             throw new functions.https.HttpsError("not-found", "Game not found.");
@@ -242,6 +282,7 @@ exports.finalizeVotingRound = functions.https.onCall(async (data, context) => {
         const selectedCategory = typeof game.selectedCategory === "string" ? game.selectedCategory : null;
         const hotCategory = typeof game.hotCategory === "string" ? game.hotCategory : null;
         const marketValues = ((_e = game.categoryMarketValues) !== null && _e !== void 0 ? _e : {});
+        const categoryNames = Object.keys(marketValues);
         const votesQuery = gameRef.collection("votes");
         const votesSnap = await transaction.get(votesQuery);
         let likes = 0;
@@ -267,13 +308,7 @@ exports.finalizeVotingRound = functions.https.onCall(async (data, context) => {
         }
         let baseScore = 10;
         if (game.mode === "economy" && selectedCategory) {
-            if (selectedCategory === hotCategory) {
-                baseScore = 12;
-            }
-            else {
-                const selectedValue = marketValues[selectedCategory];
-                baseScore = typeof selectedValue === "number" ? selectedValue : 10;
-            }
+            baseScore = economyResolvedStoredBaseValue(selectedCategory, marketValues);
         }
         const fullRoundScore = baseScore * taskMultiplier;
         const mood = likes >= neutrals && likes >= dislikes
@@ -299,35 +334,23 @@ exports.finalizeVotingRound = functions.https.onCall(async (data, context) => {
         const categoryPickOrder = Array.isArray(game.categoryPickOrder)
             ? game.categoryPickOrder
             : [];
-        if (categoryPickOrder.length > 0 && selectedCategory) {
-            const nextMarketValues = Object.assign({}, marketValues);
-            const currentValue = typeof nextMarketValues[selectedCategory] === "number"
-                ? nextMarketValues[selectedCategory]
-                : 10;
-            nextMarketValues[selectedCategory] = Math.max(0, Math.min(10, currentValue - 1));
-            updates.categoryMarketValues = nextMarketValues;
+        if (categoryPickOrder.length > 0) {
             const currentPickIndex = typeof game.currentPickIndex === "number" ? game.currentPickIndex : 0;
             const nextPickIndex = currentPickIndex + 1;
+            const penalizedCategory = economyPenaltyCategoryForNextTurn(categoryNames.length, selectedCategory, hotCategory);
+            const nextHotCategory = pickEconomyHotCategory(categoryNames, penalizedCategory ? [penalizedCategory] : []);
+            const nextTurnMarketValues = buildEconomyTurnValues(categoryNames, nextHotCategory, penalizedCategory);
             if (nextPickIndex >= categoryPickOrder.length) {
                 updates.currentPickIndex = 0;
                 updates.currentRound = (typeof game.currentRound === "number" ? game.currentRound : 1) + 1;
                 updates.currentPlayerId = categoryPickOrder[0];
-                const resetMarketValues = Object.assign({}, updates.categoryMarketValues);
-                for (const key of Object.keys(resetMarketValues)) {
-                    if (((_f = resetMarketValues[key]) !== null && _f !== void 0 ? _f : 0) === 0) {
-                        resetMarketValues[key] = 10;
-                    }
-                }
-                const atTen = Object.keys(resetMarketValues).filter((key) => { var _a; return ((_a = resetMarketValues[key]) !== null && _a !== void 0 ? _a : 0) === 10; });
-                updates.categoryMarketValues = resetMarketValues;
-                updates.hotCategory = atTen.length > 0
-                    ? atTen[Math.floor(Math.random() * atTen.length)]
-                    : null;
             }
             else {
                 updates.currentPickIndex = nextPickIndex;
                 updates.currentPlayerId = categoryPickOrder[nextPickIndex];
             }
+            updates.categoryMarketValues = nextTurnMarketValues;
+            updates.hotCategory = nextHotCategory;
         }
         transaction.update(gameRef, updates);
         return {

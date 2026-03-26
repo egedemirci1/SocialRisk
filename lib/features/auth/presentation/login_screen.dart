@@ -222,7 +222,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         children: [
           TextField(
             controller: _nameController,
-            maxLength: 24,
+            maxLength: 16,
             style: AppTextStyles.titleMedium.copyWith(fontSize: 20,
               color: Colors.white,
               fontWeight: FontWeight.w800,),

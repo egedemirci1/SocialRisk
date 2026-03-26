@@ -20,7 +20,7 @@ class UserModel {
     required this.displayName,
     this.avatarUrl,
     this.walletPoints = 0,
-    this.rank = 'Utangaç (Çaylak)',
+    this.rank = 'Çaylak',
     this.ownedCosmetics = const [],
     this.ownedCategories = GameConstants.defaultCategoriesConst,
     this.activeFrame,
@@ -35,7 +35,7 @@ class UserModel {
       displayName: json['displayName'] as String? ?? 'Misafir',
       avatarUrl: json['avatarUrl'] as String?,
       walletPoints: json['walletPoints'] as int? ?? 0,
-      rank: json['rank'] as String? ?? 'Newbie',
+      rank: json['rank'] as String? ?? 'Çaylak',
       ownedCosmetics:
           (json['ownedCosmetics'] as List<dynamic>?)
               ?.map((e) => e.toString())

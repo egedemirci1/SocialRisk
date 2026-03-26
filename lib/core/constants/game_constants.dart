@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'category_constants.dart';
 
 class GameConstants {
@@ -34,10 +36,12 @@ class GameConstants {
   static const int taskPoolSizePerCombo = 5;
 
   // Faz 10: Ekonomi Modu sabitleri (8 kategori + Özel)
+  static const int defaultEconomyBaseValue = 10;
+  static const int economyPenaltyAmount = 2;
   static Map<String, int> get defaultMarketValues {
     final map = <String, int>{};
     for (final c in CategoryConstants.all) {
-      map[c.id] = 10; // Tüm kategoriler 10 Taban Puanla başlar
+      map[c.id] = defaultEconomyBaseValue; // Tüm kategoriler 10 Taban Puanla başlar
     }
     return map;
   }
@@ -50,7 +54,10 @@ class GameConstants {
   static const int maxMarketValue = 10;
 
   /// Sıcak fırsat kategorisi için puan (Borsa modunda her tur 1 kategori)
-  static const int hotCategoryBonus = 12;
+  static const int hotCategoryBonus =
+      defaultEconomyBaseValue + economyPenaltyAmount;
+  static const int economyPenaltyValue =
+      defaultEconomyBaseValue - economyPenaltyAmount;
 
   /// Bu kadar kez seçilince kategori kilitlenir
   static const int lockThreshold = 3;
@@ -62,5 +69,70 @@ class GameConstants {
       map[name] = 0;
     }
     return map;
+  }
+
+  static int economyBaseValueForCategory({
+    required String category,
+    required int categoryCount,
+    String? hotCategory,
+    String? penalizedCategory,
+  }) {
+    if (categoryCount <= 2) return defaultEconomyBaseValue;
+    if (hotCategory == category) return hotCategoryBonus;
+    if (penalizedCategory == category) return economyPenaltyValue;
+    return defaultEconomyBaseValue;
+  }
+
+  static String? economyPenaltyCategoryForNextTurn({
+    required int categoryCount,
+    required String? selectedCategory,
+    required String? currentHotCategory,
+  }) {
+    if (categoryCount <= 2 || selectedCategory == null) return null;
+    if (selectedCategory == currentHotCategory) return null;
+    return selectedCategory;
+  }
+
+  static String? pickEconomyHotCategory({
+    required Iterable<String> categories,
+    Iterable<String> excludedCategories = const [],
+    Random? random,
+  }) {
+    final categoryList = categories.toList(growable: false);
+    if (categoryList.length <= 2) return null;
+
+    final excluded = excludedCategories.toSet();
+    final candidates = categoryList
+        .where((category) => !excluded.contains(category))
+        .toList(growable: false);
+
+    if (candidates.isEmpty) return null;
+    final rng = random ?? Random();
+    return candidates[rng.nextInt(candidates.length)];
+  }
+
+  static Map<String, int> buildEconomyTurnValues({
+    required Iterable<String> categories,
+    String? hotCategory,
+    String? penalizedCategory,
+  }) {
+    final categoryList = categories.toList(growable: false);
+    return {
+      for (final category in categoryList)
+        category: economyBaseValueForCategory(
+          category: category,
+          categoryCount: categoryList.length,
+          hotCategory: hotCategory,
+          penalizedCategory: penalizedCategory,
+        ),
+    };
+  }
+
+  static int economyResolvedStoredBaseValue({
+    required String category,
+    required Map<String, int> storedValues,
+  }) {
+    if (storedValues.length <= 2) return defaultEconomyBaseValue;
+    return storedValues[category] ?? defaultEconomyBaseValue;
   }
 }

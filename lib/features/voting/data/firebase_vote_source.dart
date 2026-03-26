@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import '../../../core/constants/game_constants.dart';
 import '../domain/vote_repository.dart';
 import 'vote_model.dart';
 import '../../../shared/models/enums.dart';
@@ -54,16 +55,14 @@ class FirebaseVoteSource implements VoteRepository {
     final mode = gameData['mode'] as String?;
     final selectedCategory = gameData['selectedCategory'] as String?;
     final marketValues = gameData['categoryMarketValues'] as Map<String, dynamic>? ?? {};
-    final hotCategory = gameData['hotCategory'] as String?;
 
     int baseScore = 10; // Çark modu (classic)
 
     if (mode == 'economy' && selectedCategory != null) {
-      if (selectedCategory == hotCategory) {
-        baseScore = 12; // Sıcak fırsat (Borsa, her tur 1 kategori)
-      } else {
-        baseScore = marketValues[selectedCategory] as int? ?? 10;
-      }
+      baseScore = GameConstants.economyResolvedStoredBaseValue(
+        category: selectedCategory,
+        storedValues: Map<String, int>.from(marketValues),
+      );
     }
 
     final snapshot = await _votesRef(gameId).get();

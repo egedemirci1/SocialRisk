@@ -417,12 +417,15 @@ class FirebaseRoomSource implements RoomRepository {
         final gameRef = _firestore.collection('games').doc();
         final gameId = gameRef.id;
         final playersList = List<String>.from(playerIds)..shuffle();
+        final initialHotCategory = mode == GameMode.economy
+            ? GameConstants.pickEconomyHotCategory(categories: activeCategories)
+            : null;
 
         final marketValues = mode == GameMode.economy
-            ? {
-                for (var cat in activeCategories)
-                  cat: GameConstants.defaultMarketValues[cat] ?? 2,
-              }
+            ? GameConstants.buildEconomyTurnValues(
+                categories: activeCategories,
+                hotCategory: initialHotCategory,
+              )
             : <String, int>{};
 
         final gameModel = {
@@ -438,6 +441,7 @@ class FirebaseRoomSource implements RoomRepository {
           'lockedCategories': [],
           'categoryPickOrder': mode == GameMode.economy ? playersList : [],
           'currentPickIndex': 0,
+          if (initialHotCategory != null) 'hotCategory': initialHotCategory,
           'taskPool': taskPool,
           'createdAt': FieldValue.serverTimestamp(),
         };

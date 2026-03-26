@@ -24,7 +24,7 @@ class SocialRiskLogo extends StatelessWidget {
       children: [
         if (mode != LogoMode.onlyText) _buildIcon(),
         if (mode == LogoMode.full) SizedBox(height: height * 0.12),
-        if (mode != LogoMode.onlyIcon) _buildLogotype(),
+        if (mode != LogoMode.onlyIcon) _buildLogotype(context),
       ],
     );
   }
@@ -86,26 +86,29 @@ class SocialRiskLogo extends StatelessWidget {
     );
   }
 
-  Widget _buildLogotype() {
+  Widget _buildLogotype(BuildContext context) {
+    final isTurkish = Localizations.localeOf(context).languageCode == 'tr';
+    final socialText = isTurkish ? 'Sosyal' : 'Social';
+
     return RichText(
       text: TextSpan(
         children: [
           TextSpan(
-            text: 'SOCIAL',
+            text: socialText,
             style: AppTextStyles.titleLarge.copyWith(
               color: Colors.white.withValues(alpha: 0.9),
               fontSize: height * (mode == LogoMode.onlyText ? 0.4 : 0.22),
               fontWeight: FontWeight.w900,
-              letterSpacing: 2,
+              letterSpacing: isTurkish ? 0 : 2,
             ),
           ),
           TextSpan(
-            text: 'RISK',
+            text: 'Risk',
             style: AppTextStyles.titleLarge.copyWith(
               color: AppColors.primary,
               fontSize: height * (mode == LogoMode.onlyText ? 0.4 : 0.22),
               fontWeight: FontWeight.w900,
-              letterSpacing: 2,
+              letterSpacing: isTurkish ? 0 : 2,
             ),
           ),
         ],

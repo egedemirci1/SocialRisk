@@ -293,7 +293,7 @@ abstract class AppLocalizations {
   /// No description provided for @economyDesc.
   ///
   /// In tr, this message translates to:
-  /// **'Strateji — puan lideri önce seçer, pazar daralır!'**
+  /// **'Bu modda kategorilerin puanları tur tur değişir. Değişen değerlere göre en doğru seçimi yap!'**
   String get economyDesc;
 
   /// No description provided for @visibilityMode.
@@ -1001,7 +1001,7 @@ abstract class AppLocalizations {
   /// No description provided for @economyModeDesc.
   ///
   /// In tr, this message translates to:
-  /// **'Görevleri tamamlayarak coin kazan; bu coinlerle başkalarına ceza kitle, risklerden kurtul. Kim daha acımasızsa o kazanır.'**
+  /// **'Görevleri tamamlayarak coin kazan; bu coinlerle başkalarına ceza kitle, risklerden kurtul. Kim daha acımasızsa o kazanır. (En az 3 kategoride aktifleşir)'**
   String get economyModeDesc;
 
   /// No description provided for @singleCategoryEconomyWarn.
@@ -1457,7 +1457,7 @@ abstract class AppLocalizations {
   /// No description provided for @about.
   ///
   /// In tr, this message translates to:
-  /// **'Credits / Hakkında'**
+  /// **'Hakkında'**
   String get about;
 
   /// No description provided for @appAndTeamInfo.

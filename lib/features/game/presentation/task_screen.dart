@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/constants/game_constants.dart';
 import '../../../core/data/task_translations/task_translation_map.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
@@ -600,9 +601,10 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         );
 
         final int cardPoints = game.mode == GameMode.economy
-            ? (((game.hotCategory == task.category
-                            ? 12
-                            : (game.categoryMarketValues[task.category] ?? 10)) *
+            ? ((GameConstants.economyResolvedStoredBaseValue(
+                          category: task.category,
+                          storedValues: game.categoryMarketValues,
+                        ) *
                         task.multiplier)
                     .toInt())
             : (10 * task.multiplier).toInt();

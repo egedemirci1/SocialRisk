@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/constants/game_constants.dart';
 import '../../../shared/models/enums.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
@@ -230,10 +231,10 @@ class _DifficultyChoiceScreenState
                   multiplier: '1x',
                   estimatedPoints: game.mode == GameMode.economy &&
                           game.selectedCategory != null
-                      ? (game.hotCategory == game.selectedCategory
-                              ? 12
-                              : (game.categoryMarketValues[game.selectedCategory] ??
-                                  10)) *
+                      ? GameConstants.economyResolvedStoredBaseValue(
+                              category: game.selectedCategory!,
+                              storedValues: game.categoryMarketValues,
+                            ) *
                           1
                       : 10,
                   color: Colors.green,
@@ -248,10 +249,10 @@ class _DifficultyChoiceScreenState
                   multiplier: '2x',
                   estimatedPoints: game.mode == GameMode.economy &&
                           game.selectedCategory != null
-                      ? (game.hotCategory == game.selectedCategory
-                              ? 12
-                              : (game.categoryMarketValues[game.selectedCategory] ??
-                                  10)) *
+                      ? GameConstants.economyResolvedStoredBaseValue(
+                              category: game.selectedCategory!,
+                              storedValues: game.categoryMarketValues,
+                            ) *
                           2
                       : 20,
                   color: Colors.orange,
@@ -266,10 +267,10 @@ class _DifficultyChoiceScreenState
                   multiplier: '3x',
                   estimatedPoints: game.mode == GameMode.economy &&
                           game.selectedCategory != null
-                      ? (game.hotCategory == game.selectedCategory
-                              ? 12
-                              : (game.categoryMarketValues[game.selectedCategory] ??
-                                  10)) *
+                      ? GameConstants.economyResolvedStoredBaseValue(
+                              category: game.selectedCategory!,
+                              storedValues: game.categoryMarketValues,
+                            ) *
                           3
                       : 30,
                   color: AppColors.primary,

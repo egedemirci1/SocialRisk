@@ -55,14 +55,6 @@ final List<_AchievementDef> _achievements = [
     tiers: [1, 3, 5, 10],
     getValue: (u) => u.ownedCosmetics.length,
   ),
-  _AchievementDef(
-    id: 'custom_tasks',
-    title: 'Oyun Kurucu',
-    description: 'Eklenen özel görev sayısı',
-    icon: Icons.edit_note_rounded,
-    tiers: [1, 5, 20, 50],
-    getValue: (u) => u.stats['custom_tasks'] ?? 0,
-  ),
 ];
 
 /// Returns how many tiers (0-4) are completed for this achievement + a [0,1] progress to next tier.
