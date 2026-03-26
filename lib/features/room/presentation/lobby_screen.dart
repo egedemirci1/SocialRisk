@@ -408,12 +408,18 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                           if (message.contains('Cooldown:')) {
                             final seconds = message.split('Cooldown:').last.replaceAll('Exception: ', '');
                             if (mounted) {
+                            final context = this.context;
+                            if (context.mounted) {
                               ToastUtils.showError(context, 'Emote bekleme süresi: $seconds sn');
                             }
+                          }
                             return;
                           }
                           if (mounted) {
-                            ToastUtils.showError(context, 'Hata: $e');
+                            final context = this.context;
+                            if (context.mounted) {
+                              ToastUtils.showError(context, 'Hata: $e');
+                            }
                           }
                         }
                       },
@@ -867,11 +873,11 @@ class _ReadyToggleButton extends ConsumerWidget {
     final compact = MediaQuery.sizeOf(context).width < 390;
 
     return StageButton(
-      label: isReady ? 'HENÜZ HAZIR DEĞİLİM' : 'PARTİYE HAZIRIM!',
-      icon: isReady ? Icons.close_rounded : Icons.check_circle_outline_rounded,
-      backgroundColor: isReady ? Colors.black26 : AppColors.primary,
-      textColor: isReady ? Colors.white54 : Colors.white,
-      borderColor: isReady ? Colors.white12 : AppColors.accent,
+      label: isReady ? 'PARTİYE HAZIRIM!' : 'HENÜZ HAZIR DEĞİLİM',
+      icon: isReady ? Icons.check_circle_outline_rounded : Icons.close_rounded,
+      backgroundColor: isReady ? AppColors.primary : Colors.black26,
+      textColor: isReady ? Colors.white : Colors.white54,
+      borderColor: isReady ? AppColors.accent : Colors.white12,
       onPressed: () => ref.read(roomControllerProvider.notifier).toggleReady(
             roomCode: roomCode,
             playerId: playerId,

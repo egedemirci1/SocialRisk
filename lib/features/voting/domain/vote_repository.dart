@@ -3,10 +3,14 @@ import '../../../shared/models/enums.dart';
 class VoteResult {
   final int totalScore;
   final int audienceScore;
+  final String? mood;
+  final int penalizedCount;
 
   const VoteResult({
     required this.totalScore,
     required this.audienceScore,
+    this.mood,
+    this.penalizedCount = 0,
   });
 }
 
@@ -32,5 +36,7 @@ abstract class VoteRepository {
   });
 
   Future<void> clearVotes(String gameId);
+
+  Future<VoteResult> finalizeVotingRound({required String gameId});
 }
 

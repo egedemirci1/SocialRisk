@@ -101,7 +101,7 @@ class PlayerAvatar extends ConsumerWidget {
                   boxShadow: hasFrame
                       ? [
                           BoxShadow(
-                            color: _frameColor(currentFrameId!)
+                            color: _frameColor(currentFrameId ?? '')
                                 .withValues(alpha: 0.5),
                             blurRadius: frameGlowBlur,
                             spreadRadius: frameGlowSpread,
@@ -121,7 +121,7 @@ class PlayerAvatar extends ConsumerWidget {
                   radius: radius,
                   backgroundColor: AppColors.surfaceElevated,
                   backgroundImage:
-                      useAvatarImage ? NetworkImage(currentAvatarUrl!) : null,
+                      useAvatarImage ? NetworkImage(currentAvatarUrl ?? '') : null,
                   child: !useAvatarImage
                       ? Text(
                           displayName.isNotEmpty
@@ -145,7 +145,7 @@ class PlayerAvatar extends ConsumerWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: _frameColor(currentFrameId!).withValues(alpha: 0.8),
+                      color: _frameColor(currentFrameId ?? '').withValues(alpha: 0.8),
                       width: frameStrokeWidth,
                     ),
                   ),
@@ -156,7 +156,7 @@ class PlayerAvatar extends ConsumerWidget {
               child: IgnorePointer(
                 child: CustomPaint(
                   painter: CustomFramePainter(
-                    frameId: currentFrameId!,
+                    frameId: currentFrameId ?? '',
                     radius: radius,
                   ),
                 ),

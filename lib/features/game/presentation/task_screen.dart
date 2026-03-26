@@ -68,11 +68,23 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   }
 
   void _onWheelResult(String category) {
-    if (ref.read(watchGameProvider(widget.gameId)).value?.currentPlayerId ==
-        ref.read(currentUserProvider)?.uid) {
+    print('WHEEL RESULT: category=$category');
+    final game = ref.read(watchGameProvider(widget.gameId)).value;
+    final currentUser = ref.read(currentUserProvider);
+    final currentPlayerId = game?.currentPlayerId;
+    final currentUserId = currentUser?.uid;
+    
+    print('Game current player: $currentPlayerId');
+    print('Current user: $currentUserId');
+    print('Should call assignTask: ${currentPlayerId == currentUserId}');
+    
+    if (currentPlayerId == currentUserId) {
+      print('CALLING ASSIGN TASK...');
       ref
           .read(gameControllerProvider.notifier)
           .assignTaskByCategory(gameId: widget.gameId, category: category);
+    } else {
+      print('NOT CURRENT PLAYER - skipping assignTask');
     }
   }
 
@@ -80,6 +92,15 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     setState(() => _isAccepting = true);
     try {
       await ref.read(gameControllerProvider.notifier).acceptTask(widget.gameId);
+      
+      // Economy modunda kabul ettikten sonra next turn yap
+      if (mounted) {
+        final game = ref.read(watchGameProvider(widget.gameId)).value;
+        if (game != null && game.categoryPickOrder.isEmpty) {
+          print('ECONOMY MODE: Accepting task and proceeding to next turn');
+          await ref.read(gameControllerProvider.notifier).nextTurn(widget.gameId);
+        }
+      }
     } finally {
       if (mounted) setState(() => _isAccepting = false);
     }
@@ -95,7 +116,14 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             roomId: widget.roomCode,
             playerId: uid,
           );
+      
+      // Economy modunda reddettikten sonra next turn yap
       if (mounted) {
+        final game = ref.read(watchGameProvider(widget.gameId)).value;
+        if (game != null && game.categoryPickOrder.isEmpty) {
+          print('ECONOMY MODE: Passing task and proceeding to next turn');
+          await ref.read(gameControllerProvider.notifier).nextTurn(widget.gameId);
+        }
         setState(() => _contentRevealed = false);
         _cardController.reset();
       }

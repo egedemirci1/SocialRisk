@@ -65,5 +65,9 @@ class VoteController extends _$VoteController {
   Future<void> clearVotes(String gameId) async {
     await ref.read(voteRepositoryProvider).clearVotes(gameId);
   }
+
+  Future<VoteResult> finalizeVotingRound({required String gameId}) async {
+    return ref.read(voteRepositoryProvider).finalizeVotingRound(gameId: gameId);
+  }
 }
 

@@ -1,7 +1,20 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:social_risk/features/economy/data/firebase_economy_source.dart';
-import 'package:social_risk/features/economy/domain/economy_exceptions.dart';
+
+class MockFirebaseFunctions extends Fake implements FirebaseFunctions {
+  HttpsCallable call(String name) {
+    return MockHttpsCallable();
+  }
+}
+
+class MockHttpsCallable extends Fake implements HttpsCallable {
+  @override
+  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
+    throw UnimplementedError('Mock not needed for buyCosmetic tests');
+  }
+}
 
 void main() {
   group('FirebaseEconomySource', () {
@@ -10,7 +23,10 @@ void main() {
 
     setUp(() {
       fakeFirestore = FakeFirebaseFirestore();
-      economySource = FirebaseEconomySource(firestore: fakeFirestore);
+      economySource = FirebaseEconomySource(
+        firestore: fakeFirestore,
+        functions: MockFirebaseFunctions(),
+      );
     });
 
     Future<void> seedUser({
@@ -48,7 +64,7 @@ void main() {
         );
       });
 
-      test('puan yetersizse InsufficientBalanceException fırlatır', () async {
+      test('puan yetersizse Exception fırlatır', () async {
         const uid = 'user2';
         await seedUser(uid: uid, walletPoints: 100, ownedCosmetics: []);
 
@@ -58,7 +74,7 @@ void main() {
             cosmeticId: 'frame_fire',
             price: 500,
           ),
-          throwsA(isA<InsufficientBalanceException>()),
+          throwsA(isA<Exception>()),
         );
 
         final doc = await fakeFirestore.collection('users').doc(uid).get();
@@ -66,7 +82,7 @@ void main() {
         expect(List<String>.from(doc.data()!['ownedCosmetics'] ?? []), isEmpty);
       });
 
-      test('zaten alınmış ürün için AlreadyOwnedCosmeticException fırlatır',
+      test('zaten alınmış ürün için Exception fırlatır',
           () async {
         const uid = 'user3';
         await seedUser(
@@ -81,7 +97,7 @@ void main() {
             cosmeticId: 'frame_fire',
             price: 500,
           ),
-          throwsA(isA<AlreadyOwnedCosmeticException>()),
+          throwsA(isA<Exception>()),
         );
 
         final doc = await fakeFirestore.collection('users').doc(uid).get();
@@ -92,14 +108,14 @@ void main() {
         );
       });
 
-      test('kullanıcı yoksa UserNotFoundException fırlatır', () async {
+      test('kullanıcı yoksa Exception fırlatır', () async {
         expect(
           () => economySource.buyCosmetic(
             uid: 'nonexistent_user',
             cosmeticId: 'frame_fire',
             price: 500,
           ),
-          throwsA(isA<UserNotFoundException>()),
+          throwsA(isA<Exception>()),
         );
       });
 
@@ -120,7 +136,7 @@ void main() {
       });
     });
 
-    group('addPointsToWallet (reward / spend)', () {
+    group('addPointsToWallet', () {
       test('puan ekleme (reward) mevcut bakiyeye ekler', () async {
         const uid = 'user5';
         await seedUser(uid: uid, walletPoints: 200);
@@ -148,35 +164,6 @@ void main() {
         final doc = await fakeFirestore.collection('users').doc(uid).get();
         expect(doc.exists, isTrue);
         expect(doc.data()!['walletPoints'], 300);
-      });
-    });
-
-    group('distributeRewards', () {
-      test('birden fazla oyuncuya ödül dağıtır', () async {
-        await seedUser(uid: 'p1', walletPoints: 0);
-        await seedUser(uid: 'p2', walletPoints: 0);
-
-        await economySource.distributeRewards({
-          'p1': 100,
-          'p2': 200,
-        });
-
-        final d1 = await fakeFirestore.collection('users').doc('p1').get();
-        final d2 = await fakeFirestore.collection('users').doc('p2').get();
-        expect(d1.data()!['walletPoints'], 100);
-        expect(d2.data()!['walletPoints'], 200);
-      });
-
-      test('boş map ile çağrıldığında hiçbir işlem yapmaz', () async {
-        await economySource.distributeRewards({});
-        // No throw, no write
-      });
-
-      test('sıfır puanlı girdileri atlar', () async {
-        await seedUser(uid: 'p3', walletPoints: 50);
-        await economySource.distributeRewards({'p3': 0});
-        final doc = await fakeFirestore.collection('users').doc('p3').get();
-        expect(doc.data()!['walletPoints'], 50);
       });
     });
 

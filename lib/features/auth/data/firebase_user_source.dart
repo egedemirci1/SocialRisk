@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -46,20 +45,13 @@ class FirebaseUserSource implements UserRepository {
 
   @override
   Future<void> updateUserProfile(UserEntity user) async {
-    final model = UserModel(
-      uid: user.uid,
-      displayName: user.displayName,
-      avatarUrl: user.avatarUrl,
-      walletPoints: user.walletPoints,
-      rank: user.rank,
-      ownedCosmetics: user.ownedCosmetics,
-      ownedCategories: user.ownedCategories,
-      activeFrame: user.activeFrame,
-      activeTitle: user.activeTitle,
-      updatedAt: DateTime.now(),
-    );
-
-    await _userDoc(user.uid).set(model.toJson(), SetOptions(merge: true));
+    await _userDoc(user.uid).set({
+      'displayName': user.displayName,
+      'avatarUrl': user.avatarUrl,
+      'activeFrame': user.activeFrame,
+      'activeTitle': user.activeTitle,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
   }
 
   @override

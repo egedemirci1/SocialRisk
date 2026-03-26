@@ -203,9 +203,9 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
-      // Oyuncu host değilse "PARTİYE HAZIRIM!" butonu görünür
-      expect(find.text('PARTİYE HAZIRIM!'), findsOneWidget);
-      await tester.tap(find.widgetWithText(StageButton, 'PARTİYE HAZIRIM!'));
+      // Oyuncu host değilse "HENÜZ HAZIR DEĞİLİM" butonu görünür
+      expect(find.text('HENÜZ HAZIR DEĞİLİM'), findsOneWidget);
+      await tester.tap(find.widgetWithText(StageButton, 'HENÜZ HAZIR DEĞİLİM'));
       await tester.pump();
 
       verify(() => mockRepo.toggleReady(
@@ -231,7 +231,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.text('PARTİYE HAZIRIM!'), findsOneWidget);
+      expect(find.text('HENÜZ HAZIR DEĞİLİM'), findsOneWidget);
       // Host olmadığı için "Oyunu Başlat" yok (sadece kurucuda çıkar)
       expect(find.text('OYUNU BAŞLAT'), findsNothing);
     });

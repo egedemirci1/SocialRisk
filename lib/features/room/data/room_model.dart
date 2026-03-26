@@ -8,6 +8,7 @@ class RoomModel {
   final String hostId;
   final String mode;
   final String status;
+  final int playerCount;
   final String endConditionType;
   final int endConditionValue;
   final String visibility;
@@ -22,6 +23,7 @@ class RoomModel {
     required this.hostId,
     required this.mode,
     required this.status,
+    this.playerCount = 0,
     required this.endConditionType,
     required this.endConditionValue,
     this.visibility = 'open',
@@ -39,6 +41,7 @@ class RoomModel {
       hostId: json['hostId'] as String,
       mode: json['mode'] as String? ?? 'classic',
       status: json['status'] as String? ?? 'waiting',
+      playerCount: json['playerCount'] as int? ?? 0,
       endConditionType: json['endConditionType'] as String? ?? 'score',
       endConditionValue: json['endConditionValue'] as int? ?? 500,
       visibility: json['visibility'] as String? ?? 'open',
@@ -61,6 +64,7 @@ class RoomModel {
       'hostId': hostId,
       'mode': mode,
       'status': status,
+      'playerCount': playerCount,
       'endConditionType': endConditionType,
       'endConditionValue': endConditionValue,
       'visibility': visibility,

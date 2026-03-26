@@ -11,13 +11,12 @@ import '../../auth/providers/user_provider.dart';
 import '../../room/providers/room_provider.dart';
 import '../../game/providers/game_provider.dart';
 import '../providers/vote_provider.dart';
-import '../domain/vote_repository.dart';
 import '../../game/domain/game_entity.dart';
+import '../../economy/providers/economy_provider.dart';
 import '../../game/presentation/widgets/turn_counter_badge.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
-import '../../economy/providers/economy_provider.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_text_styles.dart';
@@ -40,43 +39,14 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
   bool _hasProcessed = false;
   bool _hasVoted = false;
 
-  Future<void> _processResults({
-    required String currentPlayerId,
-    required int taskMultiplier,
-    required int currentRound,
-  }) async {
+  Future<void> _processResults() async {
     if (_isProcessing || _hasProcessed) return;
     _hasProcessed = true;
     setState(() => _isProcessing = true);
 
     try {
       final voteCtrl = ref.read(voteControllerProvider.notifier);
-
-      final results = await Future.wait([
-        voteCtrl.applyTimedOutPenalties(
-          gameId: widget.gameId,
-          roomId: widget.roomCode,
-          penalty: 10,
-        ),
-        voteCtrl.calculateAndApplyScore(
-          gameId: widget.gameId,
-          taskMultiplier: taskMultiplier,
-        ),
-      ]);
-      final voteResult = results[1] as VoteResult;
-      final earned = voteResult.totalScore;
-
-      await ref.read(gameControllerProvider.notifier).applyScore(
-            gameId: widget.gameId,
-            roomId: widget.roomCode,
-            playerId: currentPlayerId,
-            scoreToAdd: earned,
-            audienceScore: voteResult.audienceScore,
-            taskMultiplier: taskMultiplier,
-          );
-
-      // Oyları temizle (status değiştikten sonra, kritik yolda değil)
-      voteCtrl.clearVotes(widget.gameId);
+      await voteCtrl.finalizeVotingRound(gameId: widget.gameId);
 
       if (!mounted) return;
     } catch (e) {
@@ -172,9 +142,6 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted && !_isProcessing && !_hasProcessed) {
               _processResults(
-                currentPlayerId: game.currentPlayerId,
-                taskMultiplier: game.currentTask?.multiplier ?? 1,
-                currentRound: game.currentRound,
               );
             }
           });

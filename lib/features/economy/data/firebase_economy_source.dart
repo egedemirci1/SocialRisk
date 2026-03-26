@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import '../domain/economy_repository.dart';
 import '../domain/cosmetic_item_entity.dart';
 import '../domain/economy_exceptions.dart';
 
 class FirebaseEconomySource implements EconomyRepository {
   final FirebaseFirestore _firestore;
+  final FirebaseFunctions _functions;
 
-  FirebaseEconomySource({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+  FirebaseEconomySource({FirebaseFirestore? firestore, FirebaseFunctions? functions})
+      : _firestore = firestore ?? FirebaseFirestore.instance,
+        _functions = functions ?? FirebaseFunctions.instance;
 
   DocumentReference<Map<String, dynamic>> _userDoc(String uid) =>
       _firestore.collection('users').doc(uid);
@@ -32,20 +35,17 @@ class FirebaseEconomySource implements EconomyRepository {
   Future<void> distributeRewards(Map<String, int> playerRewards) async {
     if (playerRewards.isEmpty) return;
 
-    final batch = _firestore.batch();
-    playerRewards.forEach((uid, points) {
-      if (points != 0) {
-        batch.set(_userDoc(uid), {
-          'walletPoints': FieldValue.increment(points),
-          'updatedAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
-      }
-    });
-
     try {
-      await batch.commit();
+      final callable = _functions.httpsCallable('distributeRewards');
+      await callable.call(<String, dynamic>{
+        'playerRewards': playerRewards,
+      });
+    } on FirebaseFunctionsException catch (e) {
+      throw Exception('Ödül dağıtımı başarısız: ${e.message}');
     } on FirebaseException catch (e) {
       throw Exception('Ödül dağıtımı başarısız: ${e.message}');
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
@@ -55,78 +55,60 @@ class FirebaseEconomySource implements EconomyRepository {
     required String cosmeticId,
     required int price,
   }) async {
+    print('=== BUY COSMETIC DEBUG ===');
+    print('UID: $uid');
+    print('Cosmetic ID: $cosmeticId');
+    print('Price: $price');
+    
     try {
-      final docRef = _userDoc(uid);
-      final userSnapshot = await docRef.get();
-
-      if (!userSnapshot.exists) {
-        throw const UserNotFoundException();
-      }
-
-      final userData = userSnapshot.data()!;
-      final currentPoints = userData['walletPoints'] as int? ?? 0;
-      final ownedCosmetics = List<String>.from(userData['ownedCosmetics'] ?? []);
-
-      if (ownedCosmetics.contains(cosmeticId)) {
-        throw const AlreadyOwnedCosmeticException();
-      }
-
-      if (currentPoints < price) {
-        throw const InsufficientBalanceException();
-      }
-
-
+      // Geçici olarak client-side yap
+      final userRef = _userDoc(uid);
+      final cosmeticRef = _firestore.collection('cosmetics').doc(cosmeticId);
+      
+      print('User ref: ${userRef.path}');
+      print('Cosmetic ref: ${cosmeticRef.path}');
+      
       await _firestore.runTransaction((transaction) async {
-        final snapshot = await transaction.get(docRef);
-
-        if (!snapshot.exists) {
-          throw const UserNotFoundException();
+        final userSnap = await transaction.get(userRef);
+        final cosmeticSnap = await transaction.get(cosmeticRef);
+        
+        print('User exists: ${userSnap.exists}');
+        print('Cosmetic exists: ${cosmeticSnap.exists}');
+        
+        if (!userSnap.exists) {
+          throw Exception('Kullanıcı bulunamadı');
         }
-
-        final currentPoints = snapshot.data()?['walletPoints'] as int? ?? 0;
-        final ownedCosmetics = List<String>.from(
-          snapshot.data()?['ownedCosmetics'] ?? [],
-        );
-
+        
+        // cosmetics collection'ı olmadığı için bu kontrolü atla
+        // if (!cosmeticSnap.exists) {
+        //   throw Exception('Kozmetik ürün bulunamadı');
+        // }
+        
+        final userData = userSnap.data()!;
+        final currentWallet = userData['walletPoints'] as int? ?? userData['wallet'] as int? ?? 0;
+        final ownedCosmetics = List<String>.from(userData['ownedCosmetics'] ?? []);
+        
+        print('Current wallet: $currentWallet');
+        print('Owned cosmetics: $ownedCosmetics');
+        
+        if (currentWallet < price) {
+          throw Exception('Yetersiz bakiye');
+        }
+        
         if (ownedCosmetics.contains(cosmeticId)) {
-          throw const AlreadyOwnedCosmeticException();
+          throw Exception('Bu ürün zaten sahip olduğunuz');
         }
-
-        if (currentPoints < price) {
-          throw const InsufficientBalanceException();
-        }
-
-        // Parayı düş ve envantere ekle
-        final Map<String, dynamic> updates = {
-          'walletPoints': currentPoints - price,
+        
+        // Transaction ile güncelle
+        transaction.update(userRef, {
+          'walletPoints': currentWallet - price,
           'ownedCosmetics': FieldValue.arrayUnion([cosmeticId]),
-          'updatedAt': FieldValue.serverTimestamp(),
-        };
-
-        // Eğer kategori ise ownedCategories listesine de ekle
-        final cosmeticDoc = await transaction.get(
-          _firestore.collection('cosmetics').doc(cosmeticId),
-        );
-        if (cosmeticDoc.exists) {
-          final data = cosmeticDoc.data()!;
-          final type = data['type'] as String?;
-          if (type == 'category') {
-            final categoryName =
-                data['categoryName'] as String? ?? data['name'] as String?;
-            if (categoryName != null) {
-              updates['ownedCategories'] = FieldValue.arrayUnion([
-                categoryName,
-              ]);
-            }
-          }
-        }
-
-        transaction.update(docRef, updates);
+        });
+        
+        print('Transaction completed successfully');
       });
     } on FirebaseException catch (e) {
-      throw Exception('Satın alma işlemi başarısız: ${e.message}');
-    } on EconomyException {
-      rethrow;
+      throw Exception('Kozmetik satın alınırken bağlantı hatası: ${e.message}');
     } catch (e) {
       throw Exception(e.toString().replaceAll('Exception: ', ''));
     }

@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import '../domain/vote_repository.dart';
 import 'vote_model.dart';
 import '../../../shared/models/enums.dart';
 
 class FirebaseVoteSource implements VoteRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFunctions _functions = FirebaseFunctions.instance;
 
   CollectionReference<Map<String, dynamic>> _votesRef(String gameId) =>
       _firestore.collection('games').doc(gameId).collection('votes');
@@ -144,6 +146,20 @@ class FirebaseVoteSource implements VoteRepository {
       batch.delete(doc.reference);
     }
     await batch.commit();
+  }
+
+  @override
+  Future<VoteResult> finalizeVotingRound({required String gameId}) async {
+    final callable = _functions.httpsCallable('finalizeVotingRound');
+    final response = await callable.call(<String, dynamic>{'gameId': gameId});
+    final data = Map<String, dynamic>.from(response.data as Map);
+
+    return VoteResult(
+      totalScore: data['totalScore'] as int? ?? 0,
+      audienceScore: data['audienceScore'] as int? ?? 0,
+      mood: data['mood'] as String?,
+      penalizedCount: data['penalizedCount'] as int? ?? 0,
+    );
   }
 }
 

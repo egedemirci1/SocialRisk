@@ -70,9 +70,14 @@ class FirebaseRoomSource implements RoomRepository {
     required bool useCustomDeck,
   }) async {
     try {
+      print('=== CREATE ROOM DEBUG ===');
       String roomCode = AppHelpers.generateRoomCode();
+      print('Generated room code: $roomCode');
+      
       while (await doesRoomExist(roomCode)) {
+        print('Room $roomCode already exists, generating new one...');
         roomCode = AppHelpers.generateRoomCode();
+        print('New room code: $roomCode');
       }
 
       final roomModel = RoomModel(
@@ -80,6 +85,7 @@ class FirebaseRoomSource implements RoomRepository {
         hostId: hostId,
         mode: mode.name,
         status: GameStatus.waiting.name,
+        playerCount: 1,
         endConditionType: endConditionType.name,
         endConditionValue: endConditionValue,
         visibility: visibility.name,
@@ -88,7 +94,9 @@ class FirebaseRoomSource implements RoomRepository {
         createdAt: DateTime.now(),
       );
 
+      print('Creating room document...');
       await _roomDoc(roomCode).set(roomModel.toJson());
+      print('Room document created successfully!');
 
       final hostPlayer = PlayerModel(
         id: hostId,
@@ -99,7 +107,8 @@ class FirebaseRoomSource implements RoomRepository {
         isReady: true,
       );
       await _playersRef(roomCode).doc(hostId).set(hostPlayer.toJson());
-
+      print('Host player added successfully!');
+      print('=== END CREATE ROOM DEBUG ===');
       return roomCode;
     } on FirebaseException catch (e) {
       throw Exception(
@@ -120,29 +129,63 @@ class FirebaseRoomSource implements RoomRepository {
     String? activeTitle,
   }) async {
     try {
-      final roomDoc = await _roomDoc(roomCode).get();
-      if (!roomDoc.exists) {
-        throw Exception('Oda bulunamadı: $roomCode');
-      }
+      print('=== JOIN ROOM DEBUG ===');
+      print('Attempting to join room: $roomCode');
+      print('Player ID: $playerId');
+      print('Player Name: $playerName');
+      
+      final roomRef = _roomDoc(roomCode);
+      final playerRef = _playersRef(roomCode).doc(playerId);
 
-      final playersCountSnap = await _playersRef(roomCode).count().get();
-      if (playersCountSnap.count! >= GameConstants.maxPlayers) {
-        throw Exception(
-          'Oda dolu! Maksimum ${GameConstants.maxPlayers} oyuncu.',
+      await _firestore.runTransaction((transaction) async {
+        final roomDoc = await transaction.get(roomRef);
+        print('Room exists: ${roomDoc.exists}');
+        
+        if (!roomDoc.exists) {
+          print('ERROR: Room does not exist!');
+          throw Exception('Oda bulunamadı: $roomCode');
+        }
+
+        final roomData = roomDoc.data() ?? <String, dynamic>{};
+        final playerCount = roomData['playerCount'] as int? ?? 0;
+        print('Current player count: $playerCount');
+        
+        if (playerCount >= GameConstants.maxPlayers) {
+          print('ERROR: Room is full!');
+          throw Exception(
+            'Oda dolu! Maksimum ${GameConstants.maxPlayers} oyuncu.',
+          );
+        }
+
+        final existingPlayer = await transaction.get(playerRef);
+        print('Player already exists: ${existingPlayer.exists}');
+        
+        if (existingPlayer.exists) {
+          // Debug: Player already exists
+          print('Player $playerId already exists in room $roomCode');
+          return;
+        }
+
+        final player = PlayerModel(
+          id: playerId,
+          displayName: playerName,
+          avatarUrl: playerAvatarUrl,
+          activeFrame: activeFrame,
+          activeTitle: activeTitle,
         );
-      }
-
-      final player = PlayerModel(
-        id: playerId,
-        displayName: playerName,
-        avatarUrl: playerAvatarUrl,
-        activeFrame: activeFrame,
-        activeTitle: activeTitle,
-      );
-      await _playersRef(roomCode).doc(playerId).set(player.toJson());
+        
+        // Debug: Adding player
+        print('Adding player $playerId to room $roomCode. Current count: $playerCount');
+        transaction.set(playerRef, player.toJson());
+        transaction.update(roomRef, {'playerCount': playerCount + 1});
+        print('Player $playerId added successfully. New count: ${playerCount + 1}');
+        print('=== END JOIN ROOM DEBUG ===');
+      });
     } on FirebaseException catch (e) {
+      print('FirebaseException in joinRoom: ${e.message}');
       throw Exception('Odaya katılırken bağlantı hatası oluştu: ${e.message}');
     } catch (e) {
+      print('General exception in joinRoom: $e');
       throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
@@ -153,33 +196,55 @@ class FirebaseRoomSource implements RoomRepository {
     required String playerId,
   }) async {
     try {
-      final roomSnap = await _roomDoc(roomCode).get();
+      final roomRef = _roomDoc(roomCode);
+      final playerRef = _playersRef(roomCode).doc(playerId);
+      String? gameIdToClean;
+      bool shouldDeleteRoom = false;
+
+      await _firestore.runTransaction((transaction) async {
+        final roomSnap = await transaction.get(roomRef);
+        if (!roomSnap.exists) return;
+
+        final roomData = roomSnap.data()!;
+        final isHost = roomData['hostId'] == playerId;
+        if (isHost) {
+          shouldDeleteRoom = true;
+          return;
+        }
+
+        final playerSnap = await transaction.get(playerRef);
+        if (!playerSnap.exists) {
+          return;
+        }
+
+        final playerCount = roomData['playerCount'] as int? ?? 0;
+        final nextCount = playerCount > 0 ? playerCount - 1 : 0;
+        transaction.delete(playerRef);
+        transaction.update(roomRef, {'playerCount': nextCount});
+        if (nextCount == 0) {
+          shouldDeleteRoom = true;
+        } else {
+          final gameId = roomData['gameId'] as String?;
+          if (gameId != null && gameId.isNotEmpty) {
+            gameIdToClean = gameId;
+          }
+        }
+      });
+
+      final roomSnap = await roomRef.get();
       if (!roomSnap.exists) return;
-
       final roomData = roomSnap.data()!;
-      final isHost = roomData['hostId'] == playerId;
 
-      if (isHost) {
+      if (shouldDeleteRoom || (roomData['playerCount'] as int? ?? 0) == 0) {
         await _deleteRoomAndRelatedData(roomCode, roomData);
         return;
       }
 
-      await _playersRef(roomCode).doc(playerId).delete();
-
-      final playersCountSnap = await _playersRef(roomCode).count().get();
-      final count = playersCountSnap.count ?? 0;
-      if (count == 0) {
-        await _deleteRoomAndRelatedData(roomCode, roomData);
-      } else {
-        final gameId = roomData['gameId'] as String?;
-        if (gameId != null &&
-            gameId.isNotEmpty &&
-            _gameRepository != null) {
-          await _gameRepository!.removePlayerFromGame(
-            gameId: gameId,
-            playerId: playerId,
-          );
-        }
+      if (gameIdToClean != null && _gameRepository != null) {
+        await _gameRepository.removePlayerFromGame(
+          gameId: gameIdToClean!,
+          playerId: playerId,
+        );
       }
     } on FirebaseException catch (e) {
       throw Exception('Odadan ayrılırken hata oluştu: ${e.message}');
@@ -333,7 +398,21 @@ class FirebaseRoomSource implements RoomRepository {
 
       return await _firestore.runTransaction((transaction) async {
         final freshRoomSnap = await transaction.get(roomRef);
-    if (!freshRoomSnap.exists) throw Exception('Oda bulunamadı!');
+        if (!freshRoomSnap.exists) throw Exception('Oda bulunamadı!');
+
+        final freshRoomData = freshRoomSnap.data()!;
+        final existingGameId = freshRoomData['gameId'] as String?;
+        final currentStatus = freshRoomData['status'] as String?;
+        final playerCount = freshRoomData['playerCount'] as int? ?? 0;
+        if (existingGameId != null && existingGameId.isNotEmpty) {
+          return existingGameId;
+        }
+        if (currentStatus == GameStatus.playing.name) {
+          throw Exception('Oyun zaten başlatılmış görünüyor.');
+        }
+        if (playerCount < 2) {
+          throw Exception('Oyunu başlatmak için en az 2 oyuncu gerekli.');
+        }
 
         final gameRef = _firestore.collection('games').doc();
         final gameId = gameRef.id;

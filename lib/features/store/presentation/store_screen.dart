@@ -170,28 +170,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Test para ekleme butonu
-        GestureDetector(
-          onTap: () async {
-            await ref
-                .read(economyControllerProvider.notifier)
-                .addPointsToWallet(uid: uid, points: 500);
-            if (mounted) {
-              ToastUtils.showSuccess(context, '+500 altın eklendi!');
-            }
-          },
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
-            ),
-            child: const Icon(Icons.add, color: Colors.greenAccent, size: 16),
-          ),
-        ),
-        const SizedBox(width: 6),
         // Cüzdan göstergesi
         Container(
           margin: const EdgeInsets.symmetric(vertical: 12),

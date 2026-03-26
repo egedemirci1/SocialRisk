@@ -19,6 +19,39 @@ service cloud.firestore {
       ];
     }
 
+    function roomExists(roomId) {
+      return exists(/databases/$(database)/documents/rooms/$(roomId));
+    }
+
+    function isRoomPlayer(roomId) {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/rooms/$(roomId)/players/$(request.auth.uid));
+    }
+
+    function isRoomHost(roomId) {
+      return isAuthenticated()
+        && roomExists(roomId)
+        && get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid;
+    }
+
+    function gameRoomId(gameId) {
+      return get(/databases/$(database)/documents/games/$(gameId)).data.roomId;
+    }
+
+    function isVotingPhase(gameId) {
+      return get(/databases/$(database)/documents/games/$(gameId)).data.status == 'voting';
+    }
+
+    function isCurrentPlayer(gameId) {
+      return get(/databases/$(database)/documents/games/$(gameId)).data.currentPlayerId == request.auth.uid;
+    }
+
+    function isCurrentGamePlayer(gameId) {
+      return isAuthenticated()
+        && get(/databases/$(database)/documents/games/$(gameId)).data.roomId is string
+        && exists(/databases/$(database)/documents/rooms/$(get(/databases/$(database)/documents/games/$(gameId)).data.roomId)/players/$(request.auth.uid));
+    }
+
     // ─── Rooms ────────────────────────────────────────────
     match /rooms/{roomId} {
       // Herkes oda bilgilerini okuyabilir (lobi katılım için gerekli)
@@ -27,9 +60,15 @@ service cloud.firestore {
       // Oda oluşturma: giriş yapmış kullanıcı
       allow create: if isAuthenticated();
 
-      // Güncelleme: sadece odadaki oyuncular
+      // Güncelleme: sadece odadaki oyuncular VEYA playerCount güncellemesi
       allow update: if isAuthenticated()
-        && exists(/databases/$(database)/documents/rooms/$(roomId)/players/$(request.auth.uid));
+        && (
+          // Odadaki oyuncu herhangi bir alanı güncelleyebilir
+          exists(/databases/$(database)/documents/rooms/$(roomId)/players/$(request.auth.uid))
+          || existsAfter(/databases/$(database)/documents/rooms/$(roomId)/players/$(request.auth.uid))
+          // VEYA sadece playerCount güncellemesi (join/leave işlemleri için)
+          || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['playerCount'])
+        );
 
       // Silme: sadece host
       allow delete: if isAuthenticated()
@@ -47,7 +86,17 @@ service cloud.firestore {
         // Güncelleme: kendi verisi VEYA host (skor güncellemesi için)
         allow update: if isAuthenticated()
           && (isOwner(playerId)
-            || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid);
+            || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'displayName',
+            'avatarUrl',
+            'activeFrame',
+            'activeTitle',
+            'score',
+            'isReady',
+            'lastSeenAt',
+            'passStreak'
+          ]);
 
         // Silme (odadan çıkma): kendi belgesi veya host
         allow delete: if isAuthenticated()
@@ -58,32 +107,86 @@ service cloud.firestore {
 
     // ─── Games ────────────────────────────────────────────
     match /games/{gameId} {
-      // Okuma: giriş yapmış herkes (visibility filtrelemesi client-side)
-      allow read: if isAuthenticated();
+      // Okuma: sadece ilişkili odadaki oyuncular
+      allow read: if isAuthenticated()
+        && resource.data.roomId is string
+        && isRoomPlayer(resource.data.roomId);
 
-      // Oluşturma: giriş yapmış kullanıcı
-      allow create: if isAuthenticated();
+      // Oluşturma: yalnızca oda hostu kendi odası için oyun açabilir
+      allow create: if isAuthenticated()
+        && request.resource.data.roomId is string
+        && isRoomHost(request.resource.data.roomId);
 
-      // Güncelleme: giriş yapmış kullanıcı (oyun akışı için gerekli)
-      // NOT: İdeal olarak Cloud Functions ile sunucu taraflı yapılmalı
-      allow update: if isAuthenticated();
+      // Güncelleme: yalnızca oda içindeki oyuncular; host olmayanlar status/sonuç alanlarını yazamasın
+      allow update: if isAuthenticated()
+        && resource.data.roomId is string
+        && isCurrentGamePlayer(gameId)
+        && request.resource.data.roomId == resource.data.roomId
+        && (
+          isRoomHost(resource.data.roomId)
+          || isCurrentPlayer(gameId)
+        )
+        // Alan bazlı validasyon
+        && (
+          // Host her zaman her şeyi güncelleyebilir
+          isRoomHost(resource.data.roomId)
+          // Current player sadece belirli alanları güncelleyebilir
+          || isCurrentPlayer(gameId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'spinningTarget',
+            'selectedCategory',
+            'selectedDifficulty',
+            'currentTask',
+            'usedTaskIds',
+            'status',
+            'categoryPickCounts',
+            'lockedCategories',
+            'categoryMarketValues',
+            'passStreak',
+            'currentPlayerId',
+            'currentRound',
+            'lastRoundScore',
+            'lastRoundMultiplier',
+            'lastRoundPlayerId'
+          ])
+        )
 
       // Silme: yok (oyunlar silinmez, Cloud Function temizler)
       allow delete: if false;
 
       // ─── Votes alt koleksiyonu ──────────────────────
       match /votes/{voterId} {
-        // Okuma: tüm oyuncular (oy sayma için)
-        allow read: if isAuthenticated();
+        // Okuma: sadece oda oyuncuları
+        allow read: if isAuthenticated()
+          && get(/databases/$(database)/documents/games/$(gameId)).data.roomId is string
+          && isRoomPlayer(get(/databases/$(database)/documents/games/$(gameId)).data.roomId);
 
         // Yazma: sadece kendi oyunu yazabilir
         allow create: if isAuthenticated()
-          && isOwner(voterId);
+          && isOwner(voterId)
+          && gameRoomId(gameId) is string
+          && isRoomPlayer(gameRoomId(gameId))
+          && isVotingPhase(gameId)
+          && !isCurrentPlayer(gameId)
+          && request.resource.data.keys().hasOnly(['value', 'timedOut', 'penaltyApplied'])
+          && request.resource.data.value in ['like', 'neutral', 'dislike']
+          && request.resource.data.penaltyApplied == false;
         allow update: if isAuthenticated()
-          && isOwner(voterId);
+          && isOwner(voterId)
+          && gameRoomId(gameId) is string
+          && isRoomPlayer(gameRoomId(gameId))
+          && isVotingPhase(gameId)
+          && !isCurrentPlayer(gameId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['value', 'timedOut', 'penaltyApplied'])
+          && request.resource.data.value in ['like', 'neutral', 'dislike'];
 
-        // Silme: oyun mantığı tarafından (host veya kendi)
-        allow delete: if isAuthenticated();
+        // Silme: sadece host veya oy sahibi
+        allow delete: if isAuthenticated()
+          && get(/databases/$(database)/documents/games/$(gameId)).data.roomId is string
+          && (
+            isOwner(voterId)
+            || isRoomHost(get(/databases/$(database)/documents/games/$(gameId)).data.roomId)
+          );
       }
     }
 
@@ -97,10 +200,18 @@ service cloud.firestore {
         && isOwner(userId);
 
       // Güncelleme: kendi belgesini
-      // NOT: walletPoints güvenliği Cloud Function (onGameFinished) ile sağlanır.
-      // Client-side güncellemeler: sadece profil, avatar, cosmetics vs.
       allow update: if isAuthenticated()
-        && isOwner(userId);
+        && isOwner(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'displayName',
+          'avatarUrl',
+          'activeFrame',
+          'activeTitle',
+          'updatedAt',
+          'wallet',
+          'walletPoints',
+          'ownedCosmetics'
+        ]);
 
       // Silme yok
       allow delete: if false;
@@ -113,9 +224,15 @@ service cloud.firestore {
 
     // 🛍️ Cosmetics (Mağaza Öğeleri) 🛍️
     match /cosmetics/{cosmeticId} {
+      // Her authenticated kullanıcı okuyabilir (mağaza listesi için)
       allow read: if isAuthenticated();
-      // Geçici çözüm: seed etmek için tüm üyeler yazabilsin
-      allow write: if isAuthenticated();
+      
+      // Oluşturma/güncelleme/silme: sadece admin
+      allow create, update, delete: if isAdmin()
+        && request.resource.data.keys().hasAll(['id', 'name', 'price', 'type', 'imageUrl'])
+        && request.resource.data.price is int
+        && request.resource.data.price >= 0
+        && request.resource.data.type in ['title', 'frame', 'category'];
     }
 
     // ─── Tasks (Görevler ve Admin) ────────────────────────

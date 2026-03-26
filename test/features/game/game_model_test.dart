@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:social_risk/features/game/data/game_model.dart';
-import 'package:social_risk/features/game/domain/game_entity.dart';
 import 'package:social_risk/shared/models/enums.dart';
 
 void main() {

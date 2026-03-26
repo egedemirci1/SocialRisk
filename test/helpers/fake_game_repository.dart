@@ -29,10 +29,7 @@ class FakeGameRepository implements GameRepository {
 
   GameEntity? getGame(String gameId) => _state[gameId]?.toEntity();
 
-  /// endGame sonrası ilgili oyunun stream controller'ının kapatıldığını doğrulamak için.
-  bool isStreamClosed(String gameId) =>
-      _controllers[gameId]?.isClosed ?? true;
-
+  @override
   Stream<GameEntity?> watchGame(String gameId) {
     _controllers[gameId] ??= StreamController<GameEntity?>.broadcast();
     final state = _state[gameId];
@@ -50,18 +47,7 @@ class FakeGameRepository implements GameRepository {
     }
   }
 
-  _MutableGameState _getOrCreate(String gameId, {required String roomId}) {
-    if (!_state.containsKey(gameId)) {
-      _state[gameId] = _MutableGameState(
-        gameId: gameId,
-        roomId: roomId,
-        currentPlayerId: '',
-        turnOrder: [],
-      );
-    }
-    return _state[gameId]!;
-  }
-
+  
   @override
   Future<void> setSpinningTarget({
     required String gameId,
