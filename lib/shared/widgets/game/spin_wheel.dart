@@ -11,11 +11,13 @@ import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Kategori bilgisi — çark dilimi için renk, ikon ve isim.
 class WheelCategory {
+  final String id;
   final String name;
   final Color color;
   final IconData icon;
 
   const WheelCategory({
+    required this.id,
     required this.name,
     required this.color,
     required this.icon,
@@ -57,9 +59,15 @@ class _SpinWheelState extends ConsumerState<SpinWheel>
         .map((c) {
           final def = CategoryConstants.byId(c);
           if (def != null) {
-            return WheelCategory(name: def.localizedName(languageCode), color: def.color, icon: def.icon);
+            return WheelCategory(
+              id: def.id,
+              name: def.localizedName(languageCode),
+              color: def.color,
+              icon: def.icon,
+            );
           }
           return WheelCategory(
+            id: c,
             name: c,
             color: AppColors.primary,
             icon: Icons.category_rounded,
@@ -110,7 +118,7 @@ class _SpinWheelState extends ConsumerState<SpinWheel>
     if (_isSpinning) return;
 
     final activeCats = _activeCategories;
-    final targetIndex = activeCats.indexWhere((c) => c.name == targetCategory);
+    final targetIndex = activeCats.indexWhere((c) => c.id == targetCategory);
     if (targetIndex == -1) return;
 
     setState(() {

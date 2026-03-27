@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../shared/widgets/common/player_avatar.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/providers/user_provider.dart';
 import '../../../economy/providers/economy_provider.dart';
 import '../../../room/domain/room_entity.dart';
@@ -69,7 +70,9 @@ class PlayerSpotlight extends ConsumerWidget {
         ),
         SizedBox(height: veryShort ? 12 : (compact ? 18 : 26)),
         Text(
-          isMe ? 'Senin Sıran!' : '${player.name} Oynuyor',
+          isMe
+              ? AppLocalizations.of(context)!.yourTurn
+              : AppLocalizations.of(context)!.playerPlaying(player.name),
           style: AppTextStyles.headlineMedium.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,

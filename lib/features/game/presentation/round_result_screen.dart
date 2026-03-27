@@ -454,7 +454,7 @@ class _LeaderboardTile extends ConsumerWidget {
         children: [
           // Rank badge — fixed minimum width so '#' and number never wrap
           Container(
-            constraints: const BoxConstraints(minWidth: 28),
+            constraints: const BoxConstraints(minWidth: 44),
             child: Text(
               '#$rank',
               style: AppTextStyles.labelSmall.copyWith(
@@ -464,6 +464,7 @@ class _LeaderboardTile extends ConsumerWidget {
               ),
               maxLines: 1,
               softWrap: false,
+              overflow: TextOverflow.visible,
             ),
           ),
           SizedBox(width: compact ? 6 : 8),
