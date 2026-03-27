@@ -32,14 +32,7 @@ Oda kurucusu (Host) oyun başlamadan önce şu parametreleri belirler:
 |-----------|------------|
 | **Oyuncu Kapasitesi** | 2 – 8 oyuncu |
 | **Bitiş Koşulu** | Puan Hedefi (ör. 5000) veya Tur Sayısı (ör. 10 tur) |
-| **Görünürlük Modu** | Açık Mod (içeriği önceden gör) / Kapalı Mod (sadece kategori görünür) |
 
-### Görünürlük Modları
-
-- **Açık Mod (Stratejik):** Oyuncular görevi seçmeden önce içeriği okuyabilir. Seçimi onayladıktan sonra geri dönüş yoktur.
-- **Kapalı Mod (Full Risk):** Oyuncular yalnızca kategori adını ve puan çarpanını bilerek seçer. Sürpriz ve kaos garantili!
-
----
 
 ## 🎮 Oyun Modları
 
@@ -49,8 +42,9 @@ Oda kurucusu (Host) oyun başlamadan önce şu parametreleri belirler:
 - Nadir kategoriler yüksek puan çarpanı verir.
 
 ### 2. Ekonomi Modu (Strateji ve Rekabet)
-- **Seçim Önceliği:** Önceki turun puan lideri, yeni turda kategori seçme hakkını ilk elde eder.
-- **Pazar Daralması:** Bir kategori seçildikçe o kategorinin puan değeri düşer veya tur için kilitlenir.
+
+- **Pazar Daralması:** Bir kategori seçildikçe o kategorinin puan değeri düşer, bir kategori de sıcak fırsat olarak +2 puan alır.
+
 - **Stratejik İkilem:** "Düşük puanlı güvenli görev mi, yoksa yüksek puanlı riskli görev mi?"
 
 ---
@@ -74,23 +68,13 @@ Görev tamamlandığında tüm diğer oyuncuların ekranında anlık oylama pane
 
 ### 3. Ceza Sistemi (Anti-Korkaklık)
 - Görevi reddeden (Pas diyen) oyuncu **eksi puan** alır.
-- **Katlanan Ceza:** Üst üste Pas geçmek, ceza çarpanını artırır:
 
-```
-1. Pas → -50 puan
-2. Pas → -150 puan  (×3)
-3. Pas → -450 puan  (×3)
-```
-
----
 
 ## 🛡️ İçerik ve Güvenlik Politikası
 
-- Tüm görevler **genel kitleye** hitap eder; cinsellik, şiddet ve nefret söylemi **kesinlikle yoktur**.
+- Tüm görevler **genel kitleye** hitap eder; , şiddet ve nefret söylemi **kesinlikle yoktur**.
 - Oyun içinde **hiçbir reklam** gösterilmez.
 - İçerik moderasyonu sunucu taraflı (Cloud Functions) gerçekleştirilir.
-
----
 
 ## 💰 Meta-Game ve Puan Ekonomisi
 
@@ -99,7 +83,6 @@ Oyun sonunda toplanan puanlar kalıcı cüzdana eklenir:
 | Harcama Alanı | Açıklama |
 |---------------|----------|
 | **Kozmetik** | Avatar çerçeveleri, taçlar, rütbe simgeleri |
-| **Öncelik Hakları** | Nadir "ilk seçim" hakları (Ekonomi Modu dışında da kullanılabilir) |
 | **Premium Paketler** | Yeni ve absürt temalı (ama güvenli) soru paketleri |
 
 ---
@@ -128,41 +111,6 @@ Oyun sonunda toplanan puanlar kalıcı cüzdana eklenir:
 - Dart SDK `>=3.0.0`
 - Firebase CLI veya Supabase CLI
 - Android Studio / VS Code
-
-### Adımlar
-
-```bash
-# 1. Repoyu klonla
-git clone https://github.com/kullanici/sosyal-risk.git
-cd sosyal-risk
-
-# 2. Bağımlılıkları yükle
-flutter pub get
-
-# 3. Kod üretme (json_serializable, Riverpod codegen vb.)
-dart run build_runner build --delete-conflicting-outputs
-
-# 4. Firebase yapılandırması
-# google-services.json (Android) ve GoogleService-Info.plist (iOS) dosyalarını yerleştir
-firebase login
-flutterfire configure
-
-# 5. Uygulamayı çalıştır
-flutter run
-```
-
-### Ortam Değişkenleri
-
-`lib/core/config/app_config.dart` (ya da `.env` + `flutter_dotenv`) üzerinden yönetilir:
-
-```dart
-class AppConfig {
-  static const firestoreEmulatorHost = String.fromEnvironment('FIRESTORE_EMULATOR_HOST');
-  static const useEmulator = bool.fromEnvironment('USE_EMULATOR', defaultValue: false);
-}
-```
-
----
 
 ## 📁 Proje Yapısı
 
@@ -200,20 +148,3 @@ Geliştirici kuralları ve standartlar `instructions/` klasöründe tanımlanmı
 | [`development.instructions.md`](instructions/development.instructions.md) | Dart kod standartları, Riverpod kuralları, hata yönetimi |
 | [`testing.instructions.md`](instructions/testing.instructions.md) | Test guardrails (unit, widget, E2E) |
 | [`performance.instructions.md`](instructions/performance.instructions.md) | Flutter performans kuralları |
-
----
-
-## 🤝 Katkıda Bulunma
-
-1. `git checkout -b feature/ozellik-adi`
-2. Kodunu yaz ve instruction kurallarına uy
-3. Testlerini yaz: `flutter test`
-4. `git commit -m 'feat: ozellik aciklamasi'`
-5. `git push origin feature/ozellik-adi`
-6. Pull Request aç
-
----
-
-## 📄 Lisans
-
-MIT License — bkz. [LICENSE](LICENSE)
