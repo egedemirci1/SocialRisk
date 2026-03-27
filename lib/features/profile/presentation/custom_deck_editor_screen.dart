@@ -10,6 +10,7 @@ import '../../auth/providers/user_provider.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_colors.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 class CustomDeckEditorScreen extends ConsumerStatefulWidget {
   const CustomDeckEditorScreen({super.key});
@@ -27,6 +28,8 @@ class _CustomDeckEditorScreenState
   static const _accentCrimson = AppColors.error;
   static const _textLight = Colors.white;
   static const _cardColor = AppColors.surface;
+
+  AppLocalizations get l => AppLocalizations.of(context)!;
 
   void _showTaskDialog(UserEntity user, {UserTaskEntity? editingTask}) {
     final uid = user.uid;
@@ -49,11 +52,11 @@ class _CustomDeckEditorScreenState
                 
                 ref.listen(customTaskControllerProvider, (prev, next) {
                   if (next is AsyncError) {
-                    ToastUtils.showError(context, 'Hata: ${next.error}');
+                    ToastUtils.showError(context, l.error(next.error.toString()));
                   } else if (prev?.isLoading == true &&
                       !next.isLoading &&
                       !next.hasError) {
-                    ToastUtils.showSuccess(context, editingTask == null ? 'Soru eklendi!' : 'Soru güncellendi!');
+                    ToastUtils.showSuccess(context, editingTask == null ? l.contentAdded : l.contentUpdated);
                     Navigator.pop(context);
                   }
                 });
@@ -68,7 +71,7 @@ class _CustomDeckEditorScreenState
                 ),
               ),
               title: Text(
-                editingTask == null ? 'İçerik Oluştur' : 'İçeriği Düzenle',
+                editingTask == null ? l.createContent : l.editContent,
                 style: AppTextStyles.titleLarge.copyWith(color: Colors.white,
                   fontWeight: FontWeight.w700,
                   fontSize: 16,),
@@ -85,14 +88,14 @@ class _CustomDeckEditorScreenState
                       controller: contentController,
                       enabled: !isLoading,
                       validator: (v) => (v == null || v.trim().isEmpty)
-                          ? 'Lütfen bir içerik yazın'
+                          ? l.pleaseWriteContent
                           : null,
                       maxLines: 3,
                       minLines: 1,
                       maxLength: 120,
                       style: AppTextStyles.titleSmall.copyWith(color: Colors.white),
                       decoration: InputDecoration(
-                        labelText: 'İçerik Metni',
+                        labelText: l.contentText,
                         labelStyle: AppTextStyles.titleSmall.copyWith(color: AppColors.accent),
                         counterStyle: AppTextStyles.titleSmall.copyWith(color: Colors.white38),
                         filled: true,
@@ -114,7 +117,7 @@ class _CustomDeckEditorScreenState
                       initialValue: selectedDifficulty,
                       dropdownColor: _cardColor,
                       decoration: InputDecoration(
-                        labelText: 'Zorluk',
+                        labelText: l.difficultyLabel,
                         labelStyle: AppTextStyles.titleSmall.copyWith(color: _accentGold),
                         filled: true,
                         fillColor: Colors.black.withValues(alpha: 0.4),
@@ -130,18 +133,18 @@ class _CustomDeckEditorScreenState
                         ),
                       ),
                       items:
-                          const [
+                          [
                                 DropdownMenuItem(
                                   value: 'easy',
-                                  child: Text('Kolay'),
+                                  child: Text(l.easyDifficulty),
                                 ),
                                 DropdownMenuItem(
                                   value: 'medium',
-                                  child: Text('Orta'),
+                                  child: Text(l.mediumDifficulty),
                                 ),
                                 DropdownMenuItem(
                                   value: 'hard',
-                                  child: Text('Zor'),
+                                  child: Text(l.hardDifficulty),
                                 ),
                               ]
                               .map(
@@ -174,7 +177,7 @@ class _CustomDeckEditorScreenState
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
                   onPressed: isLoading ? null : () => Navigator.pop(context),
-                  child: Text('İptal', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w700)),
+                  child: Text(l.cancel, style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w700)),
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton(
@@ -227,7 +230,7 @@ class _CustomDeckEditorScreenState
                           ),
                         )
                       : Text(
-                          editingTask == null ? 'İçerik Ekle' : 'Güncelle',
+                          editingTask == null ? l.addContent : l.update,
                           style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w800,),
                         ),
                 ),
@@ -264,7 +267,7 @@ class _CustomDeckEditorScreenState
       ),
       error: (e, s) => Scaffold(
         backgroundColor: _bgColor,
-        body: Center(child: Text('Hata: $e')),
+        body: Center(child: Text(l.error(e.toString()))),
       ),
       data: (user) {
         if (user == null) return const SizedBox.shrink();
@@ -275,7 +278,7 @@ class _CustomDeckEditorScreenState
           backgroundColor: AppColors.background,
           appBar: AppBar(
             title: Text(
-              'İçeriklerim',
+              l.myContentsTitle,
               style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w800,
                 color: Colors.white,
                 fontSize: 18,),
@@ -298,7 +301,7 @@ class _CustomDeckEditorScreenState
                   size: 28,
                 ),
                 onPressed: () => _showTaskDialog(user),
-                tooltip: 'İçerik Oluştur',
+                tooltip: l.createContent,
               ),
             ],
           ),
@@ -342,7 +345,7 @@ class _CustomDeckEditorScreenState
                         ),
                         error: (err, stack) => Center(
                           child: Text(
-                            'Bir hata oluştu: $err',
+                            l.error(err.toString()),
                             style: AppTextStyles.titleSmall.copyWith(color: _accentCrimson),
                           ),
                         ),
@@ -365,7 +368,7 @@ class _CustomDeckEditorScreenState
                                     ),
                                     const SizedBox(height: 16),
                                     Text(
-                                      'Bu bölümde kendi içeriklerini oluşturabilirsin.',
+                                      l.myContentsDescription,
                                       textAlign: TextAlign.center,
                                       style: AppTextStyles.titleLarge.copyWith(color: Colors.white70,
                                         fontSize: 16,
@@ -374,7 +377,7 @@ class _CustomDeckEditorScreenState
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      'Bu içerikleri oyun içinde kullanarak eğlenceni katlayabilirsin!',
+                                      l.myContentsUsage,
                                       textAlign: TextAlign.center,
                                       style: AppTextStyles.labelSmall.copyWith(color: Colors.white38,
                                         fontSize: 13,
@@ -392,7 +395,7 @@ class _CustomDeckEditorScreenState
                                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                                       ),
                                       icon: const Icon(Icons.add_rounded),
-                                      label: Text('İçerik Oluştur', style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w800)),
+                                      label: Text(l.createContent, style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w800)),
                                     ),
                                   ],
                                 ),
@@ -488,15 +491,15 @@ class _CustomDeckEditorScreenState
                                                         ),
                                                       ),
                                                       child: Text(
-                                                        task.category,
-                                                        style:
-                                                            AppTextStyles.labelSmall.copyWith(color:
-                                                                  _accentGold,
-                                                              fontSize: 12,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,),
-                                                      ),
+                                                          task.category == 'Özel' ? l.specialCategory : task.category,
+                                                          style:
+                                                              AppTextStyles.labelSmall.copyWith(color:
+                                                                    _accentGold,
+                                                                fontSize: 12,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,),
+                                                        ),
                                                     ),
                                                     const SizedBox(width: 8),
                                                     Container(
@@ -519,13 +522,13 @@ class _CustomDeckEditorScreenState
                                                         ),
                                                       ),
                                                       child: Text(
-                                                        task.difficulty ==
-                                                                'easy'
-                                                            ? 'KOLAY'
-                                                            : task.difficulty ==
-                                                                  'medium'
-                                                            ? 'ORTA'
-                                                            : 'ZOR',
+                                                          task.difficulty ==
+                                                                  'easy'
+                                                              ? l.easyDifficulty.toUpperCase()
+                                                              : task.difficulty ==
+                                                                    'medium'
+                                                              ? l.mediumDifficulty.toUpperCase()
+                                                              : l.hardDifficulty.toUpperCase(),
                                                         style:
                                                             AppTextStyles.labelSmall.copyWith(color: Colors
                                                                   .grey
@@ -554,7 +557,7 @@ class _CustomDeckEditorScreenState
                                                       user,
                                                       editingTask: task,
                                                     ),
-                                                tooltip: 'Düzenle',
+                                                tooltip: l.editTooltip,
                                               ),
                                               IconButton(
                                                 icon: const Icon(
@@ -570,7 +573,7 @@ class _CustomDeckEditorScreenState
                                                       uid: user.uid,
                                                       taskId: task.id,
                                                     ),
-                                                tooltip: 'Sil',
+                                                tooltip: l.deleteTooltip,
                                               ),
                                             ],
                                           ),

@@ -478,7 +478,7 @@ class _DifficultyChoiceScreenState
                             child: FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text(
-                                'RİSK VE ÖDÜL',
+                                AppLocalizations.of(context)!.riskAndReward,
                                 style: AppTextStyles.titleLarge.copyWith(
                                   color: Colors.white,
                                   letterSpacing: layout.heroLetterSpacing,

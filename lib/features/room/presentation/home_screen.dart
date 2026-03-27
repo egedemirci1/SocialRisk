@@ -398,7 +398,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: StageButton(
-                label: 'İçerik',
+                label: l.content,
                 icon: Icons.menu_book_rounded,
                 backgroundColor: AppColors.surface,
                 textColor: AppColors.accent,
@@ -411,7 +411,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         if (isAdmin(user?.uid)) ...[
           const SizedBox(height: 24),
           StageButton(
-            label: 'Yönetici Paneli',
+            label: l.adminPanel,
             icon: Icons.admin_panel_settings_rounded,
             backgroundColor: const Color(0xFF1A1A1A),
             textColor: Colors.amber,
@@ -441,7 +441,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               const SizedBox(height: 10),
               Text(
-                'DİKKAT!',
+                l.attention,
                 style: AppTextStyles.headlineMedium.copyWith(color: AppColors.error,
                   fontWeight: FontWeight.w800,
                   fontSize: 20,),
@@ -488,13 +488,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     try {
       await ref.read(authControllerProvider.notifier).logout();
       if (context.mounted) {
-        ToastUtils.showSuccess(context, 'Çıkış Başarılı');
+        final l2 = AppLocalizations.of(context)!;
+        ToastUtils.showSuccess(context, l2.logoutSuccess);
         await Future.delayed(const Duration(milliseconds: 600));
         if (context.mounted) context.go('/login');
       }
     } catch (e) {
       if (context.mounted) {
-        ToastUtils.showError(context, 'Çıkış yapılamadı: $e');
+        final l2 = AppLocalizations.of(context)!;
+        ToastUtils.showError(context, l2.logoutError(e.toString()));
       }
     }
   }

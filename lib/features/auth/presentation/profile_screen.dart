@@ -11,6 +11,7 @@ import '../../auth/providers/user_provider.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
 import '../../profile/presentation/widgets/achievements_widget.dart';
 
@@ -28,6 +29,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   int _selectedTabIndex = 0; // 0: Profil, 1: Gardırop, 2: Performans
   bool _isUploading = false;
 
+  AppLocalizations get l => AppLocalizations.of(context)!;
+
   Future<void> _updateDisplayName(UserEntity user) async {
     final controller = TextEditingController(text: user.displayName);
     final newName = await showDialog<String>(
@@ -35,28 +38,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text(
-          'Oyuncu Adını Güncelle',
+          l.updateDisplayNameTitle,
           style: AppTextStyles.titleLarge.copyWith(color: AppColors.accent),
         ),
         content: TextField(
           controller: controller,
           maxLength: 16,
           style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            labelText: 'Yeni Oyuncu Adı',
-            labelStyle: TextStyle(color: Colors.white70),
-            counterStyle: TextStyle(color: Colors.white54),
+          decoration: InputDecoration(
+            labelText: l.newDisplayNameLabel,
+            labelStyle: const TextStyle(color: Colors.white70),
+            counterStyle: const TextStyle(color: Colors.white54),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('İPTAL', style: TextStyle(color: Colors.white54)),
+            child: Text(l.cancel, style: const TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('GÜNCELLE'),
+            child: Text(l.update),
           ),
         ],
       ),
@@ -71,9 +74,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         await ref
             .read(userControllerProvider.notifier)
             .updateUserProfile(updatedUser);
-        if (mounted) ToastUtils.showSuccess(context, 'Profil güncellendi!');
+        if (mounted) ToastUtils.showSuccess(context, l.profileUpdated);
       } else {
-        ToastUtils.showError(context, 'Lütfen geçerli bir isim giriniz! (En az 3 karakter, sadece harf ve sayı)');
+        ToastUtils.showError(context, l.invalidNameLong);
       }
     }
   }
@@ -144,7 +147,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ],
           ),
           child: Text(
-            'Profilinizi Düzenleyin',
+            l.editProfileTitle,
             style: AppTextStyles.titleLarge.copyWith(
               fontWeight: FontWeight.w900,
               color: AppColors.accent,
@@ -167,13 +170,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
               error: (err, stack) => Center(
                 child: Text(
-                  'Hata: $err',
+                  l.error(err.toString()),
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
               data: (userProfile) {
                 // Auth'tan gelen ismi tercih et (Firestore'da 'Misafir' olabilir)
-                final authName = user.displayName ?? 'Oyuncu';
+                final authName = user.displayName ?? l.playerDefaultName;
                 UserEntity profile;
                 if (userProfile == null) {
                   profile = UserEntity(
@@ -232,17 +235,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: Row(
         children: [
           _TabItem(
-            title: 'Profil',
+            title: l.actorTab,
             isSelected: _selectedTabIndex == 0,
             onTap: () => setState(() => _selectedTabIndex = 0),
           ),
           _TabItem(
-            title: 'Eşyalar',
+            title: l.wardrobeTab,
             isSelected: _selectedTabIndex == 1,
             onTap: () => setState(() => _selectedTabIndex = 1),
           ),
           _TabItem(
-            title: 'Performans',
+            title: l.performanceTab,
             isSelected: _selectedTabIndex == 2,
             onTap: () => setState(() => _selectedTabIndex = 2),
           ),
@@ -385,7 +388,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         const SizedBox(height: 48),
         StageButton(
-          label: 'Mağaza',
+          label: l.store,
           icon: Icons.shopping_bag_rounded,
           backgroundColor: AppColors.surface,
           textColor: AppColors.accent,
@@ -426,15 +429,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Henüz bir eşyanız yok.\nMağazadaki harika içeriklere göz atmak ister misiniz?',
-                        style: AppTextStyles.titleSmall.copyWith(color: Colors.white38,
+                        l.noItemsInWardrobe,
+                        style: AppTextStyles.titleSmall.copyWith(
+                          color: Colors.white38,
                           fontSize: 14,
-                          fontWeight: FontWeight.w600,),
+                          fontWeight: FontWeight.w600,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
                       StageButton(
-                        label: 'Mağaza',
+                        label: l.store,
                         icon: Icons.shopping_bag_rounded,
                         backgroundColor: AppColors.surface,
                         textColor: AppColors.accent,
@@ -461,7 +466,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Çerçeveler',
+                        l.framesTab,
                         style: AppTextStyles.titleLarge.copyWith(color: AppColors.accent,
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
@@ -497,7 +502,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Ünvanlar',
+                        l.titlesTab,
                         style: AppTextStyles.titleLarge.copyWith(color: AppColors.accent,
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
@@ -594,7 +599,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'Aktif',
+                    l.activeLabel,
                     style: AppTextStyles.titleLarge.copyWith(color: AppColors.accent,
                       fontSize: 8,
                       fontWeight: FontWeight.w900,),
@@ -612,7 +617,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'İstatistikler',
+          l.statsTitle,
           style: AppTextStyles.titleLarge.copyWith(color: AppColors.accent,
             fontSize: 18,
             fontWeight: FontWeight.w800,),
@@ -626,20 +631,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               children: [
                 _StatRow(
                   icon: Icons.monetization_on_rounded,
-                  label: 'Bakiye',
+                  label: l.balanceLabel,
                   value: '${p?.walletPoints ?? 0}',
                 ),
                 const SizedBox(height: 12),
                 _StatRow(
                   icon: Icons.workspace_premium_rounded,
-                  label: 'Rütbe',
-                  value: p?.calculatedRankTr ?? 'Çaylak',
+                  label: l.rankLabel,
+                  value: (Localizations.localeOf(context).languageCode == 'tr')
+                      ? (p?.calculatedRankTr ?? l.rankBeginner)
+                      : (p?.calculatedRankEn ?? l.rankBeginner),
                 ),
                 const SizedBox(height: 12),
                 _StatRow(
                   icon: Icons.style_rounded,
-                  label: 'Koleksiyon',
-                  value: '${p?.ownedCosmetics.length ?? 0} ürün',
+                  label: l.collectionLabel,
+                  value: l.itemsCount(p?.ownedCosmetics.length ?? 0),
                 ),
                 if (p != null) AchievementsWidget(user: p),
               ],
@@ -756,6 +763,7 @@ class _QuickStatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final gamesPlayed = user.stats['games_played'] ?? 0;
     final gamesWon = user.stats['games_won'] ?? 0;
     final winRate = gamesPlayed > 0 ? (gamesWon / gamesPlayed * 100).round() : 0;
@@ -776,7 +784,7 @@ class _QuickStatsWidget extends StatelessWidget {
               const Icon(Icons.sports_esports_rounded, color: AppColors.accent, size: 18),
               const SizedBox(width: 8),
               Text(
-                'Hızlı İstatistikler',
+                l.quickStatsTitle,
                 style: AppTextStyles.titleSmall.copyWith(
                   color: AppColors.accent,
                   fontWeight: FontWeight.w700,
@@ -788,9 +796,9 @@ class _QuickStatsWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatItem(Icons.casino_rounded, '$gamesPlayed', 'Oyun'),
-              _buildStatItem(Icons.trending_up_rounded, '$winRate%', 'Kazanma'),
-              _buildStatItem(Icons.star_rounded, '$totalPoints', 'Puan'),
+              _buildStatItem(Icons.casino_rounded, '$gamesPlayed', l.gameLabel),
+              _buildStatItem(Icons.trending_up_rounded, '$winRate%', l.winLabel),
+              _buildStatItem(Icons.star_rounded, '$totalPoints', l.pointsLabel),
             ],
           ),
         ],

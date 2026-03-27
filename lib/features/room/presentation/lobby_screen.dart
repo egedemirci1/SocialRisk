@@ -663,13 +663,13 @@ class _PlayerTile extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: isReady
                       ? Colors.green.withValues(alpha: 0.2)
-                      : Colors.orange.withValues(alpha: 0.2),
+                      : AppColors.primary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   isReady ? AppLocalizations.of(context)!.ready : AppLocalizations.of(context)!.notReady,
                   style: AppTextStyles.labelSmall.copyWith(
-                    color: isReady ? Colors.green : Colors.orange,
+                    color: isReady ? Colors.green : AppColors.primary,
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
                   ),
@@ -881,9 +881,9 @@ class _ReadyToggleButton extends ConsumerWidget {
     return StageButton(
       label: isReady ? AppLocalizations.of(context)!.readyForParty : AppLocalizations.of(context)!.notReadyYet,
       icon: isReady ? Icons.check_circle_outline_rounded : Icons.close_rounded,
-      backgroundColor: isReady ? AppColors.primary : Colors.black26,
-      textColor: isReady ? Colors.white : Colors.white54,
-      borderColor: isReady ? AppColors.accent : Colors.white12,
+      backgroundColor: isReady ? AppColors.primary : AppColors.primary.withValues(alpha: 0.15),
+      textColor: isReady ? Colors.white : AppColors.primary,
+      borderColor: isReady ? AppColors.accent : AppColors.primary.withValues(alpha: 0.4),
       onPressed: () => ref.read(roomControllerProvider.notifier).toggleReady(
             roomCode: roomCode,
             playerId: playerId,

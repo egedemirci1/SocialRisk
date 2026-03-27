@@ -69,7 +69,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ready => 'Hazırım!';
 
   @override
-  String get notReady => 'Hazır Değilim';
+  String get notReady => 'Hazır Ol';
 
   @override
   String get playerCapacity => 'Oyuncu Kapasitesi';
@@ -780,7 +780,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Son güncelleme: 2026\n\n1) Kabul ve Kapsam\nBu uygulamayi kullanarak, burada belirtilen Kullanım Koşulları\\\'nı kabul etmiş sayılırsınız. Koşulları kabul etmiyorsanız uygulamayı kullanmayınız.\n\n2) Uygun Kullanım\nKullanıcı; hile, taciz, nefret söylemi, tehdit, yasa dışı içerik paylaşımı, hesap güvenliğini ihlal etme ve hizmeti bozacak otomasyon araçları kullanmama yükümlülüğündedir.\n\n3) Hesap ve Güvenlik\nHesabınızla yapılan işlemlerden sorumlusunuz. Şüpheli erişim veya güvenlik ihlalini gecikmeden bildirmeniz gerekir.\n\n4) İçerik ve Topluluk Kuralları\nKullanıcı tarafından oluşturulan içerikler (metin, görsel vb.) topluluk kurallarına uygun olmalıdır. Kuralları ihlal eden içerikler bildirimsiz kaldırılabilir, hesaplara geçici veya kalıcı kısıt uygulanabilir.\n\n5) Fikri Mülkiyet\nUygulama arayüzü, marka öğeleri ve yazılım bileşenleri ilgili hak sahiplerine aittir. İzinsiz kopyalama, dağıtma veya tersine mühendislik yasaktır.\n\n6) Hizmette Değişiklik ve Kesinti\nHizmet, teknik bakım, güvenlik veya iş gereksinimleri nedeniyle değiştirilebilir, kısıtlanabilir veya geçici olarak durdurulabilir.\n\n7) Sorumluluğun Sınırlandırılması\nUygulama \"olduğu gibi\" sunulur. Mevzuatın izin verdiği ölçüde, dolaylı veya arızi zararlardan sorumluluk kabul edilmez.\n\n8) Hesap Sonlandırma\nKullanım koşulları veya topluluk kurallarının ihlali durumunda erişiminiz askıya alınabilir veya sonlandırılabilir.\n\n9) Koşulların Güncellenmesi\nKullanım Koşulları zaman zaman güncellenebilir. Güncel metin uygulama içinde yayımlandığı andan itibaren geçerlidir.\n\n10) İletişim\nYasal bildirimler ve destek talepleri için uygulama içi iletişim kanalları kullanılmalıdır.';
 
   @override
-  String get notReadyYet => 'HENÜZ HAZIR DEĞİLİM';
+  String get notReadyYet => 'HAZIR OL';
 
   @override
   String get readyForParty => 'PARTİYE HAZIRIM!';
@@ -834,9 +834,225 @@ class AppLocalizationsTr extends AppLocalizations {
   String get noItems => 'Henüz sergilenecek ürün yok.';
 
   @override
-  String get comingSoon => 'YAKINDA...';
-
-  @override
   String get scenariosComingSoon =>
       'Özel Senaryolar ve Tema Paketleri Çok Yakında Sizlerle!';
+
+  @override
+  String get logoutSuccess => 'Çıkış Başarılı';
+
+  @override
+  String logoutError(String error) {
+    return 'Çıkış başarısız: $error';
+  }
+
+  @override
+  String get loginError => 'Giriş başarısız';
+
+  @override
+  String get nameEmptyError => 'Lütfen sahne adınızı belirleyin';
+
+  @override
+  String get nameTooShortError => 'İsim en az 3 karakter olmalıdır';
+
+  @override
+  String get invalidNameError => 'Sadece harf ve rakam kullanın';
+
+  @override
+  String get anonymousLoginSuccess => 'Anonim olarak giriş yapıldı';
+
+  @override
+  String get loggingIn => 'Partiye giriş yapılıyor...';
+
+  @override
+  String get playerDisplayNameHint => 'Oyuncu Adınız...';
+
+  @override
+  String get joinPartyButton => 'Partiye Katıl!';
+
+  @override
+  String get anonymousHint =>
+      '* Anonim olarak devam edeceksiniz. İstatistikleriniz bu cihaza kaydedilir.';
+
+  @override
+  String get orDivider => 'Veya';
+
+  @override
+  String get continueWithGoogle => 'Google ile Devam Et';
+
+  @override
+  String get content => 'İçerik';
+
+  @override
+  String get comingSoon => 'YAKINDA';
+
+  @override
+  String get loginSuccess => 'Giriş başarılı';
+
+  @override
+  String get editProfileTitle => 'Profilinizi Düzenleyin';
+
+  @override
+  String get updateDisplayNameTitle => 'Oyuncu Adını Güncelle';
+
+  @override
+  String get newDisplayNameLabel => 'Yeni Oyuncu Adı';
+
+  @override
+  String get cancel => 'İPTAL';
+
+  @override
+  String get update => 'GÜNCELLE';
+
+  @override
+  String get profileUpdated => 'Profil güncellendi!';
+
+  @override
+  String get invalidNameLong =>
+      'Lütfen geçerli bir isim giriniz! (En az 3 karakter, sadece harf ve sayı)';
+
+  @override
+  String get actorTab => 'Profil';
+
+  @override
+  String get wardrobeTab => 'Eşyalar';
+
+  @override
+  String get performanceTab => 'Performans';
+
+  @override
+  String get noItemsInWardrobe =>
+      'Henüz bir eşyanız yok.\nMağazadaki harika içeriklere göz atmak ister misiniz?';
+
+  @override
+  String get statsTitle => 'İstatistikler';
+
+  @override
+  String get balanceLabel => 'Bakiye';
+
+  @override
+  String get rankLabel => 'Rütbe';
+
+  @override
+  String get collectionLabel => 'Koleksiyon';
+
+  @override
+  String itemsCount(int count) {
+    return '$count ürün';
+  }
+
+  @override
+  String get activeLabel => 'Aktif';
+
+  @override
+  String get quickStatsTitle => 'Hızlı İstatistikler';
+
+  @override
+  String get gameLabel => 'Oyun';
+
+  @override
+  String get winLabel => 'Kazanma';
+
+  @override
+  String get pointsLabel => 'Puan';
+
+  @override
+  String get rankLegend => 'Efsane';
+
+  @override
+  String get rankKing => 'Kral';
+
+  @override
+  String get rankStar => 'Yıldız';
+
+  @override
+  String get rankFun => 'Eğlenceli';
+
+  @override
+  String get rankBeginner => 'Çaylak';
+
+  @override
+  String get guestName => 'Misafir';
+
+  @override
+  String get achievementsTitle => 'Başarımlar';
+
+  @override
+  String get completedLabel => 'TAMAMLANDI ✓';
+
+  @override
+  String get achievementPartyMonsterTitle => 'Parti Canavarı';
+
+  @override
+  String get achievementPartyMonsterDesc => 'Oynanan oyun sayısı';
+
+  @override
+  String get achievementVoiceOfPeopleTitle => 'Halkın Sesi';
+
+  @override
+  String get achievementVoiceOfPeopleDesc => 'Verilen oy sayısı';
+
+  @override
+  String get achievementVipTitle => 'VIP';
+
+  @override
+  String get achievementVipDesc => 'Sahip olunan bakiye';
+
+  @override
+  String get achievementSocialIconTitle => 'Sosyal İkon';
+
+  @override
+  String get achievementSocialIconDesc => 'Sahip olunan eşya sayısı';
+
+  @override
+  String get createContent => 'İçerik Oluştur';
+
+  @override
+  String get editContent => 'İçeriği Düzenle';
+
+  @override
+  String get addContent => 'İçerik Ekle';
+
+  @override
+  String get contentAdded => 'Soru eklendi!';
+
+  @override
+  String get contentUpdated => 'Soru güncellendi!';
+
+  @override
+  String get pleaseWriteContent => 'Lütfen bir içerik yazın';
+
+  @override
+  String get contentText => 'İçerik Metni';
+
+  @override
+  String get difficultyLabel => 'Zorluk';
+
+  @override
+  String get specialCategory => 'Özel';
+
+  @override
+  String get myContentsTitle => 'İçeriklerim';
+
+  @override
+  String get myContentsDescription =>
+      'Bu bölümde kendi içeriklerini oluşturabilirsin.';
+
+  @override
+  String get myContentsUsage =>
+      'Bu içerikleri oyun içinde kullanarak eğlenceni katlayabilirsin!';
+
+  @override
+  String get editTooltip => 'Düzenle';
+
+  @override
+  String get deleteTooltip => 'Sil';
+
+  @override
+  String get easyDifficulty => 'Kolay';
+
+  @override
+  String get mediumDifficulty => 'Orta';
+
+  @override
+  String get hardDifficulty => 'Zor';
 }

@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @notReady.
   ///
   /// In tr, this message translates to:
-  /// **'Hazır Değilim'**
+  /// **'Hazır Ol'**
   String get notReady;
 
   /// No description provided for @playerCapacity.
@@ -1493,7 +1493,7 @@ abstract class AppLocalizations {
   /// No description provided for @notReadyYet.
   ///
   /// In tr, this message translates to:
-  /// **'HENÜZ HAZIR DEĞİLİM'**
+  /// **'HAZIR OL'**
   String get notReadyYet;
 
   /// No description provided for @readyForParty.
@@ -1586,17 +1586,431 @@ abstract class AppLocalizations {
   /// **'Henüz sergilenecek ürün yok.'**
   String get noItems;
 
-  /// No description provided for @comingSoon.
-  ///
-  /// In tr, this message translates to:
-  /// **'YAKINDA...'**
-  String get comingSoon;
-
   /// No description provided for @scenariosComingSoon.
   ///
   /// In tr, this message translates to:
   /// **'Özel Senaryolar ve Tema Paketleri Çok Yakında Sizlerle!'**
   String get scenariosComingSoon;
+
+  /// No description provided for @logoutSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkış Başarılı'**
+  String get logoutSuccess;
+
+  /// No description provided for @logoutError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkış başarısız: {error}'**
+  String logoutError(String error);
+
+  /// No description provided for @loginError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Giriş başarısız'**
+  String get loginError;
+
+  /// No description provided for @nameEmptyError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Lütfen sahne adınızı belirleyin'**
+  String get nameEmptyError;
+
+  /// No description provided for @nameTooShortError.
+  ///
+  /// In tr, this message translates to:
+  /// **'İsim en az 3 karakter olmalıdır'**
+  String get nameTooShortError;
+
+  /// No description provided for @invalidNameError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sadece harf ve rakam kullanın'**
+  String get invalidNameError;
+
+  /// No description provided for @anonymousLoginSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Anonim olarak giriş yapıldı'**
+  String get anonymousLoginSuccess;
+
+  /// No description provided for @loggingIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Partiye giriş yapılıyor...'**
+  String get loggingIn;
+
+  /// No description provided for @playerDisplayNameHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyuncu Adınız...'**
+  String get playerDisplayNameHint;
+
+  /// No description provided for @joinPartyButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Partiye Katıl!'**
+  String get joinPartyButton;
+
+  /// No description provided for @anonymousHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'* Anonim olarak devam edeceksiniz. İstatistikleriniz bu cihaza kaydedilir.'**
+  String get anonymousHint;
+
+  /// No description provided for @orDivider.
+  ///
+  /// In tr, this message translates to:
+  /// **'Veya'**
+  String get orDivider;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Google ile Devam Et'**
+  String get continueWithGoogle;
+
+  /// No description provided for @content.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik'**
+  String get content;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'YAKINDA'**
+  String get comingSoon;
+
+  /// No description provided for @loginSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Giriş başarılı'**
+  String get loginSuccess;
+
+  /// No description provided for @editProfileTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profilinizi Düzenleyin'**
+  String get editProfileTitle;
+
+  /// No description provided for @updateDisplayNameTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyuncu Adını Güncelle'**
+  String get updateDisplayNameTitle;
+
+  /// No description provided for @newDisplayNameLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Oyuncu Adı'**
+  String get newDisplayNameLabel;
+
+  /// No description provided for @cancel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İPTAL'**
+  String get cancel;
+
+  /// No description provided for @update.
+  ///
+  /// In tr, this message translates to:
+  /// **'GÜNCELLE'**
+  String get update;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil güncellendi!'**
+  String get profileUpdated;
+
+  /// No description provided for @invalidNameLong.
+  ///
+  /// In tr, this message translates to:
+  /// **'Lütfen geçerli bir isim giriniz! (En az 3 karakter, sadece harf ve sayı)'**
+  String get invalidNameLong;
+
+  /// No description provided for @actorTab.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil'**
+  String get actorTab;
+
+  /// No description provided for @wardrobeTab.
+  ///
+  /// In tr, this message translates to:
+  /// **'Eşyalar'**
+  String get wardrobeTab;
+
+  /// No description provided for @performanceTab.
+  ///
+  /// In tr, this message translates to:
+  /// **'Performans'**
+  String get performanceTab;
+
+  /// No description provided for @noItemsInWardrobe.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz bir eşyanız yok.\nMağazadaki harika içeriklere göz atmak ister misiniz?'**
+  String get noItemsInWardrobe;
+
+  /// No description provided for @statsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstatistikler'**
+  String get statsTitle;
+
+  /// No description provided for @balanceLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bakiye'**
+  String get balanceLabel;
+
+  /// No description provided for @rankLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rütbe'**
+  String get rankLabel;
+
+  /// No description provided for @collectionLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Koleksiyon'**
+  String get collectionLabel;
+
+  /// No description provided for @itemsCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} ürün'**
+  String itemsCount(int count);
+
+  /// No description provided for @activeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif'**
+  String get activeLabel;
+
+  /// No description provided for @quickStatsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hızlı İstatistikler'**
+  String get quickStatsTitle;
+
+  /// No description provided for @gameLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun'**
+  String get gameLabel;
+
+  /// No description provided for @winLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kazanma'**
+  String get winLabel;
+
+  /// No description provided for @pointsLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Puan'**
+  String get pointsLabel;
+
+  /// No description provided for @rankLegend.
+  ///
+  /// In tr, this message translates to:
+  /// **'Efsane'**
+  String get rankLegend;
+
+  /// No description provided for @rankKing.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kral'**
+  String get rankKing;
+
+  /// No description provided for @rankStar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yıldız'**
+  String get rankStar;
+
+  /// No description provided for @rankFun.
+  ///
+  /// In tr, this message translates to:
+  /// **'Eğlenceli'**
+  String get rankFun;
+
+  /// No description provided for @rankBeginner.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çaylak'**
+  String get rankBeginner;
+
+  /// No description provided for @guestName.
+  ///
+  /// In tr, this message translates to:
+  /// **'Misafir'**
+  String get guestName;
+
+  /// No description provided for @achievementsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başarımlar'**
+  String get achievementsTitle;
+
+  /// No description provided for @completedLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'TAMAMLANDI ✓'**
+  String get completedLabel;
+
+  /// No description provided for @achievementPartyMonsterTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Parti Canavarı'**
+  String get achievementPartyMonsterTitle;
+
+  /// No description provided for @achievementPartyMonsterDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oynanan oyun sayısı'**
+  String get achievementPartyMonsterDesc;
+
+  /// No description provided for @achievementVoiceOfPeopleTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Halkın Sesi'**
+  String get achievementVoiceOfPeopleTitle;
+
+  /// No description provided for @achievementVoiceOfPeopleDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verilen oy sayısı'**
+  String get achievementVoiceOfPeopleDesc;
+
+  /// No description provided for @achievementVipTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'VIP'**
+  String get achievementVipTitle;
+
+  /// No description provided for @achievementVipDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sahip olunan bakiye'**
+  String get achievementVipDesc;
+
+  /// No description provided for @achievementSocialIconTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sosyal İkon'**
+  String get achievementSocialIconTitle;
+
+  /// No description provided for @achievementSocialIconDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sahip olunan eşya sayısı'**
+  String get achievementSocialIconDesc;
+
+  /// No description provided for @createContent.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik Oluştur'**
+  String get createContent;
+
+  /// No description provided for @editContent.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçeriği Düzenle'**
+  String get editContent;
+
+  /// No description provided for @addContent.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik Ekle'**
+  String get addContent;
+
+  /// No description provided for @contentAdded.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soru eklendi!'**
+  String get contentAdded;
+
+  /// No description provided for @contentUpdated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soru güncellendi!'**
+  String get contentUpdated;
+
+  /// No description provided for @pleaseWriteContent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Lütfen bir içerik yazın'**
+  String get pleaseWriteContent;
+
+  /// No description provided for @contentText.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik Metni'**
+  String get contentText;
+
+  /// No description provided for @difficultyLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zorluk'**
+  String get difficultyLabel;
+
+  /// No description provided for @specialCategory.
+  ///
+  /// In tr, this message translates to:
+  /// **'Özel'**
+  String get specialCategory;
+
+  /// No description provided for @myContentsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçeriklerim'**
+  String get myContentsTitle;
+
+  /// No description provided for @myContentsDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu bölümde kendi içeriklerini oluşturabilirsin.'**
+  String get myContentsDescription;
+
+  /// No description provided for @myContentsUsage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu içerikleri oyun içinde kullanarak eğlenceni katlayabilirsin!'**
+  String get myContentsUsage;
+
+  /// No description provided for @editTooltip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düzenle'**
+  String get editTooltip;
+
+  /// No description provided for @deleteTooltip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sil'**
+  String get deleteTooltip;
+
+  /// No description provided for @easyDifficulty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kolay'**
+  String get easyDifficulty;
+
+  /// No description provided for @mediumDifficulty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orta'**
+  String get mediumDifficulty;
+
+  /// No description provided for @hardDifficulty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zor'**
+  String get hardDifficulty;
 }
 
 class _AppLocalizationsDelegate

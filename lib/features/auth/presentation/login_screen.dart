@@ -12,7 +12,10 @@ import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
+import 'package:social_risk/core/constants/app_locale_options.dart';
+import 'package:social_risk/core/providers/locale_provider.dart';
 
 /// Login ekranı — Tiyatro Temalı
 class LoginScreen extends ConsumerStatefulWidget {
@@ -29,6 +32,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   bool _isGoogleLoading = false;
   bool _isAppleLoading = false;
   bool _showFlare = false;
+
+  AppLocalizations get l => AppLocalizations.of(context)!;
 
   late final AnimationController _fadeController;
   late final Animation<double> _fadeAnimation;
@@ -65,25 +70,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     final nameRegex = RegExp(r'^[a-zA-Z0-9ığüşöçİĞÜŞÖÇ ]+$');
     
     if (name.isEmpty) {
-      _showError('Lütfen sahne adınızı belirleyin');
+      _showError(l.nameEmptyError);
       return;
     }
     if (name.length < 3) {
-      _showError('İsim en az 3 karakter olmalıdır');
+      _showError(l.nameTooShortError);
       return;
     }
     if (!nameRegex.hasMatch(name)) {
-      _showError('Sadece harf ve rakam kullanın');
+      _showError(l.invalidNameError);
       return;
     }
     
     setState(() => _isAnonymousLoading = true);
     try {
-      PendingToast.instance.setSuccess('Anonim olarak giriş yapıldı');
+      PendingToast.instance.setSuccess(l.anonymousLoginSuccess);
       await ref.read(authControllerProvider.notifier).signIn(name);
     } catch (e) {
       PendingToast.instance.consume(); // clear the pending toast if login failed
-      if (mounted) _showError('Giriş başarısız: $e');
+      if (mounted) _showError('${l.loginError}: $e');
     } finally {
       if (mounted) setState(() => _isAnonymousLoading = false);
     }
@@ -112,12 +117,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         await ref.read(userRepositoryProvider).createUserProfile(
           UserEntity(uid: cred.user!.uid, displayName: displayName),
         );
-        PendingToast.instance.setSuccess('Giriş Başarılı');
+        PendingToast.instance.setSuccess(l.loginSuccess);
       }
     } catch (e) {
       PendingToast.instance.consume();
       if (mounted) {
-        String msg = 'Giriş başarısız';
+        String msg = l.loginError;
         if (e is PlatformException) {
           msg = e.message ?? e.code;
           if (e.code.isNotEmpty) msg = '${e.code}: $msg';
@@ -154,7 +159,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 
     return LoadingOverlay(
       isLoading: _isAnonymousLoading || _isGoogleLoading || _isAppleLoading,
-      message: 'Partiye giriş yapılıyor...',
+      message: l.loggingIn,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: FadeTransition(
@@ -166,26 +171,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               child: AnimatedMeshBackground(),
             ),
             SafeArea(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 400),
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: verticalPad,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                      _buildHeader(logoH),
-                      SizedBox(height: headerGap),
-                      _buildLoginCard(compact),
-                      SizedBox(height: bottomGap),
-                      _buildSocialSection(compact),
-                      ],
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: _buildLanguagePicker(),
+                  ),
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: verticalPad,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildHeader(logoH),
+                            SizedBox(height: headerGap),
+                            _buildLoginCard(compact),
+                            SizedBox(height: bottomGap),
+                            _buildSocialSection(compact),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
           ],
@@ -227,7 +241,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               color: Colors.white,
               fontWeight: FontWeight.w800,),
             decoration: InputDecoration(
-              hintText: 'Oyuncu Adınız...',
+              hintText: l.playerDisplayNameHint,
               hintStyle: AppTextStyles.titleSmall.copyWith(color: Colors.white38,
                 fontWeight: FontWeight.w600,),
               counterText: '',
@@ -251,7 +265,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           Stack(
             children: [
               StageButton(
-                label: 'Partiye Katıl!',
+                label: l.joinPartyButton,
                 icon: Icons.local_fire_department_rounded,
                 backgroundColor: AppColors.primary,
                 textColor: AppColors.background,
@@ -277,7 +291,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            '* Anonim olarak devam edeceksiniz. İstatistikleriniz bu cihaza kaydedilir.',
+            l.anonymousHint,
             style: AppTextStyles.labelSmall.copyWith(color: Colors.white38,
               fontSize: 12,
               fontWeight: FontWeight.w600,),
@@ -297,7 +311,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'Veya',
+                l.orDivider,
                 style: AppTextStyles.titleSmall.copyWith(color: Colors.white38,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -312,7 +326,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           children: [
             Expanded(
               child: StageButton(
-                label: 'Google ile Devam Et',
+                label: l.continueWithGoogle,
                 icon: Icons.g_mobiledata_rounded,
                 backgroundColor: AppColors.surfaceElevated,
                 textColor: Colors.white,
@@ -325,6 +339,54 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildLanguagePicker() {
+    final currentLocale = ref.watch(appLocaleProvider);
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white10),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<Locale>(
+          value: resolveMaterialLocale(currentLocale),
+          dropdownColor: AppColors.background,
+          icon: const Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: Icon(Icons.language, color: Colors.white70, size: 20),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          borderRadius: BorderRadius.circular(16),
+          items: kAppLocaleOptions.map((opt) {
+            return DropdownMenuItem(
+              value: opt.locale,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(opt.flag, style: const TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
+                  Text(
+                    opt.label,
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: (Locale? newLocale) {
+            if (newLocale != null) {
+              ref.read(appLocaleProvider.notifier).setLocale(newLocale);
+            }
+          },
+        ),
+      ),
     );
   }
 }

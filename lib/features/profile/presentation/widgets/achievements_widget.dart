@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import '../../../auth/domain/user_entity.dart';
 import '../../../../core/constants/app_colors.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Achievement tier thresholds per category.
 class _AchievementDef {
   final String id;
-  final String title;
-  final String description;
+  final String titleKey;
+  final String descKey;
   final IconData icon;
   final List<int> tiers; // values at which tier 1..4 are completed
   final int Function(UserEntity user) getValue;
 
   const _AchievementDef({
     required this.id,
-    required this.title,
-    required this.description,
+    required this.titleKey,
+    required this.descKey,
     required this.icon,
     required this.tiers,
     required this.getValue,
@@ -25,32 +26,32 @@ class _AchievementDef {
 final List<_AchievementDef> _achievements = [
   _AchievementDef(
     id: 'games_played',
-    title: 'Parti Canavarı',
-    description: 'Oynanan oyun sayısı',
+    titleKey: 'achievementPartyMonsterTitle',
+    descKey: 'achievementPartyMonsterDesc',
     icon: Icons.sports_esports_rounded,
     tiers: [1, 10, 25, 50],
     getValue: (u) => u.stats['games_played'] ?? 0,
   ),
   _AchievementDef(
     id: 'votes_given',
-    title: 'Halkın Sesi',
-    description: 'Verilen oy sayısı',
+    titleKey: 'achievementVoiceOfPeopleTitle',
+    descKey: 'achievementVoiceOfPeopleDesc',
     icon: Icons.how_to_vote_rounded,
     tiers: [5, 20, 50, 100],
     getValue: (u) => u.stats['votes_given'] ?? 0,
   ),
   _AchievementDef(
     id: 'wallet',
-    title: 'VIP',
-    description: 'Sahip olunan bakiye',
+    titleKey: 'achievementVipTitle',
+    descKey: 'achievementVipDesc',
     icon: Icons.monetization_on_rounded,
     tiers: [100, 500, 1000, 5000],
     getValue: (u) => u.walletPoints,
   ),
   _AchievementDef(
     id: 'cosmetics',
-    title: 'Sosyal İkon',
-    description: 'Sahip olunan eşya sayısı',
+    titleKey: 'achievementSocialIconTitle',
+    descKey: 'achievementSocialIconDesc',
     icon: Icons.diamond_rounded,
     tiers: [1, 3, 5, 10],
     getValue: (u) => u.ownedCosmetics.length,
@@ -96,7 +97,7 @@ class AchievementsWidget extends StatelessWidget {
             const Icon(Icons.emoji_events_rounded, color: AppColors.accent, size: 18),
             const SizedBox(width: 8),
             Text(
-              'Başarımlar',
+              AppLocalizations.of(context)!.achievementsTitle,
               style: AppTextStyles.titleLarge.copyWith(
                 color: AppColors.accent,
                 fontSize: 18,
@@ -144,7 +145,7 @@ class _AchievementRow extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  def.title,
+                  _getTitle(context, def.titleKey),
                   style: AppTextStyles.titleSmall.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -198,11 +199,11 @@ class _AchievementRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                def.description,
+                _getDesc(context, def.descKey),
                 style: AppTextStyles.labelSmall.copyWith(color: Colors.white38, fontSize: 11),
               ),
               Text(
-                isMaxed ? 'TAMAMLANDI ✓' : '${eval.current} / ${eval.next}',
+                isMaxed ? AppLocalizations.of(context)!.completedLabel : '${eval.current} / ${eval.next}',
                 style: AppTextStyles.labelSmall.copyWith(
                   color: isMaxed ? AppColors.accent : Colors.white54,
                   fontSize: 11,
@@ -214,5 +215,27 @@ class _AchievementRow extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+String _getTitle(BuildContext context, String key) {
+  final l = AppLocalizations.of(context)!;
+  switch (key) {
+    case 'achievementPartyMonsterTitle': return l.achievementPartyMonsterTitle;
+    case 'achievementVoiceOfPeopleTitle': return l.achievementVoiceOfPeopleTitle;
+    case 'achievementVipTitle': return l.achievementVipTitle;
+    case 'achievementSocialIconTitle': return l.achievementSocialIconTitle;
+    default: return key;
+  }
+}
+
+String _getDesc(BuildContext context, String key) {
+  final l = AppLocalizations.of(context)!;
+  switch (key) {
+    case 'achievementPartyMonsterDesc': return l.achievementPartyMonsterDesc;
+    case 'achievementVoiceOfPeopleDesc': return l.achievementVoiceOfPeopleDesc;
+    case 'achievementVipDesc': return l.achievementVipDesc;
+    case 'achievementSocialIconDesc': return l.achievementSocialIconDesc;
+    default: return key;
   }
 }

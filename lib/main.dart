@@ -13,6 +13,8 @@ import 'package:social_risk/l10n/app_localizations.dart';
 import 'package:social_risk/core/providers/lifecycle_provider.dart';
 import 'package:social_risk/core/providers/locale_provider.dart';
 import 'package:social_risk/shared/widgets/common/themed_background.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:social_risk/core/providers/shared_prefs_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,7 +49,16 @@ void main() async {
     };
   }
 
-  runApp(const ProviderScope(child: SocialRiskApp()));
+  final prefs = await SharedPreferences.getInstance();
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+      ],
+      child: const SocialRiskApp(),
+    ),
+  );
 }
 
 class SocialRiskApp extends ConsumerWidget {

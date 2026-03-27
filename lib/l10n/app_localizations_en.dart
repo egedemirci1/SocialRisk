@@ -69,7 +69,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ready => 'Ready!';
 
   @override
-  String get notReady => 'Not Ready';
+  String get notReady => 'Get Ready';
 
   @override
   String get playerCapacity => 'Player Capacity';
@@ -777,7 +777,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Last update: 2026\n\n1) Acceptance and Scope\nBy using this application, you agree to these Terms of Use. If you do not agree, do not use the application.\n\n2) Appropriate Use\nUsers are obligated not to use automation tools for cheating, harassment, hate speech, threats, sharing illegal content, violating account security, or disrupting service.\n\n3) Account and Security\nYou are responsible for actions taken with your account. You must report suspicious access or security breaches immediately.\n\n4) Content and Community Rules\nUser-generated content must comply with community rules. Violating content may be removed without notice, and accounts may face temporary or permanent restrictions.\n\n5) Intellectual Property\nApp interface, brand elements, and software components belong to respective owners. Unauthorized copying, distribution, or reverse engineering is prohibited.\n\n6) Service Changes and Interruptions\nService may be modified, restricted, or temporarily suspended for technical maintenance, security, or business requirements.\n\n7) Limitation of Liability\nThe application is provided \"as is\". To the extent permitted by law, liability for indirect or incidental damages is not accepted.\n\n8) Account Termination\nAccess may be suspended or terminated in case of violation of terms of use or community rules.\n\n9) Updating Terms\nTerms of Use may be updated from time to time. Current text is valid from the moment it is published in the app.\n\n10) Contact\nIn-app communication channels should be used for legal notices and support requests.';
 
   @override
-  String get notReadyYet => 'NOT READY YET';
+  String get notReadyYet => 'GET READY';
 
   @override
   String get readyForParty => 'READY FOR PARTY!';
@@ -831,9 +831,225 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noItems => 'No items to display yet.';
 
   @override
-  String get comingSoon => 'COMING SOON...';
-
-  @override
   String get scenariosComingSoon =>
       'Special Scenarios and Theme Packs are Coming Soon!';
+
+  @override
+  String get logoutSuccess => 'Logout Successful';
+
+  @override
+  String logoutError(String error) {
+    return 'Logout failed: $error';
+  }
+
+  @override
+  String get loginError => 'Login failed';
+
+  @override
+  String get nameEmptyError => 'Please enter your stage name';
+
+  @override
+  String get nameTooShortError => 'Name must be at least 3 characters';
+
+  @override
+  String get invalidNameError => 'Use only letters and numbers';
+
+  @override
+  String get anonymousLoginSuccess => 'Logged in anonymously';
+
+  @override
+  String get loggingIn => 'Logging into the party...';
+
+  @override
+  String get playerDisplayNameHint => 'Your Player Name...';
+
+  @override
+  String get joinPartyButton => 'Join the Party!';
+
+  @override
+  String get anonymousHint =>
+      '* You will continue anonymously. Your statistics will be saved to this device.';
+
+  @override
+  String get orDivider => 'Or';
+
+  @override
+  String get continueWithGoogle => 'Continue with Google';
+
+  @override
+  String get content => 'Content';
+
+  @override
+  String get comingSoon => 'COMING SOON';
+
+  @override
+  String get loginSuccess => 'Login successful';
+
+  @override
+  String get editProfileTitle => 'Edit Profile';
+
+  @override
+  String get updateDisplayNameTitle => 'Update Player Name';
+
+  @override
+  String get newDisplayNameLabel => 'New Player Name';
+
+  @override
+  String get cancel => 'CANCEL';
+
+  @override
+  String get update => 'UPDATE';
+
+  @override
+  String get profileUpdated => 'Profile updated!';
+
+  @override
+  String get invalidNameLong =>
+      'Please enter a valid name! (Min 3 characters, alphanumeric only)';
+
+  @override
+  String get actorTab => 'Profile';
+
+  @override
+  String get wardrobeTab => 'Items';
+
+  @override
+  String get performanceTab => 'Performance';
+
+  @override
+  String get noItemsInWardrobe =>
+      'You don\'t have any items yet.\nWant to check out the cool stuff in the store?';
+
+  @override
+  String get statsTitle => 'Statistics';
+
+  @override
+  String get balanceLabel => 'Balance';
+
+  @override
+  String get rankLabel => 'Rank';
+
+  @override
+  String get collectionLabel => 'Collection';
+
+  @override
+  String itemsCount(int count) {
+    return '$count items';
+  }
+
+  @override
+  String get activeLabel => 'Active';
+
+  @override
+  String get quickStatsTitle => 'Quick Stats';
+
+  @override
+  String get gameLabel => 'Game';
+
+  @override
+  String get winLabel => 'Win';
+
+  @override
+  String get pointsLabel => 'Points';
+
+  @override
+  String get rankLegend => 'Legend';
+
+  @override
+  String get rankKing => 'King';
+
+  @override
+  String get rankStar => 'Star';
+
+  @override
+  String get rankFun => 'Fun';
+
+  @override
+  String get rankBeginner => 'Beginner';
+
+  @override
+  String get guestName => 'Guest';
+
+  @override
+  String get achievementsTitle => 'Achievements';
+
+  @override
+  String get completedLabel => 'COMPLETED ✓';
+
+  @override
+  String get achievementPartyMonsterTitle => 'Party Monster';
+
+  @override
+  String get achievementPartyMonsterDesc => 'Number of games played';
+
+  @override
+  String get achievementVoiceOfPeopleTitle => 'Voice of the People';
+
+  @override
+  String get achievementVoiceOfPeopleDesc => 'Number of votes given';
+
+  @override
+  String get achievementVipTitle => 'VIP';
+
+  @override
+  String get achievementVipDesc => 'Owned balance';
+
+  @override
+  String get achievementSocialIconTitle => 'Social Icon';
+
+  @override
+  String get achievementSocialIconDesc => 'Number of items owned';
+
+  @override
+  String get createContent => 'Create Content';
+
+  @override
+  String get editContent => 'Edit Content';
+
+  @override
+  String get addContent => 'Add Content';
+
+  @override
+  String get contentAdded => 'Content added!';
+
+  @override
+  String get contentUpdated => 'Content updated!';
+
+  @override
+  String get pleaseWriteContent => 'Please write some content';
+
+  @override
+  String get contentText => 'Content Text';
+
+  @override
+  String get difficultyLabel => 'Difficulty';
+
+  @override
+  String get specialCategory => 'Special';
+
+  @override
+  String get myContentsTitle => 'My Contents';
+
+  @override
+  String get myContentsDescription =>
+      'You can create your own contents in this section.';
+
+  @override
+  String get myContentsUsage =>
+      'Use these contents in the game to double the fun!';
+
+  @override
+  String get editTooltip => 'Edit';
+
+  @override
+  String get deleteTooltip => 'Delete';
+
+  @override
+  String get easyDifficulty => 'Easy';
+
+  @override
+  String get mediumDifficulty => 'Medium';
+
+  @override
+  String get hardDifficulty => 'Hard';
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
@@ -131,7 +132,7 @@ class LeaderboardTile extends StatelessWidget {
                   ),
                   if (isCurrentPlayer)
                     Text(
-                      'Sen',
+                      AppLocalizations.of(context)!.you,
                       style: AppTextStyles.labelSmall.copyWith(
                         color: AppColors.primary,
                         fontSize: subFont,
@@ -158,7 +159,7 @@ class LeaderboardTile extends StatelessWidget {
                     ),
                     SizedBox(width: compact ? 3 : 4),
                     Text(
-                      'puan',
+                      AppLocalizations.of(context)!.points,
                       style: AppTextStyles.labelSmall.copyWith(
                         color: Colors.white38,
                         fontSize: subFont,
