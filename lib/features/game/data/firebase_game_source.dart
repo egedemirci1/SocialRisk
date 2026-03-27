@@ -80,71 +80,48 @@ class FirebaseGameSource implements GameRepository {
     // Basit test
     if (gameId.isEmpty) throw Exception('GameId empty');
     if (category.isEmpty) throw Exception('Category empty');
-    
-    print('ASSIGN TASK CALLED: gameId=$gameId, category=$category');
-    try {
-      print('=== ASSIGN TASK BY CATEGORY DEBUG ===');
-      print('Game ID: $gameId');
-      print('Category: $category');
       
       final gameDocRef = _gameDoc(gameId);
       
       // Transaction öncesi game state'i kontrol et
       final preGameSnap = await gameDocRef.get();
       if (!preGameSnap.exists) {
-        print('ERROR: Game does not exist!');
         return;
       }
       
       final preGame = GameModel.fromJson(preGameSnap.data()!, gameId);
-      print('Pre-transaction game status: ${preGame.status}');
-      print('Pre-transaction current task: ${preGame.currentTask}');
-      print('Pre-transaction task pool keys: ${preGame.taskPool.keys}');
 
       await _firestore.runTransaction((transaction) async {
-        print('Transaction started...');
         final snap = await transaction.get(gameDocRef);
-        print('Game snapshot exists: ${snap.exists}');
         
         if (!snap.exists) {
-          print('ERROR: Game does not exist in transaction!');
           return;
         }
 
         final game = GameModel.fromJson(snap.data()!, snap.id);
-        print('Game status: ${game.status}');
-        print('Current task: ${game.currentTask}');
-        print('Current player: ${game.currentPlayerId}');
-        print('Category pick order: ${game.categoryPickOrder}');
 
         // Race condition önleme: Eğer zaten task seçilmişse işlemi iptal et
         if (game.currentTask != null) {
-          print('Task already exists, aborting transaction');
           return;
         }
 
         // Economy modunda kategori seçimi validation
         if (game.categoryPickOrder.isNotEmpty) {
           final expectedPlayer = game.categoryPickOrder[game.currentPickIndex];
-          print('Expected player: $expectedPlayer, Current player: ${game.currentPlayerId}');
           if (game.currentPlayerId != expectedPlayer) {
             // Sadece sırası gelen oyuncu kategori seçebilir
-            print('Not this player\'s turn, aborting');
             return;
           }
         }
 
         final poolKey = '${category}_mixed';
         final pool = game.taskPool[poolKey] ?? [];
-        print('Pool key: $poolKey, Pool size: ${pool.length}');
 
         // Eğer mixed mode boşsa, individual difficulty'ları dene
         if (pool.isEmpty) {
           final easyPool = game.taskPool['${category}_easy'] ?? [];
           final mediumPool = game.taskPool['${category}_medium'] ?? [];
           final hardPool = game.taskPool['${category}_hard'] ?? [];
-          
-          print('Individual pools - Easy: ${easyPool.length}, Medium: ${mediumPool.length}, Hard: ${hardPool.length}');
           
           // Tüm zorlukları birleştir
           final allTasks = [...easyPool, ...mediumPool, ...hardPool];
@@ -156,10 +133,8 @@ class FirebaseGameSource implements GameRepository {
             Map<String, dynamic>? selectedTask;
             if (available.isNotEmpty) {
               selectedTask = available[_random.nextInt(available.length)];
-              print('Selected from individual available tasks');
             } else {
               selectedTask = allTasks[_random.nextInt(allTasks.length)];
-              print('Selected from individual all tasks (fallback)');
             }
 
             if (selectedTask != null) {
@@ -178,10 +153,7 @@ class FirebaseGameSource implements GameRepository {
                 'status': 'choosingDifficulty',
               };
 
-              print('Updating game with individual task updates: $updates');
-              print('Setting status to choosingDifficulty');
               transaction.update(gameDocRef, updates);
-              print('Transaction completed successfully with individual task!');
               return;
             }
           }
@@ -190,20 +162,16 @@ class FirebaseGameSource implements GameRepository {
         final available = pool
             .where((t) => !game.usedTaskIds.contains(t['id']))
             .toList();
-        print('Available tasks from mixed pool: ${available.length}');
 
         Map<String, dynamic>? selectedTask;
 
         if (available.isNotEmpty) {
           selectedTask = available[_random.nextInt(available.length)];
-          print('Selected from available tasks');
         } else if (pool.isNotEmpty) {
           selectedTask = pool[_random.nextInt(pool.length)];
-          print('Selected from all tasks (fallback)');
         }
 
         if (selectedTask == null) {
-          print('ERROR: No task found!');
           throw Exception('Bu kategoride görev bulunamadı!');
         }
 
@@ -222,19 +190,11 @@ class FirebaseGameSource implements GameRepository {
           'status': 'choosingDifficulty',
         };
 
-        print('Updating game with updates: $updates');
         transaction.update(gameDocRef, updates);
-        print('Transaction completed successfully!');
       });
-      
-      print('=== ASSIGN TASK COMPLETED ===');
     } on FirebaseException catch (e) {
-      print('FirebaseException in assignTaskByCategory: ${e.message}');
-      print('FirebaseException code: ${e.code}');
       throw Exception('Kategori atanırken bağlantı hatası oluştu: ${e.message}');
     } catch (e) {
-      print('General exception in assignTaskByCategory: $e');
-      print('Exception type: ${e.runtimeType}');
       throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
@@ -245,51 +205,38 @@ class FirebaseGameSource implements GameRepository {
     required String difficulty,
   }) async {
     try {
-      print('=== CHOOSE DIFFICULTY DEBUG ===');
-      print('Game ID: $gameId');
-      print('Difficulty: $difficulty');
-      
       final gameSnap = await _gameDoc(gameId).get();
-      print('Game exists: ${gameSnap.exists}');
       
       if (!gameSnap.exists) {
-        print('ERROR: Game does not exist!');
         return;
       }
 
       final game = GameModel.fromJson(gameSnap.data()!, gameSnap.id);
       final category = game.selectedCategory;
-      print('Selected category: $category');
 
       if (category == null) {
-        print('ERROR: No category selected!');
         throw Exception('Önce kategori seçilmeli!');
       }
 
       // Pool'dan görev seç (Firestore sorgusu yapılmaz)
       final poolKey = '${category}_$difficulty';
       final pool = game.taskPool[poolKey] ?? [];
-      print('Pool key: $poolKey, Pool size: ${pool.length}');
 
       // Kullanılmamış görevleri filtrele
       final available = pool
           .where((t) => !game.usedTaskIds.contains(t['id']))
           .toList();
-      print('Available tasks: ${available.length}');
 
       Map<String, dynamic>? selectedTask;
 
       if (available.isNotEmpty) {
         selectedTask = available[_random.nextInt(available.length)];
-        print('Selected from available tasks');
       } else if (pool.isNotEmpty) {
         // Tüm görevler kullanılmış — tekrar kullan (fallback)
         selectedTask = pool[_random.nextInt(pool.length)];
-        print('Selected from all tasks (fallback)');
       }
 
       if (selectedTask == null) {
-        print('ERROR: No task found!');
         throw Exception('Bu kategoride görev bulunamadı!');
       }
 
@@ -297,7 +244,6 @@ class FirebaseGameSource implements GameRepository {
       final multiplier = difficulty == 'easy'
           ? 1
           : (difficulty == 'medium' ? 2 : 3);
-      print('Task multiplier: $multiplier');
 
       final taskModel = TaskModel(
           id: selectedTask['id']?.toString() ?? '',
@@ -307,20 +253,15 @@ class FirebaseGameSource implements GameRepository {
           multiplier: multiplier,
         );
 
-      print('Updating game document...');
       await _gameDoc(gameId).update({
         'selectedDifficulty': difficulty,
         'currentTask': taskModel.toJson(),
         'usedTaskIds': FieldValue.arrayUnion([taskModel.id]),
         'status': 'playing',
       });
-      print('Game document updated successfully!');
-      print('=== END CHOOSE DIFFICULTY DEBUG ===');
     } on FirebaseException catch (e) {
-      print('FirebaseException in chooseDifficulty: ${e.message}');
       throw Exception('Görev seçilirken bağlantı hatası oluştu: ${e.message}');
     } catch (e) {
-      print('General exception in chooseDifficulty: $e');
       throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }

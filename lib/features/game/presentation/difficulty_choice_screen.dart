@@ -68,26 +68,22 @@ class _DifficultyChoiceScreenState
     ref.listen(watchGameProvider(widget.gameId), (prev, next) {
       if (!mounted || _hasRedirected) return;
       final game = next.value;
-      print('DIFFICULTY SCREEN: game status = ${game?.status}');
       if (game == null) return;
       if (game.status == GameStatus.choosingDifficulty) {
-        print('DIFFICULTY SCREEN: staying on difficulty screen');
         return;
       }
 
-      print('DIFFICULTY SCREEN: redirecting, status = ${game.status}');
       _hasRedirected = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        if (game.status == GameStatus.results) {
-          context.go(
-            '/round-result',
+        if (game.status == GameStatus.performing) {
+          context.replace(
+            '/performing',
             extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
           );
         } else if (game.status == GameStatus.finished) {
           context.go('/game-over', extra: widget.roomCode);
         } else {
-          print('DIFFICULTY SCREEN: going to /task, status = ${game.status}');
           context.replace(
             '/task',
             extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
