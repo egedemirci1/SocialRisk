@@ -187,7 +187,6 @@ async function performInactiveUsersCleanup() {
     }
     return deletedCount;
 }
-// Her 6 saatte bir boş odaları temizle
 function hasReachedScoreTarget(players, targetScore) {
     return players.some((player) => player.score >= targetScore);
 }
@@ -198,6 +197,7 @@ function comparePlayersForFinalRank(a, b) {
         return b.totalLikes - a.totalLikes;
     return a.id.localeCompare(b.id);
 }
+// Her 6 saatte bir boş odaları temizle
 exports.cleanupEmptyRooms = functions.pubsub
     .schedule('every 6 hours')
     .onRun(async (context) => {
