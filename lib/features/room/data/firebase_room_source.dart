@@ -70,14 +70,10 @@ class FirebaseRoomSource implements RoomRepository {
     required bool useCustomDeck,
   }) async {
     try {
-      print('=== CREATE ROOM DEBUG ===');
       String roomCode = AppHelpers.generateRoomCode();
-      print('Generated room code: $roomCode');
       
       while (await doesRoomExist(roomCode)) {
-        print('Room $roomCode already exists, generating new one...');
         roomCode = AppHelpers.generateRoomCode();
-        print('New room code: $roomCode');
       }
 
       final roomModel = RoomModel(
@@ -94,9 +90,7 @@ class FirebaseRoomSource implements RoomRepository {
         createdAt: DateTime.now(),
       );
 
-      print('Creating room document...');
       await _roomDoc(roomCode).set(roomModel.toJson());
-      print('Room document created successfully!');
 
       final hostPlayer = PlayerModel(
         id: hostId,
@@ -107,8 +101,6 @@ class FirebaseRoomSource implements RoomRepository {
         isReady: true,
       );
       await _playersRef(roomCode).doc(hostId).set(hostPlayer.toJson());
-      print('Host player added successfully!');
-      print('=== END CREATE ROOM DEBUG ===');
       return roomCode;
     } on FirebaseException catch (e) {
       throw Exception(
@@ -129,40 +121,29 @@ class FirebaseRoomSource implements RoomRepository {
     String? activeTitle,
   }) async {
     try {
-      print('=== JOIN ROOM DEBUG ===');
-      print('Attempting to join room: $roomCode');
-      print('Player ID: $playerId');
-      print('Player Name: $playerName');
-      
       final roomRef = _roomDoc(roomCode);
       final playerRef = _playersRef(roomCode).doc(playerId);
 
       await _firestore.runTransaction((transaction) async {
         final roomDoc = await transaction.get(roomRef);
-        print('Room exists: ${roomDoc.exists}');
         
         if (!roomDoc.exists) {
-          print('ERROR: Room does not exist!');
           throw Exception('Oda bulunamadı: $roomCode');
         }
 
         final roomData = roomDoc.data() ?? <String, dynamic>{};
         final playerCount = roomData['playerCount'] as int? ?? 0;
-        print('Current player count: $playerCount');
         
         if (playerCount >= GameConstants.maxPlayers) {
-          print('ERROR: Room is full!');
           throw Exception(
             'Oda dolu! Maksimum ${GameConstants.maxPlayers} oyuncu.',
           );
         }
 
         final existingPlayer = await transaction.get(playerRef);
-        print('Player already exists: ${existingPlayer.exists}');
         
         if (existingPlayer.exists) {
-          // Debug: Player already exists
-          print('Player $playerId already exists in room $roomCode');
+          // Player already exists
           return;
         }
 
@@ -174,18 +155,13 @@ class FirebaseRoomSource implements RoomRepository {
           activeTitle: activeTitle,
         );
         
-        // Debug: Adding player
-        print('Adding player $playerId to room $roomCode. Current count: $playerCount');
+        // Adding player
         transaction.set(playerRef, player.toJson());
         transaction.update(roomRef, {'playerCount': playerCount + 1});
-        print('Player $playerId added successfully. New count: ${playerCount + 1}');
-        print('=== END JOIN ROOM DEBUG ===');
       });
     } on FirebaseException catch (e) {
-      print('FirebaseException in joinRoom: ${e.message}');
       throw Exception('Odaya katılırken bağlantı hatası oluştu: ${e.message}');
     } catch (e) {
-      print('General exception in joinRoom: $e');
       throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
@@ -519,9 +495,13 @@ class FirebaseRoomSource implements RoomRepository {
         await batch.commit();
       }
 
-      debugPrint('${zombieRoomsQuery.docs.length} zombi oda temizlendi.');
+      if (kDebugMode) {
+        debugPrint('${zombieRoomsQuery.docs.length} zombi oda temizlendi.');
+      }
     } catch (e) {
-      debugPrint('Zombi odaları temizlerken hata oluştu: $e');
+      if (kDebugMode) {
+        debugPrint('Zombi odaları temizlerken hata oluştu: $e');
+      }
     }
   }
 }

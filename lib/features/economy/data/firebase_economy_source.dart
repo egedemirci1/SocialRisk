@@ -54,25 +54,14 @@ class FirebaseEconomySource implements EconomyRepository {
     required String cosmeticId,
     required int price,
   }) async {
-    print('=== BUY COSMETIC DEBUG ===');
-    print('UID: $uid');
-    print('Cosmetic ID: $cosmeticId');
-    print('Price: $price');
-    
     try {
       // Geçici olarak client-side yap
       final userRef = _userDoc(uid);
       final cosmeticRef = _firestore.collection('cosmetics').doc(cosmeticId);
       
-      print('User ref: ${userRef.path}');
-      print('Cosmetic ref: ${cosmeticRef.path}');
-      
       await _firestore.runTransaction((transaction) async {
         final userSnap = await transaction.get(userRef);
         final cosmeticSnap = await transaction.get(cosmeticRef);
-        
-        print('User exists: ${userSnap.exists}');
-        print('Cosmetic exists: ${cosmeticSnap.exists}');
         
         if (!userSnap.exists) {
           throw Exception('Kullanıcı bulunamadı');
@@ -87,9 +76,6 @@ class FirebaseEconomySource implements EconomyRepository {
         final currentWallet = userData['walletPoints'] as int? ?? userData['wallet'] as int? ?? 0;
         final ownedCosmetics = List<String>.from(userData['ownedCosmetics'] ?? []);
         
-        print('Current wallet: $currentWallet');
-        print('Owned cosmetics: $ownedCosmetics');
-        
         if (currentWallet < price) {
           throw Exception('Yetersiz bakiye');
         }
@@ -103,8 +89,6 @@ class FirebaseEconomySource implements EconomyRepository {
           'walletPoints': currentWallet - price,
           'ownedCosmetics': FieldValue.arrayUnion([cosmeticId]),
         });
-        
-        print('Transaction completed successfully');
       });
     } on FirebaseException catch (e) {
       throw Exception('Kozmetik satın alınırken bağlantı hatası: ${e.message}');

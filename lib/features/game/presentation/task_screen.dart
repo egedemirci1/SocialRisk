@@ -73,23 +73,15 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   }
 
   void _onWheelResult(String category) {
-    print('WHEEL RESULT: category=$category');
     final game = ref.read(watchGameProvider(widget.gameId)).value;
     final currentUser = ref.read(currentUserProvider);
     final currentPlayerId = game?.currentPlayerId;
     final currentUserId = currentUser?.uid;
     
-    print('Game current player: $currentPlayerId');
-    print('Current user: $currentUserId');
-    print('Should call assignTask: ${currentPlayerId == currentUserId}');
-    
     if (currentPlayerId == currentUserId) {
-      print('CALLING ASSIGN TASK...');
       ref
           .read(gameControllerProvider.notifier)
           .assignTaskByCategory(gameId: widget.gameId, category: category);
-    } else {
-      print('NOT CURRENT PLAYER - skipping assignTask');
     }
   }
 
@@ -102,7 +94,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
       if (mounted) {
         final game = ref.read(watchGameProvider(widget.gameId)).value;
         if (game != null && game.categoryPickOrder.isEmpty) {
-          print('ECONOMY MODE: Accepting task and proceeding to next turn');
           await ref.read(gameControllerProvider.notifier).nextTurn(widget.gameId);
         }
       }
@@ -126,7 +117,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
       if (mounted) {
         final game = ref.read(watchGameProvider(widget.gameId)).value;
         if (game != null && game.categoryPickOrder.isEmpty) {
-          print('ECONOMY MODE: Passing task and proceeding to next turn');
           await ref.read(gameControllerProvider.notifier).nextTurn(widget.gameId);
         }
         setState(() => _contentRevealed = false);
