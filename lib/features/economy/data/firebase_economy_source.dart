@@ -55,41 +55,14 @@ class FirebaseEconomySource implements EconomyRepository {
     required int price,
   }) async {
     try {
-      // Geçici olarak client-side yap
-      final userRef = _userDoc(uid);
-      final cosmeticRef = _firestore.collection('cosmetics').doc(cosmeticId);
-      
-      await _firestore.runTransaction((transaction) async {
-        final userSnap = await transaction.get(userRef);
-        final cosmeticSnap = await transaction.get(cosmeticRef);
-        
-        if (!userSnap.exists) {
-          throw Exception('Kullanıcı bulunamadı');
-        }
-        
-        // cosmetics collection'ı olmadığı için bu kontrolü atla
-        // if (!cosmeticSnap.exists) {
-        //   throw Exception('Kozmetik ürün bulunamadı');
-        // }
-        
-        final userData = userSnap.data()!;
-        final currentWallet = userData['walletPoints'] as int? ?? userData['wallet'] as int? ?? 0;
-        final ownedCosmetics = List<String>.from(userData['ownedCosmetics'] ?? []);
-        
-        if (currentWallet < price) {
-          throw Exception('Yetersiz bakiye');
-        }
-        
-        if (ownedCosmetics.contains(cosmeticId)) {
-          throw Exception('Bu ürün zaten sahip olduğunuz');
-        }
-        
-        // Transaction ile güncelle
-        transaction.update(userRef, {
-          'walletPoints': currentWallet - price,
-          'ownedCosmetics': FieldValue.arrayUnion([cosmeticId]),
-        });
+      final callable = _functions.httpsCallable('buyCosmetic');
+      await callable.call(<String, dynamic>{
+        'cosmeticId': cosmeticId,
+        'price': price,
+        'uid': uid,
       });
+    } on FirebaseFunctionsException catch (e) {
+      throw Exception(e.message ?? 'Satın alma sırasında hata oluştu');
     } on FirebaseException catch (e) {
       throw Exception('Kozmetik satın alınırken bağlantı hatası: ${e.message}');
     } catch (e) {
@@ -227,13 +200,14 @@ class FirebaseEconomySource implements EconomyRepository {
       const CosmeticItemEntity(id: 'title_flirt', name: 'Tatlı Dilli', nameEn: 'Smooth Talker', description: 'İkna gücü yüksek.', descriptionEn: 'High persuasion power.', imageUrl: '😏', price: 350, type: 'title'),
       const CosmeticItemEntity(id: 'title_rebel', name: 'Kuralsız', nameEn: 'Rulebreaker', description: 'Alışılmışın dışında oynar.', descriptionEn: 'Plays outside the box.', imageUrl: '�', price: 500, type: 'title'),
       const CosmeticItemEntity(id: 'title_wild', name: 'Deli Dolu', nameEn: 'Wild Card', description: 'Ne yapacağı belli olmaz.', descriptionEn: 'Unpredictable to the end.', imageUrl: '🎭', price: 400, type: 'title'),
-      // PREMIUM SENARYOLAR (Sadece 2 adet)
+      // PREMIUM SENARYOLAR
       const CosmeticItemEntity(
         id: 'scenario_standup',
         name: 'Açık Mikrofon',
-        nameEn: 'Open Mic',
+        nameEn: 'Open Mic Night',
         description: 'Stand-up, pazarlama ve karakter gösterileri ağırlıklı olarak çıkar.',
-        descriptionEn: 'Stand-up, pitching and character performances appear predominantly.',
+        descriptionEn:
+            'Includes 120 tasks focused on stand-up bits, pitches, and character performances.',
         imageUrl: '🎤',
         price: 500,
         type: 'category',
@@ -244,11 +218,36 @@ class FirebaseEconomySource implements EconomyRepository {
         name: 'Kıvırma Sanatı',
         nameEn: 'The Art of Wiggling Out',
         description: 'Kriz yönetimi, kaçış ve yalancılık görevleri ağırlıklı olarak çıkar.',
-        descriptionEn: 'Crisis management, escape and lying tasks appear predominantly.',
+        descriptionEn:
+            'Includes 120 tasks centered on crisis management, clever excuses, and escape moves.',
         imageUrl: '😅',
         price: 500,
         type: 'category',
         categoryName: 'Kıvırma',
+      ),
+      const CosmeticItemEntity(
+        id: 'scenario_kaos',
+        name: 'Kaos Mühendisi',
+        nameEn: 'Chaos Engineer',
+        description: 'Hayatta kalma ve yaratıcı kaçış görevleri ağırlıklı olarak çıkar.',
+        descriptionEn:
+            'Includes 120 tasks built around survival, improvisation, and creative problem-solving.',
+        imageUrl: '🔧',
+        price: 500,
+        type: 'category',
+        categoryName: 'Kaos Mühendisi',
+      ),
+      const CosmeticItemEntity(
+        id: 'scenario_vaat',
+        name: 'Boş Vaatler',
+        nameEn: 'Empty Promises',
+        description: 'Politik vaatler ve absürt yasaklar görevleri ağırlıklı olarak çıkar.',
+        descriptionEn:
+            'Includes 120 tasks featuring political promises, campaign drama, and absurd rule-making.',
+        imageUrl: '💬',
+        price: 500,
+        type: 'category',
+        categoryName: 'Boş Vaatler',
       ),
     ];
   }

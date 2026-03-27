@@ -6,6 +6,10 @@ import 'tasks_zihinsel_en.dart';
 import 'tasks_ahlaki_en.dart';
 import 'tasks_gorsel_en.dart';
 import 'tasks_mahrem_en.dart';
+import 'tasks_standup_en.dart';
+import 'tasks_kivirma_en.dart';
+import 'tasks_kaos_muhendisi_en.dart';
+import 'tasks_bos_vaatler_en.dart';
 // Diğer kategoriler buraya eklenecek
 
 class TaskTranslationMap {
@@ -18,6 +22,10 @@ class TaskTranslationMap {
     ...tasksAhlakiEn,
     ...tasksGorselEn,
     ...tasksMahremEn,
+    ...tasksStandUpEn,
+    ...tasksKivirmaEn,
+    ...tasksKaosMuhendisiEn,
+    ...tasksBosVaatlerEn,
   };
 
   /// Görev ID'sine göre eğer dil İngilizce ise çeviriyi döndürür.
@@ -57,6 +65,18 @@ class TaskTranslationMap {
         return 'Intimate';
       case 'zihinsel':
         return 'Mental';
+      case 'stand-up':
+      case 'standup':
+        return 'Stand-Up';
+      case 'kıvırma':
+      case 'kivirma':
+        return 'The Art of Wiggling Out';
+      case 'kaos mühendisi':
+      case 'kaos muhendisi':
+        return 'Chaos Engineer';
+      case 'boş vaatler':
+      case 'bos vaatler':
+        return 'Empty Promises';
       default:
         return category;
     }

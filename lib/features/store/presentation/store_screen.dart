@@ -8,6 +8,7 @@ import '../../economy/domain/cosmetic_item_entity.dart';
 import '../../economy/domain/economy_exceptions.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
+import '../../premium/providers/premium_provider.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
@@ -70,6 +71,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     final isAnonymous = user.isAnonymous;
     final userProfileAsync = ref.watch(watchUserProfileProvider(user.uid));
     final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
+    final premiumService = ref.read(premiumPurchaseServiceProvider);
+    premiumService.init();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -156,6 +159,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                           owned: owned,
                           roleItems: roleItems,
                           maskItems: maskItems,
+                          isPremium: profile?.isPremium ?? false,
                           isAnonymous: isAnonymous,
                           cosmeticsAsync: cosmeticsAsync,
                         ),
@@ -271,6 +275,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     required List<String> owned,
     required List<CosmeticItemEntity> roleItems,
     required List<CosmeticItemEntity> maskItems,
+    required bool isPremium,
     required bool isAnonymous,
     required AsyncValue<List<CosmeticItemEntity>> cosmeticsAsync,
   }) {
@@ -369,7 +374,14 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         const Divider(color: Colors.white10, height: 24),
         ...displayItems.map((item) {
           final isOwned = owned.contains(item.id);
-          return _buildCompactItem(context, ref, uid, item, isOwned);
+          return _buildCompactItem(
+            context,
+            ref,
+            uid,
+            item,
+            isOwned,
+            isPremium: isPremium,
+          );
         }),
       ],
     );
@@ -387,7 +399,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     String uid,
     CosmeticItemEntity item,
     bool isOwned,
+    {required bool isPremium}
   ) {
+    final isPremiumScenario = item.type == 'category';
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -489,6 +503,38 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                     ),
                   ),
                 ],
+              ),
+            )
+          else if (isPremiumScenario && !isPremium)
+            GestureDetector(
+              onTap: () async {
+                final premiumService = ref.read(premiumPurchaseServiceProvider);
+                try {
+                  await premiumService.buyLifetimePremium();
+                  if (!context.mounted) return;
+                  ToastUtils.showSuccess(context, 'Premium satın alma akışı başlatıldı.');
+                } catch (e) {
+                  if (!context.mounted) return;
+                  ToastUtils.showError(context, e.toString());
+                }
+              },
+              child: Container(
+                width: 92,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white10,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
+                ),
+                child: Center(
+                  child: Text(
+                    'PREMIUM',
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: AppColors.accent,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
               ),
             )
           else

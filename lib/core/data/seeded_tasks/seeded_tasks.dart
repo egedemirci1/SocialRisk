@@ -1,6 +1,6 @@
 /// 8 kategori × 100 soru = 800 soru, tamamen local.
 /// Kategoriler: Fiziksel, Bilgi, Dijital, İtiraf, Zihinsel, Ahlaki, Görsel, Mahrem.
-/// + Stand-Up ve Kıvırma Premium Senaryolar
+/// + 4 Premium Senaryo: Stand-Up, Kıvırma, Kaos Mühendisi, Boş Vaatler
 library;
 import 'tasks_fiziksel.dart';
 import 'tasks_bilgi.dart';
@@ -12,6 +12,8 @@ import 'tasks_gorsel.dart';
 import 'tasks_mahrem.dart';
 import 'tasks_standup.dart';
 import 'tasks_kivirma.dart';
+import 'tasks_kaos_muhendisi.dart';
+import 'tasks_bos_vaatler.dart';
 
 /// Tüm local seed soruları (1040 adet). Uygulama veya seed akışı bu listeyi kullanabilir.
 List<Map<String, dynamic>> getAllSeededTasks() {
@@ -26,5 +28,7 @@ List<Map<String, dynamic>> getAllSeededTasks() {
     ...tasksMahrem,
     ...tasksStandUp,
     ...tasksKivirma,
+    ...tasksKaosMuhendisi,
+    ...tasksBosVaatler,
   ];
 }

@@ -17,6 +17,11 @@ class UserEntity {
   final String? activeFrame;
   final String? activeTitle;
   final Map<String, int> stats;
+  final bool isPremium;
+  final String? premiumType;
+  final String? premiumSource;
+  final DateTime? premiumActivatedAt;
+  final String? premiumProductId;
 
   const UserEntity({
     required this.uid,
@@ -29,6 +34,11 @@ class UserEntity {
     this.activeFrame,
     this.activeTitle,
     this.stats = const {},
+    this.isPremium = false,
+    this.premiumType,
+    this.premiumSource,
+    this.premiumActivatedAt,
+    this.premiumProductId,
   });
 
   /// 5 Kategorinin toplam seviye değerine göre dinamik Parti Rütbesini hesaplar.
@@ -144,6 +154,11 @@ class UserEntity {
     List<String>? ownedCategories,
     Nullable<String>? activeFrame,
     Nullable<String>? activeTitle,
+    bool? isPremium,
+    Nullable<String>? premiumType,
+    Nullable<String>? premiumSource,
+    Nullable<DateTime>? premiumActivatedAt,
+    Nullable<String>? premiumProductId,
   }) {
     return UserEntity(
       uid: uid ?? this.uid,
@@ -156,6 +171,15 @@ class UserEntity {
       activeFrame: activeFrame != null ? activeFrame.value : this.activeFrame,
       activeTitle: activeTitle != null ? activeTitle.value : this.activeTitle,
       stats: this.stats, // Default stats logic
+      isPremium: isPremium ?? this.isPremium,
+      premiumType: premiumType != null ? premiumType.value : this.premiumType,
+      premiumSource: premiumSource != null ? premiumSource.value : this.premiumSource,
+      premiumActivatedAt: premiumActivatedAt != null
+          ? premiumActivatedAt.value
+          : this.premiumActivatedAt,
+      premiumProductId: premiumProductId != null
+          ? premiumProductId.value
+          : this.premiumProductId,
     );
   }
 }

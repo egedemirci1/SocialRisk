@@ -7,6 +7,7 @@ import '../../custom_decks/domain/user_task_entity.dart';
 import '../../custom_decks/providers/user_task_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
+import '../../premium/providers/premium_provider.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_colors.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
@@ -271,6 +272,91 @@ class _CustomDeckEditorScreenState
       ),
       data: (user) {
         if (user == null) return const SizedBox.shrink();
+
+        final premiumService = ref.read(premiumPurchaseServiceProvider);
+        premiumService.init();
+
+        if (!user.isPremium) {
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            appBar: AppBar(
+              title: Text(
+                l.myContentsTitle,
+                style: AppTextStyles.titleLarge.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_rounded, color: AppColors.accent),
+                onPressed: () => context.pop(),
+              ),
+            ),
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.workspace_premium_rounded, color: AppColors.accent, size: 62),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Özel içerik üretmek için Premium gerekli.',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.titleLarge.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Tek seferlik Premium satın alarak içerik ekleme özelliğini açabilirsin.',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        try {
+                          await premiumService.buyLifetimePremium();
+                          if (!context.mounted) return;
+                          ToastUtils.showSuccess(
+                            context,
+                            'Satın alma akışı başlatıldı.',
+                          );
+                        } catch (e) {
+                          if (!context.mounted) return;
+                          ToastUtils.showError(context, e.toString());
+                        }
+                      },
+                      icon: const Icon(Icons.lock_open_rounded),
+                      label: const Text('Premium Al'),
+                    ),
+                    const SizedBox(height: 10),
+                    OutlinedButton.icon(
+                      onPressed: () async {
+                        try {
+                          await premiumService.restorePurchases();
+                          if (!context.mounted) return;
+                          ToastUtils.showSuccess(context, 'Satın alımlar geri yükleniyor.');
+                        } catch (e) {
+                          if (!context.mounted) return;
+                          ToastUtils.showError(context, e.toString());
+                        }
+                      },
+                      icon: const Icon(Icons.restore_rounded),
+                      label: const Text('Satın Alımları Geri Yükle'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
 
         final customTasksAsync = ref.watch(watchCustomTasksProvider(user.uid));
 

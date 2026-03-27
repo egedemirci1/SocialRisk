@@ -20,6 +20,7 @@ class FirebaseUserTaskSource {
     required String uid,
     required UserTaskEntity task,
   }) async {
+    await _ensurePremium(uid);
     final doc = await _userTasksRef(uid).add({
       'category': task.category,
       'content': task.content,
@@ -36,6 +37,7 @@ class FirebaseUserTaskSource {
     required String uid,
     required UserTaskEntity task,
   }) async {
+    await _ensurePremium(uid);
     await _userTasksRef(uid).doc(task.id).update({
       'category': task.category,
       'content': task.content,
@@ -47,7 +49,16 @@ class FirebaseUserTaskSource {
   }
 
   Future<void> deleteTask({required String uid, required String taskId}) async {
+    await _ensurePremium(uid);
     await _userTasksRef(uid).doc(taskId).delete();
+  }
+
+  Future<void> _ensurePremium(String uid) async {
+    final userSnap = await _firestore.collection('users').doc(uid).get();
+    final isPremium = userSnap.data()?['isPremium'] as bool? ?? false;
+    if (!isPremium) {
+      throw Exception('Bu özellik için Premium üyelik gerekiyor.');
+    }
   }
 
   UserTaskEntity _docToEntity(DocumentSnapshot<Map<String, dynamic>> doc) {

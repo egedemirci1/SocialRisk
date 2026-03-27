@@ -11,6 +11,11 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
 
+    function isPremiumUser(userId) {
+      return exists(/databases/$(database)/documents/users/$(userId))
+        && get(/databases/$(database)/documents/users/$(userId)).data.isPremium == true;
+    }
+
     function isAdmin() {
       return isAuthenticated() && request.auth.uid in [
         'y51M7E6YXZT5I04M9YFqGzSgZ7Y2',
@@ -207,10 +212,7 @@ service cloud.firestore {
           'avatarUrl',
           'activeFrame',
           'activeTitle',
-          'updatedAt',
-          'wallet',
-          'walletPoints',
-          'ownedCosmetics'
+          'updatedAt'
         ]);
 
       // Silme yok
@@ -218,7 +220,10 @@ service cloud.firestore {
 
       // ─── Custom Tasks alt koleksiyonu ─────────────────
       match /custom_tasks/{taskId} {
-        allow read, write: if isAuthenticated() && isOwner(userId);
+        allow read: if isAuthenticated() && isOwner(userId);
+        allow create, update, delete: if isAuthenticated()
+          && isOwner(userId)
+          && isPremiumUser(userId);
       }
     }
 

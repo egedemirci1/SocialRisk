@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onGameUpdated = exports.finalizeVotingRound = exports.distributeRewards = exports.buyCosmetic = exports.forceCleanupOldPlayingRooms = exports.runMaintenanceCleanup = exports.auditContentState = exports.deleteOwnUserData = exports.cleanupInactiveUsers = exports.cleanupOldGames = exports.cleanupEmptyRooms = void 0;
+exports.onGameUpdated = exports.finalizeVotingRound = exports.distributeRewards = exports.activatePremium = exports.buyCosmetic = exports.forceCleanupOldPlayingRooms = exports.runMaintenanceCleanup = exports.auditContentState = exports.deleteOwnUserData = exports.cleanupInactiveUsers = exports.cleanupOldGames = exports.cleanupEmptyRooms = void 0;
 const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 if (!admin.apps.length)
@@ -19,6 +19,7 @@ const ADMIN_UIDS = [
     "hW42qgzVJIXr6sOLO0q1zPOdv6w1",
     "d7sLOX946mRfrmkYMRUOJXNa44l2",
 ];
+const PREMIUM_LIFETIME_PRODUCT_ID = "premium_lifetime";
 function economyResolvedStoredBaseValue(category, storedValues) {
     if (Object.keys(storedValues).length <= 2)
         return DEFAULT_ECONOMY_BASE_VALUE;
@@ -436,6 +437,9 @@ exports.buyCosmetic = functions.https.onCall(async (data, context) => {
         }
         const currentPoints = typeof userData.walletPoints === "number" ? userData.walletPoints : 0;
         const price = typeof cosmeticData.price === "number" ? cosmeticData.price : 0;
+        if (cosmeticData.type === "category" && userData.isPremium !== true) {
+            throw new functions.https.HttpsError("permission-denied", "Premium membership required for scenario packs.");
+        }
         if (currentPoints < price) {
             throw new functions.https.HttpsError("failed-precondition", "Insufficient balance.");
         }
@@ -456,6 +460,66 @@ exports.buyCosmetic = functions.https.onCall(async (data, context) => {
             walletPoints: currentPoints - price,
         };
     });
+});
+exports.activatePremium = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError("unauthenticated", "Authentication required.");
+    }
+    const uid = context.auth.uid;
+    const productId = typeof (data === null || data === void 0 ? void 0 : data.productId) === "string" ? data.productId.trim() : "";
+    const purchaseId = typeof (data === null || data === void 0 ? void 0 : data.purchaseId) === "string" ? data.purchaseId.trim() : "";
+    const verificationData = typeof (data === null || data === void 0 ? void 0 : data.verificationData) === "string"
+        ? data.verificationData.trim()
+        : "";
+    const source = typeof (data === null || data === void 0 ? void 0 : data.source) === "string" ? data.source.trim() : "";
+    if (productId !== PREMIUM_LIFETIME_PRODUCT_ID) {
+        throw new functions.https.HttpsError("invalid-argument", "Unsupported productId.");
+    }
+    if (source !== "play_store" && source !== "app_store") {
+        throw new functions.https.HttpsError("invalid-argument", "Invalid purchase source.");
+    }
+    if (!purchaseId && !verificationData) {
+        throw new functions.https.HttpsError("invalid-argument", "purchaseId or verificationData is required.");
+    }
+    // NOTE: Real store-side receipt validation should be added with Play/App Store APIs.
+    // This callable currently performs server-side entitlement issuance and replay protection.
+    const purchaseKey = purchaseId || verificationData.substring(0, 120);
+    const purchaseRef = db.collection("premiumPurchases").doc(purchaseKey);
+    const userRef = db.collection("users").doc(uid);
+    await db.runTransaction(async (transaction) => {
+        var _a;
+        const [purchaseSnap, userSnap] = await Promise.all([
+            transaction.get(purchaseRef),
+            transaction.get(userRef),
+        ]);
+        if (!userSnap.exists) {
+            throw new functions.https.HttpsError("not-found", "User not found.");
+        }
+        if (purchaseSnap.exists) {
+            const purchaseData = (_a = purchaseSnap.data()) !== null && _a !== void 0 ? _a : {};
+            const existingUid = typeof purchaseData.uid === "string" ? purchaseData.uid : "";
+            if (existingUid && existingUid !== uid) {
+                throw new functions.https.HttpsError("already-exists", "Purchase already linked to another user.");
+            }
+        }
+        transaction.set(purchaseRef, {
+            uid,
+            productId,
+            source,
+            purchaseId: purchaseId || null,
+            verificationDataHash: verificationData ? verificationData.substring(0, 64) : null,
+            activatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        }, { merge: true });
+        transaction.set(userRef, {
+            isPremium: true,
+            premiumType: "lifetime",
+            premiumSource: source,
+            premiumProductId: productId,
+            premiumActivatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        }, { merge: true });
+    });
+    return { ok: true, isPremium: true };
 });
 exports.distributeRewards = functions.https.onCall(async (data, context) => {
     if (!context.auth) {

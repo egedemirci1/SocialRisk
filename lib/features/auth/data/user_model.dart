@@ -14,6 +14,11 @@ class UserModel {
   final String? activeTitle;
   final Map<String, int> stats;
   final DateTime updatedAt;
+  final bool isPremium;
+  final String? premiumType;
+  final String? premiumSource;
+  final DateTime? premiumActivatedAt;
+  final String? premiumProductId;
 
   const UserModel({
     required this.uid,
@@ -27,6 +32,11 @@ class UserModel {
     this.activeTitle,
     this.stats = const {},
     required this.updatedAt,
+    this.isPremium = false,
+    this.premiumType,
+    this.premiumSource,
+    this.premiumActivatedAt,
+    this.premiumProductId,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json, String docId) {
@@ -52,6 +62,11 @@ class UserModel {
           ? Map<String, int>.from(json['stats'] as Map)
           : const {},
       updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      isPremium: json['isPremium'] as bool? ?? false,
+      premiumType: json['premiumType'] as String?,
+      premiumSource: json['premiumSource'] as String?,
+      premiumActivatedAt: (json['premiumActivatedAt'] as Timestamp?)?.toDate(),
+      premiumProductId: json['premiumProductId'] as String?,
     );
   }
 
@@ -67,6 +82,13 @@ class UserModel {
       'activeTitle': activeTitle,
       'stats': stats,
       'updatedAt': FieldValue.serverTimestamp(),
+      'isPremium': isPremium,
+      'premiumType': premiumType,
+      'premiumSource': premiumSource,
+      'premiumActivatedAt': premiumActivatedAt == null
+          ? null
+          : Timestamp.fromDate(premiumActivatedAt!),
+      'premiumProductId': premiumProductId,
     };
   }
 
@@ -82,6 +104,11 @@ class UserModel {
       activeFrame: activeFrame,
       activeTitle: activeTitle,
       stats: stats,
+      isPremium: isPremium,
+      premiumType: premiumType,
+      premiumSource: premiumSource,
+      premiumActivatedAt: premiumActivatedAt,
+      premiumProductId: premiumProductId,
     );
   }
 }
