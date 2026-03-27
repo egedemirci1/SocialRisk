@@ -11,6 +11,7 @@ import '../../../shared/widgets/common/responsive_wrapper.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
 import '../../../shared/widgets/score/leaderboard_tile.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../domain/game_end_utils.dart';
 import '../../room/providers/room_provider.dart';
 
 class GameOverScreen extends ConsumerStatefulWidget {
@@ -65,7 +66,7 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
       body: playersAsync.when(
         data: (players) {
           final sorted = List.of(players)
-            ..sort((a, b) => b.score.compareTo(a.score));
+            ..sort(GameEndUtils.comparePlayersForFinalRanking);
           final winner = sorted.isNotEmpty ? sorted.first : null;
 
           final myPlayer = user != null

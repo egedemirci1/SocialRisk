@@ -191,6 +191,13 @@ async function performInactiveUsersCleanup() {
 function hasReachedScoreTarget(players, targetScore) {
     return players.some((player) => player.score >= targetScore);
 }
+function comparePlayersForFinalRank(a, b) {
+    if (b.score !== a.score)
+        return b.score - a.score;
+    if (b.totalLikes !== a.totalLikes)
+        return b.totalLikes - a.totalLikes;
+    return a.id.localeCompare(b.id);
+}
 exports.cleanupEmptyRooms = functions.pubsub
     .schedule('every 6 hours')
     .onRun(async (context) => {
@@ -631,7 +638,10 @@ exports.finalizeVotingRound = functions.https.onCall(async (data, context) => {
             : mood === "neutral"
                 ? Math.floor(fullRoundScore / 2)
                 : 0;
-        transaction.update(roomRef.collection("players").doc(currentPlayerId), { score: admin.firestore.FieldValue.increment(totalScore) });
+        transaction.update(roomRef.collection("players").doc(currentPlayerId), {
+            score: admin.firestore.FieldValue.increment(totalScore),
+            totalLikes: admin.firestore.FieldValue.increment(likes),
+        });
         const updates = {
             status: "results",
             lastRoundScore: totalScore,
@@ -705,9 +715,13 @@ exports.onGameUpdated = functions.firestore
     // Oyuncu skorlarını veritabanından oku (onUpdate tetikleyicisi transaction commit edildikten sonra çalıştığı için skorlar zaten güncel)
     const players = playersSnap.docs.map((doc) => {
         const d = doc.data();
-        const raw = d.score;
-        const score = typeof raw === "number" ? Math.floor(raw) : parseInt(String(raw), 10) || 0;
-        return { id: doc.id, score };
+        const rawScore = d.score;
+        const rawTotalLikes = d.totalLikes;
+        const score = typeof rawScore === "number" ? Math.floor(rawScore) : parseInt(String(rawScore), 10) || 0;
+        const totalLikes = typeof rawTotalLikes === "number"
+            ? Math.floor(rawTotalLikes)
+            : parseInt(String(rawTotalLikes), 10) || 0;
+        return { id: doc.id, score, totalLikes };
     });
     // Tur bazlı bitiş kontrolü için lastRoundPlayerId'ye ihtiyacımız var
     const lastRoundPlayerId = ((_d = (_c = after === null || after === void 0 ? void 0 : after.lastRoundPlayerId) !== null && _c !== void 0 ? _c : after === null || after === void 0 ? void 0 : after.currentPlayerId) !== null && _d !== void 0 ? _d : "");
@@ -732,12 +746,12 @@ exports.onGameUpdated = functions.firestore
     else {
         // Skor modu her zaman oyuncunun tur sonunda gerçekten ulaştığı toplam puana göre karar verir.
         // Challenge'ın ham değeri veya teorik tam puanı değil, oylama sonrası persisted skor esas alınır.
-        shouldEnd = hasReachedScoreTarget(players, endValue);
+        shouldEnd = isLastActive && hasReachedScoreTarget(players, endValue);
     }
     if (!shouldEnd)
         return;
     // Veritabanından gelen güncel skorlarla sıralama yap
-    const sorted = [...players].sort((a, b) => b.score - a.score);
+    const sorted = [...players].sort(comparePlayersForFinalRank);
     const rewards = {};
     sorted.forEach((p, i) => {
         if (p.score <= 0)

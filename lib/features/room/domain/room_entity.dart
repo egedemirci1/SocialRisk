@@ -53,6 +53,7 @@ class PlayerEntity {
   final String? lobbyEmote;
   final DateTime? lobbyEmoteExpiresAt;
   final int score;
+  final int totalLikes;
   final int passStreak;
   final bool isReady;
 
@@ -65,6 +66,7 @@ class PlayerEntity {
     this.lobbyEmote,
     this.lobbyEmoteExpiresAt,
     this.score = 0,
+    this.totalLikes = 0,
     this.passStreak = 0,
     this.isReady = false,
   });

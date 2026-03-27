@@ -159,6 +159,7 @@ class PlayerModel {
   final String? lobbyEmote;
   final DateTime? lobbyEmoteExpiresAt;
   final int score;
+  final int totalLikes;
   final int passStreak;
   final bool isReady;
 
@@ -171,6 +172,7 @@ class PlayerModel {
     this.lobbyEmote,
     this.lobbyEmoteExpiresAt,
     this.score = 0,
+    this.totalLikes = 0,
     this.passStreak = 0,
     this.isReady = false,
   });
@@ -185,6 +187,7 @@ class PlayerModel {
       lobbyEmote: json['lobbyEmote'] as String?,
       lobbyEmoteExpiresAt: (json['lobbyEmoteExpiresAt'] as Timestamp?)?.toDate(),
       score: json['score'] as int? ?? 0,
+      totalLikes: json['totalLikes'] as int? ?? 0,
       passStreak: json['passStreak'] as int? ?? 0,
       isReady: json['isReady'] as bool? ?? false,
     );
@@ -201,6 +204,7 @@ class PlayerModel {
           ? null
           : Timestamp.fromDate(lobbyEmoteExpiresAt!),
       'score': score,
+      'totalLikes': totalLikes,
       'passStreak': passStreak,
       'isReady': isReady,
     };
@@ -216,6 +220,7 @@ class PlayerModel {
       lobbyEmote: lobbyEmote,
       lobbyEmoteExpiresAt: lobbyEmoteExpiresAt,
       score: score,
+      totalLikes: totalLikes,
       passStreak: passStreak,
       isReady: isReady,
     );

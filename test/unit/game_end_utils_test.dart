@@ -102,7 +102,8 @@ void main() {
       const game = GameEntity(
         gameId: 'g1',
         roomId: 'r1',
-        currentPlayerId: 'p1',
+        currentPlayerId: 'p2',
+        lastRoundPlayerId: 'p2',
         turnOrder: ['p1', 'p2'],
       );
       final room = RoomEntity(
@@ -123,6 +124,34 @@ void main() {
         players: players,
       );
       expect(result, isTrue);
+    });
+
+    test('score modunda hedefe ulaÅŸÄ±lsa bile tur bitmeden false dÃ¶ner', () {
+      const game = GameEntity(
+        gameId: 'g1',
+        roomId: 'r1',
+        currentPlayerId: 'p1',
+        lastRoundPlayerId: 'p1',
+        turnOrder: ['p1', 'p2'],
+      );
+      final room = RoomEntity(
+        roomCode: 'R1',
+        hostId: 'h1',
+        createdAt: DateTime(2024),
+        endConditionType: EndConditionType.score,
+        endConditionValue: 500,
+      );
+      const players = [
+        PlayerEntity(id: 'p1', displayName: 'A', score: 520),
+        PlayerEntity(id: 'p2', displayName: 'B', score: 490),
+      ];
+
+      final result = GameEndUtils.shouldEndAfterRound(
+        game: game,
+        room: room,
+        players: players,
+      );
+      expect(result, isFalse);
     });
 
     test('score modunda challenge ham puani degil gerçek toplam skor dikkate alınır', () {
@@ -154,6 +183,18 @@ void main() {
         players: players,
       );
       expect(result, isFalse);
+    });
+
+    test('final sÄ±ralamada eÅŸit puanda toplam like sayÄ±sÄ± tie-break olur', () {
+      const players = [
+        PlayerEntity(id: 'p1', displayName: 'A', score: 100, totalLikes: 7),
+        PlayerEntity(id: 'p2', displayName: 'B', score: 100, totalLikes: 11),
+        PlayerEntity(id: 'p3', displayName: 'C', score: 90, totalLikes: 20),
+      ];
+
+      final sorted = [...players]..sort(GameEndUtils.comparePlayersForFinalRanking);
+
+      expect(sorted.map((player) => player.id), ['p2', 'p1', 'p3']);
     });
   });
 }

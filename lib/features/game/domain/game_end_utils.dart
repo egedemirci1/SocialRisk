@@ -4,6 +4,17 @@ import '../../../shared/models/enums.dart';
 
 /// Tek noktadan "oyun bu tur sonunda bitmeli mi?" kararını verir.
 class GameEndUtils {
+  static int comparePlayersForFinalRanking(
+    PlayerEntity a,
+    PlayerEntity b,
+  ) {
+    final scoreCompare = b.score.compareTo(a.score);
+    if (scoreCompare != 0) return scoreCompare;
+    final likesCompare = b.totalLikes.compareTo(a.totalLikes);
+    if (likesCompare != 0) return likesCompare;
+    return a.id.compareTo(b.id);
+  }
+
   static bool shouldEndAfterRound({
     required GameEntity game,
     required RoomEntity room,
@@ -21,6 +32,15 @@ class GameEndUtils {
       return game.currentRound >= room.endConditionValue && isLastActive;
     }
 
-    return players.any((p) => p.score >= room.endConditionValue);
+    final activePlayerIds = players.map((p) => p.id).toSet();
+    final orderSource = game.mode == GameMode.economy
+        ? game.categoryPickOrder
+        : game.turnOrder;
+    final activeOrder =
+        orderSource.where((id) => activePlayerIds.contains(id)).toList();
+    final roundPlayerId = game.lastRoundPlayerId ?? game.currentPlayerId;
+    final isLastActive = activeOrder.isNotEmpty && activeOrder.last == roundPlayerId;
+
+    return isLastActive && players.any((p) => p.score >= room.endConditionValue);
   }
 }
