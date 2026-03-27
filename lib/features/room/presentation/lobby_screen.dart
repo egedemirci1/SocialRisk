@@ -879,11 +879,15 @@ class _ReadyToggleButton extends ConsumerWidget {
     final compact = MediaQuery.sizeOf(context).width < 390;
 
     return StageButton(
-      label: isReady ? AppLocalizations.of(context)!.readyForParty : AppLocalizations.of(context)!.notReadyYet,
-      icon: isReady ? Icons.check_circle_outline_rounded : Icons.close_rounded,
-      backgroundColor: isReady ? AppColors.primary : AppColors.primary.withValues(alpha: 0.15),
-      textColor: isReady ? Colors.white : AppColors.primary,
-      borderColor: isReady ? AppColors.accent : AppColors.primary.withValues(alpha: 0.4),
+      label: isReady
+          ? AppLocalizations.of(context)!.readyForParty
+          : AppLocalizations.of(context)!.notReadyYet,
+      icon: isReady ? Icons.close_rounded : Icons.check_circle_outline_rounded,
+      backgroundColor: isReady ? AppColors.error : AppColors.primary,
+      textColor: Colors.white,
+      borderColor: isReady
+          ? AppColors.error.withValues(alpha: 0.5)
+          : AppColors.accent.withValues(alpha: 0.5),
       onPressed: () => ref.read(roomControllerProvider.notifier).toggleReady(
             roomCode: roomCode,
             playerId: playerId,

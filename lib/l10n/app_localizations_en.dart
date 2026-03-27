@@ -107,7 +107,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get economyDesc =>
-      'In this mode, category point values change each round. Adapt your picks to the new values!';
+      'In this mode, category points fluctuate based on popularity. Rare picks gain value, while overused ones lose points!';
 
   @override
   String get visibilityMode => 'Visibility Mode';
@@ -496,7 +496,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get economyModeDesc =>
-      'Earn coins by doing tasks; use these coins to impose penalties on others and avoid risks. The most ruthless wins. (Activates with at least 3 categories)';
+      'Category points change dynamically based on popularity: less chosen \'hidden gems\' grant higher rewards, while overused categories lose value. Strategize and take the most profitable risks! (Activates with at least 3 categories)';
 
   @override
   String get singleCategoryEconomyWarn =>
@@ -777,10 +777,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Last update: 2026\n\n1) Acceptance and Scope\nBy using this application, you agree to these Terms of Use. If you do not agree, do not use the application.\n\n2) Appropriate Use\nUsers are obligated not to use automation tools for cheating, harassment, hate speech, threats, sharing illegal content, violating account security, or disrupting service.\n\n3) Account and Security\nYou are responsible for actions taken with your account. You must report suspicious access or security breaches immediately.\n\n4) Content and Community Rules\nUser-generated content must comply with community rules. Violating content may be removed without notice, and accounts may face temporary or permanent restrictions.\n\n5) Intellectual Property\nApp interface, brand elements, and software components belong to respective owners. Unauthorized copying, distribution, or reverse engineering is prohibited.\n\n6) Service Changes and Interruptions\nService may be modified, restricted, or temporarily suspended for technical maintenance, security, or business requirements.\n\n7) Limitation of Liability\nThe application is provided \"as is\". To the extent permitted by law, liability for indirect or incidental damages is not accepted.\n\n8) Account Termination\nAccess may be suspended or terminated in case of violation of terms of use or community rules.\n\n9) Updating Terms\nTerms of Use may be updated from time to time. Current text is valid from the moment it is published in the app.\n\n10) Contact\nIn-app communication channels should be used for legal notices and support requests.';
 
   @override
-  String get notReadyYet => 'GET READY';
+  String get notReadyYet => 'READY UP';
 
   @override
-  String get readyForParty => 'READY FOR PARTY!';
+  String get readyForParty => 'NOT READY';
 
   @override
   String get lobbyTip1 => 'Let the party begin! Are you ready?';
@@ -1090,4 +1090,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get waitingTip5 => 'The tension is rising...';
+
+  @override
+  String get howWasPerformance => 'HOW WAS THE PERFORMANCE?';
+
+  @override
+  String get evaluatePerformance => 'Evaluate the player\'s performance';
+
+  @override
+  String get voteLike => 'LIKE';
+
+  @override
+  String get voteNeutral => 'NEUTRAL';
+
+  @override
+  String get voteDislike => 'DISLIKE';
+
+  @override
+  String get categoryMoral => 'Moral';
+
+  @override
+  String get categoryKnowledge => 'Knowledge';
+
+  @override
+  String get categoryDigital => 'Digital';
+
+  @override
+  String get categoryPhysical => 'Physical';
+
+  @override
+  String get categoryVisual => 'Visual';
+
+  @override
+  String get categoryConfession => 'Confession';
+
+  @override
+  String get categoryIntimate => 'Intimate';
+
+  @override
+  String get categoryMental => 'Mental';
 }

@@ -107,7 +107,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get economyDesc =>
-      'Bu modda kategorilerin puanları tur tur değişir. Değişen değerlere göre en doğru seçimi yap!';
+      'Bu modda kategorilerin puanları popülerliğine göre değişir. Az seçilen kategoriler değer kazanırken, çok seçilenlerin puanı düşer!';
 
   @override
   String get visibilityMode => 'Görünürlük Modu';
@@ -498,7 +498,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get economyModeDesc =>
-      'Görevleri tamamlayarak coin kazan; bu coinlerle başkalarına ceza kitle, risklerden kurtul. Kim daha acımasızsa o kazanır. (En az 3 kategoride aktifleşir)';
+      'Kategorilerin puanları popülerliğine göre dinamik olarak değişir: Az seçilen gizli cevherler daha çok puan kazandırırken, herkesin seçtiği kategorilerin değeri düşer. Stratejini kur ve en karlı riskleri al! (En az 3 kategoride aktifleşir)';
 
   @override
   String get singleCategoryEconomyWarn =>
@@ -783,7 +783,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notReadyYet => 'HAZIR OL';
 
   @override
-  String get readyForParty => 'PARTİYE HAZIRIM!';
+  String get readyForParty => 'HAZIR DEĞİLİM';
 
   @override
   String get lobbyTip1 => 'Parti başlasın! Hazır mısın?';
@@ -1093,4 +1093,44 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get waitingTip5 => 'Gerilim tırmanıyor...';
+
+  @override
+  String get howWasPerformance => 'PERFORMANS NASILDI?';
+
+  @override
+  String get evaluatePerformance =>
+      'Oyuncunun sergilediği performansı değerlendirin';
+
+  @override
+  String get voteLike => 'BEĞEN';
+
+  @override
+  String get voteNeutral => 'KARARSIZ';
+
+  @override
+  String get voteDislike => 'BEĞENME';
+
+  @override
+  String get categoryMoral => 'Ahlaki';
+
+  @override
+  String get categoryKnowledge => 'Bilgi';
+
+  @override
+  String get categoryDigital => 'Dijital';
+
+  @override
+  String get categoryPhysical => 'Fiziksel';
+
+  @override
+  String get categoryVisual => 'Görsel';
+
+  @override
+  String get categoryConfession => 'İtiraf';
+
+  @override
+  String get categoryIntimate => 'Mahrem';
+
+  @override
+  String get categoryMental => 'Zihinsel';
 }

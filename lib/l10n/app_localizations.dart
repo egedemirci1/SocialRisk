@@ -293,7 +293,7 @@ abstract class AppLocalizations {
   /// No description provided for @economyDesc.
   ///
   /// In tr, this message translates to:
-  /// **'Bu modda kategorilerin puanları tur tur değişir. Değişen değerlere göre en doğru seçimi yap!'**
+  /// **'Bu modda kategorilerin puanları popülerliğine göre değişir. Az seçilen kategoriler değer kazanırken, çok seçilenlerin puanı düşer!'**
   String get economyDesc;
 
   /// No description provided for @visibilityMode.
@@ -1001,7 +1001,7 @@ abstract class AppLocalizations {
   /// No description provided for @economyModeDesc.
   ///
   /// In tr, this message translates to:
-  /// **'Görevleri tamamlayarak coin kazan; bu coinlerle başkalarına ceza kitle, risklerden kurtul. Kim daha acımasızsa o kazanır. (En az 3 kategoride aktifleşir)'**
+  /// **'Kategorilerin puanları popülerliğine göre dinamik olarak değişir: Az seçilen gizli cevherler daha çok puan kazandırırken, herkesin seçtiği kategorilerin değeri düşer. Stratejini kur ve en karlı riskleri al! (En az 3 kategoride aktifleşir)'**
   String get economyModeDesc;
 
   /// No description provided for @singleCategoryEconomyWarn.
@@ -1499,7 +1499,7 @@ abstract class AppLocalizations {
   /// No description provided for @readyForParty.
   ///
   /// In tr, this message translates to:
-  /// **'PARTİYE HAZIRIM!'**
+  /// **'HAZIR DEĞİLİM'**
   String get readyForParty;
 
   /// No description provided for @lobbyTip1.
@@ -2083,6 +2083,84 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Gerilim tırmanıyor...'**
   String get waitingTip5;
+
+  /// No description provided for @howWasPerformance.
+  ///
+  /// In tr, this message translates to:
+  /// **'PERFORMANS NASILDI?'**
+  String get howWasPerformance;
+
+  /// No description provided for @evaluatePerformance.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyuncunun sergilediği performansı değerlendirin'**
+  String get evaluatePerformance;
+
+  /// No description provided for @voteLike.
+  ///
+  /// In tr, this message translates to:
+  /// **'BEĞEN'**
+  String get voteLike;
+
+  /// No description provided for @voteNeutral.
+  ///
+  /// In tr, this message translates to:
+  /// **'KARARSIZ'**
+  String get voteNeutral;
+
+  /// No description provided for @voteDislike.
+  ///
+  /// In tr, this message translates to:
+  /// **'BEĞENME'**
+  String get voteDislike;
+
+  /// No description provided for @categoryMoral.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ahlaki'**
+  String get categoryMoral;
+
+  /// No description provided for @categoryKnowledge.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bilgi'**
+  String get categoryKnowledge;
+
+  /// No description provided for @categoryDigital.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dijital'**
+  String get categoryDigital;
+
+  /// No description provided for @categoryPhysical.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fiziksel'**
+  String get categoryPhysical;
+
+  /// No description provided for @categoryVisual.
+  ///
+  /// In tr, this message translates to:
+  /// **'Görsel'**
+  String get categoryVisual;
+
+  /// No description provided for @categoryConfession.
+  ///
+  /// In tr, this message translates to:
+  /// **'İtiraf'**
+  String get categoryConfession;
+
+  /// No description provided for @categoryIntimate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mahrem'**
+  String get categoryIntimate;
+
+  /// No description provided for @categoryMental.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zihinsel'**
+  String get categoryMental;
 }
 
 class _AppLocalizationsDelegate
