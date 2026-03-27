@@ -124,5 +124,36 @@ void main() {
       );
       expect(result, isTrue);
     });
+
+    test('score modunda challenge ham puani degil gerçek toplam skor dikkate alınır', () {
+      const game = GameEntity(
+        gameId: 'g1',
+        roomId: 'r1',
+        currentPlayerId: 'p1',
+        lastRoundPlayerId: 'p1',
+        lastRoundScore: 15,
+        lastRoundMultiplier: 3,
+        turnOrder: ['p1', 'p2'],
+      );
+      final room = RoomEntity(
+        roomCode: 'R1',
+        hostId: 'h1',
+        createdAt: DateTime(2024),
+        endConditionType: EndConditionType.score,
+        endConditionValue: 100,
+      );
+      const players = [
+        // Oyuncu 70 puandayken 30'luk challenge secip nötr oyla 15 alip 85'e cikiyor.
+        PlayerEntity(id: 'p1', displayName: 'A', score: 85),
+        PlayerEntity(id: 'p2', displayName: 'B', score: 40),
+      ];
+
+      final result = GameEndUtils.shouldEndAfterRound(
+        game: game,
+        room: room,
+        players: players,
+      );
+      expect(result, isFalse);
+    });
   });
 }

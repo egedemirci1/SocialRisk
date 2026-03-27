@@ -241,6 +241,10 @@ interface PlayerScore {
   score: number;
 }
 
+function hasReachedScoreTarget(players: PlayerScore[], targetScore: number): boolean {
+  return players.some((player) => player.score >= targetScore);
+}
+
 // Her 6 saatte bir boş odaları temizle
 export const cleanupEmptyRooms = functions.pubsub
   .schedule('every 6 hours')
@@ -914,8 +918,9 @@ export const onGameUpdated = functions.firestore
     if (endType === "rounds") {
       shouldEnd = currentRound >= endValue && isLastActive;
     } else {
-      // Veritabanından gelen güncel skorlarla bitiş kontrolü yap
-      shouldEnd = players.some((p) => p.score >= endValue);
+      // Skor modu her zaman oyuncunun tur sonunda gerçekten ulaştığı toplam puana göre karar verir.
+      // Challenge'ın ham değeri veya teorik tam puanı değil, oylama sonrası persisted skor esas alınır.
+      shouldEnd = hasReachedScoreTarget(players, endValue);
     }
 
     if (!shouldEnd) return;

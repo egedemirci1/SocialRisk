@@ -188,6 +188,9 @@ async function performInactiveUsersCleanup() {
     return deletedCount;
 }
 // Her 6 saatte bir boş odaları temizle
+function hasReachedScoreTarget(players, targetScore) {
+    return players.some((player) => player.score >= targetScore);
+}
 exports.cleanupEmptyRooms = functions.pubsub
     .schedule('every 6 hours')
     .onRun(async (context) => {
@@ -727,8 +730,9 @@ exports.onGameUpdated = functions.firestore
         shouldEnd = currentRound >= endValue && isLastActive;
     }
     else {
-        // Veritabanından gelen güncel skorlarla bitiş kontrolü yap
-        shouldEnd = players.some((p) => p.score >= endValue);
+        // Skor modu her zaman oyuncunun tur sonunda gerçekten ulaştığı toplam puana göre karar verir.
+        // Challenge'ın ham değeri veya teorik tam puanı değil, oylama sonrası persisted skor esas alınır.
+        shouldEnd = hasReachedScoreTarget(players, endValue);
     }
     if (!shouldEnd)
         return;
