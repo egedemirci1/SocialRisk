@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onGameUpdated = exports.finalizeVotingRound = exports.distributeRewards = exports.buyCosmetic = exports.runMaintenanceCleanup = exports.auditContentState = exports.deleteOwnUserData = exports.cleanupInactiveUsers = exports.cleanupOldGames = exports.cleanupEmptyRooms = void 0;
+exports.onGameUpdated = exports.finalizeVotingRound = exports.distributeRewards = exports.buyCosmetic = exports.forceCleanupOldPlayingRooms = exports.runMaintenanceCleanup = exports.auditContentState = exports.deleteOwnUserData = exports.cleanupInactiveUsers = exports.cleanupOldGames = exports.cleanupEmptyRooms = void 0;
 const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 if (!admin.apps.length)
@@ -347,6 +347,36 @@ exports.runMaintenanceCleanup = functions.https.onCall(async (data, context) => 
         roomsDeleted,
         gamesDeleted,
         usersDeleted,
+    };
+});
+exports.forceCleanupOldPlayingRooms = functions.https.onCall(async (data, context) => {
+    var _a, _b;
+    if (!context.auth) {
+        throw new functions.https.HttpsError("unauthenticated", "Authentication required.");
+    }
+    if (!isAdminUid(context.auth.uid)) {
+        throw new functions.https.HttpsError("permission-denied", "Admin access required.");
+    }
+    const threeHoursAgoMs = Date.now() - 3 * 60 * 60 * 1000;
+    const roomsSnapshot = await db.collection("rooms").get();
+    let deletedCount = 0;
+    for (const doc of roomsSnapshot.docs) {
+        const room = doc.data();
+        // Aggressive: use updateTime if createdAt is missing
+        const createdAt = timestampMillis(room.createdAt);
+        const docUpdateTime = ((_b = (_a = doc.updateTime) === null || _a === void 0 ? void 0 : _a.toMillis) === null || _b === void 0 ? void 0 : _b.call(_a)) || 0;
+        const referenceTime = createdAt > 0 ? createdAt : docUpdateTime;
+        const isOld = referenceTime > 0 && referenceTime < threeHoursAgoMs;
+        // Aggressive: if status is missing, treat as "unknown" and still delete if old
+        const status = room.status || "unknown";
+        const isPlaying = status === "playing" || status === "lobby" || status === "unknown";
+        if (isPlaying && isOld) {
+            await deleteRoomAndRelatedData(doc.ref, room);
+            deletedCount++;
+        }
+    }
+    return {
+        deleted: deletedCount,
     };
 });
 exports.buyCosmetic = functions.https.onCall(async (data, context) => {

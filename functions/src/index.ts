@@ -457,9 +457,17 @@ export const forceCleanupOldPlayingRooms = functions.https.onCall(async (data, c
 
   for (const doc of roomsSnapshot.docs) {
     const room = doc.data();
+    
+    // Aggressive: use updateTime if createdAt is missing
     const createdAt = timestampMillis(room.createdAt);
-    const isOld = createdAt > 0 && createdAt < threeHoursAgoMs;
-    const isPlaying = room.status === "playing" || room.status === "lobby";
+    const docUpdateTime = doc.updateTime?.toMillis?.() || 0;
+    const referenceTime = createdAt > 0 ? createdAt : docUpdateTime;
+    
+    const isOld = referenceTime > 0 && referenceTime < threeHoursAgoMs;
+    
+    // Aggressive: if status is missing, treat as "unknown" and still delete if old
+    const status = room.status || "unknown";
+    const isPlaying = status === "playing" || status === "lobby" || status === "unknown";
 
     if (isPlaying && isOld) {
       await deleteRoomAndRelatedData(doc.ref, room);
