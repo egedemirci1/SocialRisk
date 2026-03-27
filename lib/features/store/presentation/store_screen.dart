@@ -157,6 +157,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                           roleItems: roleItems,
                           maskItems: maskItems,
                           isAnonymous: isAnonymous,
+                          cosmeticsAsync: cosmeticsAsync,
                         ),
                       ),
                     ),
@@ -271,6 +272,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     required List<CosmeticItemEntity> roleItems,
     required List<CosmeticItemEntity> maskItems,
     required bool isAnonymous,
+    required AsyncValue<List<CosmeticItemEntity>> cosmeticsAsync,
   }) {
     final l = AppLocalizations.of(context)!;
     final isTr = Localizations.localeOf(context).languageCode == 'tr';
@@ -297,9 +299,12 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         icon = Icons.face_retouching_natural_rounded;
         break;
       default:
-        // Note: Scenario items are also fetched via cosmeticsAsync in this screen's logic now
-        // But for hardcoded preview/locked state:
-        displayItems = roleItems.where((_) => false).toList(); // Empty placeholder
+        // Senaryo öğelerini göster
+        displayItems = cosmeticsAsync.when(
+          data: (items) => items.where((c) => c.type == 'category').toList(),
+          loading: () => [],
+          error: (_, __) => [],
+        );
         title = l.scenariosTab;
         subtitle = isTr
             ? 'Oyundaki görev havuzunu belirleyen tema paketleri.'
@@ -370,67 +375,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     );
 
     if (_selectedTab == 2) {
-      return Stack(
-        children: [
-          content,
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.7),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.accent.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.accent.withValues(alpha: 0.3),
-                            width: 2,
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.lock_clock_rounded,
-                          color: AppColors.accent,
-                          size: 48,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        l.comingSoon,
-                        style: AppTextStyles.displayMedium.copyWith(
-                          color: AppColors.accent,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 4,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Text(
-                          l.scenariosComingSoon,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.labelSmall.copyWith(
-                            color: Colors.white30,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
+      return content;
     }
 
     return content;
