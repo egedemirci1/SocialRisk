@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 import '../../../core/audio/audio_service.dart';
 import '../../../core/constants/app_colors.dart';
@@ -85,7 +85,7 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
-              'PERFORMANS NASILDI?',
+              AppLocalizations.of(context)!.howWasPerformance,
               style: AppTextStyles.headlineMedium.copyWith(
                 color: Colors.white,
                 letterSpacing: 2,
@@ -94,7 +94,7 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
           ),
           const SizedBox(height: 8),
           Text(
-            'Oyuncunun sergilediği performansı değerlendirin',
+            AppLocalizations.of(context)!.evaluatePerformance,
             style: AppTextStyles.bodyMedium.copyWith(
               color: Colors.white54,
             ),
@@ -128,7 +128,7 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
               Expanded(
                 child: _VoteButton(
                   emoji: '👏',
-                  label: 'BEĞEN',
+                  label: AppLocalizations.of(context)!.voteLike,
                   color: Colors.green,
                   isSelected: _selectedVote == 'like',
                   isDisabled: _selectedVote != null && _selectedVote != 'like',
@@ -140,7 +140,7 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
               Expanded(
                 child: _VoteButton(
                   emoji: '😶',
-                  label: 'KARARSIZ',
+                  label: AppLocalizations.of(context)!.voteNeutral,
                   color: Colors.orange,
                   isSelected: _selectedVote == 'neutral',
                   isDisabled:
@@ -153,7 +153,7 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
               Expanded(
                 child: _VoteButton(
                   emoji: '🎭',
-                  label: 'BEĞENME',
+                  label: AppLocalizations.of(context)!.voteDislike,
                   color: AppColors.primary,
                   isSelected: _selectedVote == 'dislike',
                   isDisabled:

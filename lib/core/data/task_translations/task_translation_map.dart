@@ -34,4 +34,31 @@ class TaskTranslationMap {
     // veya orijinal içerik döndürülür.
     return originalContent;
   }
+
+  /// Kategori ismini dile göre çevirir.
+  static String getCategoryTranslation(String category, String languageCode) {
+    if (languageCode != 'en') return category;
+
+    switch (category.toLowerCase()) {
+      case 'ahlaki':
+        return 'Moral';
+      case 'bilgi':
+        return 'Knowledge';
+      case 'dijital':
+        return 'Digital';
+      case 'fiziksel':
+        return 'Physical';
+      case 'gorsel':
+      case 'görsel':
+        return 'Visual';
+      case 'itiraf':
+        return 'Confession';
+      case 'mahrem':
+        return 'Intimate';
+      case 'zihinsel':
+        return 'Mental';
+      default:
+        return category;
+    }
+  }
 }

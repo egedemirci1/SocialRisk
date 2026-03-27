@@ -1052,4 +1052,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hardDifficulty => 'Hard';
+
+  @override
+  String get votingTitle => 'CRITIQUE & VOTING';
+
+  @override
+  String get playerPerformed => 'performed:';
+
+  @override
+  String get voteTimeoutPenalty =>
+      'Time\'s up! You received a -10 point penalty for not voting.';
+
+  @override
+  String get calculatingScore => 'Calculating Score...';
+
+  @override
+  String get countingVotes => 'Counting votes...';
+
+  @override
+  String get waitingForEvaluation =>
+      'Waiting for other players\' evaluation...';
+
+  @override
+  String get evaluated => 'EVALUATED';
+
+  @override
+  String get waitingTip1 => 'Everyone is waiting for your decision...';
+
+  @override
+  String get waitingTip2 => 'Time is running out!';
+
+  @override
+  String get waitingTip3 => 'Decide quickly...';
+
+  @override
+  String get waitingTip4 => 'Be ruthless!';
+
+  @override
+  String get waitingTip5 => 'The tension is rising...';
 }

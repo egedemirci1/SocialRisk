@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/data/task_translations/task_translation_map.dart';
+import '../../../core/providers/locale_provider.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/game_constants.dart';
@@ -170,8 +173,15 @@ class _DifficultyChoiceScreenState
                                       color: AppColors.accent.withValues(alpha: 0.4),
                                     ),
                                   ),
-                                  child: Text(
-                                    '${AppLocalizations.of(context)!.categoryVariable(game.selectedCategory != null ? _toTurkishUpper(game.selectedCategory!) : "?")}',
+                                    child: Text(
+                                      AppLocalizations.of(context)!.categoryVariable(
+                                        game.selectedCategory != null
+                                            ? TaskTranslationMap.getCategoryTranslation(
+                                                game.selectedCategory!,
+                                                LocaleProvider.of(context).languageCode,
+                                              ).toUpperCase()
+                                            : "?",
+                                      ),
                                     style: AppTextStyles.titleMedium.copyWith(
                                       color: AppColors.accent,
                                       fontWeight: FontWeight.w900,

@@ -11,13 +11,137 @@ const Map<String, String> tasksFizikselEn = {
   'local_Fiziksel_easy_7': 'Walk around the room like a "Frankenstein" monster without bending your legs (straight) and with arms outstretched, touching everyone one by one.',
   'local_Fiziksel_easy_8': 'Spin around like a whirlwind for 30 seconds without stopping, then try to stand on one leg at the end of the time.',
   'local_Fiziksel_easy_9': 'Bend your knees to get as small as possible and move through the room by jumping like a frog for 30 seconds.',
-  
-  // Medium (Starts at index 21 in Turkish file, so index 21 in global list)
-  // Wait, index 10-20 were skipped in my view or were they?
-  // Let me check Fiziksel file again.
-  // easy_0 to easy_9 (10 items)
-  // medium_0 to medium_9 (10 items) -> starts at index 10 or 21?
-  // Looking at the file: line 10 is easy_0, line 21 is medium_0. 
-  // So there are 11 items in the first block (0-10)? No, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19. That's 10 items.
-  // Medium_0 is at line 22 (index 11? no, index 10).
+
+  // 1. SHOWMANSHIP — MEDIUM
+  'local_Fiziksel_medium_10': 'Try to do the most exaggerated "twerk" or hip dance move in the middle of the room for 30 seconds without stopping.',
+  'local_Fiziksel_medium_11': 'Lie on your back on the floor and do a bicycle cycling movement while making an exaggerated exhaust (engine) sound with your mouth for 45 seconds.',
+  'local_Fiziksel_medium_12': 'Hold your own ankles with your hands (in a bent position) and take a lap around the room without breaking this position.',
+  'local_Fiziksel_medium_13': 'For 45 seconds, serve water/napkins to those in the room with only choppy and mechanical muscle movements like in a "robot dance".',
+  'local_Fiziksel_medium_14': 'Put a book (or phone) on top of your head. Walk with exaggerated hip movements like a model walking on a catwalk without dropping it.',
+  'local_Fiziksel_medium_15': 'Lean over until your hands touch your toes. While in this position, count the names of everyone in the group out loud.',
+  'local_Fiziksel_medium_16': 'For 1 minute, communicate only by jumping while speaking. The moment you stop jumping, 10 seconds are added to the time.',
+  'local_Fiziksel_medium_17': 'Bend over like a monkey, swinging your arms and scratching your armpits, and ask someone from the group for something to eat.',
+  'local_Fiziksel_medium_18': 'Lie on your back on the floor, raise your arms and legs in the air and struggle for 30 seconds like a bug turned on its back.',
+  'local_Fiziksel_medium_19': 'Go under the table and watch the surroundings like a mole from there for 30 seconds, only sticking your head out.',
+
+  // 1. SHOWMANSHIP — HARD
+  'local_Fiziksel_hard_20': 'While standing, open your legs as wide as possible (split attempt) and wait at the lowest point you can go for 15 seconds.',
+  'local_Fiziksel_hard_21': 'On the floor of the room, go from one end to the other without using your arms, only by rolling on the floor (like a sausage).',
+  'local_Fiziksel_hard_22': 'Do "jumping jacks" (jumping while opening and closing arms) without stopping for 1 minute while reading the alphabet backwards at the same time.',
+  'local_Fiziksel_hard_23': 'Go to the middle of the room, try to do a handstand (or a somersault). It is not important that you are successful, but that you show that funny effort with confidence.',
+  'local_Fiziksel_hard_24': 'Put your hands and feet on the floor and take a full lap around the room with a "bear walk" (without knees touching the floor).',
+  'local_Fiziksel_hard_25': 'While sitting where you are, shake your head violently for 1 minute without stopping like a metalhead "headbanging".',
+  'local_Fiziksel_hard_26': 'Perform at least 3 consecutive proper forward somersaults from one end of the room to the other.',
+  'local_Fiziksel_hard_27': 'Lie face down on the floor and raise your arms and legs in the air ("superman" move) and stay tense for 1 minute as if you were flying.',
+  'local_Fiziksel_hard_28': 'Lift one leg in the air with both hands (e.g., pull your knee to your chest) and walk around on one leg for 45 seconds in this strange position.',
+  'local_Fiziksel_hard_29': 'Go to the highest safe point in the room (on a sofa or chair) and wait like an eagle for 30 seconds with arms outstretched.',
+
+  // 2. ENDURANCE — EASY
+  'local_Fiziksel_easy_30': 'Take a wall sit position and endure for 45 seconds without breaking the position.',
+  'local_Fiziksel_easy_31': 'Go into plank position and wait for 30 seconds without letting your knees touch the floor.',
+  'local_Fiziksel_easy_32': 'Open your arms parallel to the floor on both sides and keep them in the air until your shoulders burn (at least 1 minute).',
+  'local_Fiziksel_easy_33': 'Stay locked in a half push-up position (arms bent, chest close to the floor) for 15 seconds.',
+  'local_Fiziksel_easy_34': 'While on one leg, extend your other leg backwards and wait in balance for 45 seconds.',
+  'local_Fiziksel_easy_35': 'In the squat position, go all the way down and wait at that point for 45 seconds without bouncing.',
+  'local_Fiziksel_easy_36': 'Lie on your back on the floor and keep your feet 10 cm above the floor (stomach squeeze) and wait for 30 seconds.',
+  'local_Fiziksel_easy_37': 'Extend your arms straight forward and keep them locked for exactly 1 minute with palms facing up.',
+  'local_Fiziksel_easy_38': 'Stand on your tiptoes (heels in the air) squeezing your calves for 1 minute.',
+  'local_Fiziksel_easy_39': 'Kneel down, throw your arms back and lean your torso back (like the Matrix) and endure for 20 seconds squeezing your abdominal muscles.',
+
+  // 2. ENDURANCE — MEDIUM
+  'local_Fiziksel_medium_40': 'While in a wall sit, take a heavy object (or a few thick books) on your lap and endure for 1 minute.',
+  'local_Fiziksel_medium_41': 'In plank position, wait for 30 seconds by extending one arm forward (3-legged plank). Then switch to the other arm.',
+  'local_Fiziksel_medium_42': 'With hands behind your head, do jump squats. Complete exactly 20 repetitions without pausing.',
+  'local_Fiziksel_medium_43': 'Do a "V" sit (stomach tight, feet and back in the air) and endure for 45 seconds by extending your arms forward.',
+  'local_Fiziksel_medium_44': 'While waiting in push-up position, spend 1 minute by pulling your right knee to your right elbow and your left knee to your left elbow (spider-man plank).',
+  'local_Fiziksel_medium_45': 'While standing on one leg, extend your other leg straight forward and wait for 30 seconds without dropping that leg.',
+  'local_Fiziksel_medium_46': 'Wait for 1 minute while holding a heavy object in each hand (e.g., full water bottle) with your arms outstretched on both sides.',
+  'local_Fiziksel_medium_47': 'Squat until your knees are not touching the floor (squat hold) and wait for 1 minute by raising your arms straight above your head.',
+  'local_Fiziksel_medium_48': 'Stay fixed for 45 seconds at the lowest point in the lunge position (one leg bent in front, the other tense behind).',
+  'local_Fiziksel_medium_49': 'Lie on your back on the floor, raise your legs straight in the air (L shape) and squeeze your abdominal muscles for 30 seconds by slightly lifting your hips off the floor.',
+
+  // 2. ENDURANCE — HARD
+  'local_Fiziksel_hard_50': 'Stand in a handstand position and lean your legs against the wall (inverted stand). Stay like this until your arms tremble (at least 30 seconds).',
+  'local_Fiziksel_hard_51': 'Endure in plank position with only one arm for 30 seconds. Tie your other arm behind you.',
+  'local_Fiziksel_hard_52': 'While waiting in a wall sit, extend one leg straight forward and endure for 30 seconds on one leg.',
+  'local_Fiziksel_hard_53': 'Perform proper "Burpees" for 1 minute without stopping, with your chest touching the floor (target at least 15 repetitions).',
+  'local_Fiziksel_hard_54': 'Lie face down on the floor and endure for 45 seconds by keeping your whole body locked 5 cm above the floor on your hands and toe tips.',
+  'local_Fiziksel_hard_55': 'Go into push-up position. Every 5 seconds, wait by going down and coming up half way. Continue this cycle for a total of 1 minute.',
+  'local_Fiziksel_hard_56': 'Spend 40 seconds without stopping by jumping in the lunge position and changing legs (jump lunge).',
+  'local_Fiziksel_hard_57': 'Raise yourself halfway in the sit-up position with your abdominal muscles (crunch hold) and move your legs as if cycling for 1 minute without stopping.',
+  'local_Fiziksel_hard_58': 'Go between two chairs or sofas and take your feet off the floor by taking power from your arms (L-sit) and endure for 15 seconds.',
+  'local_Fiziksel_hard_59': 'Wait fixed for 1.5 minutes (90 seconds) in a deep squat position (lowest point) while your arms are locked behind your neck.',
+
+  // 3. EXPRESSION CONTROL — EASY
+  'local_Fiziksel_easy_60': 'Open your eyes wide. Let someone from the group talk to you for 30 seconds. Show physical resistance to avoid blinking at all.',
+  'local_Fiziksel_easy_61': 'Take a small amount of water in your mouth. Let someone from the group approach you for 30 seconds. Do not drink the water with a swallowing reflex or spit it out.',
+  'local_Fiziksel_easy_62': 'Put a piece of napkin or a feather on the tip of your nose. While that feather tickles your nose for 30 seconds, resist the urge to sneeze or screw up your face.',
+  'local_Fiziksel_easy_63': 'Someone from the group should suddenly bring their palms quickly towards your face (never touching) and snap them. Do not jump or flinch physically (3 attempts allowed).',
+  'local_Fiziksel_easy_64': 'Take a piece of ice and hold it tightly in your palm. Endure the stinging sensation created by the cold for 30 seconds without screwing up your face at all.',
+  'local_Fiziksel_easy_65': 'Someone from the group should touch/blow on your neck or behind your ear very lightly. Suppress your body\'s reflex to shiver or shrug for 30 seconds.',
+  'local_Fiziksel_easy_66': 'Eat a spoonful of plain yogurt (or a dry snack). Resist the urge to lick your lips or wipe the corners of your mouth for 1 minute.',
+  'local_Fiziksel_easy_67': 'Someone from the group should lightly tap just below your knee (reflex point) with a pen. Try to stop your leg\'s reflex to kick forward by squeezing your muscles.',
+  'local_Fiziksel_easy_68': 'Someone from the group should touch the inner part of your arm or your waist (the ticklish area) with their index finger for 15 seconds. Do not move or twitch.',
+  'local_Fiziksel_easy_69': 'Slightly pull your eyelids back with your fingers. Endure the burning sensation created by eye dryness for 20 seconds.',
+
+  // 3. EXPRESSION CONTROL — MEDIUM
+  'local_Fiziksel_medium_70': 'Hold a piece of ice tightly in both hands. Endure your hands\' numbness reflex for 1 minute, relax your facial muscles.',
+  'local_Fiziksel_medium_71': 'Put a slice of raw lemon or an extremely sour candy in your mouth. Completely suppress your mouth muscles\' puckering and salivating reflex.',
+  'local_Fiziksel_medium_72': 'While your eyes are open, someone from the group should wave their hand and create wind very close to your eyes (without harming). Do not blink your eyes at all.',
+  'local_Fiziksel_medium_73': 'Have someone touch your armpit or the sole of your foot (your most ticklish spot) with a feather or a napkin tip for 20 seconds. Stop the foot/arm pulling reflex.',
+  'local_Fiziksel_medium_74': 'Close your nose tightly with two fingers and breathe through your mouth. Try to swallow while in this position (it is biologically challenging); if you fail, you get a penalty.',
+  'local_Fiziksel_medium_75': 'While you are gulping down a glass of water, let someone from the group suddenly shout "STOP!". Stop immediately without getting the water down the wrong pipe or coughing.',
+  'local_Fiziksel_medium_76': 'Open your mouth wide (like yawning). Let someone from the group show you something to eat for 30 seconds. Suppress the urge to close your jaw or lick your lips.',
+  'local_Fiziksel_medium_77': 'Try to look at a very bright light source (e.g., a phone flash) from a distance for 10-15 seconds without squinting your eyes at all (paying attention to eye health for a short time).',
+  'local_Fiziksel_medium_78': 'Put your hand in a bowl of icy water (or under cold water) and stop your body\'s reflex to shiver and pull the hand back for 45 seconds.',
+  'local_Fiziksel_medium_79': 'Someone from the group should make a very high-pitched or annoying sound (fork scratching, balloon squeaking) right at your ear for 30 seconds. Do not clench your teeth or screw up your face.',
+
+  // 3. EXPRESSION CONTROL — HARD
+  'local_Fiziksel_hard_80': 'Put something very bitter (e.g., a chip with bitter sauce or a pepper) in your mouth. Resist your eyes watering and coughing reflex for 1 minute.',
+  'local_Fiziksel_hard_81': 'Someone from the group should act as if they are stretching a rubber band in the middle of your forehead (level with your eyes) and letting it go (they will never let go). Try not to flinch at every fake release.',
+  'local_Fiziksel_hard_82': 'Bring a raw onion (or something with a strong smell) close to your nose and breathe in deeply. Suppress the reflex of eyes watering and pulling your head back.',
+  'local_Fiziksel_hard_83': 'Hold a contest of not blinking for 1 minute (by pushing your own limits). Resist your eyes burning and watering with your muscles.',
+  'local_Fiziksel_hard_84': 'While you have a full mouthful of water, let someone from the group suddenly clap very loudly right next to your ear. Overcome the water-spitting reflex.',
+  'local_Fiziksel_hard_85': 'Join your hands behind your back and bring your neck to its most tense position (neck stretch). Do not screw up your face at all in this slightly painful tension for 45 seconds.',
+  'local_Fiziksel_hard_86': 'Everyone in the group should simultaneously touch different (harmless) reflex points of your body (e.g., knee, neck, waist) lightly. Stay stiff as a board for 20 seconds.',
+  'local_Fiziksel_hard_87': 'Stick your tongue to your palate and keep your mouth completely open. Try to control your salivary glands\' secretion without swallowing (without closing your mouth) for 45 seconds.',
+  'local_Fiziksel_hard_88': 'While your hand is numb from heat (at a level that will not harm) or cold, suddenly try to perform a very fine motor skill reflex immediately like threading a needle.',
+  'local_Fiziksel_hard_89': 'Open your nostrils outwards to the end. Stand for 45 seconds without relaxing those nose muscles at all, breaking your aesthetic reflexes.',
+
+  // 4. HANDICAP — EASY
+  'local_Fiziksel_easy_90': 'Without using your hands at all, take a glass from the table with your mouth, drink the liquid inside (or when empty) and put it back.',
+  'local_Fiziksel_easy_91': 'Write the sentence "Social Risk is very fun" legibly on a blank piece of paper with your non-dominant hand (left if right-handed).',
+  'local_Fiziksel_easy_92': 'While your eyes are completely closed, find the doorknob of the room, open and close it again and sit back in your place.',
+  'local_Fiziksel_easy_93': 'Try to tie your shoelaces (or close a jacket zipper) using only one hand.',
+  'local_Fiziksel_easy_94': 'Hide your arms inside your sweater/T-shirt. Touch the shoulder of the player next to you using only your head or shoulder.',
+  'local_Fiziksel_easy_95': 'Using only your elbows, neatly line up 3 items on the table (e.g., salt shaker, napkin, phone) side by side.',
+  'local_Fiziksel_easy_96': 'Hide your thumbs as if they were taped inside your palm. With this 4-fingered state, take a coin/card out of your wallet or pocket.',
+  'local_Fiziksel_easy_97': 'Squeeze a tennis ball or lemon between your two knees. Walk from one end of the room to the other without dropping it.',
+  'local_Fiziksel_easy_98': 'Hold a spoon in your mouth. Put a small object (e.g., an eraser) on the end of the spoon and take a lap around the room without dropping that object.',
+  'local_Fiziksel_easy_99': 'While hopping on one foot, lean down and pick up an object (e.g., a pillow) from the floor and put it on the table.',
+
+  // 4. HANDICAP — MEDIUM
+  'local_Fiziksel_medium_100': 'With your eyes closed, find out who someone from the group is by just touching their hand. (Tactical touching).',
+  'local_Fiziksel_medium_101': 'Cross your arms on your chest. Without opening your arms at all, take a napkin from the table with your mouth and throw it into the lap of the player on your left.',
+  'local_Fiziksel_medium_102': 'Keep your ankles tightly joined together (as if tied with a rope). Open and close the light in the room by jumping this way.',
+  'local_Fiziksel_medium_103': 'Try to take off your own shoe or sock using only your index fingers.',
+  'local_Fiziksel_medium_104': 'Your eyes are blindfolded, your hands are tied behind your back. Know what a food item (e.g., chips) offered to you by someone from the group is from its smell and texture (with your mouth).',
+  'local_Fiziksel_medium_105': 'Tie your dominant hand behind your back. Try to peel/unpackage a fruit (or a similar food item) with your non-dominant hand.',
+  'local_Fiziksel_medium_106': 'Stick your chin to your chest (neck locked). Find and pick up an item that has fallen under the table by squatting down without lifting your neck.',
+  'local_Fiziksel_medium_107': 'Make your hands into fists. Try to put on your coat/jacket neatly without opening your fists at all.',
+  'local_Fiziksel_medium_108': 'Without bending your knees at all (legs straight), catch a napkin fallen on the floor with your toes, lift it up and take it into your hand.',
+  'local_Fiziksel_medium_109': 'Hold your left ear with one hand and your right nose with the other. Without letting go of your nose and ear, change places by crossing your arms.',
+  'local_Fiziksel_medium_110': 'Hold your left ear with one hand and your right nose with the other. Without letting go of your nose and ear, change places by crossing your arms.',
+
+  // 4. HANDICAP — HARD
+  'local_Fiziksel_hard_111': 'Tie your arms behind your back. Sit cross-legged on the floor and stand up using only leg and stomach power without taking support from anywhere (wall/person).',
+  'local_Fiziksel_hard_112': 'While completely blindfolded and holding a glass of water (or an object) in each hand, take a full lap around the room without hitting chairs.',
+  'local_Fiziksel_hard_113': 'Make your arms completely unbendable (elbowless). Try to take a sip of your water on the table with these stiff arms.',
+  'local_Fiziksel_hard_114': 'Using only your jaw and shoulders (hands, arms and feet are strictly forbidden), drag an object on the floor 1 meter forward.',
+  'local_Fiziksel_hard_115': 'Your dominant hand is tied behind your back, and close one eye with your non-dominant hand. Lose your depth perception and quickly collect 5 small objects (coins, etc.) on the table.',
+  'local_Fiziksel_hard_116': 'Stand on your tiptoes (ballet stance) and put your hands behind your neck. In this state, close your eyes and wait for 20 seconds without losing your balance.',
+  'local_Fiziksel_hard_117': 'Hold your own two ankles with your two hands. Take a lap around the room walking like a duck (in a bent position) without your hands ever leaving your ankles.',
+  'local_Fiziksel_hard_118': 'Without turning your neck right or left at all (fixed gaze) and while your eyes are blindfolded, walk towards a sound in the room (someone will whistle) and find the source.',
+  'local_Fiziksel_hard_119': 'Lift one leg in the air with both hands. While on one foot, lean over and pick up an object from the floor and straighten up again (like a pistol squat).',
+  'local_Fiziksel_hard_120': 'While your eyes are blindfolded and your hands are tied behind your back, pass under the table by crawling on your knees and come out the other side without hitting your head at all.',
 };

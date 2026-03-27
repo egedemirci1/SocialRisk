@@ -81,6 +81,7 @@ class FirebaseGameSource implements GameRepository {
     if (gameId.isEmpty) throw Exception('GameId empty');
     if (category.isEmpty) throw Exception('Category empty');
       
+    try {
       final gameDocRef = _gameDoc(gameId);
       
       // Transaction öncesi game state'i kontrol et

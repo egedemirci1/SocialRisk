@@ -21,6 +21,9 @@ import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../../core/data/task_translations/task_translation_map.dart';
+import '../../../core/providers/locale_provider.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor (Parti Temalı).
 class VotingScreen extends ConsumerStatefulWidget {
@@ -123,7 +126,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
         final performer = activePlayers
             .where((p) => p.id == game.currentPlayerId)
             .firstOrNull;
-        final performerName = performer?.name ?? 'Oyuncu';
+        final performerName = performer?.name ?? AppLocalizations.of(context)!.playerDefaultName;
 
         final activePlayerIds = activePlayers.map((p) => p.id).toList();
         final allVoted =
@@ -175,7 +178,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
             title: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                'ELEŞTİRİ & OYLAMA',
+                AppLocalizations.of(context)!.votingTitle,
                 style: AppTextStyles.headlineMedium.copyWith(
                   color: AppColors.accent,
                   letterSpacing: 2,
@@ -273,7 +276,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'performansını sergiledi:',
+                                    AppLocalizations.of(context)!.playerPerformed,
                                     style: AppTextStyles.bodyMedium.copyWith(
                                       color: Colors.white54,
                                       fontStyle: FontStyle.italic,
@@ -290,7 +293,11 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                                       ),
                                     ),
                                     child: Text(
-                                      '"${game.currentTask?.content ?? ""}"',
+                                      TaskTranslationMap.getTranslation(
+                                        game.currentTask?.id ?? '',
+                                        game.currentTask?.content ?? "",
+                                        LocaleProvider.of(context).languageCode,
+                                      ),
                                       style: AppTextStyles.titleLarge.copyWith(
                                         color: Colors.white,
                                         fontStyle: FontStyle.italic,
@@ -329,7 +336,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                                           if (timedOut && mounted) {
                                             ToastUtils.showError(
                                               context,
-                                              'S\u00fcre doldu. Oy vermedi\u011fin i\u00e7in -10 puan cezas\u0131 ald\u0131n.',
+                                              AppLocalizations.of(context)!.voteTimeoutPenalty,
                                             );
                                           }
                                           ref
@@ -351,9 +358,9 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
   ),
 ));
       },
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         backgroundColor: Colors.transparent,
-        body: TheaterLoadingScreen(message: 'Skor Hesaplanıyor...'),
+        body: TheaterLoadingScreen(message: AppLocalizations.of(context)!.calculatingScore),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.background,
@@ -368,7 +375,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
         const CircularProgressIndicator(color: AppColors.accent),
         const SizedBox(height: 16),
         Text(
-          'Oylar sayılıyor...',
+          AppLocalizations.of(context)!.countingVotes,
           style: AppTextStyles.titleMedium.copyWith(
             color: AppColors.accent,
             letterSpacing: 1,
@@ -388,7 +395,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
           border: Border.all(color: Colors.white10),
         ),
         child: Text(
-          'Diğer oyuncuların değerlendirmesi bekleniyor...',
+          AppLocalizations.of(context)!.waitingForEvaluation,
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white38,
             fontStyle: FontStyle.italic,
@@ -413,7 +420,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
           const Icon(Icons.check_circle_rounded, color: Colors.green, size: 20),
           const SizedBox(width: 12),
           Text(
-            'DEĞERLENDİRİLDİ',
+            AppLocalizations.of(context)!.evaluated,
             style: AppTextStyles.labelSmall.copyWith(
               color: Colors.green,
               fontSize: 14,
@@ -527,27 +534,37 @@ class _FloatingPsychologicalTexts extends StatefulWidget {
 
 class _FloatingPsychologicalTextsState
     extends State<_FloatingPsychologicalTexts> with TickerProviderStateMixin {
-  final List<String> _texts = [
-    'Herkes senin kararını bekliyor...',
-    'Zaman daralıyor!',
-    'Hızlı karar ver...',
-    'Acımasız ol!',
-    'Gerilim tırmanıyor...',
-  ];
-
-  final Random _rng = Random();
-  late Timer _timer;
-  String _currentText = '';
+  String _currentText = "";
   Alignment _currentAlignment = Alignment.center;
+  late Timer _timer;
+  final Random _rng = Random();
+
+  List<String> _getLocalizedTexts(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      l10n.waitingTip1,
+      l10n.waitingTip2,
+      l10n.waitingTip3,
+      l10n.waitingTip4,
+      l10n.waitingTip5,
+    ];
+  }
 
   @override
   void initState() {
     super.initState();
-    _currentText = _texts[_rng.nextInt(_texts.length)];
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final texts = _getLocalizedTexts(context);
+      setState(() {
+        _currentText = texts[_rng.nextInt(texts.length)];
+      });
+    });
     _timer = Timer.periodic(const Duration(seconds: 4), (_) {
       if (!mounted) return;
+      final texts = _getLocalizedTexts(context);
       setState(() {
-        _currentText = _texts[_rng.nextInt(_texts.length)];
+        _currentText = texts[_rng.nextInt(texts.length)];
         _currentAlignment = Alignment(
           (_rng.nextDouble() * 1.6) - 0.8, // -0.8 to 0.8
           (_rng.nextDouble() * 1.6) - 0.8,

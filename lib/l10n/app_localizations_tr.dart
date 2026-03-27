@@ -1055,4 +1055,42 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get hardDifficulty => 'Zor';
+
+  @override
+  String get votingTitle => 'ELEŞTİRİ & OYLAMA';
+
+  @override
+  String get playerPerformed => 'performansını sergiledi:';
+
+  @override
+  String get voteTimeoutPenalty =>
+      'Süre doldu. Oy vermediğin için -10 puan cezası aldın.';
+
+  @override
+  String get calculatingScore => 'Skor Hesaplanıyor...';
+
+  @override
+  String get countingVotes => 'Oylar sayılıyor...';
+
+  @override
+  String get waitingForEvaluation =>
+      'Diğer oyuncuların değerlendirmesi bekleniyor...';
+
+  @override
+  String get evaluated => 'DEĞERLENDİRİLDİ';
+
+  @override
+  String get waitingTip1 => 'Herkes senin kararını bekliyor...';
+
+  @override
+  String get waitingTip2 => 'Zaman daralıyor!';
+
+  @override
+  String get waitingTip3 => 'Hızlı karar ver...';
+
+  @override
+  String get waitingTip4 => 'Acımasız ol!';
+
+  @override
+  String get waitingTip5 => 'Gerilim tırmanıyor...';
 }

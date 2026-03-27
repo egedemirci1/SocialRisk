@@ -674,7 +674,12 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                                       ),
                                     ),
                                     child: Text(
-                                      AppLocalizations.of(context)!.categoryVariable(task.category),
+                                      AppLocalizations.of(context)!.categoryVariable(
+                                        TaskTranslationMap.getCategoryTranslation(
+                                          task.category,
+                                          LocaleProvider.of(context).languageCode,
+                                        ),
+                                      ),
                                       style: AppTextStyles.labelSmall.copyWith(
                                         color: AppColors.accent,
                                         fontWeight: FontWeight.w900,

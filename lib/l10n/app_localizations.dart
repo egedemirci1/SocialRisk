@@ -2011,6 +2011,78 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Zor'**
   String get hardDifficulty;
+
+  /// No description provided for @votingTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'ELEŞTİRİ & OYLAMA'**
+  String get votingTitle;
+
+  /// No description provided for @playerPerformed.
+  ///
+  /// In tr, this message translates to:
+  /// **'performansını sergiledi:'**
+  String get playerPerformed;
+
+  /// No description provided for @voteTimeoutPenalty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Süre doldu. Oy vermediğin için -10 puan cezası aldın.'**
+  String get voteTimeoutPenalty;
+
+  /// No description provided for @calculatingScore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Skor Hesaplanıyor...'**
+  String get calculatingScore;
+
+  /// No description provided for @countingVotes.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oylar sayılıyor...'**
+  String get countingVotes;
+
+  /// No description provided for @waitingForEvaluation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Diğer oyuncuların değerlendirmesi bekleniyor...'**
+  String get waitingForEvaluation;
+
+  /// No description provided for @evaluated.
+  ///
+  /// In tr, this message translates to:
+  /// **'DEĞERLENDİRİLDİ'**
+  String get evaluated;
+
+  /// No description provided for @waitingTip1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Herkes senin kararını bekliyor...'**
+  String get waitingTip1;
+
+  /// No description provided for @waitingTip2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zaman daralıyor!'**
+  String get waitingTip2;
+
+  /// No description provided for @waitingTip3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hızlı karar ver...'**
+  String get waitingTip3;
+
+  /// No description provided for @waitingTip4.
+  ///
+  /// In tr, this message translates to:
+  /// **'Acımasız ol!'**
+  String get waitingTip4;
+
+  /// No description provided for @waitingTip5.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gerilim tırmanıyor...'**
+  String get waitingTip5;
 }
 
 class _AppLocalizationsDelegate
