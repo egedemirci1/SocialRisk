@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import '../domain/auth_repository.dart';
 import '../domain/user_entity.dart';
@@ -8,12 +9,15 @@ import 'firebase_user_source.dart';
 class FirebaseAuthSource implements AuthRepository {
   final FirebaseAuth _auth;
   final UserRepository _userRepository;
+  final FirebaseFunctions _functions;
 
   FirebaseAuthSource({
     FirebaseAuth? auth,
     UserRepository? userRepository,
+    FirebaseFunctions? functions,
   })  : _auth = auth ?? FirebaseAuth.instance,
-        _userRepository = userRepository ?? FirebaseUserSource();
+        _userRepository = userRepository ?? FirebaseUserSource(),
+        _functions = functions ?? FirebaseFunctions.instance;
 
   @override
   Stream<User?> get authStateChanges => _auth.userChanges();
@@ -56,7 +60,8 @@ class FirebaseAuthSource implements AuthRepository {
     final user = _auth.currentUser;
     if (user != null && user.isAnonymous) {
       try {
-        await _userRepository.deleteUserProfileAndAvatar(user.uid);
+        final callable = _functions.httpsCallable('deleteOwnUserData');
+        await callable.call(<String, dynamic>{'uid': user.uid});
       } catch (e) {
         if (kDebugMode) {
           debugPrint('Kullanıcı dökümanı/avatar silinirken hata: $e');

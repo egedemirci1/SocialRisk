@@ -72,6 +72,118 @@ class AdminDashboardScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              backgroundColor: AppColors.surface,
+                              title: Text(
+                                'BAKIM TEMİZLİĞİ?',
+                                style: AppTextStyles.titleLarge.copyWith(color: Colors.white, fontWeight: FontWeight.w900),
+                              ),
+                              content: Text(
+                                'Boş odalar, bitmiş oyunlar ve aktif olmayan kullanıcılar silinecek.',
+                                style: AppTextStyles.titleSmall.copyWith(color: Colors.white70),
+                              ),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('İPTAL')),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: const Text('ÇALIŞTIR', style: TextStyle(color: AppColors.primary)),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirm == true) {
+                            try {
+                              final result = await ref.read(adminControllerProvider.notifier).runMaintenanceCleanup();
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Temizlik: ${result['roomsDeleted']} oda, ${result['gamesDeleted']} oyun, ${result['usersDeleted']} kullanıcı silindi.'),
+                                    backgroundColor: AppColors.accent,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Hata: $e'), backgroundColor: AppColors.primary),
+                                );
+                              }
+                            }
+                          }
+                        },
+                        icon: const Icon(Icons.cleaning_services_rounded, color: Colors.white),
+                        label: const Text('BAKIM TEMİZLİĞİ', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              backgroundColor: AppColors.surface,
+                              title: Text(
+                                'GÖREVLERİ YENİLE?',
+                                style: AppTextStyles.titleLarge.copyWith(color: Colors.white, fontWeight: FontWeight.w900),
+                              ),
+                              content: Text(
+                                'Mevcut tüm görevler silinip güncel seed verisi yüklenecek.',
+                                style: AppTextStyles.titleSmall.copyWith(color: Colors.white70),
+                              ),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('İPTAL')),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: const Text('YENİLE', style: TextStyle(color: AppColors.accent)),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirm == true) {
+                            try {
+                              await ref.read(adminControllerProvider.notifier).seedTasks();
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Görevler güncel seed ile yenilendi.'),
+                                    backgroundColor: AppColors.accent,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Hata: $e'), backgroundColor: AppColors.primary),
+                                );
+                              }
+                            }
+                          }
+                        },
+                        icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+                        label: const Text('GÖREVLERİ YENİLE', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.accent,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               if (tasks.isEmpty)
                 Expanded(
                   child: Center(

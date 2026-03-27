@@ -4,6 +4,7 @@ import * as admin from "firebase-admin";
 if (!admin.apps.length) admin.initializeApp();
 
 const db = admin.firestore();
+const storageBucket = admin.storage().bucket("socialrisk-9840e.firebasestorage.app");
 
 const RANK_REWARDS = [200, 100, 50];
 const DEFAULT_REWARD = 20;
@@ -11,6 +12,12 @@ const DEFAULT_ECONOMY_BASE_VALUE = 10;
 const ECONOMY_PENALTY_AMOUNT = 2;
 const HOT_CATEGORY_BONUS = DEFAULT_ECONOMY_BASE_VALUE + ECONOMY_PENALTY_AMOUNT;
 const ECONOMY_PENALTY_VALUE = DEFAULT_ECONOMY_BASE_VALUE - ECONOMY_PENALTY_AMOUNT;
+const EXPECTED_SEEDED_TASK_COUNT = 800;
+const ADMIN_UIDS = [
+  "y51M7E6YXZT5I04M9YFqGzSgZ7Y2",
+  "hW42qgzVJIXr6sOLO0q1zPOdv6w1",
+  "d7sLOX946mRfrmkYMRUOJXNa44l2",
+];
 
 function economyResolvedStoredBaseValue(category: string, storedValues: Record<string, number>): number {
   if (Object.keys(storedValues).length <= 2) return DEFAULT_ECONOMY_BASE_VALUE;
@@ -61,6 +68,168 @@ function buildEconomyTurnValues(
   );
 }
 
+function timestampMillis(value: unknown): number {
+  if (value instanceof admin.firestore.Timestamp) {
+    return value.toMillis();
+  }
+  if (value instanceof Date) {
+    return value.getTime();
+  }
+  if (typeof value === "number") {
+    return value;
+  }
+  return 0;
+}
+
+async function deleteFilesWithPrefixes(prefixes: string[]): Promise<number> {
+  let deleted = 0;
+
+  for (const prefix of prefixes) {
+    const [files] = await storageBucket.getFiles({prefix});
+    for (const file of files) {
+      await file.delete({ignoreNotFound: true});
+      deleted++;
+    }
+  }
+
+  return deleted;
+}
+
+async function deleteUserData(uid: string, avatarUrl?: string | null): Promise<{deletedFiles: number}> {
+  const userRef = db.collection("users").doc(uid);
+  const customTasksRef = userRef.collection("custom_tasks");
+  const [profileSnap, customTasksSnap] = await Promise.all([
+    userRef.get(),
+    customTasksRef.get(),
+  ]);
+
+  let deletedFiles = await deleteFilesWithPrefixes([
+    `avatars/${uid}_`,
+    `users/${uid}/`,
+  ]);
+
+  const resolvedAvatarUrl = avatarUrl
+    ?? ((profileSnap.exists ? profileSnap.data()?.avatarUrl : null) as string | null | undefined)
+    ?? null;
+  if (resolvedAvatarUrl && resolvedAvatarUrl.startsWith("https://firebasestorage.googleapis.com")) {
+    try {
+      const file = storageBucket.file(decodeURIComponent(resolvedAvatarUrl.split("/o/")[1]?.split("?")[0] ?? ""));
+      await file.delete({ignoreNotFound: true});
+      deletedFiles++;
+    } catch (error) {
+      functions.logger.warn("Avatar URL cleanup failed", {uid, error});
+    }
+  }
+
+  for (const doc of customTasksSnap.docs) {
+    await doc.ref.delete();
+  }
+
+  if (profileSnap.exists) {
+    await userRef.delete();
+  }
+
+  try {
+    await admin.auth().deleteUser(uid);
+  } catch (error) {
+    functions.logger.warn("Auth user cleanup skipped", {uid, error});
+  }
+
+  return {deletedFiles};
+}
+
+async function deleteRoomAndRelatedData(
+  roomRef: admin.firestore.DocumentReference,
+  roomData: admin.firestore.DocumentData,
+): Promise<void> {
+  const gameId = typeof roomData.gameId === "string" ? roomData.gameId : "";
+
+  await db.recursiveDelete(roomRef);
+
+  if (gameId) {
+    await db.recursiveDelete(db.collection("games").doc(gameId));
+  }
+}
+
+function isAdminUid(uid: string | undefined): boolean {
+  return typeof uid === "string" && ADMIN_UIDS.includes(uid);
+}
+
+async function performEmptyRoomCleanup(): Promise<number> {
+  const roomsSnapshot = await db.collection("rooms").get();
+  let deletedCount = 0;
+
+  for (const doc of roomsSnapshot.docs) {
+    const room = doc.data();
+    const storedPlayerCount = typeof room.playerCount === "number" ? room.playerCount : 0;
+    let playerCount = storedPlayerCount;
+
+    if (storedPlayerCount <= 1) {
+      const playersSnapshot = await doc.ref.collection("players").limit(2).get();
+      playerCount = playersSnapshot.size;
+    }
+
+    const roomAge = Date.now() - (room.createdAt?.toMillis?.() || 0);
+    const oneHour = 60 * 60 * 1000;
+
+    if (playerCount === 0 || (playerCount === 1 && roomAge > oneHour)) {
+      await deleteRoomAndRelatedData(doc.ref, room);
+      deletedCount++;
+    }
+  }
+
+  return deletedCount;
+}
+
+async function performOldGamesCleanup(): Promise<number> {
+  const oneDayAgoMs = Date.now() - 24 * 60 * 60 * 1000;
+  const gamesSnapshot = await db.collection("games")
+    .where("status", "==", "finished")
+    .get();
+
+  let deletedCount = 0;
+
+  for (const doc of gamesSnapshot.docs) {
+    const game = doc.data();
+    const referenceTime = timestampMillis(game.finishedAt)
+      || timestampMillis(game.updatedAt)
+      || timestampMillis(game.createdAt)
+      || doc.updateTime.toMillis();
+
+    if (referenceTime > 0 && referenceTime < oneDayAgoMs) {
+      await db.recursiveDelete(doc.ref);
+      deletedCount++;
+    }
+  }
+
+  return deletedCount;
+}
+
+async function performInactiveUsersCleanup(): Promise<number> {
+  const ninetyDaysAgoMs = Date.now() - 90 * 24 * 60 * 60 * 1000;
+  const usersSnapshot = await db.collection("users").get();
+  let deletedCount = 0;
+
+  for (const doc of usersSnapshot.docs) {
+    const user = doc.data();
+    const lastActivity = timestampMillis(user.lastSeenAt)
+      || timestampMillis(user.updatedAt)
+      || doc.updateTime.toMillis();
+    const walletPoints = typeof user.walletPoints === "number" ? user.walletPoints : 0;
+    const ownedCosmetics = Array.isArray(user.ownedCosmetics) ? user.ownedCosmetics : [];
+
+    if (lastActivity > 0 &&
+        lastActivity < ninetyDaysAgoMs &&
+        walletPoints === 0 &&
+        ownedCosmetics.length === 0) {
+      await deleteUserData(doc.id, user.avatarUrl as string | null | undefined);
+      deletedCount++;
+    }
+  }
+
+  return deletedCount;
+}
+
 interface RoomDoc {
   endConditionType?: string;
   endConditionValue?: number;
@@ -76,38 +245,15 @@ export const cleanupEmptyRooms = functions.pubsub
   .schedule('every 6 hours')
   .onRun(async (context) => {
     console.log('Starting cleanup of empty rooms...');
-    
-    const roomsSnapshot = await db.collection('rooms').get();
-    const batch = db.batch();
-    let deletedCount = 0;
-    
-    for (const doc of roomsSnapshot.docs) {
-      const room = doc.data();
-      const players = room.players || {};
-      const playerCount = Object.keys(players).length;
-      
-      // Boş oda veya 1 saatten eski ve 1 oyunculu odaları sil
-      const roomAge = Date.now() - (room.createdAt?.toMillis?.() || 0);
-      const oneHour = 60 * 60 * 1000;
-      
-      if (playerCount === 0 || (playerCount === 1 && roomAge > oneHour)) {
-        batch.delete(doc.ref);
-        deletedCount++;
-        
-        // İlgili oyunu da sil
-        if (room.gameId) {
-          batch.delete(db.collection('games').doc(room.gameId));
-        }
-      }
-    }
-    
-    if (deletedCount > 0) {
-      await batch.commit();
-      console.log(`Deleted ${deletedCount} empty/abandoned rooms`);
-    } else {
+
+    const deletedCount = await performEmptyRoomCleanup();
+
+    if (deletedCount === 0) {
       console.log('No rooms to clean up');
+    } else {
+      console.log(`Deleted ${deletedCount} empty/abandoned rooms`);
     }
-    
+
     return null;
   });
 
@@ -116,29 +262,15 @@ export const cleanupOldGames = functions.pubsub
   .schedule('every 24 hours')
   .onRun(async (context) => {
     console.log('Starting cleanup of old games...');
-    
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    
-    const gamesSnapshot = await db.collection('games')
-      .where('status', '==', 'finished')
-      .where('updatedAt', '<', oneDayAgo)
-      .get();
-    
-    const batch = db.batch();
-    let deletedCount = 0;
-    
-    for (const doc of gamesSnapshot.docs) {
-      batch.delete(doc.ref);
-      deletedCount++;
-    }
-    
-    if (deletedCount > 0) {
-      await batch.commit();
-      console.log(`Deleted ${deletedCount} old finished games`);
-    } else {
+
+    const deletedCount = await performOldGamesCleanup();
+
+    if (deletedCount === 0) {
       console.log('No old games to clean up');
+    } else {
+      console.log(`Deleted ${deletedCount} old finished games`);
     }
-    
+
     return null;
   });
 
@@ -148,33 +280,15 @@ export const cleanupInactiveUsers = functions.pubsub
   .timeZone('America/New_York')
   .onRun(async (context) => {
     console.log('Starting cleanup of inactive users...');
-    
-    const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
-    
-    const usersSnapshot = await db.collection('users')
-      .where('lastSeenAt', '<', ninetyDaysAgo)
-      .get();
-    
-    const batch = db.batch();
-    let deletedCount = 0;
-    
-    for (const doc of usersSnapshot.docs) {
-      const user = doc.data();
-      
-      // Sadece 0 puanlı ve hiç kozmetiği olmayan user'ları sil
-      if (user.score === 0 && (!user.ownedCosmetics || user.ownedCosmetics.length === 0)) {
-        batch.delete(doc.ref);
-        deletedCount++;
-      }
-    }
-    
-    if (deletedCount > 0) {
-      await batch.commit();
-      console.log(`Deleted ${deletedCount} inactive users`);
-    } else {
+
+    const deletedCount = await performInactiveUsersCleanup();
+
+    if (deletedCount === 0) {
       console.log('No inactive users to clean up');
+    } else {
+      console.log(`Deleted ${deletedCount} inactive users`);
     }
-    
+
     return null;
   });
 
@@ -189,6 +303,174 @@ interface CosmeticDoc {
   categoryName?: string;
   name?: string;
 }
+
+export const deleteOwnUserData = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError("unauthenticated", "Authentication required.");
+  }
+
+  const uid = typeof data?.uid === "string" ? data.uid.trim() : context.auth.uid;
+  if (uid !== context.auth.uid) {
+    throw new functions.https.HttpsError("permission-denied", "You can only delete your own user data.");
+  }
+
+  const profileSnap = await db.collection("users").doc(uid).get();
+  const avatarUrl = profileSnap.exists ? (profileSnap.data()?.avatarUrl as string | undefined) : undefined;
+  const cleanupResult = await deleteUserData(uid, avatarUrl);
+
+  return {
+    deleted: true,
+    deletedFiles: cleanupResult.deletedFiles,
+  };
+});
+
+export const auditContentState = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError("unauthenticated", "Authentication required.");
+  }
+
+  const [tasksSnap, roomsSnap, gamesSnap, usersSnap, customTasksSnap] = await Promise.all([
+    db.collection("tasks").get(),
+    db.collection("rooms").get(),
+    db.collection("games").get(),
+    db.collection("users").get(),
+    db.collectionGroup("custom_tasks").get(),
+  ]);
+
+  const tasksByCategory: Record<string, number> = {};
+  const tasksByDifficulty: Record<string, number> = {};
+  let activeTaskCount = 0;
+  let missingCoreFieldsCount = 0;
+  let latestTaskCreatedAtMs = 0;
+
+  for (const doc of tasksSnap.docs) {
+    const task = doc.data();
+    const category = typeof task.category === "string" ? task.category : "unknown";
+    const difficulty = typeof task.difficulty === "string" ? task.difficulty : "unknown";
+    tasksByCategory[category] = (tasksByCategory[category] ?? 0) + 1;
+    tasksByDifficulty[difficulty] = (tasksByDifficulty[difficulty] ?? 0) + 1;
+
+    if (task.isActive === true) {
+      activeTaskCount++;
+    }
+
+    if (!task.category || !task.content || !task.difficulty || !task.type) {
+      missingCoreFieldsCount++;
+    }
+
+    latestTaskCreatedAtMs = Math.max(latestTaskCreatedAtMs, timestampMillis(task.createdAt));
+  }
+
+  let emptyRoomsCount = 0;
+  let orphanGamesCount = 0;
+  let twoCategoryEconomyIssueCount = 0;
+
+  for (const roomDoc of roomsSnap.docs) {
+    const roomData = roomDoc.data();
+    const storedPlayerCount = typeof roomData.playerCount === "number" ? roomData.playerCount : 0;
+    if (storedPlayerCount === 0) {
+      emptyRoomsCount++;
+    }
+  }
+
+  for (const gameDoc of gamesSnap.docs) {
+    const game = gameDoc.data();
+    const roomId = typeof game.roomId === "string" ? game.roomId : "";
+    if (!roomId || !roomsSnap.docs.some((roomDoc) => roomDoc.id === roomId)) {
+      orphanGamesCount++;
+    }
+
+    const marketValues = game.categoryMarketValues as Record<string, number> | undefined;
+    const categoryCount = marketValues ? Object.keys(marketValues).length : 0;
+    const lockedCategories = Array.isArray(game.lockedCategories) ? game.lockedCategories : [];
+    const hasNonTenBase = marketValues
+      ? Object.values(marketValues).some((value) => typeof value === "number" && value !== 10)
+      : false;
+    if (game.mode === "economy" && categoryCount > 0 && categoryCount < 3 && (lockedCategories.length > 0 || hasNonTenBase)) {
+      twoCategoryEconomyIssueCount++;
+    }
+  }
+
+  return {
+    tasks: {
+      total: tasksSnap.size,
+      active: activeTaskCount,
+      expectedSeededMinimum: EXPECTED_SEEDED_TASK_COUNT,
+      categories: tasksByCategory,
+      difficulties: tasksByDifficulty,
+      missingCoreFieldsCount,
+      latestCreatedAtMs: latestTaskCreatedAtMs,
+      looksSeededAndCurrent: tasksSnap.size >= EXPECTED_SEEDED_TASK_COUNT && missingCoreFieldsCount === 0,
+    },
+    customTasks: {
+      total: customTasksSnap.size,
+    },
+    rooms: {
+      total: roomsSnap.size,
+      emptyCount: emptyRoomsCount,
+    },
+    games: {
+      total: gamesSnap.size,
+      orphanCount: orphanGamesCount,
+      economyIssuesUnderThreeCategories: twoCategoryEconomyIssueCount,
+    },
+    users: {
+      total: usersSnap.size,
+    },
+  };
+});
+
+export const runMaintenanceCleanup = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError("unauthenticated", "Authentication required.");
+  }
+
+  if (!isAdminUid(context.auth.uid)) {
+    throw new functions.https.HttpsError("permission-denied", "Admin access required.");
+  }
+
+  const [roomsDeleted, gamesDeleted, usersDeleted] = await Promise.all([
+    performEmptyRoomCleanup(),
+    performOldGamesCleanup(),
+    performInactiveUsersCleanup(),
+  ]);
+
+  return {
+    roomsDeleted,
+    gamesDeleted,
+    usersDeleted,
+  };
+});
+
+export const forceCleanupOldPlayingRooms = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError("unauthenticated", "Authentication required.");
+  }
+
+  if (!isAdminUid(context.auth.uid)) {
+    throw new functions.https.HttpsError("permission-denied", "Admin access required.");
+  }
+
+  const threeHoursAgoMs = Date.now() - 3 * 60 * 60 * 1000;
+  const roomsSnapshot = await db.collection("rooms").get();
+  let deletedCount = 0;
+
+  for (const doc of roomsSnapshot.docs) {
+    const room = doc.data();
+    const createdAt = timestampMillis(room.createdAt);
+    const isOld = createdAt > 0 && createdAt < threeHoursAgoMs;
+    const isPlaying = room.status === "playing" || room.status === "lobby";
+
+    if (isPlaying && isOld) {
+      await deleteRoomAndRelatedData(doc.ref, room);
+      deletedCount++;
+    }
+  }
+
+  return {
+    deleted: deletedCount,
+  };
+});
 
 export const buyCosmetic = functions.https.onCall(async (data, context) => {
   console.log('=== BUY COSMETIC DEBUG ===');

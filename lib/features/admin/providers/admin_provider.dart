@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../domain/task_item_entity.dart';
@@ -98,6 +99,38 @@ class AdminController extends _$AdminController {
     } catch (e, st) {
       state = AsyncError(e, st);
       throw Exception('Görevler eklenirken hata: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> runMaintenanceCleanup() async {
+    state = const AsyncLoading();
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'runMaintenanceCleanup',
+      );
+      final response = await callable.call(<String, dynamic>{});
+      final data = Map<String, dynamic>.from(response.data as Map);
+      state = const AsyncData(null);
+      return data;
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
+
+  Future<int> forceCleanupOldPlayingRooms() async {
+    state = const AsyncLoading();
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'forceCleanupOldPlayingRooms',
+      );
+      final response = await callable.call(<String, dynamic>{});
+      final data = Map<String, dynamic>.from(response.data as Map);
+      state = const AsyncData(null);
+      return data['deleted'] as int? ?? 0;
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
     }
   }
 
