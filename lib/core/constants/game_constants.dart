@@ -77,7 +77,6 @@ class GameConstants {
     String? hotCategory,
     String? penalizedCategory,
   }) {
-    if (categoryCount <= 2) return defaultEconomyBaseValue;
     if (hotCategory == category) return hotCategoryBonus;
     if (penalizedCategory == category) return economyPenaltyValue;
     return defaultEconomyBaseValue;
@@ -88,7 +87,7 @@ class GameConstants {
     required String? selectedCategory,
     required String? currentHotCategory,
   }) {
-    if (categoryCount <= 2 || selectedCategory == null) return null;
+    if (selectedCategory == null) return null;
     if (selectedCategory == currentHotCategory) return null;
     return selectedCategory;
   }
@@ -99,7 +98,7 @@ class GameConstants {
     Random? random,
   }) {
     final categoryList = categories.toList(growable: false);
-    if (categoryList.length <= 2) return null;
+    if (categoryList.isEmpty) return null;
 
     final excluded = excludedCategories.toSet();
     final candidates = categoryList
@@ -132,7 +131,6 @@ class GameConstants {
     required String category,
     required Map<String, int> storedValues,
   }) {
-    if (storedValues.length <= 2) return defaultEconomyBaseValue;
     return storedValues[category] ?? defaultEconomyBaseValue;
   }
 }

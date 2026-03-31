@@ -122,7 +122,25 @@ class TaskFirestoreSource {
     String? hostId,
     List<String>? categories,
   }) async {
-    final cats = categories ?? GameConstants.defaultCategories;
+    final List<String> activeCats = categories ?? GameConstants.defaultCategories;
+    
+    final cats = activeCats.map((c) {
+      if (c.toLowerCase() == 'moral') return 'Ahlaki';
+      if (c.toLowerCase() == 'knowledge') return 'Bilgi';
+      if (c.toLowerCase() == 'digital') return 'Dijital';
+      if (c.toLowerCase() == 'physical') return 'Fiziksel';
+      if (c.toLowerCase() == 'visual') return 'Görsel';
+      if (c.toLowerCase() == 'confession') return 'İtiraf';
+      if (c.toLowerCase() == 'intimate' || c.toLowerCase() == 'private') return 'Mahrem';
+      if (c.toLowerCase() == 'mental') return 'Zihinsel';
+      if (c.toLowerCase() == 'stand-up') return 'Stand-Up';
+      if (c.toLowerCase() == 'the art of wiggling out') return 'Kıvırma';
+      if (c.toLowerCase() == 'chaos engineer') return 'Kaos Mühendisi';
+      if (c.toLowerCase() == 'empty promises') return 'Boş Vaatler';
+      if (c.toLowerCase() == 'custom content') return 'Özel';
+      return c;
+    }).toList();
+
     final diffs = GameConstants.defaultDifficulties;
     final poolSize = GameConstants.taskPoolSizePerCombo;
     final pool = <String, List<Map<String, dynamic>>>{};

@@ -20,9 +20,11 @@
   - [x] Localize `ExitRoomButton` dialogs and toasters.
   - [x] Localize "Get Premium" screen and error toasters.
 - [ ] **Economy Mode Enhancements**
-  - [ ] Fix English localization for questions in Economy mode (ensure `taskPool` and `TaskTranslationMap` work correctly).
-  - [ ] Debug category value decrease logic: ensure it works for < 3 categories if requested, or clarify logic.
-  - [ ] Fix game freeze in Economy mode when playing with a single category.
+  - [x] Audit EconomyPickScreen for hardcoded strings
+  - [x] Fix English localization for questions in Economy mode (ensure `taskPool` IDs are preserved)
+  - [x] Fix category value decrease logic (remove `categoryCount <= 2` guards)
+  - [x] Fix game freeze in Economy mode for single-category games
+  - [ ] Verify economy mechanics in 1-category and 2-category games
 - [ ] **Lobby & Store UI**
   - [x] Rename "Özel" category to "Custom Content" (EN) / "Özel İçerik" (TR).
   - [x] Lock "Custom Content" for non-premium users with a lock icon.

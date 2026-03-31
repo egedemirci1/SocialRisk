@@ -83,10 +83,40 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
+
+          // 1. Durum Kontrolü ve Yönlendirme (Öncelikli)
+          if (game.status == GameStatus.finished) {
+            context.replace('/game-over', extra: widget.roomCode);
+            return;
+          }
+          
+          if (game.status == GameStatus.results) {
+            context.replace(
+              '/round-result',
+              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+            );
+            return;
+          }
+
+          if (game.currentTask != null) {
+            context.replace(
+              '/task',
+              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+            );
+            return;
+          }
+
+          if (game.status == GameStatus.choosingDifficulty || game.selectedCategory != null) {
+            context.replace(
+              '/difficulty',
+              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+            );
+            return;
+          }
+
+          // 2. Tek Kategori Otomatik Seçim (Sadece sırası gelende)
           if (isSingleCategory &&
               singleCategory != null &&
-              game.currentTask == null &&
-              game.selectedCategory == null &&
               game.status == GameStatus.playing &&
               isMyPick &&
               !_isPicking &&
@@ -94,23 +124,6 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
             _pickCategory(singleCategory).catchError((_) {
               if (mounted) setState(() => _autoPickFailed = true);
             });
-          } else if (game.currentTask != null) {
-            context.replace(
-              '/task',
-              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-            );
-          } else if (game.status == GameStatus.choosingDifficulty) {
-            context.replace(
-              '/difficulty',
-              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-            );
-          } else if (game.status == GameStatus.finished) {
-            context.replace('/game-over', extra: widget.roomCode);
-          } else if (game.status == GameStatus.results) {
-            context.replace(
-              '/round-result',
-              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-            );
           }
         });
 
