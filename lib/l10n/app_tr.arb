@@ -223,6 +223,7 @@
   "economyModeTitle": "Patron Parti",
   "classicModeDesc": "Şans çarkını çevir ve rastgele kategoriden gelen riskli cezalarla yüzleş. Puan toplamak için tek şansın cesaret!",
   "economyModeDesc": "Kategorilerin puanları popülerliğine göre dinamik olarak değişir: Az seçilen gizli cevherler daha çok puan kazandırırken, herkesin seçtiği kategorilerin değeri düşer. Stratejini kur ve en karlı riskleri al! (En az 3 kategoride aktifleşir)",
+  "minThreeCategoriesEconomy": "Borsa modu için en az 3 kategori seçmelisin.",
   "singleCategoryEconomyWarn": "Tek kategori seçildiğinde sadece Borsa modu kullanılabilir.",
   "singleCategoryEconomyAutoChange": "Tek kategori seçildi. Oyun modu otomatik Borsa moduna alındı.",
   "minOneCategoryWarn": "En az 1 kategori seçmelisiniz.",

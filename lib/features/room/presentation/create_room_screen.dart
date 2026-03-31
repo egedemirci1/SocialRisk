@@ -45,6 +45,15 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   }
 
   Future<void> _createRoom() async {
+    // Borsa modu için 3 kategori zorunluluğu
+    if (_selectedMode == GameMode.economy && _selectedCategories.length < 3) {
+      ToastUtils.showWarning(
+        context, 
+        AppLocalizations.of(context)!.minThreeCategoriesEconomy,
+      );
+      return;
+    }
+
     setState(() => _isCreating = true);
     try {
       final user = ref.read(currentUserProvider);
@@ -58,9 +67,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
       final userProfile =
           await ref.read(userRepositoryProvider).getUserProfile(user.uid);
       final repo = ref.read(roomRepositoryProvider);
-      final effectiveMode = _selectedCategories.length == 1
-          ? GameMode.economy
-          : _selectedMode;
+      final effectiveMode = _selectedMode;
 
       final roomCode = await repo.createRoom(
         hostId: user.uid,
@@ -146,7 +153,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 metrics: metrics,
                 title: AppLocalizations.of(context)!.gameModeLabel,
                 icon: Icons.celebration_rounded,
-                child: _buildGameMode(metrics),
+                child: _buildGameMode(metrics, isPremium),
               ),
               SizedBox(height: metrics.sectionGap),
               _buildSection(
@@ -454,7 +461,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
     );
   }
 
-  Widget _buildGameMode(_CreateRoomMetrics metrics) {
+  Widget _buildGameMode(_CreateRoomMetrics metrics, bool isPremium) {
     return Column(
       children: [
         Row(
@@ -465,13 +472,6 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 isSelected: _selectedMode == GameMode.classic,
                 compact: metrics.isCompactWidth || metrics.isCompactHeight,
                 onTap: () {
-                  if (_selectedCategories.length == 1) {
-                    ToastUtils.showInfo(
-                      context,
-                        AppLocalizations.of(context)!.singleCategoryEconomyWarn,
-                    );
-                    return;
-                  }
                   HapticFeedback.lightImpact();
                   setState(() => _selectedMode = GameMode.classic);
                 },
@@ -485,7 +485,21 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 compact: metrics.isCompactWidth || metrics.isCompactHeight,
                 onTap: () {
                   HapticFeedback.lightImpact();
-                  setState(() => _selectedMode = GameMode.economy);
+                  setState(() {
+                    _selectedMode = GameMode.economy;
+                    
+                    // Otomatik 3 kategori seçimi
+                    if (_selectedCategories.length < 3) {
+                      final allCats = CategoryConstants.all;
+                      for (final cat in allCats) {
+                        if (_selectedCategories.length >= 3) break;
+                        if (cat.id == 'Özel' && !isPremium) continue;
+                        if (!_selectedCategories.contains(cat.id)) {
+                          _selectedCategories.add(cat.id);
+                        }
+                      }
+                    }
+                  });
                 },
               ),
             ),
@@ -588,14 +602,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                     if (isSelected) {
                       if (_selectedCategories.length > 1) {
                         _selectedCategories.remove(categoryId);
-                        if (_selectedCategories.length == 1 &&
-                            _selectedMode != GameMode.economy) {
-                          _selectedMode = GameMode.economy;
-                          ToastUtils.showInfo(
-                            context,
-                  AppLocalizations.of(context)!.singleCategoryEconomyAutoChange,
-                          );
-                        }
+                        // Artık otomatik ekonomi değişimine gerek yok, yeni kural 3 kategori
                       } else {
                         ToastUtils.showWarning(
                           context,

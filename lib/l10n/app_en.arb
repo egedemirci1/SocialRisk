@@ -223,6 +223,7 @@
   "economyModeTitle": "Boss Party",
   "classicModeDesc": "Spin the wheel and face risky penalties from random categories. Your only chance to collect points is courage!",
   "economyModeDesc": "Category points change dynamically based on popularity: less chosen 'hidden gems' grant higher rewards, while overused categories lose value. Strategize and take the most profitable risks! (Activates with at least 3 categories)",
+  "minThreeCategoriesEconomy": "You must select at least 3 categories for Boss mode.",
   "singleCategoryEconomyWarn": "When a single category is selected, only the Boss mode can be used.",
   "singleCategoryEconomyAutoChange": "A single category was selected. The game mode was automatically changed to Boss mode.",
   "minOneCategoryWarn": "You must select at least 1 category.",
