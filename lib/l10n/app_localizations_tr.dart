@@ -1032,7 +1032,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get difficultyLabel => 'Zorluk';
 
   @override
-  String get specialCategory => 'Özel';
+  String get specialCategory => 'Özel İçerik';
 
   @override
   String get myContentsTitle => 'İçeriklerim';

@@ -85,8 +85,8 @@ class CategoryConstants {
     ),
     CategoryDefinition(
       id: 'Özel',
-      name: 'Özel',
-      nameEn: 'Special',
+      name: 'Özel İçerik',
+      nameEn: 'Custom Content',
       icon: Icons.category_rounded,
       color: AppColors.primary,
     ),

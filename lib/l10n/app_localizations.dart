@@ -1967,7 +1967,7 @@ abstract class AppLocalizations {
   /// No description provided for @specialCategory.
   ///
   /// In tr, this message translates to:
-  /// **'Özel'**
+  /// **'Özel İçerik'**
   String get specialCategory;
 
   /// No description provided for @myContentsTitle.

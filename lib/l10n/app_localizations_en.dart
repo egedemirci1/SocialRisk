@@ -1029,7 +1029,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get difficultyLabel => 'Difficulty';
 
   @override
-  String get specialCategory => 'Special';
+  String get specialCategory => 'Custom Content';
 
   @override
   String get myContentsTitle => 'My Contents';

@@ -24,9 +24,9 @@
   - [ ] Debug category value decrease logic: ensure it works for < 3 categories if requested, or clarify logic.
   - [ ] Fix game freeze in Economy mode when playing with a single category.
 - [ ] **Lobby & Store UI**
-  - [ ] Rename "Özel" category to "Custom Content" (EN) / "Özel İçerik" (TR).
-  - [ ] Lock "Custom Content" for non-premium users with a lock icon.
-  - [ ] Show premium toaster when trying to select locked category.
+  - [x] Rename "Özel" category to "Custom Content" (EN) / "Özel İçerik" (TR).
+  - [x] Lock "Custom Content" for non-premium users with a lock icon.
+  - [x] Show premium toaster when trying to select locked category.
 
 ## ⚙️ Module 3: Backend, Admin & Integration (Focus: Cloud Functions, Assets, Protection)
 - [ ] **Host Exit Logic Fix**
