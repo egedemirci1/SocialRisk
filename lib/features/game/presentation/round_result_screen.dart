@@ -644,6 +644,7 @@ class _FeedbackButton extends StatelessWidget {
 class _RoundResultMetrics {
   const _RoundResultMetrics({
     required this.isCompact,
+    required this.isTiny,
     required this.screenPadding,
     required this.contentWidth,
     required this.sectionGap,
@@ -662,6 +663,7 @@ class _RoundResultMetrics {
   });
 
   final bool isCompact;
+  final bool isTiny;
   final double screenPadding;
   final double contentWidth;
   final double sectionGap;
@@ -687,6 +689,7 @@ class _RoundResultMetrics {
 
     return _RoundResultMetrics(
       isCompact: isCompact,
+      isTiny: isTiny,
       screenPadding: isCompact ? 12 : 24,
       contentWidth: isCompact ? size.width - 24 : 380,
       sectionGap: isTiny ? 8 : (isCompact ? 10 : 20),
