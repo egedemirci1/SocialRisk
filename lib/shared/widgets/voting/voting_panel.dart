@@ -217,8 +217,9 @@ class _VoteButton extends StatelessWidget {
                   label,
                   style: AppTextStyles.labelSmall.copyWith(
                     fontWeight: FontWeight.w900,
+                    fontSize: 14,
                     color: isSelected ? color : Colors.white54,
-                    letterSpacing: 1,
+                    letterSpacing: 1.2,
                   ),
                   textAlign: TextAlign.center,
                 ),

@@ -1,12 +1,12 @@
 # SocialRisk Project Enhancements & Bug Fixes
 
 ## 🛠 Module 1: UI/UX & Onboarding (Focus: Layout, Responsiveness, New Flow)
-- [ ] **Voting Screen Typography**
-  - [ ] Increase font size of "Critique" and "Voting" labels.
-  - [ ] Adjust layout with round numbers for better spacing.
-- [ ] **Round Result Screen Layout**
-  - [ ] Fix logo positioning (it stays at the top/scrolled).
-  - [ ] Remove outer scroll behavior; use internal scrolling for content if needed.
+- [x] **Voting Screen Typography**
+  - [x] Increase font size of "Critique" and "Voting" labels.
+  - [x] Adjust layout with round numbers for better spacing.
+- [x] **Round Result Screen Layout**
+  - [x] Fix logo positioning (it stays at the top/scrolled).
+  - [x] Remove outer scroll behavior; use internal scrolling for content if needed.
 - [ ] **iPhone SE Responsiveness**
   - [ ] Fix task content overflow on "Performing" screen when it's someone else's turn and the question is long.
 - [ ] **Onboarding & Terms of Use**

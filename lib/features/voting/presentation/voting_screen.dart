@@ -181,6 +181,8 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                 AppLocalizations.of(context)!.votingTitle,
                 style: AppTextStyles.headlineMedium.copyWith(
                   color: AppColors.accent,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: 2,
                 ),
               ),
