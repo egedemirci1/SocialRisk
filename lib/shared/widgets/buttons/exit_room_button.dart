@@ -7,6 +7,7 @@ import '../../../features/auth/providers/auth_provider.dart';
 import '../../../features/room/providers/room_provider.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../utils/toast_utils.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 class ExitRoomButton extends ConsumerWidget {
   final String roomCode;
@@ -72,7 +73,7 @@ class _ExitCountdownDialogState extends ConsumerState<_ExitCountdownDialog> {
         side: BorderSide(color: AppColors.accent.withValues(alpha: 0.3)),
       ),
       title: Text(
-        'Partiden Ayrıl',
+        AppLocalizations.of(context)!.leavePartyTitle,
         style: AppTextStyles.titleMedium.copyWith(
           color: AppColors.accent,
           fontWeight: FontWeight.bold,
@@ -80,14 +81,14 @@ class _ExitCountdownDialogState extends ConsumerState<_ExitCountdownDialog> {
       ),
       content: Text(
         canExit
-            ? 'Oyundan çıkmak istediğinize emin misiniz? (Eğer kurucuysanız oda kapanır.)'
-            : 'Çıkış butonu $_remaining saniye sonra aktif olacak.',
+            ? AppLocalizations.of(context)!.leavePartyConfirm
+            : AppLocalizations.of(context)!.exitButtonActiveIn(_remaining),
         style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('İptal', style: TextStyle(color: Colors.white54)),
+          child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: Colors.white54)),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -106,11 +107,15 @@ class _ExitCountdownDialogState extends ConsumerState<_ExitCountdownDialog> {
                         );
                   }
                   if (context.mounted) {
-                    ToastUtils.showInfo(context, 'Odadan ayrıldınız');
+                    ToastUtils.showInfo(context, AppLocalizations.of(context)!.leftRoomToast);
                   }
                   context.go('/home');
                 },
-          child: Text(canExit ? 'Sil ve Çık' : 'Sil ve Çık ($_remaining)'),
+          child: Text(
+            canExit
+                ? AppLocalizations.of(context)!.deleteAndExit
+                : '${AppLocalizations.of(context)!.deleteAndExit} ($_remaining)',
+          ),
         ),
       ],
     );

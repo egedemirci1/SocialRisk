@@ -6,6 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../../../features/room/providers/room_provider.dart';
 import '../../utils/toast_utils.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 class LeaveRoomButton extends ConsumerWidget {
   final String roomCode;
@@ -66,22 +67,22 @@ class _LeaveCountdownDialogState extends ConsumerState<_LeaveCountdownDialog> {
     final canExit = _remaining == 0;
     return AlertDialog(
       backgroundColor: AppColors.surface,
-      title: const Text(
-        'Oyundan Çık',
-        style: TextStyle(color: Colors.white),
+      title: Text(
+        AppLocalizations.of(context)!.leavePartyTitle,
+        style: const TextStyle(color: Colors.white),
       ),
       content: Text(
         canExit
-            ? 'Odadan / Oyundan ayrılmak istediğinize emin misiniz? Oyun devam ederken çıkış yapmak oyunun akışını etkileyebilir.'
-            : 'Sil ve Çık butonu $_remaining saniye sonra aktif olacak.',
+            ? AppLocalizations.of(context)!.leavePartyConfirmInGame
+            : AppLocalizations.of(context)!.exitButtonActiveIn(_remaining),
         style: const TextStyle(color: Colors.white70),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text(
-            'İptal',
-            style: TextStyle(color: Colors.white54),
+          child: Text(
+            AppLocalizations.of(context)!.cancel,
+            style: const TextStyle(color: Colors.white54),
           ),
         ),
         TextButton(
@@ -95,16 +96,18 @@ class _LeaveCountdownDialogState extends ConsumerState<_LeaveCountdownDialog> {
                         .leaveRoom(roomCode: widget.roomCode, playerId: user.uid);
                   }
                   Navigator.pop(context);
-                  if (context.mounted) {
-                    ToastUtils.showInfo(context, 'Odadan ayrıldınız');
-                  }
-                  context.go('/home');
-                },
-          child: Text(
-            canExit ? 'Sil ve Çık' : 'Sil ve Çık ($_remaining)',
-            style: const TextStyle(color: AppColors.primary),
+                    if (context.mounted) {
+                      ToastUtils.showInfo(context, AppLocalizations.of(context)!.leftRoomToast);
+                    }
+                    context.go('/home');
+                  },
+            child: Text(
+              canExit
+                  ? AppLocalizations.of(context)!.deleteAndExit
+                  : '${AppLocalizations.of(context)!.deleteAndExit} ($_remaining)',
+              style: const TextStyle(color: AppColors.primary),
+            ),
           ),
-        ),
       ],
     );
   }

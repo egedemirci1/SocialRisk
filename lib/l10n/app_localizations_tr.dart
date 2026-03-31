@@ -902,7 +902,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get newDisplayNameLabel => 'Yeni Oyuncu Adı';
 
   @override
-  String get cancel => 'İPTAL';
+  String get cancel => 'İptal';
 
   @override
   String get update => 'GÜNCELLE';
@@ -1137,4 +1137,45 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get categoryMental => 'Zihinsel';
+
+  @override
+  String get premiumRequiredTitle => 'Premium Gerekli';
+
+  @override
+  String get premiumRequiredDesc =>
+      'Özel içerik üretmek için Premium gerekli. Tek seferlik Premium satın alarak bu özelliği açabilirsin.';
+
+  @override
+  String get buyPremium => 'Premium Al';
+
+  @override
+  String get restorePurchases => 'Satın Alımları Geri Yükle';
+
+  @override
+  String get restoringPurchases => 'Satın alımlar geri yükleniyor...';
+
+  @override
+  String get purchaseFlowStarted => 'Satın alma akışı başlatıldı.';
+
+  @override
+  String get premiumLabel => 'PREMIUM';
+
+  @override
+  String get leavePartyTitle => 'Partiden Ayrıl';
+
+  @override
+  String get leavePartyConfirm =>
+      'Oyundan çıkmak istediğinize emin misiniz? (Eğer kurucuysanız oda kapanır.)';
+
+  @override
+  String get leavePartyConfirmInGame =>
+      'Odadan / Oyundan ayrılmak istediğinize emin misiniz? Oyun devam ederken çıkış yapmak oyunun akışını etkileyebilir.';
+
+  @override
+  String exitButtonActiveIn(int seconds) {
+    return 'Çıkış butonu $seconds saniye sonra aktif olacak.';
+  }
+
+  @override
+  String get leftRoomToast => 'Odadan ayrıldınız';
 }

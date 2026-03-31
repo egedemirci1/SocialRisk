@@ -305,7 +305,7 @@ class _CustomDeckEditorScreenState
                     const Icon(Icons.workspace_premium_rounded, color: AppColors.accent, size: 62),
                     const SizedBox(height: 16),
                     Text(
-                      'Özel içerik üretmek için Premium gerekli.',
+                      l.premiumRequiredTitle,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.titleLarge.copyWith(
                         color: Colors.white,
@@ -314,7 +314,7 @@ class _CustomDeckEditorScreenState
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Tek seferlik Premium satın alarak içerik ekleme özelliğini açabilirsin.',
+                      l.premiumRequiredDesc,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
                     ),
@@ -326,7 +326,7 @@ class _CustomDeckEditorScreenState
                           if (!context.mounted) return;
                           ToastUtils.showSuccess(
                             context,
-                            'Satın alma akışı başlatıldı.',
+                            l.purchaseFlowStarted,
                           );
                         } catch (e) {
                           if (!context.mounted) return;
@@ -334,7 +334,7 @@ class _CustomDeckEditorScreenState
                         }
                       },
                       icon: const Icon(Icons.lock_open_rounded),
-                      label: const Text('Premium Al'),
+                      label: Text(l.buyPremium),
                     ),
                     const SizedBox(height: 10),
                     OutlinedButton.icon(
@@ -342,14 +342,14 @@ class _CustomDeckEditorScreenState
                         try {
                           await premiumService.restorePurchases();
                           if (!context.mounted) return;
-                          ToastUtils.showSuccess(context, 'Satın alımlar geri yükleniyor.');
+                          ToastUtils.showSuccess(context, l.restoringPurchases);
                         } catch (e) {
                           if (!context.mounted) return;
                           ToastUtils.showError(context, e.toString());
                         }
                       },
                       icon: const Icon(Icons.restore_rounded),
-                      label: const Text('Satın Alımları Geri Yükle'),
+                      label: Text(l.restorePurchases),
                     ),
                   ],
                 ),

@@ -512,7 +512,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 try {
                   await premiumService.buyLifetimePremium();
                   if (!context.mounted) return;
-                  ToastUtils.showSuccess(context, 'Premium satın alma akışı başlatıldı.');
+                  ToastUtils.showSuccess(context, AppLocalizations.of(context)!.purchaseFlowStarted);
                 } catch (e) {
                   if (!context.mounted) return;
                   ToastUtils.showError(context, e.toString());
@@ -528,7 +528,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 ),
                 child: Center(
                   child: Text(
-                    'PREMIUM',
+                    AppLocalizations.of(context)!.premiumLabel,
                     style: AppTextStyles.labelSmall.copyWith(
                       color: AppColors.accent,
                       fontWeight: FontWeight.w900,

@@ -899,7 +899,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newDisplayNameLabel => 'New Player Name';
 
   @override
-  String get cancel => 'CANCEL';
+  String get cancel => 'Cancel';
 
   @override
   String get update => 'UPDATE';
@@ -1133,4 +1133,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get categoryMental => 'Mental';
+
+  @override
+  String get premiumRequiredTitle => 'Premium Required';
+
+  @override
+  String get premiumRequiredDesc =>
+      'To create custom content, you need Premium status. You can unlock this feature by purchasing the lifetime premium.';
+
+  @override
+  String get buyPremium => 'Get Premium';
+
+  @override
+  String get restorePurchases => 'Restore Purchases';
+
+  @override
+  String get restoringPurchases => 'Restoring purchases...';
+
+  @override
+  String get purchaseFlowStarted => 'Purchase flow started.';
+
+  @override
+  String get premiumLabel => 'PREMIUM';
+
+  @override
+  String get leavePartyTitle => 'Leave Party';
+
+  @override
+  String get leavePartyConfirm =>
+      'Are you sure you want to leave? If you are the host, the room will be closed.';
+
+  @override
+  String get leavePartyConfirmInGame =>
+      'Are you sure you want to leave the room/game? Leaving while the game is in progress may affect the flow.';
+
+  @override
+  String exitButtonActiveIn(int seconds) {
+    return 'The exit button will be active in $seconds seconds.';
+  }
+
+  @override
+  String get leftRoomToast => 'You left the room';
 }

@@ -15,10 +15,10 @@
   - [ ] Show toaster after evaluating/liking a scenario ("Scenario liked!").
 
 ## 🌎 Module 2: Localization & Economy Mode (Focus: Data, Logic, i18n)
-- [ ] **Localization Audit & Fixes**
-  - [ ] Translate "Special Content" to English in all relevant screens.
-  - [ ] Localize `ExitRoomButton` dialogs and toasters.
-  - [ ] Localize "Get Premium" screen and error toasters.
+- [x] **Localization Audit & Fixes**
+  - [x] Translate "Special Content" to English in all relevant screens.
+  - [x] Localize `ExitRoomButton` dialogs and toasters.
+  - [x] Localize "Get Premium" screen and error toasters.
 - [ ] **Economy Mode Enhancements**
   - [ ] Fix English localization for questions in Economy mode (ensure `taskPool` and `TaskTranslationMap` work correctly).
   - [ ] Debug category value decrease logic: ensure it works for < 3 categories if requested, or clarify logic.

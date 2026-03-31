@@ -1715,7 +1715,7 @@ abstract class AppLocalizations {
   /// No description provided for @cancel.
   ///
   /// In tr, this message translates to:
-  /// **'İPTAL'**
+  /// **'İptal'**
   String get cancel;
 
   /// No description provided for @update.
@@ -2167,6 +2167,78 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Zihinsel'**
   String get categoryMental;
+
+  /// No description provided for @premiumRequiredTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium Gerekli'**
+  String get premiumRequiredTitle;
+
+  /// No description provided for @premiumRequiredDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Özel içerik üretmek için Premium gerekli. Tek seferlik Premium satın alarak bu özelliği açabilirsin.'**
+  String get premiumRequiredDesc;
+
+  /// No description provided for @buyPremium.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium Al'**
+  String get buyPremium;
+
+  /// No description provided for @restorePurchases.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın Alımları Geri Yükle'**
+  String get restorePurchases;
+
+  /// No description provided for @restoringPurchases.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın alımlar geri yükleniyor...'**
+  String get restoringPurchases;
+
+  /// No description provided for @purchaseFlowStarted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın alma akışı başlatıldı.'**
+  String get purchaseFlowStarted;
+
+  /// No description provided for @premiumLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'PREMIUM'**
+  String get premiumLabel;
+
+  /// No description provided for @leavePartyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Partiden Ayrıl'**
+  String get leavePartyTitle;
+
+  /// No description provided for @leavePartyConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyundan çıkmak istediğinize emin misiniz? (Eğer kurucuysanız oda kapanır.)'**
+  String get leavePartyConfirm;
+
+  /// No description provided for @leavePartyConfirmInGame.
+  ///
+  /// In tr, this message translates to:
+  /// **'Odadan / Oyundan ayrılmak istediğinize emin misiniz? Oyun devam ederken çıkış yapmak oyunun akışını etkileyebilir.'**
+  String get leavePartyConfirmInGame;
+
+  /// No description provided for @exitButtonActiveIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkış butonu {seconds} saniye sonra aktif olacak.'**
+  String exitButtonActiveIn(int seconds);
+
+  /// No description provided for @leftRoomToast.
+  ///
+  /// In tr, this message translates to:
+  /// **'Odadan ayrıldınız'**
+  String get leftRoomToast;
 }
 
 class _AppLocalizationsDelegate

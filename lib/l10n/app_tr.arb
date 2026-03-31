@@ -496,5 +496,25 @@
   "categoryVisual": "Görsel",
   "categoryConfession": "İtiraf",
   "categoryIntimate": "Mahrem",
-  "categoryMental": "Zihinsel"
+  "categoryMental": "Zihinsel",
+  "premiumRequiredTitle": "Premium Gerekli",
+  "premiumRequiredDesc": "Özel içerik üretmek için Premium gerekli. Tek seferlik Premium satın alarak bu özelliği açabilirsin.",
+  "buyPremium": "Premium Al",
+  "restorePurchases": "Satın Alımları Geri Yükle",
+  "restoringPurchases": "Satın alımlar geri yükleniyor...",
+  "purchaseFlowStarted": "Satın alma akışı başlatıldı.",
+  "premiumLabel": "PREMIUM",
+  "leavePartyTitle": "Partiden Ayrıl",
+  "leavePartyConfirm": "Oyundan çıkmak istediğinize emin misiniz? (Eğer kurucuysanız oda kapanır.)",
+  "leavePartyConfirmInGame": "Odadan / Oyundan ayrılmak istediğinize emin misiniz? Oyun devam ederken çıkış yapmak oyunun akışını etkileyebilir.",
+  "exitButtonActiveIn": "Çıkış butonu {seconds} saniye sonra aktif olacak.",
+  "@exitButtonActiveIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "leftRoomToast": "Odadan ayrıldınız",
+  "cancel": "İptal"
 }

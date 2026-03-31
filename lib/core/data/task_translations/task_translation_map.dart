@@ -77,6 +77,11 @@ class TaskTranslationMap {
       case 'boş vaatler':
       case 'bos vaatler':
         return 'Empty Promises';
+      case 'özel':
+      case 'özel içerik':
+      case 'ozel':
+      case 'ozel icerik':
+        return 'Custom Content';
       default:
         return category;
     }

@@ -496,5 +496,25 @@
   "categoryVisual": "Visual",
   "categoryConfession": "Confession",
   "categoryIntimate": "Intimate",
-  "categoryMental": "Mental"
+  "categoryMental": "Mental",
+  "premiumRequiredTitle": "Premium Required",
+  "premiumRequiredDesc": "To create custom content, you need Premium status. You can unlock this feature by purchasing the lifetime premium.",
+  "buyPremium": "Get Premium",
+  "restorePurchases": "Restore Purchases",
+  "restoringPurchases": "Restoring purchases...",
+  "purchaseFlowStarted": "Purchase flow started.",
+  "premiumLabel": "PREMIUM",
+  "leavePartyTitle": "Leave Party",
+  "leavePartyConfirm": "Are you sure you want to leave? If you are the host, the room will be closed.",
+  "leavePartyConfirmInGame": "Are you sure you want to leave the room/game? Leaving while the game is in progress may affect the flow.",
+  "exitButtonActiveIn": "The exit button will be active in {seconds} seconds.",
+  "@exitButtonActiveIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "leftRoomToast": "You left the room",
+  "cancel": "Cancel"
 }

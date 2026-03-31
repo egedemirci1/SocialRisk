@@ -6,6 +6,8 @@ import '../domain/task_item_entity.dart';
 import '../providers/admin_provider.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
+import '../../../core/data/task_translations/task_translation_map.dart';
+import 'package:social_risk/core/providers/locale_provider.dart';
 
 enum SortOption {
   newest,
@@ -290,7 +292,10 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   ),
                 ),
                 ...categories.map((category) => FilterChip(
-                  label: Text(category),
+                  label: Text(TaskTranslationMap.getCategoryTranslation(
+                    category,
+                    LocaleProvider.of(context).languageCode,
+                  )),
                   selected: _selectedCategory == category,
                   onSelected: (_) => setState(() => _selectedCategory = category),
                   backgroundColor: AppColors.surface,
@@ -564,7 +569,13 @@ class _TaskCard extends StatelessWidget {
             padding: const EdgeInsets.only(top: 6),
             child: Row(
               children: [
-                _buildBadge(task.category, AppColors.accent),
+                _buildBadge(
+                  TaskTranslationMap.getCategoryTranslation(
+                    task.category,
+                    LocaleProvider.of(context).languageCode,
+                  ),
+                  AppColors.accent,
+                ),
                 const SizedBox(width: 8),
                 _buildBadge(task.difficulty.toUpperCase(), Colors.white60),
               ],
@@ -637,7 +648,14 @@ class _TaskCard extends StatelessWidget {
           children: [
             _LikeBadge(likes: task.likes, dislikes: task.dislikes, isSmall: false),
             const SizedBox(width: 12),
-            _buildBadge(task.category, AppColors.accent, padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3)),
+            _buildBadge(
+              TaskTranslationMap.getCategoryTranslation(
+                task.category,
+                LocaleProvider.of(context).languageCode,
+              ),
+              AppColors.accent,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+            ),
             const SizedBox(width: 8),
             _buildBadge(task.difficulty.toUpperCase(), Colors.white60, padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3)),
           ],
