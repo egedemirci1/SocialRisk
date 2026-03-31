@@ -69,9 +69,9 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
     final isSmall = screenHeight < 700;
-    final containerPadding = isSmall ? 16.0 : 24.0;
-    final emojiSize = isSmall ? 20.0 : 24.0;
-    final innerGap = isSmall ? 16.0 : 24.0;
+    final containerPadding = isSmall ? 12.0 : 16.0;
+    final emojiSize = isSmall ? 18.0 : 22.0;
+    final innerGap = isSmall ? 10.0 : 14.0;
 
     return Container(
       padding: EdgeInsets.all(containerPadding),
@@ -89,15 +89,17 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
               AppLocalizations.of(context)!.howWasPerformance,
               style: AppTextStyles.headlineMedium.copyWith(
                 color: Colors.white,
+                fontSize: isSmall ? 20 : 24, // Reduced slightly
                 letterSpacing: 2,
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             AppLocalizations.of(context)!.evaluatePerformance,
             style: AppTextStyles.bodyMedium.copyWith(
               color: Colors.white54,
+              fontSize: isSmall ? 12 : 14, // Reduced slightly
             ),
             textAlign: TextAlign.center,
           ),
@@ -196,7 +198,7 @@ class _VoteButton extends StatelessWidget {
       onTap: isDisabled ? null : onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: isSelected ? color.withValues(alpha: 0.1) : Colors.black26,
           borderRadius: BorderRadius.circular(8),
@@ -210,14 +212,14 @@ class _VoteButton extends StatelessWidget {
           child: Column(
             children: [
               Text(emoji, style: TextStyle(fontSize: emojiSize)),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   label,
                   style: AppTextStyles.labelSmall.copyWith(
                     fontWeight: FontWeight.w900,
-                    fontSize: 14,
+                    fontSize: 12, // Reduced from 14
                     color: isSelected ? color : Colors.white54,
                     letterSpacing: 1.2,
                   ),

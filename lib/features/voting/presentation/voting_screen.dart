@@ -181,16 +181,19 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                 AppLocalizations.of(context)!.votingTitle,
                 style: AppTextStyles.headlineMedium.copyWith(
                   color: AppColors.accent,
-                  fontSize: 26,
+                  fontSize: 34, // Increased from 26
                   fontWeight: FontWeight.w900,
-                  letterSpacing: 2,
+                  letterSpacing: 1.5, // Slightly reduced for better fit
                 ),
               ),
             ),
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
-            leading: ExitRoomButton(roomCode: widget.roomCode),
+            leading: Transform.scale(
+              scale: 0.85, // Scale down the exit button
+              child: ExitRoomButton(roomCode: widget.roomCode),
+            ),
             actions: [
               if (roomAsync.value != null)
                 TurnCounterBadge(
@@ -199,9 +202,11 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                   endConditionValue: roomAsync.value!.endConditionValue,
                 ),
               IconButton(
+                visualDensity: VisualDensity.compact, // Make it more compact
                 icon: const Icon(
                   Icons.leaderboard_rounded,
                   color: AppColors.accent,
+                  size: 22, // Slightly smaller
                 ),
                 onPressed: () =>
                     ScoreboardBottomSheet.show(context, widget.roomCode),
@@ -220,73 +225,93 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                   child: Column(
                     children: [
                       const _VisualCountdownTimer(duration: _voteDuration),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Builder(
-                            builder: (context) {
-                              final sh = MediaQuery.sizeOf(context).height;
-                              final isSmall = sh < 700;
-                              final avatarR = isSmall ? 38.0 : 50.0;
-                              return Column(
-                                children: [
-                                  SizedBox(height: isSmall ? 10 : 16),
-                                  PlayerAvatar(
-                                    uid: game.currentPlayerId,
-                                    displayName: performerName,
-                                    radius: avatarR,
+                      
+                      // 1. FIXED HEADER: Avatar and Name
+                      Builder(
+                        builder: (context) {
+                          final sh = MediaQuery.sizeOf(context).height;
+                          final isSmall = sh < 700;
+                          final avatarR = isSmall ? 32.0 : 40.0; // Reduced radius for better space
+                          return Padding(
+                            padding: EdgeInsets.only(top: isSmall ? 8 : 12),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                PlayerAvatar(
+                                  uid: game.currentPlayerId,
+                                  displayName: performerName,
+                                  radius: avatarR,
+                                ),
+                                SizedBox(height: isSmall ? 4 : 8),
+                                Text(
+                                  performerName.toUpperCase(),
+                                  style: AppTextStyles.displayMedium.copyWith(
+                                    color: Colors.white,
+                                    fontSize: isSmall ? 20 : 24,
+                                    letterSpacing: 2,
                                   ),
-                                  SizedBox(height: isSmall ? 10 : 16),
-                                  Text(
-                                    performerName.toUpperCase(),
-                                    style: AppTextStyles.displayMedium.copyWith(
-                                      color: Colors.white,
-                                      letterSpacing: 2,
-                                    ),
-                                  ),
-                                  // Ünvan gösterimi
-                                  Builder(
-                                    builder: (context) {
-                                      final profile = ref
-                                          .watch(
-                                            watchUserProfileProvider(game.currentPlayerId),
-                                          )
-                                          .value;
-                                      if (profile?.activeTitle == null) {
-                                        return const SizedBox.shrink();
-                                      }
-                                      final cosmetics =
-                                          ref.watch(fetchCosmeticsProvider).value ?? [];
-                                      final titleItem = cosmetics
-                                          .where((c) => c.id == profile!.activeTitle)
-                                          .firstOrNull;
-                                      if (titleItem == null) {
-                                        return const SizedBox.shrink();
-                                      }
-                                      return Padding(
-                                        padding: const EdgeInsets.only(top: 4),
-                                        child: Text(
-                                          '${titleItem.imageUrl} ${titleItem.name}',
-                                          style: AppTextStyles.labelSmall.copyWith(
-                                            color: AppColors.accent,
-                                            fontWeight: FontWeight.w700,
-                                          ),
+                                ),
+                                // Ünvan gösterimi
+                                Builder(
+                                  builder: (context) {
+                                    final profile = ref
+                                        .watch(
+                                          watchUserProfileProvider(game.currentPlayerId),
+                                        )
+                                        .value;
+                                    if (profile?.activeTitle == null) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    final cosmetics =
+                                        ref.watch(fetchCosmeticsProvider).value ?? [];
+                                    final titleItem = cosmetics
+                                        .where((c) => c.id == profile!.activeTitle)
+                                        .firstOrNull;
+                                    if (titleItem == null) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        '${titleItem.imageUrl} ${titleItem.name}',
+                                        style: AppTextStyles.labelSmall.copyWith(
+                                          color: AppColors.accent,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w700,
                                         ),
-                                      );
-                                    },
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  AppLocalizations.of(context)!.playerPerformed,
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: Colors.white54,
+                                    fontSize: isSmall ? 11 : 13,
+                                    fontStyle: FontStyle.italic,
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    AppLocalizations.of(context)!.playerPerformed,
-                                    style: AppTextStyles.bodyMedium.copyWith(
-                                      color: Colors.white54,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                  SizedBox(height: isSmall ? 16 : 24),
-                                  Container(
-                                    padding: EdgeInsets.all(isSmall ? 16 : 24),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+
+                      // 2. CENTERED CONTENT: Challenge text
+                      Expanded(
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minHeight: constraints.maxHeight,
+                                ),
+                                child: Center(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(20),
                                     decoration: BoxDecoration(
                                       color: AppColors.surface,
                                       borderRadius: BorderRadius.circular(12),
@@ -303,26 +328,26 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                                       style: AppTextStyles.titleLarge.copyWith(
                                         color: Colors.white,
                                         fontStyle: FontStyle.italic,
-                                        height: 1.5,
+                                        fontSize: MediaQuery.sizeOf(context).height < 700 ? 18 : 22,
+                                        height: 1.4,
                                       ),
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
-                                  SizedBox(height: isSmall ? 12 : 16),
-                                  SizedBox(height: isSmall ? 16 : 24),
-                                ],
-                              );
-                            },
-                          ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                      // Oylama / bekleme alanı her zaman altta görünsün
+                      
+                      // 3. FIXED FOOTER: Voting Panel
                       Padding(
                         padding: EdgeInsets.fromLTRB(
-                          MediaQuery.sizeOf(context).height < 700 ? 16 : 24,
-                          MediaQuery.sizeOf(context).height < 700 ? 8 : 16,
-                          MediaQuery.sizeOf(context).height < 700 ? 16 : 24,
-                          MediaQuery.sizeOf(context).height < 700 ? 16 : 32,
+                          16,
+                          4,
+                          16,
+                          MediaQuery.sizeOf(context).height < 700 ? 12 : 24,
                         ),
                         child: _isProcessing
                             ? _buildProcessingIndicator()

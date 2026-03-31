@@ -20,7 +20,8 @@ class TurnCounterBadge extends StatelessWidget {
     bool isRounds = endConditionType == EndConditionType.rounds;
     String text = isRounds
         ? '$currentRound / $endConditionValue Tur'
-        : '$currentRound. Tur (Hedef: $endConditionValue Puan)';
+        : '$currentRound. Tur • $endConditionValue P'; // Compacted for better fit
+
 
     return Center(
       child: Container(
@@ -35,7 +36,8 @@ class TurnCounterBadge extends StatelessWidget {
           text,
           style: AppTextStyles.labelSmall.copyWith(
             color: AppColors.accent,
-            fontWeight: FontWeight.w600,
+            fontSize: 12, // Increased from default for better visibility
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
