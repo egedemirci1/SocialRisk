@@ -235,6 +235,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get categoryLocked => 'Bu kategori kilitli!';
 
   @override
+  String get premiumCategoryLocked =>
+      'Bu özel bir kilitli kategoridir ve sadece Premium üyeler tarafından seçilebilir.';
+
+  @override
   String error(String message) {
     return 'Hata: $message';
   }

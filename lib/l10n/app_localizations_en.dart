@@ -235,6 +235,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryLocked => 'This category is locked!';
 
   @override
+  String get premiumCategoryLocked =>
+      'This is a premium-only category and can only be selected by members.';
+
+  @override
   String error(String message) {
     return 'Error: $message';
   }

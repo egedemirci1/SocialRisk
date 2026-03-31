@@ -110,6 +110,7 @@
   },
   "marketStatus": "Pazar Durumu",
   "categoryLocked": "Bu kategori kilitli!",
+  "premiumCategoryLocked": "Bu özel bir kilitli kategoridir ve sadece Premium üyeler tarafından seçilebilir.",
   "error": "Hata: {message}",
   "@error": {
     "placeholders": {

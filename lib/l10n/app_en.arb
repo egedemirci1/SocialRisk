@@ -110,6 +110,7 @@
   },
   "marketStatus": "Market Status",
   "categoryLocked": "This category is locked!",
+  "premiumCategoryLocked": "This is a premium-only category and can only be selected by members.",
   "error": "Error: {message}",
   "@error": {
     "placeholders": {

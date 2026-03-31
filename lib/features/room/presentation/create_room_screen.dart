@@ -18,6 +18,7 @@ import '../../../core/audio/audio_service.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/domain/user_entity.dart';
 import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
 
@@ -88,6 +89,11 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
   @override
   Widget build(BuildContext context) {
     final metrics = _CreateRoomMetrics.from(context);
+    final user = ref.watch(currentUserProvider);
+    final userProfile = user != null
+        ? ref.watch(watchUserProfileProvider(user.uid)).value
+        : null;
+    final isPremium = userProfile?.isPremium ?? false;
 
     Widget buildContent(double availableWidth) {
       return SizedBox(
@@ -147,7 +153,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                 metrics: metrics,
                 title: AppLocalizations.of(context)!.categoriesLabel,
                 icon: Icons.category_rounded,
-                child: _buildCategorySelector(metrics),
+                child: _buildCategorySelector(metrics, isPremium),
               ),
               SizedBox(height: metrics.actionTopSpacing),
               SizedBox(
@@ -547,7 +553,7 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
     );
   }
 
-  Widget _buildCategorySelector(_CreateRoomMetrics metrics) {
+  Widget _buildCategorySelector(_CreateRoomMetrics metrics, bool isPremium) {
     final categories = CategoryConstants.all;
     final languageCode = LocaleProvider.of(context).languageCode;
     return LayoutBuilder(
@@ -570,6 +576,14 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
               width: itemWidth,
               child: GestureDetector(
                 onTap: () {
+                  if (categoryId == 'Özel' && !isPremium) {
+                    HapticFeedback.heavyImpact();
+                    ToastUtils.showInfo(
+                      context,
+                      AppLocalizations.of(context)!.premiumCategoryLocked,
+                    );
+                    return;
+                  }
                   setState(() {
                     if (isSelected) {
                       if (_selectedCategories.length > 1) {
@@ -611,17 +625,38 @@ class _CreateRoomScreenState extends ConsumerState<CreateRoomScreen> {
                     ),
                   ),
                   child: Center(
-                    child: Text(
-                      categoryDef.localizedName(languageCode),
-                      style: AppTextStyles.titleSmall.copyWith(
-                        color: isSelected ? Colors.white : Colors.white54,
-                        fontSize: metrics.categoryFontSize,
-                        fontWeight:
-                            isSelected ? FontWeight.w900 : FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (categoryId == 'Özel' && !isPremium) ...[
+                          Icon(
+                            Icons.lock_outline_rounded,
+                            size: metrics.categoryFontSize,
+                            color: Colors.white24,
+                          ),
+                          const SizedBox(width: 4),
+                        ],
+                        Flexible(
+                          child: Text(
+                            categoryDef.localizedName(languageCode),
+                            style: AppTextStyles.titleSmall.copyWith(
+                              color: isSelected
+                                  ? Colors.white
+                                  : (categoryId == 'Özel' && !isPremium)
+                                      ? Colors.white24
+                                      : Colors.white54,
+                              fontSize: metrics.categoryFontSize,
+                              fontWeight: isSelected
+                                  ? FontWeight.w900
+                                  : FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

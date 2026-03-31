@@ -512,6 +512,12 @@ abstract class AppLocalizations {
   /// **'Bu kategori kilitli!'**
   String get categoryLocked;
 
+  /// No description provided for @premiumCategoryLocked.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu özel bir kilitli kategoridir ve sadece Premium üyeler tarafından seçilebilir.'**
+  String get premiumCategoryLocked;
+
   /// No description provided for @error.
   ///
   /// In tr, this message translates to:
