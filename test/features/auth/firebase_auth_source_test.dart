@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:social_risk/features/auth/data/firebase_auth_source.dart';
 import 'package:social_risk/features/auth/data/firebase_user_source.dart';
 import 'package:social_risk/features/auth/domain/user_entity.dart';
+import '../../helpers/mock_firebase_functions.dart';
 
 void main() {
   group('FirebaseAuthSource', () {
@@ -12,16 +13,32 @@ void main() {
     late FakeFirebaseFirestore fakeFirestore;
     late MockFirebaseStorage mockStorage;
     late FirebaseUserSource userSource;
+    late MockFirebaseFunctions mockFunctions;
 
     setUp(() {
       mockAuth = MockFirebaseAuth();
       fakeFirestore = FakeFirebaseFirestore();
       mockStorage = MockFirebaseStorage();
       userSource = FirebaseUserSource(firestore: fakeFirestore, storage: mockStorage);
+      mockFunctions = MockFirebaseFunctions(
+        handlers: {
+          'deleteOwnUserData': (params) async {
+            final uid = (params as Map)['uid'] as String;
+            await fakeFirestore.collection('users').doc(uid).delete();
+            return {'deleted': true};
+          },
+        },
+      );
     });
 
+    FirebaseAuthSource buildSource() => FirebaseAuthSource(
+          auth: mockAuth,
+          userRepository: userSource,
+          functions: mockFunctions,
+        );
+
     test('signInAnonymously creates user and writes profile to Firestore', () async {
-      final source = FirebaseAuthSource(auth: mockAuth, userRepository: userSource);
+      final source = buildSource();
       final credential = await source.signInAnonymously('Oyuncu1');
 
       expect(credential, isNotNull);
@@ -34,7 +51,7 @@ void main() {
     });
 
     test('when already anonymous, updateDisplayName and upsert profile', () async {
-      final source = FirebaseAuthSource(auth: mockAuth, userRepository: userSource);
+      final source = buildSource();
       await source.signInAnonymously('First');
       final uid = mockAuth.currentUser!.uid;
 
@@ -56,18 +73,30 @@ void main() {
       var doc = await fakeFirestore.collection('users').doc('anon_3').get();
       expect(doc.exists, isTrue);
 
-      final source = FirebaseAuthSource(auth: mockAuth, userRepository: userSource);
+      final source = FirebaseAuthSource(
+        auth: mockAuth,
+        userRepository: userSource,
+        functions: MockFirebaseFunctions(
+          handlers: {
+            'deleteOwnUserData': (params) async {
+              await fakeFirestore.collection('users').doc('anon_3').delete();
+              return {'deleted': true};
+            },
+          },
+        ),
+      );
       await source.signOut();
 
       doc = await fakeFirestore.collection('users').doc('anon_3').get();
       expect(doc.exists, isFalse);
+      expect(mockFunctions.calls, isEmpty);
     });
 
     test('signOut when not anonymous only signs out', () async {
       final mockUser = MockUser(uid: 'google_1', isAnonymous: false);
       mockAuth = MockFirebaseAuth(signedIn: true, mockUser: mockUser);
 
-      final source = FirebaseAuthSource(auth: mockAuth, userRepository: userSource);
+      final source = buildSource();
       await source.signOut();
 
       expect(mockAuth.currentUser, isNull);
@@ -79,12 +108,12 @@ void main() {
       final mockUser = MockUser(uid: 'u1', isAnonymous: true);
       mockAuth = MockFirebaseAuth(signedIn: true, mockUser: mockUser);
 
-      final source = FirebaseAuthSource(auth: mockAuth, userRepository: userSource);
+      final source = buildSource();
       expect(source.currentUser, mockUser);
     });
 
     test('authStateChanges delegates to auth', () {
-      final source = FirebaseAuthSource(auth: mockAuth, userRepository: userSource);
+      final source = buildSource();
       expect(source.authStateChanges, isNotNull);
     });
 
@@ -92,7 +121,7 @@ void main() {
       final mockUser = MockUser(uid: 'u2', isAnonymous: true, displayName: 'Eski');
       mockAuth = MockFirebaseAuth(signedIn: true, mockUser: mockUser);
 
-      final source = FirebaseAuthSource(auth: mockAuth, userRepository: userSource);
+      final source = buildSource();
       await source.updateDisplayName('YeniAd');
 
       expect(mockAuth.currentUser!.displayName, 'YeniAd');

@@ -30,10 +30,14 @@ void main() {
     } else if (line.startsWith('LH:')) {
       fileLH = int.tryParse(line.substring(3)) ?? 0;
     } else if (line == 'end_of_record' && currentSF != null && fileLF != null && fileLH != null) {
-      totalLF += fileLF;
-      totalLH += fileLH;
-      if (!currentSF.contains('generated') && !currentSF.contains('.g.dart')) {
-        perFile[currentSF] = (hit: fileLH, found: fileLF);
+      final normalized = currentSF.replaceAll(r'\', '/');
+      final skipInTotal = _skipFromTotalCoverage(normalized);
+      if (!skipInTotal) {
+        totalLF += fileLF;
+        totalLH += fileLH;
+      }
+      if (!normalized.contains('generated') && !normalized.contains('.g.dart')) {
+        perFile[normalized] = (hit: fileLH, found: fileLF);
       }
       currentSF = null;
     }
@@ -41,7 +45,7 @@ void main() {
 
   final pct = totalLF > 0 ? (100.0 * totalLH / totalLF) : 0.0;
   print('═══════════════════════════════════════');
-  print('  TOPLAM SATIR KAPSAMI');
+  print('  TOPLAM SATIR KAPSAMI (lib, üretilmiş hariç)');
   print('  $totalLH / $totalLF satır  →  ${pct.toStringAsFixed(1)}%');
   print('═══════════════════════════════════════');
 
@@ -55,6 +59,14 @@ void main() {
     final bar = _bar(fpct);
     print('${fpct.toStringAsFixed(0).padLeft(3)}% $bar $name');
   }
+}
+
+/// Üretilmiş / düşük değerli dosyalar toplam yüzdeye dahil edilmez.
+bool _skipFromTotalCoverage(String path) {
+  if (path.contains('.g.dart')) return true;
+  if (path.endsWith('app_localizations_en.dart')) return true;
+  if (path.endsWith('app_localizations_tr.dart')) return true;
+  return false;
 }
 
 String _bar(double pct) {

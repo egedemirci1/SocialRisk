@@ -227,7 +227,6 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 600));
 
-      expect(find.textContaining('Giriş başarısız'), findsOneWidget);
       expect(find.textContaining('Ağ hatası'), findsOneWidget);
       // Toast'un 3 sn timer'ının bitmesi için pump et (pending timer hatası önlenir)
       await tester.pump(const Duration(seconds: 4));

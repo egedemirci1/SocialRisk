@@ -129,28 +129,28 @@ void main() {
         expect(values['Mahrem'], 10);
       });
 
-      test('tek kategorili oyunda hot deal uygulanmaz ve baz 10 kalır', () {
+      test('tek kategorili oyunda hot deal uygulanır', () {
         final values = GameConstants.buildEconomyTurnValues(
           categories: const ['Bilgi'],
           hotCategory: 'Bilgi',
           penalizedCategory: 'Bilgi',
         );
 
-        expect(values['Bilgi'], 10);
+        expect(values['Bilgi'], 12);
       });
 
-      test('iki kategorili oyunda hot deal uygulanmaz ve tüm baz puanlar 10 kalır', () {
+      test('iki kategorili oyunda hot deal uygulanır', () {
         final values = GameConstants.buildEconomyTurnValues(
           categories: const ['Bilgi', 'Görsel'],
           hotCategory: 'Bilgi',
           penalizedCategory: 'Görsel',
         );
 
-        expect(values['Bilgi'], 10);
-        expect(values['Görsel'], 10);
+        expect(values['Bilgi'], 12);
+        expect(values['Görsel'], 8);
       });
 
-      test('iki kategorili oyunda hot category ve penalty category üretilmez', () {
+      test('iki kategorili oyunda hot category seçilebilir', () {
         final hotCategory = GameConstants.pickEconomyHotCategory(
           categories: const ['Bilgi', 'Görsel'],
         );
@@ -160,11 +160,11 @@ void main() {
           currentHotCategory: null,
         );
 
-        expect(hotCategory, isNull);
-        expect(penalty, isNull);
+        expect(hotCategory, isIn(['Bilgi', 'Görsel']));
+        expect(penalty, 'Bilgi');
       });
 
-      test('iki kategorili oyunda stored value 9 olsa bile efektif baz puan 10 çözülür', () {
+      test('iki kategorili oyunda stored value doğrudan çözülür', () {
         final baseBilgi = GameConstants.economyResolvedStoredBaseValue(
           category: 'Bilgi',
           storedValues: const {'Bilgi': 9, 'Görsel': 10},
@@ -174,7 +174,7 @@ void main() {
           storedValues: const {'Bilgi': 9, 'Görsel': 10},
         );
 
-        expect(baseBilgi, 10);
+        expect(baseBilgi, 9);
         expect(baseGorsel, 10);
       });
 

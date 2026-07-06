@@ -6,17 +6,20 @@ import 'package:social_risk/features/room/providers/room_provider.dart';
 import 'package:social_risk/shared/models/enums.dart';
 import '../helpers/fake_room_repository.dart';
 import '../helpers/fake_user_repository.dart';
+import '../helpers/test_provider_overrides.dart';
 
 void main() {
   group('RoomController (with FakeRoomRepository)', () {
     test('createRoom returns room code from fake repository', () async {
       final container = ProviderContainer(
-        overrides: [
-          roomRepositoryProvider.overrideWithValue(
-            FakeRoomRepository(createdRoomCode: 'ABC123'),
-          ),
-          userRepositoryProvider.overrideWithValue(FakeUserRepository()),
-        ],
+        overrides: unitTestOverrides(
+          extra: [
+            roomRepositoryProvider.overrideWithValue(
+              FakeRoomRepository(createdRoomCode: 'ABC123'),
+            ),
+            userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+          ],
+        ),
       );
       addTearDown(container.dispose);
 
@@ -38,10 +41,12 @@ void main() {
 
     test('leaveRoom clears current room tracker', () async {
       final container = ProviderContainer(
-        overrides: [
-          roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
-          userRepositoryProvider.overrideWithValue(FakeUserRepository()),
-        ],
+        overrides: unitTestOverrides(
+          extra: [
+            roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
+            userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+          ],
+        ),
       );
       addTearDown(container.dispose);
 
@@ -64,10 +69,12 @@ void main() {
 
     test('joinRoom updates room tracker', () async {
       final container = ProviderContainer(
-        overrides: [
-          roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
-          userRepositoryProvider.overrideWithValue(FakeUserRepository()),
-        ],
+        overrides: unitTestOverrides(
+          extra: [
+            roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
+            userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+          ],
+        ),
       );
       addTearDown(container.dispose);
 
@@ -82,10 +89,12 @@ void main() {
 
     test('toggleReady completes without error', () async {
       final container = ProviderContainer(
-        overrides: [
-          roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
-          userRepositoryProvider.overrideWithValue(FakeUserRepository()),
-        ],
+        overrides: unitTestOverrides(
+          extra: [
+            roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
+            userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+          ],
+        ),
       );
       addTearDown(container.dispose);
 
@@ -99,10 +108,12 @@ void main() {
 
     test('startGame completes without error', () async {
       final container = ProviderContainer(
-        overrides: [
-          roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
-          userRepositoryProvider.overrideWithValue(FakeUserRepository()),
-        ],
+        overrides: unitTestOverrides(
+          extra: [
+            roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
+            userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+          ],
+        ),
       );
       addTearDown(container.dispose);
 
@@ -112,10 +123,12 @@ void main() {
 
     test('toggleVisibility completes without error', () async {
       final container = ProviderContainer(
-        overrides: [
-          roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
-          userRepositoryProvider.overrideWithValue(FakeUserRepository()),
-        ],
+        overrides: unitTestOverrides(
+          extra: [
+            roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
+            userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+          ],
+        ),
       );
       addTearDown(container.dispose);
 
@@ -128,10 +141,12 @@ void main() {
 
     test('cleanupZombies completes without error', () async {
       final container = ProviderContainer(
-        overrides: [
-          roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
-          userRepositoryProvider.overrideWithValue(FakeUserRepository()),
-        ],
+        overrides: unitTestOverrides(
+          extra: [
+            roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
+            userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+          ],
+        ),
       );
       addTearDown(container.dispose);
 

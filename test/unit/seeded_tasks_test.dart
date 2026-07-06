@@ -3,15 +3,30 @@ import 'package:social_risk/core/data/seeded_tasks/seeded_tasks.dart';
 
 void main() {
   group('SeededTasks', () {
-    test('getAllSeededTasks returns 8 categories with 70+ tasks each', () {
+    const expectedCategories = {
+      'Fiziksel',
+      'Bilgi',
+      'Dijital',
+      'İtiraf',
+      'Zihinsel',
+      'Ahlaki',
+      'Görsel',
+      'Mahrem',
+      'Stand-Up',
+      'Kıvırma',
+      'Kaos Mühendisi',
+      'Boş Vaatler',
+    };
+
+    test('getAllSeededTasks returns 12 categories with 70+ tasks each', () {
       final tasks = getAllSeededTasks();
-      expect(tasks.length, greaterThanOrEqualTo(560));
+      expect(tasks.length, greaterThanOrEqualTo(840));
       final byCategory = <String, int>{};
       for (final task in tasks) {
         final c = task['category'] as String;
         byCategory[c] = (byCategory[c] ?? 0) + 1;
       }
-      expect(byCategory.length, 8);
+      expect(byCategory.length, 12);
       for (final count in byCategory.values) {
         expect(count, greaterThanOrEqualTo(70));
       }
@@ -31,20 +46,10 @@ void main() {
       }
     });
 
-    test('all categories are the 8 seeded categories', () {
+    test('all categories are the 12 seeded categories', () {
       final tasks = getAllSeededTasks();
-      const expectedCategories = {
-        'Fiziksel',
-        'Bilgi',
-        'Dijital',
-        'İtiraf',
-        'Zihinsel',
-        'Ahlaki',
-        'Görsel',
-        'Mahrem',
-      };
       final categories = tasks.map((t) => t['category'] as String).toSet();
-      expect(categories.length, 8);
+      expect(categories.length, 12);
       expect(categories, expectedCategories);
     });
 
@@ -55,7 +60,7 @@ void main() {
         final c = task['category'] as String;
         byCategory[c] = (byCategory[c] ?? 0) + 1;
       }
-      expect(byCategory.length, 8);
+      expect(byCategory.length, 12);
       for (final count in byCategory.values) {
         expect(count, greaterThanOrEqualTo(70));
       }

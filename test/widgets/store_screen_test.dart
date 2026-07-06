@@ -6,6 +6,7 @@ import 'package:social_risk/features/auth/domain/user_entity.dart';
 import 'package:social_risk/features/auth/providers/auth_provider.dart';
 import 'package:social_risk/features/auth/providers/user_provider.dart';
 import 'package:social_risk/features/economy/domain/cosmetic_item_entity.dart';
+import 'package:social_risk/features/economy/domain/economy_exceptions.dart';
 import 'package:social_risk/features/economy/providers/economy_provider.dart';
 import 'package:social_risk/features/store/presentation/store_screen.dart';
 import '../helpers/fake_economy_controller.dart';
@@ -31,7 +32,7 @@ class ThrowInsufficientBalanceEconomyController extends EconomyController {
     required String cosmeticId,
     required int price,
   }) async {
-    throw Exception('Yetersiz bakiye');
+    throw const InsufficientBalanceException();
   }
 }
 

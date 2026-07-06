@@ -40,7 +40,7 @@ void main() {
       expect(model.displayName, 'Misafir');
       expect(model.avatarUrl, isNull);
       expect(model.walletPoints, 0);
-      expect(model.rank, 'Newbie');
+      expect(model.rank, 'Çaylak');
       expect(model.ownedCosmetics, isEmpty);
       expect(model.ownedCategories, GameConstants.defaultCategories);
       expect(model.activeFrame, isNull);

@@ -51,7 +51,7 @@ void main() {
       await tester.pump();
 
       // Assert
-      expect(find.text('2. Tur (Hedef: 50 Puan)'), findsOneWidget);
+      expect(find.text('2. Tur • 50 P'), findsOneWidget);
     });
   });
 }

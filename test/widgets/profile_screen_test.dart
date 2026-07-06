@@ -353,7 +353,7 @@ void main() {
       await tester.tap(find.text('Eşyalar'));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Hata: Exception: Yüklenemedi'), findsOneWidget);
+      expect(find.text('Veriler yüklenemedi'), findsOneWidget);
     });
 
     // ---------- Eşyalar: setActiveFrame toggle (verify çağrı) ----------

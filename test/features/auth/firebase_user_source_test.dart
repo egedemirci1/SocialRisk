@@ -63,7 +63,8 @@ void main() {
 
       final doc = await fakeFirestore.collection('users').doc('u3').get();
       expect(doc.data()!['displayName'], 'Yeni');
-      expect(doc.data()!['walletPoints'], 50);
+      // walletPoints yalnızca createUserProfile / economy katmanında güncellenir.
+      expect(doc.data()!['walletPoints'], 0);
     });
 
     test('updateAvatarUrl merges avatarUrl', () async {

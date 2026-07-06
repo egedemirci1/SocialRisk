@@ -20,12 +20,11 @@ void main() {
   });
 
   group('FirebaseGameSource - pickCategoryEconomy', () {
-    test('pickCategoryEconomy uses Seesaw logic (one drops, one gains)', () async {
+    test('pickCategoryEconomy seçim sayısını artırır ve zorluk seçimine geçer', () async {
       const gameId = 'game123';
       const category = 'Dijital';
       const playerId = 'p1';
 
-      // Initial state with 10 for all categories
       final initialData = {
         'roomId': 'room1',
         'currentPlayerId': playerId,
@@ -40,7 +39,6 @@ void main() {
 
       await fakeFirestore.collection('games').doc(gameId).set(initialData);
 
-      // Execute pick (10 -> 8 decay; no rival transfer)
       await gameSource.pickCategoryEconomy(
         gameId: gameId,
         playerId: playerId,
@@ -49,13 +47,11 @@ void main() {
 
       final gameSnap = await fakeFirestore.collection('games').doc(gameId).get();
       final marketValues = Map<String, int>.from(gameSnap.data()?['categoryMarketValues']);
-      expect(marketValues[category], 8);
-      final others = marketValues.entries.where((e) => e.key != category).map((e) => e.value).toList();
-      expect(others, everyElement(10));
-      
-      // Turn check: currentPlayerId should STAY 'p1'
+      expect(marketValues[category], 10);
+      expect(gameSnap.data()?['categoryPickCounts'][category], 1);
       expect(gameSnap.data()?['currentPlayerId'], playerId);
       expect(gameSnap.data()?['status'], 'choosingDifficulty');
+      expect(gameSnap.data()?['selectedCategory'], category);
     });
 
     test('pickCategoryEconomy locks category at threshold', () async {
@@ -69,7 +65,7 @@ void main() {
         'turnOrder': [playerId],
         'categoryPickOrder': [playerId],
         'lockedCategories': [],
-        'categoryMarketValues': {'Dijital': 10, 'Bilgi': 10},
+        'categoryMarketValues': {'Dijital': 10, 'Bilgi': 10, 'Fiziksel': 10},
         'categoryPickCounts': {'Dijital': 2},
         'status': 'playing',
         'mode': 'economy',
@@ -220,6 +216,65 @@ void main() {
       final snap = await fakeFirestore.collection('games').doc(gameId).get();
       expect(snap.data()?['selectedCategory'], 'Bilgi');
       expect(snap.data()?['status'], 'choosingDifficulty');
+    });
+
+    test('assignTaskByCategory zorluk havuzlarından görev seçer', () async {
+      const gameId = 'game_mixed_fallback';
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'usedTaskIds': <String>[],
+        'taskPool': {
+          'Dijital_easy': [
+            {
+              'id': 'easy1',
+              'category': 'Dijital',
+              'content': 'Kolay görev',
+              'difficulty': 'easy',
+            },
+          ],
+        },
+      });
+
+      await gameSource.assignTaskByCategory(gameId: gameId, category: 'Dijital');
+
+      final snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['currentTask']['id'], 'easy1');
+      expect(snap.data()?['currentTask']['multiplier'], 2);
+    });
+
+    test('assignTaskByCategory görev yoksa AppException fırlatır', () async {
+      const gameId = 'game_empty_pool';
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'taskPool': {'Bilgi_mixed': <Map<String, dynamic>>[]},
+      });
+
+      expect(
+        () => gameSource.assignTaskByCategory(gameId: gameId, category: 'Bilgi'),
+        throwsA(isA<AppException>().having((e) => e.code, 'code', AppErrorCode.noTasksInCategory)),
+      );
+    });
+
+    test('assignTaskByCategory boş gameId ile Exception fırlatır', () async {
+      expect(
+        () => gameSource.assignTaskByCategory(gameId: '', category: 'Bilgi'),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('assignTaskByCategory mevcut görev varsa güncelleme yapmaz', () async {
+      const gameId = 'game_has_task';
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'currentTask': {'id': 'existing', 'category': 'Bilgi', 'content': 'x', 'difficulty': 'easy'},
+        'taskPool': {
+          'Bilgi_mixed': [
+            {'id': 'task1', 'category': 'Bilgi', 'content': 'Yeni', 'difficulty': 'medium'},
+          ],
+        },
+      });
+
+      await gameSource.assignTaskByCategory(gameId: gameId, category: 'Bilgi');
+
+      final snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['currentTask']['id'], 'existing');
     });
   });
 

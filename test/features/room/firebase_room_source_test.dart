@@ -371,7 +371,8 @@ void main() {
         final roomDoc = await fakeFirestore.collection('rooms').doc(roomCode).get();
         expect(roomDoc.exists, isFalse);
         gameDoc = await fakeFirestore.collection('games').doc(gameId).get();
-        expect(gameDoc.exists, isFalse);
+        // Oyun dökümanı istemci tarafında silinmez (Cloud Functions / rules).
+        expect(gameDoc.exists, isTrue);
       });
     });
   });

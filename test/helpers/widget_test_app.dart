@@ -3,11 +3,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_risk/core/providers/shared_prefs_provider.dart';
 import 'package:social_risk/features/premium/data/premium_purchase_service.dart';
 import 'package:social_risk/features/premium/providers/premium_provider.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
+import 'test_shared_preferences.dart';
+
+export 'test_shared_preferences.dart';
 
 const testLocale = Locale('tr');
 
@@ -18,25 +20,11 @@ const testLocalizationsDelegates = [
   GlobalCupertinoLocalizations.delegate,
 ];
 
-class TestSharedPreferences extends Fake implements SharedPreferences {
-  final Map<String, Object> _data = {};
-
-  @override
-  String? getString(String key) => _data[key] as String?;
-
-  @override
-  Future<bool> setString(String key, String value) async {
-    _data[key] = value;
-    return true;
-  }
-}
-
 class MockPremiumPurchaseService extends Mock implements PremiumPurchaseService {}
 
-final _testSharedPreferences = TestSharedPreferences();
 MockPremiumPurchaseService? _mockPremiumPurchaseService;
 
-void _ensureTestMocks() {
+void ensureTestMocks() {
   final mock = _mockPremiumPurchaseService ??= MockPremiumPurchaseService();
   when(() => mock.init()).thenAnswer((_) async {});
   when(() => mock.dispose()).thenAnswer((_) async {});
@@ -46,7 +34,7 @@ void _ensureTestMocks() {
 }
 
 final defaultWidgetTestOverrides = [
-  sharedPreferencesProvider.overrideWithValue(_testSharedPreferences),
+  sharedPreferencesProvider.overrideWithValue(testSharedPreferences),
   premiumPurchaseServiceProvider.overrideWithValue(
     _mockPremiumPurchaseService ?? MockPremiumPurchaseService(),
   ),
@@ -57,10 +45,10 @@ Widget wrapWithLocalizedApp({
   overrides = const [],
   Size size = const Size(600, 900),
 }) {
-  _ensureTestMocks();
+  ensureTestMocks();
   return ProviderScope(
     overrides: [
-      sharedPreferencesProvider.overrideWithValue(_testSharedPreferences),
+      sharedPreferencesProvider.overrideWithValue(testSharedPreferences),
       premiumPurchaseServiceProvider.overrideWithValue(_mockPremiumPurchaseService!),
       ...overrides,
     ],
@@ -80,10 +68,10 @@ Widget wrapWithLocalizedRouter({
   required GoRouter routerConfig,
   overrides = const [],
 }) {
-  _ensureTestMocks();
+  ensureTestMocks();
   return ProviderScope(
     overrides: [
-      sharedPreferencesProvider.overrideWithValue(_testSharedPreferences),
+      sharedPreferencesProvider.overrideWithValue(testSharedPreferences),
       premiumPurchaseServiceProvider.overrideWithValue(_mockPremiumPurchaseService!),
       ...overrides,
     ],

@@ -1,31 +1,20 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:social_risk/features/economy/data/firebase_economy_source.dart';
-
-class MockFirebaseFunctions extends Fake implements FirebaseFunctions {
-  HttpsCallable call(String name) {
-    return MockHttpsCallable();
-  }
-}
-
-class MockHttpsCallable extends Fake implements HttpsCallable {
-  @override
-  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
-    throw UnimplementedError('Mock not needed for buyCosmetic tests');
-  }
-}
+import '../../helpers/mock_firebase_functions.dart';
 
 void main() {
   group('FirebaseEconomySource', () {
     late FakeFirebaseFirestore fakeFirestore;
+    late MockFirebaseFunctions mockFunctions;
     late FirebaseEconomySource economySource;
 
     setUp(() {
       fakeFirestore = FakeFirebaseFirestore();
+      mockFunctions = MockFirebaseFunctions();
       economySource = FirebaseEconomySource(
         firestore: fakeFirestore,
-        functions: MockFirebaseFunctions(),
+        functions: mockFunctions,
       );
     });
 
@@ -43,8 +32,7 @@ void main() {
     }
 
     group('buyCosmetic', () {
-      test('yeterli puanla satın alma başarılı ve puan düşer, kozmetik listeye eklenir',
-          () async {
+      test('yeterli puanla satın alma Cloud Function çağrısı yapar', () async {
         const uid = 'user1';
         await seedUser(uid: uid, walletPoints: 1000, ownedCosmetics: []);
 
@@ -54,17 +42,17 @@ void main() {
           price: 500,
         );
 
-        final doc = await fakeFirestore.collection('users').doc(uid).get();
-        expect(doc.exists, isTrue);
-        final data = doc.data()!;
-        expect(data['walletPoints'], 500);
-        expect(
-          List<String>.from(data['ownedCosmetics'] ?? []),
-          contains('frame_fire'),
-        );
+        expect(mockFunctions.calls.length, 1);
+        expect(mockFunctions.calls.first.name, 'buyCosmetic');
+        expect(mockFunctions.calls.first.parameters['uid'], uid);
+        expect(mockFunctions.calls.first.parameters['cosmeticId'], 'frame_fire');
+        expect(mockFunctions.calls.first.parameters['price'], 500);
       });
 
       test('puan yetersizse Exception fırlatır', () async {
+        mockFunctions.handlers['buyCosmetic'] =
+            (_) async => throw Exception('Yetersiz bakiye.');
+
         const uid = 'user2';
         await seedUser(uid: uid, walletPoints: 100, ownedCosmetics: []);
 
@@ -76,14 +64,12 @@ void main() {
           ),
           throwsA(isA<Exception>()),
         );
-
-        final doc = await fakeFirestore.collection('users').doc(uid).get();
-        expect(doc.data()!['walletPoints'], 100);
-        expect(List<String>.from(doc.data()!['ownedCosmetics'] ?? []), isEmpty);
       });
 
-      test('zaten alınmış ürün için Exception fırlatır',
-          () async {
+      test('zaten alınmış ürün için Exception fırlatır', () async {
+        mockFunctions.handlers['buyCosmetic'] =
+            (_) async => throw Exception('Bu eşyaya zaten sahipsiniz.');
+
         const uid = 'user3';
         await seedUser(
           uid: uid,
@@ -99,16 +85,12 @@ void main() {
           ),
           throwsA(isA<Exception>()),
         );
-
-        final doc = await fakeFirestore.collection('users').doc(uid).get();
-        expect(doc.data()!['walletPoints'], 1000);
-        expect(
-          List<String>.from(doc.data()!['ownedCosmetics'] ?? []),
-          ['frame_fire'],
-        );
       });
 
       test('kullanıcı yoksa Exception fırlatır', () async {
+        mockFunctions.handlers['buyCosmetic'] =
+            (_) async => throw Exception('Kullanıcı bulunamadı.');
+
         expect(
           () => economySource.buyCosmetic(
             uid: 'nonexistent_user',
@@ -119,7 +101,7 @@ void main() {
         );
       });
 
-      test('satın alınan ürün ownedCosmetics listesine eklenir', () async {
+      test('satın alma çağrısı doğru kozmetik kimliği ile yapılır', () async {
         const uid = 'user4';
         await seedUser(uid: uid, walletPoints: 800, ownedCosmetics: []);
 
@@ -129,10 +111,8 @@ void main() {
           price: 500,
         );
 
-        final doc = await fakeFirestore.collection('users').doc(uid).get();
-        final owned = List<String>.from(doc.data()!['ownedCosmetics'] ?? []);
-        expect(owned, contains('frame_ice'));
-        expect(owned.length, 1);
+        expect(mockFunctions.calls.single.name, 'buyCosmetic');
+        expect(mockFunctions.calls.single.parameters['cosmeticId'], 'frame_ice');
       });
     });
 
@@ -158,19 +138,20 @@ void main() {
       });
 
       test('doc yoksa merge ile oluşturup puan yazar', () async {
-        const uid = 'new_user';
-        await economySource.addPointsToWallet(uid: uid, points: 300);
+        const uid = 'user7';
+
+        await economySource.addPointsToWallet(uid: uid, points: 50);
 
         final doc = await fakeFirestore.collection('users').doc(uid).get();
         expect(doc.exists, isTrue);
-        expect(doc.data()!['walletPoints'], 300);
+        expect(doc.data()!['walletPoints'], 50);
       });
     });
 
     group('setActiveFrame / setActiveTitle', () {
       test('setActiveFrame değeri günceller', () async {
-        const uid = 'user7';
-        await seedUser(uid: uid, walletPoints: 0);
+        const uid = 'user8';
+        await seedUser(uid: uid);
 
         await economySource.setActiveFrame(uid: uid, cosmeticId: 'frame_fire');
 
@@ -179,12 +160,10 @@ void main() {
       });
 
       test('setActiveFrame null ile temizlenir', () async {
-        const uid = 'user8';
-        await fakeFirestore.collection('users').doc(uid).set({
-          'displayName': 'U',
-          'walletPoints': 0,
-          'activeFrame': 'frame_ice',
-          'updatedAt': DateTime.now(),
+        const uid = 'user9';
+        await seedUser(uid: uid);
+        await fakeFirestore.collection('users').doc(uid).update({
+          'activeFrame': 'frame_fire',
         });
 
         await economySource.setActiveFrame(uid: uid, cosmeticId: null);
@@ -194,8 +173,8 @@ void main() {
       });
 
       test('setActiveTitle değeri günceller', () async {
-        const uid = 'user9';
-        await seedUser(uid: uid, walletPoints: 0);
+        const uid = 'user10';
+        await seedUser(uid: uid);
 
         await economySource.setActiveTitle(uid: uid, cosmeticId: 'title_king');
 
@@ -206,11 +185,28 @@ void main() {
 
     group('fetchCosmetics', () {
       test('sabit kozmetik listesini döner', () async {
-        final list = await economySource.fetchCosmetics();
-        expect(list, isNotEmpty);
-        expect(list.any((e) => e.id == 'frame_fire' && e.type == 'frame'), true);
-        expect(list.any((e) => e.id == 'title_legend' && e.type == 'title'), true);
-        expect(list.any((e) => e.type == 'category'), true);
+        final items = await economySource.fetchCosmetics();
+        expect(items, isNotEmpty);
+        expect(items.any((item) => item.id == 'frame_fire'), isTrue);
+      });
+    });
+
+    group('distributeRewards', () {
+      test('Cloud Function çağrısı yapar', () async {
+        await economySource.distributeRewards({'p1': 100, 'p2': 50});
+
+        expect(mockFunctions.calls.length, 1);
+        expect(mockFunctions.calls.first.name, 'distributeRewards');
+        expect(mockFunctions.calls.first.parameters['playerRewards'], {
+          'p1': 100,
+          'p2': 50,
+        });
+      });
+
+      test('boş harita için erken döner', () async {
+        await economySource.distributeRewards({});
+
+        expect(mockFunctions.calls, isEmpty);
       });
     });
   });

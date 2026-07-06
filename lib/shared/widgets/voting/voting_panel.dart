@@ -27,6 +27,7 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
     with TickerProviderStateMixin {
   String? _selectedVote;
   late final AnimationController _timerController;
+  AudioService? _audioService;
 
   @override
   void initState() {
@@ -44,22 +45,24 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !widget.isEnabled) return;
-      ref.read(audioServiceProvider).startCountdownLoop();
+      _audioService = ref.read(audioServiceProvider);
+      _audioService!.startCountdownLoop();
     });
   }
 
   @override
   void dispose() {
-    ref.read(audioServiceProvider).stopCountdown();
+    _audioService?.stopCountdown();
     _timerController.dispose();
     super.dispose();
   }
 
   void _castVote(String value, {bool timedOut = false}) {
     if (_selectedVote != null || !widget.isEnabled) return;
-    ref.read(audioServiceProvider).stopCountdown();
+    final AudioService audio = _audioService ?? ref.read(audioServiceProvider);
+    audio.stopCountdown();
     if (!timedOut) {
-      ref.read(audioServiceProvider).playSfx(AppSfx.buttonClick);
+      audio.playSfx(AppSfx.buttonClick);
     }
     setState(() => _selectedVote = value);
     widget.onVote(value, timedOut: timedOut);
