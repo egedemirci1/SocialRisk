@@ -17,6 +17,8 @@ class RoomModel {
   final bool useCustomDeck;
   final DateTime createdAt;
   final Map<String, LobbyEmoteModel> lobbyEmotes;
+  final bool? hostLeftSignal;
+  final DateTime? hostLeftAt;
 
   const RoomModel({
     required this.roomCode,
@@ -32,6 +34,8 @@ class RoomModel {
     this.gameId,
     required this.createdAt,
     this.lobbyEmotes = const {},
+    this.hostLeftSignal,
+    this.hostLeftAt,
   });
 
   factory RoomModel.fromJson(Map<String, dynamic> json) {
@@ -48,6 +52,8 @@ class RoomModel {
       categories: List<String>.from(json['categories'] ?? []),
       useCustomDeck: json['useCustomDeck'] as bool? ?? false,
       gameId: json['gameId'] as String?,
+      hostLeftSignal: json['hostLeftSignal'] as bool?,
+      hostLeftAt: (json['hostLeftAt'] as Timestamp?)?.toDate(),
       createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       lobbyEmotes: rawEmotes.map(
         (key, value) => MapEntry(
@@ -107,6 +113,8 @@ class RoomModel {
       lobbyEmotes: lobbyEmotes.map(
         (key, value) => MapEntry(key, value.toEntity()),
       ),
+      hostLeftSignal: hostLeftSignal,
+      hostLeftAt: hostLeftAt,
     );
   }
 }

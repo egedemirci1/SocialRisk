@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -123,7 +124,7 @@ void main() {
 
     // --- Avatar URL senaryoları ---
 
-    testWidgets('avatarUrl verildiğinde CircleAvatar backgroundImage kullanır', (tester) async {
+    testWidgets('avatarUrl verildiğinde CachedNetworkImage kullanır', (tester) async {
       const url = 'https://example.com/avatar.png';
       await HttpOverrides.runZoned(() async {
         await tester.pumpWidget(
@@ -143,11 +144,10 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        final circleAvatar = tester.widget<CircleAvatar>(find.byType(CircleAvatar));
-        expect(circleAvatar.backgroundImage, isNotNull);
-        expect(circleAvatar.backgroundImage, isA<NetworkImage>());
-        expect((circleAvatar.backgroundImage! as NetworkImage).url, url);
-        expect(find.text('A'), findsNothing);
+        final image = tester.widget<CachedNetworkImage>(
+          find.byType(CachedNetworkImage),
+        );
+        expect(image.imageUrl, url);
       }, createHttpClient: createMockImageHttpClient);
     });
 
@@ -180,10 +180,10 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.byType(CustomPaint), findsWidgets);
-        final circleAvatar = tester.widget<CircleAvatar>(find.byType(CircleAvatar));
-        expect(circleAvatar.backgroundImage, isNotNull);
-        expect(circleAvatar.backgroundImage, isA<NetworkImage>());
-        expect((circleAvatar.backgroundImage! as NetworkImage).url, url);
+        final image = tester.widget<CachedNetworkImage>(
+          find.byType(CachedNetworkImage),
+        );
+        expect(image.imageUrl, url);
       }, createHttpClient: createMockImageHttpClient);
     });
 

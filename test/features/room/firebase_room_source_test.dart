@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:social_risk/core/constants/game_constants.dart';
+import 'package:social_risk/core/errors/app_exception.dart';
 import 'package:social_risk/features/admin/data/task_firestore_source.dart';
 import 'package:social_risk/features/room/data/firebase_room_source.dart';
 import 'package:social_risk/shared/models/enums.dart';
@@ -78,10 +79,10 @@ void main() {
           playerId: 'p1',
           playerName: 'P',
         ),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Oda bulunamadı'),
+        throwsA(isA<AppException>().having(
+          (e) => e.code,
+          'code',
+          AppErrorCode.roomNotFound,
         )),
       );
     });
@@ -229,10 +230,10 @@ void main() {
             playerId: 'extra',
             playerName: 'Fazla',
           ),
-          throwsA(isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('Oda dolu'),
+          throwsA(isA<AppException>().having(
+            (e) => e.code,
+            'code',
+            AppErrorCode.roomFull,
           )),
         );
 

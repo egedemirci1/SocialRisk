@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../features/room/providers/room_provider.dart';
 import '../../../features/auth/providers/auth_provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/models/enums.dart';
 import '../../utils/toast_utils.dart';
 
@@ -48,7 +49,7 @@ class ActiveGameGuard extends ConsumerWidget {
           if (context.mounted) {
             ToastUtils.showError(
               context,
-              'Oyuncu sayısı yetersiz kaldığı için oyun sona erdi.',
+              AppLocalizations.of(context)!.gameEndedInsufficientPlayers,
             );
 
             // Kalan o son kişiyi de odadan çıkartıyoruz

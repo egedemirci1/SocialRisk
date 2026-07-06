@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -101,7 +102,7 @@ class PlayerAvatar extends ConsumerWidget {
                   boxShadow: hasFrame
                       ? [
                           BoxShadow(
-                            color: _frameColor(currentFrameId ?? '')
+                            color: _frameColor(currentFrameId)
                                 .withValues(alpha: 0.5),
                             blurRadius: frameGlowBlur,
                             spreadRadius: frameGlowSpread,
@@ -120,20 +121,24 @@ class PlayerAvatar extends ConsumerWidget {
                 child: CircleAvatar(
                   radius: radius,
                   backgroundColor: AppColors.surfaceElevated,
-                  backgroundImage:
-                      useAvatarImage ? NetworkImage(currentAvatarUrl ?? '') : null,
-                  child: !useAvatarImage
-                      ? Text(
-                          displayName.isNotEmpty
-                              ? displayName[0].toUpperCase()
-                              : '?',
-                          style: AppTextStyles.titleSmall.copyWith(
-                            fontSize: radius * 0.8,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white54,
+                  child: useAvatarImage
+                      ? ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: currentAvatarUrl,
+                            width: avatarDiameter,
+                            height: avatarDiameter,
+                            fit: BoxFit.cover,
+                            placeholder: (_, __) => ColoredBox(
+                              color: AppColors.surfaceElevated,
+                              child: Center(child: _initialsText(radius)),
+                            ),
+                            errorWidget: (_, __, ___) => ColoredBox(
+                              color: AppColors.surfaceElevated,
+                              child: Center(child: _initialsText(radius)),
+                            ),
                           ),
                         )
-                      : null,
+                      : _initialsText(radius),
                 ),
               ),
             ),
@@ -145,7 +150,8 @@ class PlayerAvatar extends ConsumerWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: _frameColor(currentFrameId ?? '').withValues(alpha: 0.8),
+                      color: _frameColor(currentFrameId)
+                          .withValues(alpha: 0.8),
                       width: frameStrokeWidth,
                     ),
                   ),
@@ -156,7 +162,7 @@ class PlayerAvatar extends ConsumerWidget {
               child: IgnorePointer(
                 child: CustomPaint(
                   painter: CustomFramePainter(
-                    frameId: currentFrameId ?? '',
+                    frameId: currentFrameId,
                     radius: radius,
                   ),
                 ),
@@ -173,6 +179,17 @@ class PlayerAvatar extends ConsumerWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _initialsText(double avatarRadius) {
+    return Text(
+      displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
+      style: AppTextStyles.titleSmall.copyWith(
+        fontSize: avatarRadius * 0.8,
+        fontWeight: FontWeight.w700,
+        color: Colors.white54,
       ),
     );
   }

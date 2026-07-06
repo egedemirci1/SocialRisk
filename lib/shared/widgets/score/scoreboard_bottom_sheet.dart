@@ -8,6 +8,9 @@ import '../../../features/room/providers/room_provider.dart';
 import '../../../features/auth/providers/user_provider.dart';
 import '../../../features/economy/providers/economy_provider.dart';
 import '../common/player_avatar.dart';
+import '../../../shared/widgets/common/async_error_view.dart';
+import '../../../shared/utils/error_message_utils.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ScoreboardBottomSheet extends ConsumerWidget {
   const ScoreboardBottomSheet({super.key, required this.roomCode});
@@ -118,7 +121,19 @@ class ScoreboardBottomSheet extends ConsumerWidget {
                             loading: () => const Center(
                               child: CircularProgressIndicator(),
                             ),
-                            error: (e, _) => Center(child: Text('Hata: $e')),
+                            error: (e, _) {
+                              final l = AppLocalizations.of(context)!;
+                              return Center(
+                                child: AsyncErrorView(
+                                  message: l.loadFailed,
+                                  detail: ErrorMessageUtils.formatUserError(e, l),
+                                  onRetry: () => ref.invalidate(
+                                    watchPlayersProvider(roomCode),
+                                  ),
+                                  compact: true,
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],

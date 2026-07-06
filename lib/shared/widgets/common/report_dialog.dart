@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../features/auth/providers/user_provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../utils/toast_utils.dart';
 
 class ReportDialog {
@@ -12,11 +13,12 @@ class ReportDialog {
     required String targetUserName,
     required String targetUserAvatar,
   }) async {
+    final l = AppLocalizations.of(context)!;
     final reasons = [
-      'Uygunsuz Fotoğraf / Çıplaklık',
-      'Şiddet veya Tehdit',
-      'Spam veya Reklam',
-      'Diğer',
+      l.reportReasonInappropriate,
+      l.reportReasonViolence,
+      l.reportReasonSpam,
+      l.reportReasonOther,
     ];
 
     String selectedReason = reasons.first;
@@ -28,16 +30,16 @@ class ReportDialog {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: AppColors.surface,
-              title: const Text(
-                'Kullanıcıyı Raporla',
-                style: TextStyle(color: Colors.white),
+              title: Text(
+                l.reportUserTitle,
+                style: const TextStyle(color: Colors.white),
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Bu kullanıcının profil fotoğrafını raporlamak istediğinize emin misiniz?',
-                    style: TextStyle(color: Colors.white70),
+                  Text(
+                    l.reportUserConfirmMessage,
+                    style: const TextStyle(color: Colors.white70),
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
@@ -58,13 +60,13 @@ class ReportDialog {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
-                  child: const Text('İptal'),
+                  child: Text(l.cancel),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, true),
-                  child: const Text(
-                    'Raporla',
-                    style: TextStyle(color: AppColors.error),
+                  child: Text(
+                    l.reportUserAction,
+                    style: const TextStyle(color: AppColors.error),
                   ),
                 ),
               ],
@@ -85,11 +87,11 @@ class ReportDialog {
               reason: selectedReason,
             );
         if (context.mounted) {
-          ToastUtils.showSuccess(context, 'Kullanıcı raporlandı. İnceleyeceğiz.');
+          ToastUtils.showSuccess(context, l.reportUserSuccess);
         }
       } catch (e) {
         if (context.mounted) {
-          ToastUtils.showError(context, 'Raporlanırken hata oluştu.');
+          ToastUtils.showError(context, l.reportUserFailed);
         }
       }
     }

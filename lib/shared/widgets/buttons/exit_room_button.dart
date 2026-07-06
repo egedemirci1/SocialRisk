@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'dart:async';
-import '../../../core/constants/app_colors.dart';
-import '../../../features/auth/providers/auth_provider.dart';
-import '../../../features/room/providers/room_provider.dart';
-import '../../../core/constants/app_text_styles.dart';
-import '../../utils/toast_utils.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
+
+import '../../../core/constants/app_colors.dart';
+import '../guards/room_exit_guard.dart';
 
 class ExitRoomButton extends ConsumerWidget {
   final String roomCode;
@@ -16,108 +12,18 @@ class ExitRoomButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return IconButton(
-      icon: const Icon(Icons.exit_to_app_rounded, color: AppColors.primary),
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (ctx) => _ExitCountdownDialog(roomCode: roomCode),
-        );
-      },
-    );
-  }
-}
-
-class _ExitCountdownDialog extends ConsumerStatefulWidget {
-  const _ExitCountdownDialog({required this.roomCode});
-
-  final String roomCode;
-
-  @override
-  ConsumerState<_ExitCountdownDialog> createState() => _ExitCountdownDialogState();
-}
-
-class _ExitCountdownDialogState extends ConsumerState<_ExitCountdownDialog> {
-  static const int _initialSeconds = 3;
-  late int _remaining;
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _remaining = _initialSeconds;
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) return;
-      if (_remaining <= 1) {
-        setState(() => _remaining = 0);
-        timer.cancel();
-      } else {
-        setState(() => _remaining--);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final canExit = _remaining == 0;
-    return AlertDialog(
-      backgroundColor: AppColors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: AppColors.accent.withValues(alpha: 0.3)),
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.leavePartyTitle,
-        style: AppTextStyles.titleMedium.copyWith(
-          color: AppColors.accent,
-          fontWeight: FontWeight.bold,
+    final l = AppLocalizations.of(context)!;
+    return Tooltip(
+      message: l.leavePartyTitle,
+      child: IconButton(
+        icon: const Icon(Icons.exit_to_app_rounded, color: AppColors.primary),
+        onPressed: () => showLeaveRoomDialog(
+          context,
+          ref,
+          roomCode,
+          mode: LeaveRoomMode.inGame,
         ),
       ),
-      content: Text(
-        canExit
-            ? AppLocalizations.of(context)!.leavePartyConfirm
-            : AppLocalizations.of(context)!.exitButtonActiveIn(_remaining),
-        style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: Colors.white54)),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-          ),
-          onPressed: !canExit
-              ? null
-              : () {
-                  Navigator.of(context).pop();
-                  final user = ref.read(currentUserProvider);
-                  if (user != null) {
-                    ref.read(roomControllerProvider.notifier).leaveRoom(
-                          roomCode: widget.roomCode,
-                          playerId: user.uid,
-                        );
-                  }
-                  if (context.mounted) {
-                    ToastUtils.showInfo(context, AppLocalizations.of(context)!.leftRoomToast);
-                  }
-                  context.go('/home');
-                },
-          child: Text(
-            canExit
-                ? AppLocalizations.of(context)!.deleteAndExit
-                : '${AppLocalizations.of(context)!.deleteAndExit} ($_remaining)',
-          ),
-        ),
-      ],
     );
   }
 }

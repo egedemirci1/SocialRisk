@@ -244,6 +244,33 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get errorPermissionDenied => 'Bu işlem için yetkiniz yok';
+
+  @override
+  String get errorServiceUnavailable =>
+      'Hizmet geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin';
+
+  @override
+  String get errorNotFound => 'İstenen kayıt bulunamadı';
+
+  @override
+  String get errorRequestTimedOut =>
+      'İstek zaman aşımına uğradı. Lütfen tekrar deneyin';
+
+  @override
+  String get errorNetwork =>
+      'Bağlantı hatası. İnternetinizi kontrol edip tekrar deneyin';
+
+  @override
+  String get errorUnknown => 'Bir şeyler ters gitti. Lütfen tekrar deneyin';
+
+  @override
+  String get errorAlreadyOwned => 'Bu eşyaya zaten sahipsiniz';
+
+  @override
+  String get errorUserNotFound => 'Kullanıcı bulunamadı';
+
+  @override
   String get storeTitle => 'Mağaza & Cüzdan';
 
   @override
@@ -443,6 +470,18 @@ class AppLocalizationsTr extends AppLocalizations {
   String get preparingGame => 'Oyun Hazırlanıyor...';
 
   @override
+  String get continueParty => 'Oyuna Devam Et';
+
+  @override
+  String activePartySubtitle(String roomCode) {
+    return 'Oda $roomCode — dokunarak geri dön';
+  }
+
+  @override
+  String get invalidPasteRoomCode =>
+      'Panoda geçerli 6 haneli oda kodu bulunamadı.';
+
+  @override
   String get wheelModeCapital => 'ÇARK MODU';
 
   @override
@@ -503,6 +542,10 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get economyModeDesc =>
       'Kategorilerin puanları popülerliğine göre dinamik olarak değişir: Az seçilen gizli cevherler daha çok puan kazandırırken, herkesin seçtiği kategorilerin değeri düşer. Stratejini kur ve en karlı riskleri al! (En az 3 kategoride aktifleşir)';
+
+  @override
+  String get minThreeCategoriesEconomy =>
+      'Borsa modu için en az 3 kategori seçmelisin.';
 
   @override
   String get singleCategoryEconomyWarn =>
@@ -874,6 +917,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get joinPartyButton => 'Partiye Katıl!';
 
   @override
+  String get pastePartyCode => 'Kodu yapıştır';
+
+  @override
   String get anonymousHint =>
       '* Anonim olarak devam edeceksiniz. İstatistikleriniz bu cihaza kaydedilir.';
 
@@ -1178,4 +1224,356 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get leftRoomToast => 'Odadan ayrıldınız';
+
+  @override
+  String get adminPanelTitle => 'YÖNETİCİ PANELİ';
+
+  @override
+  String adminTaskCountBanner(int total, int filtered) {
+    return 'Toplam $total görev • Filtreli: $filtered';
+  }
+
+  @override
+  String get adminMaintenanceCleanup => 'BAKIM TEMİZLİĞİ';
+
+  @override
+  String get adminRefreshTasks => 'GÖREVLERİ YENİLE';
+
+  @override
+  String get adminDeleteOldRooms => 'ESKİ ODALARI SİL (3h+)';
+
+  @override
+  String get adminSortLabel => 'Sıralama:';
+
+  @override
+  String get adminSortNewest => 'En Yeni';
+
+  @override
+  String get adminSortMostLiked => 'En Çok Beğenilen 👍';
+
+  @override
+  String get adminSortLeastLiked => 'En Az Beğenilen 👎';
+
+  @override
+  String get adminSortMostDisliked => 'En Çok Beğenilmeyen 😒';
+
+  @override
+  String get adminCategoryFilterLabel => 'Kategori Filtresi:';
+
+  @override
+  String get adminFilterAll => 'Tümü';
+
+  @override
+  String get adminNoMatchingTasks => 'Filtreyle eşleşen görev bulunamadı.';
+
+  @override
+  String get adminMaintenanceCleanupTitle => 'BAKIM TEMİZLİĞİ?';
+
+  @override
+  String get adminMaintenanceCleanupBody =>
+      'Boş odalar, bitmiş oyunlar ve aktif olmayan kullanıcılar silinecek.';
+
+  @override
+  String get adminRun => 'ÇALIŞTIR';
+
+  @override
+  String adminMaintenanceCleanupResult(
+    int roomsDeleted,
+    int gamesDeleted,
+    int usersDeleted,
+  ) {
+    return 'Temizlik: $roomsDeleted oda, $gamesDeleted oyun, $usersDeleted kullanıcı silindi.';
+  }
+
+  @override
+  String get adminRefreshTasksTitle => 'GÖREVLERİ YENİLE?';
+
+  @override
+  String get adminRefreshTasksBody =>
+      'Mevcut tüm görevler silinip güncel seed verisi yüklenecek.';
+
+  @override
+  String get adminRefresh => 'YENİLE';
+
+  @override
+  String get adminTasksRefreshed => 'Görevler güncel seed ile yenilendi.';
+
+  @override
+  String get adminForceCleanupTitle => 'ESKİ AKTİF ODALARI TEMİZLE?';
+
+  @override
+  String get adminForceCleanupBody =>
+      '3 saatten eski tüm playing/lobby odaları ve oyunları silecek. Devam?';
+
+  @override
+  String get adminDeleteConfirm => 'SİL';
+
+  @override
+  String adminForceCleanupResult(int count) {
+    return '$count eski aktif oda silindi.';
+  }
+
+  @override
+  String get adminDeleteTaskTitle => 'GÖREVİ SİL?';
+
+  @override
+  String get adminDeleteTaskBody =>
+      'Bu görev sistemden kalıcı olarak silinecek.';
+
+  @override
+  String get adminEditButton => 'DÜZENLE';
+
+  @override
+  String get adminDeleteButton => 'SİL';
+
+  @override
+  String get adminCancelButton => 'İPTAL';
+
+  @override
+  String get adminNewScenario => 'YENİ SENARYO';
+
+  @override
+  String get adminEditScenario => 'SENARYOYU DÜZENLE';
+
+  @override
+  String get adminScenarioAdded => 'Senaryo eklendi!';
+
+  @override
+  String get adminScenarioUpdated => 'Senaryo güncellendi!';
+
+  @override
+  String get adminScenarioLineLabel => 'SENARYO REPLİĞİ';
+
+  @override
+  String get adminTypeLabel => 'TÜR';
+
+  @override
+  String get adminTagsLabel => 'ETİKETLER';
+
+  @override
+  String get adminAddToRepertoire => 'REPERTUARA EKLE';
+
+  @override
+  String get fieldCannotBeEmpty => 'Boş bırakılamaz';
+
+  @override
+  String get adminReportedNamesTitle => 'RAPORLU OYUNCU ADLARI';
+
+  @override
+  String get adminAllPlayersClean => 'TÜM OYUNCULAR TEMİZ 🎉';
+
+  @override
+  String adminReportLabel(String reason) {
+    return 'İHBAR: $reason';
+  }
+
+  @override
+  String get adminApproveTooltip => 'ONAYLA';
+
+  @override
+  String get adminBanTooltip => 'YASAKLA';
+
+  @override
+  String get loadFailed => 'Veriler yüklenemedi';
+
+  @override
+  String get retry => 'Tekrar dene';
+
+  @override
+  String get goHome => 'Ana menüye dön';
+
+  @override
+  String get actionFailed => 'İşlem başarısız. Tekrar deneyin.';
+
+  @override
+  String get walletUnavailable => 'Bakiye yüklenemedi';
+
+  @override
+  String get autoPickFailed => 'Kategori seçilemedi. Tekrar deneyin.';
+
+  @override
+  String get processing => 'İşleniyor...';
+
+  @override
+  String get buttonSemanticsLabel => 'Buton';
+
+  @override
+  String get developerTeamTitle => 'Geliştirici Ekip';
+
+  @override
+  String get developerRole => 'Geliştirici';
+
+  @override
+  String get artDirectorRole => 'Sanat Yönetmeni';
+
+  @override
+  String get allRightsReserved => '2026 Tüm Hakları Saklıdır';
+
+  @override
+  String get reportUserTitle => 'Kullanıcıyı Raporla';
+
+  @override
+  String get reportUserConfirmMessage =>
+      'Bu kullanıcının profil fotoğrafını raporlamak istediğinize emin misiniz?';
+
+  @override
+  String get reportReasonInappropriate => 'Uygunsuz Fotoğraf / Çıplaklık';
+
+  @override
+  String get reportReasonViolence => 'Şiddet veya Tehdit';
+
+  @override
+  String get reportReasonSpam => 'Spam veya Reklam';
+
+  @override
+  String get reportReasonOther => 'Diğer';
+
+  @override
+  String get reportUserAction => 'Raporla';
+
+  @override
+  String get reportUserSuccess => 'Kullanıcı raporlandı. İnceleyeceğiz.';
+
+  @override
+  String get reportUserFailed => 'Raporlanırken hata oluştu.';
+
+  @override
+  String get gameEndedInsufficientPlayers =>
+      'Oyuncu sayısı yetersiz kaldığı için oyun sona erdi.';
+
+  @override
+  String get titlesTabSubtitle =>
+      'Oyun içinde adınızın altında görünen özel etiketler.';
+
+  @override
+  String get framesTabSubtitle =>
+      'Profil fotoğrafınızın etrafında parlayan özel efektler.';
+
+  @override
+  String get scenariosTabSubtitle =>
+      'Oyundaki görev havuzunu belirleyen tema paketleri.';
+
+  @override
+  String get errorCategoryNotSelected => 'Önce kategori seçilmeli!';
+
+  @override
+  String get errorNoTasksInCategory => 'Bu kategoride görev bulunamadı!';
+
+  @override
+  String errorTaskSelectConnection(String message) {
+    return 'Görev seçilirken bağlantı hatası oluştu: $message';
+  }
+
+  @override
+  String errorSaveResults(String message) {
+    return 'Sonuçlar kaydedilirken hata oluştu: $message';
+  }
+
+  @override
+  String errorSaveResultsUnexpected(String error) {
+    return 'Sonuçlar kaydedilirken beklenmeyen hata: $error';
+  }
+
+  @override
+  String errorTurnAdvanceConnection(String message) {
+    return 'Sıra geçerken bağlantı hatası oluştu: $message';
+  }
+
+  @override
+  String get errorGameNotFound => 'Oyun bulunamadı!';
+
+  @override
+  String get errorCategoryLocked => 'Bu kategori kilitli!';
+
+  @override
+  String errorCategorySelectConnection(String message) {
+    return 'Kategori seçilirken bağlantı hatası oluştu: $message';
+  }
+
+  @override
+  String errorAssignCategoryConnection(String message) {
+    return 'Kategori atanırken bağlantı hatası oluştu: $message';
+  }
+
+  @override
+  String errorSkipTask(String message) {
+    return 'Görevi geçerken bir hata oluştu: $message';
+  }
+
+  @override
+  String errorSkipTaskUnexpected(String error) {
+    return 'Görevi geçerken beklenmeyen bir hata oluştu: $error';
+  }
+
+  @override
+  String errorRemovePlayer(String message) {
+    return 'Oyuncu oyundan çıkarılırken hata oluştu: $message';
+  }
+
+  @override
+  String errorCreateRoomConnection(String message) {
+    return 'Oda oluşturulurken bağlantı hatası oluştu: $message';
+  }
+
+  @override
+  String errorCreateRoomFailed(String error) {
+    return 'Oda oluşturulamadı: $error';
+  }
+
+  @override
+  String errorRoomNotFound(String code) {
+    return 'Oda bulunamadı: $code';
+  }
+
+  @override
+  String errorRoomFull(int max) {
+    return 'Oda dolu! Maksimum $max oyuncu.';
+  }
+
+  @override
+  String errorJoinRoomConnection(String message) {
+    return 'Odaya katılırken bağlantı hatası oluştu: $message';
+  }
+
+  @override
+  String errorLeaveRoom(String message) {
+    return 'Odadan ayrılırken hata oluştu: $message';
+  }
+
+  @override
+  String errorReadyStatus(String message) {
+    return 'Hazır durumu güncellenirken hata oluştu: $message';
+  }
+
+  @override
+  String errorEmoteSend(String message) {
+    return 'Emote gönderilirken hata oluştu: $message';
+  }
+
+  @override
+  String errorRoomVisibility(String message) {
+    return 'Oda görünürlüğü güncellenirken hata oluştu: $message';
+  }
+
+  @override
+  String errorRoomStatus(String message) {
+    return 'Oda durumu güncellenirken hata oluştu: $message';
+  }
+
+  @override
+  String get errorGameAlreadyStarted => 'Oyun zaten başlatılmış görünüyor.';
+
+  @override
+  String get errorMinPlayersToStart =>
+      'Oyunu başlatmak için en az 2 oyuncu gerekli.';
+
+  @override
+  String errorStartGameTransaction(String message) {
+    return 'Oyun başlatılamadı (İşlem Hatası): $message';
+  }
+
+  @override
+  String errorStartGameFailed(String error) {
+    return 'Oyun başlatılamadı: $error';
+  }
 }

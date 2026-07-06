@@ -14,6 +14,8 @@ class RoomEntity {
   final bool useCustomDeck;
   final DateTime createdAt;
   final Map<String, LobbyEmoteEntity> lobbyEmotes;
+  final bool? hostLeftSignal;
+  final DateTime? hostLeftAt;
 
   const RoomEntity({
     required this.roomCode,
@@ -29,6 +31,8 @@ class RoomEntity {
     this.gameId,
     required this.createdAt,
     this.lobbyEmotes = const {},
+    this.hostLeftSignal,
+    this.hostLeftAt,
   });
 }
 

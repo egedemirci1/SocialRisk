@@ -8,6 +8,7 @@ import '../providers/user_provider.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../core/constants/app_colors.dart';
 import '../domain/user_entity.dart';
+import '../../../shared/utils/error_message_utils.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
@@ -70,15 +71,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     final nameRegex = RegExp(r'^[a-zA-Z0-9ığüşöçİĞÜŞÖÇ ]+$');
     
     if (name.isEmpty) {
-      _showError(l.nameEmptyError);
+      _showValidationWarning(l.nameEmptyError);
       return;
     }
     if (name.length < 3) {
-      _showError(l.nameTooShortError);
+      _showValidationWarning(l.nameTooShortError);
       return;
     }
     if (!nameRegex.hasMatch(name)) {
-      _showError(l.invalidNameError);
+      _showValidationWarning(l.invalidNameError);
       return;
     }
     
@@ -88,7 +89,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       await ref.read(authControllerProvider.notifier).signIn(name);
     } catch (e) {
       PendingToast.instance.consume(); // clear the pending toast if login failed
-      if (mounted) _showError('${l.loginError}: $e');
+      if (mounted) {
+        _showError(ErrorMessageUtils.formatUserError(e, l));
+      }
     } finally {
       if (mounted) setState(() => _isAnonymousLoading = false);
     }
@@ -96,6 +99,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 
   Future<UserCredential> _signInWithGoogle() async {
     return ref.read(signInWithGoogleCallbackProvider)();
+  }
+
+  Future<UserCredential> _signInWithApple() async {
+    return ref.read(signInWithAppleCallbackProvider)();
   }
 
   Future<void> _signInSocial(
@@ -109,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     try {
       final cred = await method();
       if (cred.user != null) {
-        final displayName = cred.user!.displayName ?? 'Oyuncu';
+        final displayName = cred.user!.displayName ?? l.playerDefaultName;
         if (cred.user!.displayName == null) {
           await cred.user!.updateDisplayName(displayName);
         }
@@ -122,15 +129,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     } catch (e) {
       PendingToast.instance.consume();
       if (mounted) {
-        String msg = l.loginError;
-        if (e is PlatformException) {
-          msg = e.message ?? e.code;
-          if (e.code.isNotEmpty) msg = '${e.code}: $msg';
-        } else if (e.toString().contains('ApiException') || e.toString().contains('sign_in_failed')) {
-          msg = e.toString().replaceFirst(RegExp(r'^Exception:\s*'), '');
-        } else {
-          msg = e.toString();
-        }
+        final msg = e is PlatformException
+            ? l.loginError
+            : ErrorMessageUtils.formatUserError(e, l);
         _showError(msg);
       }
     } finally {
@@ -143,9 +144,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     }
   }
 
+  void _showValidationWarning(String message) {
+    if (!mounted) return;
+    ToastUtils.showWarning(context, message);
+  }
+
   void _showError(String message) {
     if (!mounted) return;
-    ToastUtils.showInfo(context, message);
+    ToastUtils.showError(context, message);
   }
 
   @override
@@ -252,11 +258,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               filled: true,
               fillColor: Colors.black26,
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: const BorderSide(color: Colors.white10),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: const BorderSide(color: AppColors.accent),
               ),
             ),
@@ -322,6 +328,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           ],
         ),
         SizedBox(height: compact ? 16 : 24),
+        if (supportsAppleSignIn) ...[
+          StageButton(
+            label: l.signInWithApple,
+            icon: Icons.apple_rounded,
+            backgroundColor: AppColors.surfaceElevated,
+            textColor: Colors.white,
+            borderColor: Colors.transparent,
+            onPressed: () => _signInSocial(_signInWithApple, 'apple'),
+            isLoading: _isAppleLoading,
+            compact: compact,
+          ),
+          SizedBox(height: compact ? 12 : 16),
+        ],
         Row(
           children: [
             Expanded(

@@ -6,8 +6,15 @@ import '../data/firebase_auth_source.dart';
 import '../domain/auth_repository.dart';
 import '../constants/auth_constants.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 part 'auth_provider.g.dart';
+
+/// iOS / macOS dışında Apple girişi desteklenmez.
+bool get supportsAppleSignIn =>
+    !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS);
 
 @Riverpod(keepAlive: true)
 AuthRepository authRepository(Ref ref) {
@@ -60,5 +67,23 @@ final signInWithGoogleCallbackProvider = Provider<Future<UserCredential> Functio
       idToken: googleAuth.idToken,
     );
     return FirebaseAuth.instance.signInWithCredential(credential);
+  };
+});
+
+/// Apple ile giriş yapan callback. Yalnızca iOS/macOS'ta kullanılır.
+final signInWithAppleCallbackProvider =
+    Provider<Future<UserCredential> Function()>((ref) {
+  return () async {
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+    final oauthCredential = OAuthProvider('apple.com').credential(
+      idToken: appleCredential.identityToken,
+      accessToken: appleCredential.authorizationCode,
+    );
+    return FirebaseAuth.instance.signInWithCredential(oauthCredential);
   };
 });

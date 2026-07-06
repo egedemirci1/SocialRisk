@@ -7,12 +7,13 @@ import '../../../shared/widgets/common/loading_overlay.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../providers/room_provider.dart';
+import '../../../core/providers/lifecycle_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../shared/utils/error_message_utils.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
-import '../../../core/audio/audio_service.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Partiye Katılma Ekranı — Parti Temalı
@@ -35,7 +36,6 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
   @override
   void initState() {
     super.initState();
-    ref.read(audioServiceProvider).playMenuLoop();
     _controllers = List.generate(_codeLength, (_) => TextEditingController());
     _focusNodes = List.generate(_codeLength, (i) {
       final node = FocusNode();
@@ -64,9 +64,29 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
     super.dispose();
   }
 
+  Future<void> _pasteRoomCode() async {
+    final l = AppLocalizations.of(context)!;
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final raw = data?.text ?? '';
+    final cleaned = raw.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '').toUpperCase();
+    if (cleaned.length < _codeLength) {
+      if (mounted) {
+        ToastUtils.showWarning(context, l.invalidPasteRoomCode);
+      }
+      return;
+    }
+
+    for (var i = 0; i < _codeLength; i++) {
+      _controllers[i].text = cleaned[i];
+    }
+    _focusNodes[_codeLength - 1].requestFocus();
+    setState(() {});
+  }
+
   Future<void> _joinRoom() async {
+    final l = AppLocalizations.of(context)!;
     if (!_isCodeComplete) {
-      ToastUtils.showWarning(context, AppLocalizations.of(context)!.pleaseEnter6DigitCode);
+      ToastUtils.showWarning(context, l.pleaseEnter6DigitCode);
       return;
     }
 
@@ -78,20 +98,25 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
       final userProfile = await ref
           .read(userRepositoryProvider)
           .getUserProfile(user.uid);
+      if (!mounted) return;
+
       final repo = ref.read(roomRepositoryProvider);
+      final playerName = user.displayName ?? l.playerDefaultName;
 
       await repo.joinRoom(
         roomCode: _roomCode,
         playerId: user.uid,
-        playerName: user.displayName ?? AppLocalizations.of(context)!.playerDefaultName,
+        playerName: playerName,
         playerAvatarUrl: userProfile?.avatarUrl,
       );
 
-      if (mounted) context.push('/lobby', extra: _roomCode);
+      ref.read(currentRoomTrackerProvider.notifier).updateRoom(_roomCode);
+
+      if (!mounted) return;
+      context.push('/lobby', extra: _roomCode);
     } catch (e) {
-      if (mounted) {
-        ToastUtils.showError(context, AppLocalizations.of(context)!.partyNotFound(e.toString()));
-      }
+      if (!mounted) return;
+      ToastUtils.showError(context, l.partyNotFound(ErrorMessageUtils.formatUserError(e, l)));
     } finally {
       if (mounted) setState(() => _isJoining = false);
     }
@@ -194,15 +219,44 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 48),
-                          _buildCodeInputs(),
-                          const SizedBox(height: 60),
+                          Actions(
+                            actions: {
+                              PasteTextIntent: CallbackAction<PasteTextIntent>(
+                                onInvoke: (_) {
+                                  _pasteRoomCode();
+                                  return null;
+                                },
+                              ),
+                            },
+                            child: Focus(
+                              autofocus: true,
+                              child: _buildCodeInputs(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextButton.icon(
+                            onPressed: _pasteRoomCode,
+                            icon: const Icon(
+                              Icons.content_paste_rounded,
+                              size: 18,
+                              color: AppColors.accent,
+                            ),
+                            label: Text(
+                              AppLocalizations.of(context)!.pastePartyCode,
+                              style: AppTextStyles.labelSmall.copyWith(
+                                color: AppColors.accent,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 48),
                           StageButton(
                             label: AppLocalizations.of(context)!.joinPartyTitle,
                             icon: Icons.login_rounded,
                             backgroundColor: AppColors.primary,
                             textColor: AppColors.background,
                             borderColor: Colors.transparent,
-                            onPressed: _isCodeComplete ? _joinRoom : () {},
+                            onPressed: _isCodeComplete ? _joinRoom : null,
                             isLoading: _isJoining,
                           ),
                         ],
@@ -232,7 +286,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
               width: 42,
               height: 54,
               child: KeyboardListener(
-                focusNode: FocusNode(),
+                focusNode: _focusNodes[index],
                 onKeyEvent: (event) {
                   if (event is! KeyDownEvent) return;
                   

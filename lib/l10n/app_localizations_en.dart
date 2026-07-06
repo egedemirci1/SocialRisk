@@ -244,6 +244,33 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get errorPermissionDenied =>
+      'You don\'t have permission for this action';
+
+  @override
+  String get errorServiceUnavailable =>
+      'Service is temporarily unavailable. Please try again later';
+
+  @override
+  String get errorNotFound => 'The requested item was not found';
+
+  @override
+  String get errorRequestTimedOut => 'Request timed out. Please try again';
+
+  @override
+  String get errorNetwork =>
+      'Network error. Check your connection and try again';
+
+  @override
+  String get errorUnknown => 'Something went wrong. Please try again';
+
+  @override
+  String get errorAlreadyOwned => 'You already own this item';
+
+  @override
+  String get errorUserNotFound => 'User not found';
+
+  @override
   String get storeTitle => 'Store & Wallet';
 
   @override
@@ -442,6 +469,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get preparingGame => 'Preparing Game...';
 
   @override
+  String get continueParty => 'Continue Party';
+
+  @override
+  String activePartySubtitle(String roomCode) {
+    return 'Room $roomCode — tap to rejoin';
+  }
+
+  @override
+  String get invalidPasteRoomCode =>
+      'No valid 6-digit room code found on clipboard.';
+
+  @override
   String get wheelModeCapital => 'WHEEL MODE';
 
   @override
@@ -501,6 +540,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get economyModeDesc =>
       'Category points change dynamically based on popularity: less chosen \'hidden gems\' grant higher rewards, while overused categories lose value. Strategize and take the most profitable risks! (Activates with at least 3 categories)';
+
+  @override
+  String get minThreeCategoriesEconomy =>
+      'You must select at least 3 categories for Boss mode.';
 
   @override
   String get singleCategoryEconomyWarn =>
@@ -871,6 +914,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get joinPartyButton => 'Join the Party!';
 
   @override
+  String get pastePartyCode => 'Paste code';
+
+  @override
   String get anonymousHint =>
       '* You will continue anonymously. Your statistics will be saved to this device.';
 
@@ -1174,4 +1220,357 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get leftRoomToast => 'You left the room';
+
+  @override
+  String get adminPanelTitle => 'ADMIN PANEL';
+
+  @override
+  String adminTaskCountBanner(int total, int filtered) {
+    return 'Total $total tasks • Filtered: $filtered';
+  }
+
+  @override
+  String get adminMaintenanceCleanup => 'MAINTENANCE CLEANUP';
+
+  @override
+  String get adminRefreshTasks => 'REFRESH TASKS';
+
+  @override
+  String get adminDeleteOldRooms => 'DELETE OLD ROOMS (3h+)';
+
+  @override
+  String get adminSortLabel => 'Sort:';
+
+  @override
+  String get adminSortNewest => 'Newest';
+
+  @override
+  String get adminSortMostLiked => 'Most Liked 👍';
+
+  @override
+  String get adminSortLeastLiked => 'Least Liked 👎';
+
+  @override
+  String get adminSortMostDisliked => 'Most Disliked 😒';
+
+  @override
+  String get adminCategoryFilterLabel => 'Category Filter:';
+
+  @override
+  String get adminFilterAll => 'All';
+
+  @override
+  String get adminNoMatchingTasks => 'No tasks match the filter.';
+
+  @override
+  String get adminMaintenanceCleanupTitle => 'MAINTENANCE CLEANUP?';
+
+  @override
+  String get adminMaintenanceCleanupBody =>
+      'Empty rooms, finished games, and inactive users will be deleted.';
+
+  @override
+  String get adminRun => 'RUN';
+
+  @override
+  String adminMaintenanceCleanupResult(
+    int roomsDeleted,
+    int gamesDeleted,
+    int usersDeleted,
+  ) {
+    return 'Cleanup: $roomsDeleted rooms, $gamesDeleted games, $usersDeleted users deleted.';
+  }
+
+  @override
+  String get adminRefreshTasksTitle => 'REFRESH TASKS?';
+
+  @override
+  String get adminRefreshTasksBody =>
+      'All existing tasks will be deleted and replaced with the latest seed data.';
+
+  @override
+  String get adminRefresh => 'REFRESH';
+
+  @override
+  String get adminTasksRefreshed => 'Tasks refreshed with latest seed data.';
+
+  @override
+  String get adminForceCleanupTitle => 'CLEAN OLD ACTIVE ROOMS?';
+
+  @override
+  String get adminForceCleanupBody =>
+      'Will delete all playing/lobby rooms and games older than 3 hours. Continue?';
+
+  @override
+  String get adminDeleteConfirm => 'DELETE';
+
+  @override
+  String adminForceCleanupResult(int count) {
+    return '$count old active rooms deleted.';
+  }
+
+  @override
+  String get adminDeleteTaskTitle => 'DELETE TASK?';
+
+  @override
+  String get adminDeleteTaskBody =>
+      'This task will be permanently deleted from the system.';
+
+  @override
+  String get adminEditButton => 'EDIT';
+
+  @override
+  String get adminDeleteButton => 'DELETE';
+
+  @override
+  String get adminCancelButton => 'CANCEL';
+
+  @override
+  String get adminNewScenario => 'NEW SCENARIO';
+
+  @override
+  String get adminEditScenario => 'EDIT SCENARIO';
+
+  @override
+  String get adminScenarioAdded => 'Scenario added!';
+
+  @override
+  String get adminScenarioUpdated => 'Scenario updated!';
+
+  @override
+  String get adminScenarioLineLabel => 'SCENARIO LINE';
+
+  @override
+  String get adminTypeLabel => 'TYPE';
+
+  @override
+  String get adminTagsLabel => 'TAGS';
+
+  @override
+  String get adminAddToRepertoire => 'ADD TO REPERTOIRE';
+
+  @override
+  String get fieldCannotBeEmpty => 'Cannot be left empty';
+
+  @override
+  String get adminReportedNamesTitle => 'REPORTED PLAYER NAMES';
+
+  @override
+  String get adminAllPlayersClean => 'ALL PLAYERS CLEAR 🎉';
+
+  @override
+  String adminReportLabel(String reason) {
+    return 'REPORT: $reason';
+  }
+
+  @override
+  String get adminApproveTooltip => 'APPROVE';
+
+  @override
+  String get adminBanTooltip => 'BAN';
+
+  @override
+  String get loadFailed => 'Could not load data';
+
+  @override
+  String get retry => 'Try again';
+
+  @override
+  String get goHome => 'Back to home';
+
+  @override
+  String get actionFailed => 'Action failed. Please try again.';
+
+  @override
+  String get walletUnavailable => 'Balance unavailable';
+
+  @override
+  String get autoPickFailed => 'Could not select category. Please try again.';
+
+  @override
+  String get processing => 'Processing...';
+
+  @override
+  String get buttonSemanticsLabel => 'Button';
+
+  @override
+  String get developerTeamTitle => 'Developer Team';
+
+  @override
+  String get developerRole => 'Developer';
+
+  @override
+  String get artDirectorRole => 'Art Director';
+
+  @override
+  String get allRightsReserved => '2026 All rights reserved.';
+
+  @override
+  String get reportUserTitle => 'Report User';
+
+  @override
+  String get reportUserConfirmMessage =>
+      'Are you sure you want to report this user\'s profile photo?';
+
+  @override
+  String get reportReasonInappropriate => 'Inappropriate Photo / Nudity';
+
+  @override
+  String get reportReasonViolence => 'Violence or Threats';
+
+  @override
+  String get reportReasonSpam => 'Spam or Advertising';
+
+  @override
+  String get reportReasonOther => 'Other';
+
+  @override
+  String get reportUserAction => 'Report';
+
+  @override
+  String get reportUserSuccess => 'User reported. We will review it.';
+
+  @override
+  String get reportUserFailed => 'An error occurred while reporting.';
+
+  @override
+  String get gameEndedInsufficientPlayers =>
+      'The game ended because there were not enough players.';
+
+  @override
+  String get titlesTabSubtitle =>
+      'Custom labels that appear under your name in-game.';
+
+  @override
+  String get framesTabSubtitle =>
+      'Special effects glowing around your profile picture.';
+
+  @override
+  String get scenariosTabSubtitle =>
+      'Theme packs that determine the task pool in the game.';
+
+  @override
+  String get errorCategoryNotSelected => 'A category must be selected first.';
+
+  @override
+  String get errorNoTasksInCategory => 'No tasks found in this category.';
+
+  @override
+  String errorTaskSelectConnection(String message) {
+    return 'Connection error while selecting task: $message';
+  }
+
+  @override
+  String errorSaveResults(String message) {
+    return 'Error saving results: $message';
+  }
+
+  @override
+  String errorSaveResultsUnexpected(String error) {
+    return 'Unexpected error saving results: $error';
+  }
+
+  @override
+  String errorTurnAdvanceConnection(String message) {
+    return 'Connection error advancing turn: $message';
+  }
+
+  @override
+  String get errorGameNotFound => 'Game not found.';
+
+  @override
+  String get errorCategoryLocked => 'This category is locked.';
+
+  @override
+  String errorCategorySelectConnection(String message) {
+    return 'Connection error selecting category: $message';
+  }
+
+  @override
+  String errorAssignCategoryConnection(String message) {
+    return 'Connection error assigning category: $message';
+  }
+
+  @override
+  String errorSkipTask(String message) {
+    return 'Error skipping task: $message';
+  }
+
+  @override
+  String errorSkipTaskUnexpected(String error) {
+    return 'Unexpected error skipping task: $error';
+  }
+
+  @override
+  String errorRemovePlayer(String message) {
+    return 'Error removing player from game: $message';
+  }
+
+  @override
+  String errorCreateRoomConnection(String message) {
+    return 'Connection error creating room: $message';
+  }
+
+  @override
+  String errorCreateRoomFailed(String error) {
+    return 'Could not create room: $error';
+  }
+
+  @override
+  String errorRoomNotFound(String code) {
+    return 'Room not found: $code';
+  }
+
+  @override
+  String errorRoomFull(int max) {
+    return 'Room is full! Maximum $max players.';
+  }
+
+  @override
+  String errorJoinRoomConnection(String message) {
+    return 'Connection error joining room: $message';
+  }
+
+  @override
+  String errorLeaveRoom(String message) {
+    return 'Error leaving room: $message';
+  }
+
+  @override
+  String errorReadyStatus(String message) {
+    return 'Error updating ready status: $message';
+  }
+
+  @override
+  String errorEmoteSend(String message) {
+    return 'Error sending emote: $message';
+  }
+
+  @override
+  String errorRoomVisibility(String message) {
+    return 'Error updating room visibility: $message';
+  }
+
+  @override
+  String errorRoomStatus(String message) {
+    return 'Error updating room status: $message';
+  }
+
+  @override
+  String get errorGameAlreadyStarted =>
+      'The game appears to have already started.';
+
+  @override
+  String get errorMinPlayersToStart =>
+      'At least 2 players are required to start the game.';
+
+  @override
+  String errorStartGameTransaction(String message) {
+    return 'Could not start game (transaction error): $message';
+  }
+
+  @override
+  String errorStartGameFailed(String error) {
+    return 'Could not start game: $error';
+  }
 }

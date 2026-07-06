@@ -11,7 +11,7 @@ class GameConstants {
 
   static const int basePenalty = 50;
 
-  static const Duration voteDuration = Duration(seconds: 15);
+  static const Duration voteDuration = Duration(seconds: 20);
   static const Duration lobbyRefreshRate = Duration(seconds: 2);
 
   /// Varsayılan kategoriler — CategoryConstants'tan tek kaynak (SSoT)

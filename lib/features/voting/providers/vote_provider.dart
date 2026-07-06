@@ -39,6 +39,7 @@ class VoteController extends _$VoteController {
         timedOut: timedOut,
       ),
     );
+    if (state.hasError) throw state.error!;
   }
 
   /// Oyları topla, repo içindeki çarpan kurallarıyla nihai puanı hesapla

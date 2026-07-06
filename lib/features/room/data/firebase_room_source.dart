@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../core/constants/game_constants.dart';
+import '../../../core/errors/app_exception.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../shared/models/enums.dart';
 import '../../admin/data/task_firestore_source.dart';
@@ -103,11 +104,13 @@ class FirebaseRoomSource implements RoomRepository {
       await _playersRef(roomCode).doc(hostId).set(hostPlayer.toJson());
       return roomCode;
     } on FirebaseException catch (e) {
-      throw Exception(
-        'Oda oluşturulurken bağlantı hatası oluştu: ${e.message}',
+      throw AppException(
+        AppErrorCode.createRoomConnectionError,
+        {'message': e.message ?? ''},
       );
     } catch (e) {
-      throw Exception('Oda oluşturulamadı: $e');
+      if (e is AppException) rethrow;
+      throw AppException(AppErrorCode.createRoomFailed, {'error': e.toString()});
     }
   }
 
@@ -128,16 +131,16 @@ class FirebaseRoomSource implements RoomRepository {
         final roomDoc = await transaction.get(roomRef);
         
         if (!roomDoc.exists) {
-          throw Exception('Oda bulunamadı: $roomCode');
+          throw AppException(AppErrorCode.roomNotFound, {'code': roomCode});
         }
 
         final roomData = roomDoc.data() ?? <String, dynamic>{};
         final playerCount = roomData['playerCount'] as int? ?? 0;
         
         if (playerCount >= GameConstants.maxPlayers) {
-          throw Exception(
-            'Oda dolu! Maksimum ${GameConstants.maxPlayers} oyuncu.',
-          );
+          throw AppException(AppErrorCode.roomFull, {
+            'max': GameConstants.maxPlayers,
+          });
         }
 
         final existingPlayer = await transaction.get(playerRef);
@@ -160,9 +163,15 @@ class FirebaseRoomSource implements RoomRepository {
         transaction.update(roomRef, {'playerCount': playerCount + 1});
       });
     } on FirebaseException catch (e) {
-      throw Exception('Odaya katılırken bağlantı hatası oluştu: ${e.message}');
+      throw AppException(
+        AppErrorCode.joinRoomConnectionError,
+        {'message': e.message ?? ''},
+      );
     } catch (e) {
-      throw Exception(e.toString().replaceAll('Exception: ', ''));
+      if (e is AppException) rethrow;
+      throw AppException(AppErrorCode.joinRoomConnectionError, {
+        'message': e.toString().replaceAll('Exception: ', ''),
+      });
     }
   }
 
@@ -223,7 +232,10 @@ class FirebaseRoomSource implements RoomRepository {
         );
       }
     } on FirebaseException catch (e) {
-      throw Exception('Odadan ayrılırken hata oluştu: ${e.message}');
+      throw AppException(
+        AppErrorCode.leaveRoomError,
+        {'message': e.message ?? ''},
+      );
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Odadan ayrilirken hata: $e');
@@ -267,7 +279,10 @@ class FirebaseRoomSource implements RoomRepository {
     try {
       await _playersRef(roomCode).doc(playerId).update({'isReady': isReady});
     } on FirebaseException catch (e) {
-      throw Exception('Hazır durumu güncellenirken hata oluştu: ${e.message}');
+      throw AppException(
+        AppErrorCode.readyStatusError,
+        {'message': e.message ?? ''},
+      );
     }
   }
 
@@ -285,7 +300,9 @@ class FirebaseRoomSource implements RoomRepository {
         final roomRef = _roomDoc(roomCode);
         final roomSnap = await transaction.get(roomRef);
         if (!roomSnap.exists) {
-      if (!roomSnap.exists) throw Exception('Oda bulunamadı!');
+      if (!roomSnap.exists) {
+        throw const AppException(AppErrorCode.roomNotFound, {'code': ''});
+      }
         }
 
         final roomData = roomSnap.data() ?? <String, dynamic>{};
@@ -297,7 +314,9 @@ class FirebaseRoomSource implements RoomRepository {
 
         if (lastSentAt != null && now.difference(lastSentAt) < cooldown) {
           final remaining = cooldown - now.difference(lastSentAt);
-          throw Exception('Cooldown:${remaining.inSeconds + 1}');
+          throw AppException(AppErrorCode.emoteCooldown, {
+            'seconds': remaining.inSeconds + 1,
+          });
         }
 
         rawLobbyEmotes.removeWhere((key, value) {
@@ -315,7 +334,10 @@ class FirebaseRoomSource implements RoomRepository {
         transaction.update(roomRef, {'lobbyEmotes': rawLobbyEmotes});
       });
     } on FirebaseException catch (e) {
-      throw Exception('Emote gönderilirken hata oluştu: ${e.message}');
+      throw AppException(
+        AppErrorCode.emoteSendError,
+        {'message': e.message ?? ''},
+      );
     }
   }
 
@@ -327,7 +349,10 @@ class FirebaseRoomSource implements RoomRepository {
     try {
       await _roomDoc(roomCode).update({'visibility': visibility.name});
     } on FirebaseException catch (e) {
-      throw Exception('Oda görünürlüğü güncellenirken hata oluştu: ${e.message}');
+      throw AppException(
+        AppErrorCode.roomVisibilityError,
+        {'message': e.message ?? ''},
+      );
     }
   }
 
@@ -339,7 +364,10 @@ class FirebaseRoomSource implements RoomRepository {
     try {
       await _roomDoc(roomCode).update({'status': status.name});
     } on FirebaseException catch (e) {
-      throw Exception('Oda durumu güncellenirken hata oluştu: ${e.message}');
+      throw AppException(
+        AppErrorCode.roomStatusError,
+        {'message': e.message ?? ''},
+      );
     }
   }
 
@@ -354,7 +382,9 @@ class FirebaseRoomSource implements RoomRepository {
       final roomRef = _roomDoc(roomCode);
 
       final roomSnap = await roomRef.get();
-      if (!roomSnap.exists) throw Exception('Oda bulunamadı!');
+      if (!roomSnap.exists) {
+        throw const AppException(AppErrorCode.roomNotFound, {'code': ''});
+      }
       final roomData = roomSnap.data()!;
       final categoriesList = List<String>.from(roomData['categories'] ?? []);
       final useCustomDeck = roomData['useCustomDeck'] as bool? ?? false;
@@ -374,7 +404,9 @@ class FirebaseRoomSource implements RoomRepository {
 
       return await _firestore.runTransaction((transaction) async {
         final freshRoomSnap = await transaction.get(roomRef);
-        if (!freshRoomSnap.exists) throw Exception('Oda bulunamadı!');
+        if (!freshRoomSnap.exists) {
+          throw const AppException(AppErrorCode.roomNotFound, {'code': ''});
+        }
 
         final freshRoomData = freshRoomSnap.data()!;
         final existingGameId = freshRoomData['gameId'] as String?;
@@ -384,10 +416,10 @@ class FirebaseRoomSource implements RoomRepository {
           return existingGameId;
         }
         if (currentStatus == GameStatus.playing.name) {
-          throw Exception('Oyun zaten başlatılmış görünüyor.');
+          throw const AppException(AppErrorCode.gameAlreadyStarted);
         }
         if (playerCount < 2) {
-          throw Exception('Oyunu başlatmak için en az 2 oyuncu gerekli.');
+          throw const AppException(AppErrorCode.minPlayersToStart);
         }
 
         final gameRef = _firestore.collection('games').doc();
@@ -431,9 +463,13 @@ class FirebaseRoomSource implements RoomRepository {
         return gameId;
       });
     } on FirebaseException catch (e) {
-      throw Exception('Oyun başlatılamadı (İşlem Hatası): ${e.message}');
+      throw AppException(
+        AppErrorCode.startGameTransactionError,
+        {'message': e.message ?? ''},
+      );
     } catch (e) {
-      throw Exception('Oyun başlatılamadı: $e');
+      if (e is AppException) rethrow;
+      throw AppException(AppErrorCode.startGameFailed, {'error': e.toString()});
     }
   }
 

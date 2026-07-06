@@ -11,7 +11,7 @@ class LoadingOverlay extends StatelessWidget {
     super.key,
     required this.isLoading,
     required this.child,
-    this.message = 'İşleniyor...',
+    required this.message,
   });
 
   @override
@@ -20,24 +20,30 @@ class LoadingOverlay extends StatelessWidget {
       children: [
         child,
         if (isLoading)
-          Container(
-            color: Colors.black.withValues(alpha: 0.6),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircularProgressIndicator(
-                    color: AppColors.primary,
+          Positioned.fill(
+            child: AbsorbPointer(
+              child: Container(
+                color: Colors.black.withValues(alpha: 0.6),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const CircularProgressIndicator(
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        message,
+                        style: AppTextStyles.titleMedium.copyWith(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    message,
-                    style: AppTextStyles.titleMedium.copyWith(color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.none,),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

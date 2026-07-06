@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:social_risk/core/errors/app_exception.dart';
 import 'package:social_risk/features/game/data/firebase_game_source.dart';
 import 'package:social_risk/features/game/data/game_model.dart';
 
@@ -248,7 +249,11 @@ void main() {
 
       expect(
         () => gameSource.chooseDifficulty(gameId: gameId, difficulty: 'easy'),
-        throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('Önce kategori seçilmeli'))),
+        throwsA(isA<AppException>().having(
+          (e) => e.code,
+          'code',
+          AppErrorCode.categoryNotSelected,
+        )),
       );
     });
 

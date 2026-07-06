@@ -6,7 +6,7 @@ import 'social_risk_logo.dart';
 class TheaterLoadingScreen extends StatefulWidget {
   const TheaterLoadingScreen({
     super.key,
-    this.message = 'Parti Hazırlanıyor...',
+    required this.message,
     /// 0.0–1.0: determinate progress bar; null: indeterminate
     this.progress,
   });

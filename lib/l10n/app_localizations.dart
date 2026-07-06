@@ -524,6 +524,54 @@ abstract class AppLocalizations {
   /// **'Hata: {message}'**
   String error(String message);
 
+  /// No description provided for @errorPermissionDenied.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu işlem için yetkiniz yok'**
+  String get errorPermissionDenied;
+
+  /// No description provided for @errorServiceUnavailable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hizmet geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin'**
+  String get errorServiceUnavailable;
+
+  /// No description provided for @errorNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstenen kayıt bulunamadı'**
+  String get errorNotFound;
+
+  /// No description provided for @errorRequestTimedOut.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstek zaman aşımına uğradı. Lütfen tekrar deneyin'**
+  String get errorRequestTimedOut;
+
+  /// No description provided for @errorNetwork.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlantı hatası. İnternetinizi kontrol edip tekrar deneyin'**
+  String get errorNetwork;
+
+  /// No description provided for @errorUnknown.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir şeyler ters gitti. Lütfen tekrar deneyin'**
+  String get errorUnknown;
+
+  /// No description provided for @errorAlreadyOwned.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu eşyaya zaten sahipsiniz'**
+  String get errorAlreadyOwned;
+
+  /// No description provided for @errorUserNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanıcı bulunamadı'**
+  String get errorUserNotFound;
+
   /// No description provided for @storeTitle.
   ///
   /// In tr, this message translates to:
@@ -896,6 +944,24 @@ abstract class AppLocalizations {
   /// **'Oyun Hazırlanıyor...'**
   String get preparingGame;
 
+  /// No description provided for @continueParty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyuna Devam Et'**
+  String get continueParty;
+
+  /// No description provided for @activePartySubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda {roomCode} — dokunarak geri dön'**
+  String activePartySubtitle(String roomCode);
+
+  /// No description provided for @invalidPasteRoomCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Panoda geçerli 6 haneli oda kodu bulunamadı.'**
+  String get invalidPasteRoomCode;
+
   /// No description provided for @wheelModeCapital.
   ///
   /// In tr, this message translates to:
@@ -1009,6 +1075,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kategorilerin puanları popülerliğine göre dinamik olarak değişir: Az seçilen gizli cevherler daha çok puan kazandırırken, herkesin seçtiği kategorilerin değeri düşer. Stratejini kur ve en karlı riskleri al! (En az 3 kategoride aktifleşir)'**
   String get economyModeDesc;
+
+  /// No description provided for @minThreeCategoriesEconomy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Borsa modu için en az 3 kategori seçmelisin.'**
+  String get minThreeCategoriesEconomy;
 
   /// No description provided for @singleCategoryEconomyWarn.
   ///
@@ -1658,6 +1730,12 @@ abstract class AppLocalizations {
   /// **'Partiye Katıl!'**
   String get joinPartyButton;
 
+  /// No description provided for @pastePartyCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodu yapıştır'**
+  String get pastePartyCode;
+
   /// No description provided for @anonymousHint.
   ///
   /// In tr, this message translates to:
@@ -2239,6 +2317,586 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Odadan ayrıldınız'**
   String get leftRoomToast;
+
+  /// No description provided for @adminPanelTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'YÖNETİCİ PANELİ'**
+  String get adminPanelTitle;
+
+  /// No description provided for @adminTaskCountBanner.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplam {total} görev • Filtreli: {filtered}'**
+  String adminTaskCountBanner(int total, int filtered);
+
+  /// No description provided for @adminMaintenanceCleanup.
+  ///
+  /// In tr, this message translates to:
+  /// **'BAKIM TEMİZLİĞİ'**
+  String get adminMaintenanceCleanup;
+
+  /// No description provided for @adminRefreshTasks.
+  ///
+  /// In tr, this message translates to:
+  /// **'GÖREVLERİ YENİLE'**
+  String get adminRefreshTasks;
+
+  /// No description provided for @adminDeleteOldRooms.
+  ///
+  /// In tr, this message translates to:
+  /// **'ESKİ ODALARI SİL (3h+)'**
+  String get adminDeleteOldRooms;
+
+  /// No description provided for @adminSortLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıralama:'**
+  String get adminSortLabel;
+
+  /// No description provided for @adminSortNewest.
+  ///
+  /// In tr, this message translates to:
+  /// **'En Yeni'**
+  String get adminSortNewest;
+
+  /// No description provided for @adminSortMostLiked.
+  ///
+  /// In tr, this message translates to:
+  /// **'En Çok Beğenilen 👍'**
+  String get adminSortMostLiked;
+
+  /// No description provided for @adminSortLeastLiked.
+  ///
+  /// In tr, this message translates to:
+  /// **'En Az Beğenilen 👎'**
+  String get adminSortLeastLiked;
+
+  /// No description provided for @adminSortMostDisliked.
+  ///
+  /// In tr, this message translates to:
+  /// **'En Çok Beğenilmeyen 😒'**
+  String get adminSortMostDisliked;
+
+  /// No description provided for @adminCategoryFilterLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kategori Filtresi:'**
+  String get adminCategoryFilterLabel;
+
+  /// No description provided for @adminFilterAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü'**
+  String get adminFilterAll;
+
+  /// No description provided for @adminNoMatchingTasks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Filtreyle eşleşen görev bulunamadı.'**
+  String get adminNoMatchingTasks;
+
+  /// No description provided for @adminMaintenanceCleanupTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'BAKIM TEMİZLİĞİ?'**
+  String get adminMaintenanceCleanupTitle;
+
+  /// No description provided for @adminMaintenanceCleanupBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Boş odalar, bitmiş oyunlar ve aktif olmayan kullanıcılar silinecek.'**
+  String get adminMaintenanceCleanupBody;
+
+  /// No description provided for @adminRun.
+  ///
+  /// In tr, this message translates to:
+  /// **'ÇALIŞTIR'**
+  String get adminRun;
+
+  /// No description provided for @adminMaintenanceCleanupResult.
+  ///
+  /// In tr, this message translates to:
+  /// **'Temizlik: {roomsDeleted} oda, {gamesDeleted} oyun, {usersDeleted} kullanıcı silindi.'**
+  String adminMaintenanceCleanupResult(
+    int roomsDeleted,
+    int gamesDeleted,
+    int usersDeleted,
+  );
+
+  /// No description provided for @adminRefreshTasksTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'GÖREVLERİ YENİLE?'**
+  String get adminRefreshTasksTitle;
+
+  /// No description provided for @adminRefreshTasksBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mevcut tüm görevler silinip güncel seed verisi yüklenecek.'**
+  String get adminRefreshTasksBody;
+
+  /// No description provided for @adminRefresh.
+  ///
+  /// In tr, this message translates to:
+  /// **'YENİLE'**
+  String get adminRefresh;
+
+  /// No description provided for @adminTasksRefreshed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Görevler güncel seed ile yenilendi.'**
+  String get adminTasksRefreshed;
+
+  /// No description provided for @adminForceCleanupTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'ESKİ AKTİF ODALARI TEMİZLE?'**
+  String get adminForceCleanupTitle;
+
+  /// No description provided for @adminForceCleanupBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'3 saatten eski tüm playing/lobby odaları ve oyunları silecek. Devam?'**
+  String get adminForceCleanupBody;
+
+  /// No description provided for @adminDeleteConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'SİL'**
+  String get adminDeleteConfirm;
+
+  /// No description provided for @adminForceCleanupResult.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} eski aktif oda silindi.'**
+  String adminForceCleanupResult(int count);
+
+  /// No description provided for @adminDeleteTaskTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'GÖREVİ SİL?'**
+  String get adminDeleteTaskTitle;
+
+  /// No description provided for @adminDeleteTaskBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu görev sistemden kalıcı olarak silinecek.'**
+  String get adminDeleteTaskBody;
+
+  /// No description provided for @adminEditButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'DÜZENLE'**
+  String get adminEditButton;
+
+  /// No description provided for @adminDeleteButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'SİL'**
+  String get adminDeleteButton;
+
+  /// No description provided for @adminCancelButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'İPTAL'**
+  String get adminCancelButton;
+
+  /// No description provided for @adminNewScenario.
+  ///
+  /// In tr, this message translates to:
+  /// **'YENİ SENARYO'**
+  String get adminNewScenario;
+
+  /// No description provided for @adminEditScenario.
+  ///
+  /// In tr, this message translates to:
+  /// **'SENARYOYU DÜZENLE'**
+  String get adminEditScenario;
+
+  /// No description provided for @adminScenarioAdded.
+  ///
+  /// In tr, this message translates to:
+  /// **'Senaryo eklendi!'**
+  String get adminScenarioAdded;
+
+  /// No description provided for @adminScenarioUpdated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Senaryo güncellendi!'**
+  String get adminScenarioUpdated;
+
+  /// No description provided for @adminScenarioLineLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'SENARYO REPLİĞİ'**
+  String get adminScenarioLineLabel;
+
+  /// No description provided for @adminTypeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'TÜR'**
+  String get adminTypeLabel;
+
+  /// No description provided for @adminTagsLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'ETİKETLER'**
+  String get adminTagsLabel;
+
+  /// No description provided for @adminAddToRepertoire.
+  ///
+  /// In tr, this message translates to:
+  /// **'REPERTUARA EKLE'**
+  String get adminAddToRepertoire;
+
+  /// No description provided for @fieldCannotBeEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Boş bırakılamaz'**
+  String get fieldCannotBeEmpty;
+
+  /// No description provided for @adminReportedNamesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'RAPORLU OYUNCU ADLARI'**
+  String get adminReportedNamesTitle;
+
+  /// No description provided for @adminAllPlayersClean.
+  ///
+  /// In tr, this message translates to:
+  /// **'TÜM OYUNCULAR TEMİZ 🎉'**
+  String get adminAllPlayersClean;
+
+  /// No description provided for @adminReportLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İHBAR: {reason}'**
+  String adminReportLabel(String reason);
+
+  /// No description provided for @adminApproveTooltip.
+  ///
+  /// In tr, this message translates to:
+  /// **'ONAYLA'**
+  String get adminApproveTooltip;
+
+  /// No description provided for @adminBanTooltip.
+  ///
+  /// In tr, this message translates to:
+  /// **'YASAKLA'**
+  String get adminBanTooltip;
+
+  /// No description provided for @loadFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Veriler yüklenemedi'**
+  String get loadFailed;
+
+  /// No description provided for @retry.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar dene'**
+  String get retry;
+
+  /// No description provided for @goHome.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ana menüye dön'**
+  String get goHome;
+
+  /// No description provided for @actionFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlem başarısız. Tekrar deneyin.'**
+  String get actionFailed;
+
+  /// No description provided for @walletUnavailable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bakiye yüklenemedi'**
+  String get walletUnavailable;
+
+  /// No description provided for @autoPickFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kategori seçilemedi. Tekrar deneyin.'**
+  String get autoPickFailed;
+
+  /// No description provided for @processing.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşleniyor...'**
+  String get processing;
+
+  /// No description provided for @buttonSemanticsLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Buton'**
+  String get buttonSemanticsLabel;
+
+  /// No description provided for @developerTeamTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geliştirici Ekip'**
+  String get developerTeamTitle;
+
+  /// No description provided for @developerRole.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geliştirici'**
+  String get developerRole;
+
+  /// No description provided for @artDirectorRole.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sanat Yönetmeni'**
+  String get artDirectorRole;
+
+  /// No description provided for @allRightsReserved.
+  ///
+  /// In tr, this message translates to:
+  /// **'2026 Tüm Hakları Saklıdır'**
+  String get allRightsReserved;
+
+  /// No description provided for @reportUserTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanıcıyı Raporla'**
+  String get reportUserTitle;
+
+  /// No description provided for @reportUserConfirmMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kullanıcının profil fotoğrafını raporlamak istediğinize emin misiniz?'**
+  String get reportUserConfirmMessage;
+
+  /// No description provided for @reportReasonInappropriate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Uygunsuz Fotoğraf / Çıplaklık'**
+  String get reportReasonInappropriate;
+
+  /// No description provided for @reportReasonViolence.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şiddet veya Tehdit'**
+  String get reportReasonViolence;
+
+  /// No description provided for @reportReasonSpam.
+  ///
+  /// In tr, this message translates to:
+  /// **'Spam veya Reklam'**
+  String get reportReasonSpam;
+
+  /// No description provided for @reportReasonOther.
+  ///
+  /// In tr, this message translates to:
+  /// **'Diğer'**
+  String get reportReasonOther;
+
+  /// No description provided for @reportUserAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Raporla'**
+  String get reportUserAction;
+
+  /// No description provided for @reportUserSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanıcı raporlandı. İnceleyeceğiz.'**
+  String get reportUserSuccess;
+
+  /// No description provided for @reportUserFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Raporlanırken hata oluştu.'**
+  String get reportUserFailed;
+
+  /// No description provided for @gameEndedInsufficientPlayers.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyuncu sayısı yetersiz kaldığı için oyun sona erdi.'**
+  String get gameEndedInsufficientPlayers;
+
+  /// No description provided for @titlesTabSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun içinde adınızın altında görünen özel etiketler.'**
+  String get titlesTabSubtitle;
+
+  /// No description provided for @framesTabSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil fotoğrafınızın etrafında parlayan özel efektler.'**
+  String get framesTabSubtitle;
+
+  /// No description provided for @scenariosTabSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyundaki görev havuzunu belirleyen tema paketleri.'**
+  String get scenariosTabSubtitle;
+
+  /// No description provided for @errorCategoryNotSelected.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önce kategori seçilmeli!'**
+  String get errorCategoryNotSelected;
+
+  /// No description provided for @errorNoTasksInCategory.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kategoride görev bulunamadı!'**
+  String get errorNoTasksInCategory;
+
+  /// No description provided for @errorTaskSelectConnection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Görev seçilirken bağlantı hatası oluştu: {message}'**
+  String errorTaskSelectConnection(String message);
+
+  /// No description provided for @errorSaveResults.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuçlar kaydedilirken hata oluştu: {message}'**
+  String errorSaveResults(String message);
+
+  /// No description provided for @errorSaveResultsUnexpected.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuçlar kaydedilirken beklenmeyen hata: {error}'**
+  String errorSaveResultsUnexpected(String error);
+
+  /// No description provided for @errorTurnAdvanceConnection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıra geçerken bağlantı hatası oluştu: {message}'**
+  String errorTurnAdvanceConnection(String message);
+
+  /// No description provided for @errorGameNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun bulunamadı!'**
+  String get errorGameNotFound;
+
+  /// No description provided for @errorCategoryLocked.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kategori kilitli!'**
+  String get errorCategoryLocked;
+
+  /// No description provided for @errorCategorySelectConnection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kategori seçilirken bağlantı hatası oluştu: {message}'**
+  String errorCategorySelectConnection(String message);
+
+  /// No description provided for @errorAssignCategoryConnection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kategori atanırken bağlantı hatası oluştu: {message}'**
+  String errorAssignCategoryConnection(String message);
+
+  /// No description provided for @errorSkipTask.
+  ///
+  /// In tr, this message translates to:
+  /// **'Görevi geçerken bir hata oluştu: {message}'**
+  String errorSkipTask(String message);
+
+  /// No description provided for @errorSkipTaskUnexpected.
+  ///
+  /// In tr, this message translates to:
+  /// **'Görevi geçerken beklenmeyen bir hata oluştu: {error}'**
+  String errorSkipTaskUnexpected(String error);
+
+  /// No description provided for @errorRemovePlayer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyuncu oyundan çıkarılırken hata oluştu: {message}'**
+  String errorRemovePlayer(String message);
+
+  /// No description provided for @errorCreateRoomConnection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda oluşturulurken bağlantı hatası oluştu: {message}'**
+  String errorCreateRoomConnection(String message);
+
+  /// No description provided for @errorCreateRoomFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda oluşturulamadı: {error}'**
+  String errorCreateRoomFailed(String error);
+
+  /// No description provided for @errorRoomNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda bulunamadı: {code}'**
+  String errorRoomNotFound(String code);
+
+  /// No description provided for @errorRoomFull.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda dolu! Maksimum {max} oyuncu.'**
+  String errorRoomFull(int max);
+
+  /// No description provided for @errorJoinRoomConnection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Odaya katılırken bağlantı hatası oluştu: {message}'**
+  String errorJoinRoomConnection(String message);
+
+  /// No description provided for @errorLeaveRoom.
+  ///
+  /// In tr, this message translates to:
+  /// **'Odadan ayrılırken hata oluştu: {message}'**
+  String errorLeaveRoom(String message);
+
+  /// No description provided for @errorReadyStatus.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hazır durumu güncellenirken hata oluştu: {message}'**
+  String errorReadyStatus(String message);
+
+  /// No description provided for @errorEmoteSend.
+  ///
+  /// In tr, this message translates to:
+  /// **'Emote gönderilirken hata oluştu: {message}'**
+  String errorEmoteSend(String message);
+
+  /// No description provided for @errorRoomVisibility.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda görünürlüğü güncellenirken hata oluştu: {message}'**
+  String errorRoomVisibility(String message);
+
+  /// No description provided for @errorRoomStatus.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda durumu güncellenirken hata oluştu: {message}'**
+  String errorRoomStatus(String message);
+
+  /// No description provided for @errorGameAlreadyStarted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun zaten başlatılmış görünüyor.'**
+  String get errorGameAlreadyStarted;
+
+  /// No description provided for @errorMinPlayersToStart.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyunu başlatmak için en az 2 oyuncu gerekli.'**
+  String get errorMinPlayersToStart;
+
+  /// No description provided for @errorStartGameTransaction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun başlatılamadı (İşlem Hatası): {message}'**
+  String errorStartGameTransaction(String message);
+
+  /// No description provided for @errorStartGameFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun başlatılamadı: {error}'**
+  String errorStartGameFailed(String error);
 }
 
 class _AppLocalizationsDelegate

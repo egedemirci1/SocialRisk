@@ -135,13 +135,16 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
-# Launcher + web/PWA icons from project root logo (run: dart run flutter_launcher_icons)
+# Launcher + web/PWA icons (run: dart run flutter_launcher_icons)
 flutter_launcher_icons:
   android: true
   ios: true
   remove_alpha_ios: true
-  image_path: logo.png
+  image_path: assets/icon/app_icon.png
+  adaptive_icon_background: "#16103A"
+  adaptive_icon_foreground: assets/icon/adaptive_foreground.png
   web:
     generate: true
+    image_path: assets/icon/app_icon.png
     background_color: "#16103A"
     theme_color: "#16103A"

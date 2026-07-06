@@ -26,6 +26,9 @@ class CategoryDefinition {
 class CategoryConstants {
   CategoryConstants._();
 
+  /// Özel / custom deck kategori kimliği (encoding-safe tek kaynak).
+  static const String customCategoryId = 'Özel';
+
   static const List<CategoryDefinition> all = [
     CategoryDefinition(
       id: 'Fiziksel',

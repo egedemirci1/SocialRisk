@@ -117,6 +117,14 @@
       "message": {"type": "String"}
     }
   },
+  "errorPermissionDenied": "Bu işlem için yetkiniz yok",
+  "errorServiceUnavailable": "Hizmet geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin",
+  "errorNotFound": "İstenen kayıt bulunamadı",
+  "errorRequestTimedOut": "İstek zaman aşımına uğradı. Lütfen tekrar deneyin",
+  "errorNetwork": "Bağlantı hatası. İnternetinizi kontrol edip tekrar deneyin",
+  "errorUnknown": "Bir şeyler ters gitti. Lütfen tekrar deneyin",
+  "errorAlreadyOwned": "Bu eşyaya zaten sahipsiniz",
+  "errorUserNotFound": "Kullanıcı bulunamadı",
   "storeTitle": "Mağaza & Cüzdan",
   "storeSubtitle": "Kozmetikler ve içerikler",
   "cosmetics": "Kozmetikler",
@@ -199,6 +207,14 @@
   "menu": "Menü",
   "roomClosedHostLeft": "Ev sahibi odadan ayrıldığı için oda kapatıldı.",
   "preparingGame": "Oyun Hazırlanıyor...",
+  "continueParty": "Oyuna Devam Et",
+  "activePartySubtitle": "Oda {roomCode} — dokunarak geri dön",
+  "@activePartySubtitle": {
+    "placeholders": {
+      "roomCode": {"type": "String"}
+    }
+  },
+  "invalidPasteRoomCode": "Panoda geçerli 6 haneli oda kodu bulunamadı.",
   "wheelModeCapital": "ÇARK MODU",
   "marketModeCapital": "BORSA MODU",
   "chooseAnEmote": "Bir Emote Seç",
@@ -405,6 +421,7 @@
   "loggingIn": "Partiye giriş yapılıyor...",
   "playerDisplayNameHint": "Oyuncu Adınız...",
   "joinPartyButton": "Partiye Katıl!",
+  "pastePartyCode": "Kodu yapıştır",
   "anonymousHint": "* Anonim olarak devam edeceksiniz. İstatistikleriniz bu cihaza kaydedilir.",
   "orDivider": "Veya",
   "continueWithGoogle": "Google ile Devam Et",
@@ -517,5 +534,229 @@
     }
   },
   "leftRoomToast": "Odadan ayrıldınız",
-  "cancel": "İptal"
+  "cancel": "İptal",
+  "adminPanelTitle": "YÖNETİCİ PANELİ",
+  "adminTaskCountBanner": "Toplam {total} görev • Filtreli: {filtered}",
+  "@adminTaskCountBanner": {
+    "placeholders": {
+      "total": {"type": "int"},
+      "filtered": {"type": "int"}
+    }
+  },
+  "adminMaintenanceCleanup": "BAKIM TEMİZLİĞİ",
+  "adminRefreshTasks": "GÖREVLERİ YENİLE",
+  "adminDeleteOldRooms": "ESKİ ODALARI SİL (3h+)",
+  "adminSortLabel": "Sıralama:",
+  "adminSortNewest": "En Yeni",
+  "adminSortMostLiked": "En Çok Beğenilen 👍",
+  "adminSortLeastLiked": "En Az Beğenilen 👎",
+  "adminSortMostDisliked": "En Çok Beğenilmeyen 😒",
+  "adminCategoryFilterLabel": "Kategori Filtresi:",
+  "adminFilterAll": "Tümü",
+  "adminNoMatchingTasks": "Filtreyle eşleşen görev bulunamadı.",
+  "adminMaintenanceCleanupTitle": "BAKIM TEMİZLİĞİ?",
+  "adminMaintenanceCleanupBody": "Boş odalar, bitmiş oyunlar ve aktif olmayan kullanıcılar silinecek.",
+  "adminRun": "ÇALIŞTIR",
+  "adminMaintenanceCleanupResult": "Temizlik: {roomsDeleted} oda, {gamesDeleted} oyun, {usersDeleted} kullanıcı silindi.",
+  "@adminMaintenanceCleanupResult": {
+    "placeholders": {
+      "roomsDeleted": {"type": "int"},
+      "gamesDeleted": {"type": "int"},
+      "usersDeleted": {"type": "int"}
+    }
+  },
+  "adminRefreshTasksTitle": "GÖREVLERİ YENİLE?",
+  "adminRefreshTasksBody": "Mevcut tüm görevler silinip güncel seed verisi yüklenecek.",
+  "adminRefresh": "YENİLE",
+  "adminTasksRefreshed": "Görevler güncel seed ile yenilendi.",
+  "adminForceCleanupTitle": "ESKİ AKTİF ODALARI TEMİZLE?",
+  "adminForceCleanupBody": "3 saatten eski tüm playing/lobby odaları ve oyunları silecek. Devam?",
+  "adminDeleteConfirm": "SİL",
+  "adminForceCleanupResult": "{count} eski aktif oda silindi.",
+  "@adminForceCleanupResult": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "adminDeleteTaskTitle": "GÖREVİ SİL?",
+  "adminDeleteTaskBody": "Bu görev sistemden kalıcı olarak silinecek.",
+  "adminEditButton": "DÜZENLE",
+  "adminDeleteButton": "SİL",
+  "adminCancelButton": "İPTAL",
+  "adminNewScenario": "YENİ SENARYO",
+  "adminEditScenario": "SENARYOYU DÜZENLE",
+  "adminScenarioAdded": "Senaryo eklendi!",
+  "adminScenarioUpdated": "Senaryo güncellendi!",
+  "adminScenarioLineLabel": "SENARYO REPLİĞİ",
+  "adminTypeLabel": "TÜR",
+  "adminTagsLabel": "ETİKETLER",
+  "adminAddToRepertoire": "REPERTUARA EKLE",
+  "fieldCannotBeEmpty": "Boş bırakılamaz",
+  "adminReportedNamesTitle": "RAPORLU OYUNCU ADLARI",
+  "adminAllPlayersClean": "TÜM OYUNCULAR TEMİZ 🎉",
+  "adminReportLabel": "İHBAR: {reason}",
+  "@adminReportLabel": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "adminApproveTooltip": "ONAYLA",
+  "adminBanTooltip": "YASAKLA",
+  "loadFailed": "Veriler yüklenemedi",
+  "retry": "Tekrar dene",
+  "goHome": "Ana menüye dön",
+  "actionFailed": "İşlem başarısız. Tekrar deneyin.",
+  "walletUnavailable": "Bakiye yüklenemedi",
+  "autoPickFailed": "Kategori seçilemedi. Tekrar deneyin.",
+  "processing": "İşleniyor...",
+  "buttonSemanticsLabel": "Buton",
+  "developerTeamTitle": "Geliştirici Ekip",
+  "developerRole": "Geliştirici",
+  "artDirectorRole": "Sanat Yönetmeni",
+  "allRightsReserved": "2026 Tüm Hakları Saklıdır",
+  "reportUserTitle": "Kullanıcıyı Raporla",
+  "reportUserConfirmMessage": "Bu kullanıcının profil fotoğrafını raporlamak istediğinize emin misiniz?",
+  "reportReasonInappropriate": "Uygunsuz Fotoğraf / Çıplaklık",
+  "reportReasonViolence": "Şiddet veya Tehdit",
+  "reportReasonSpam": "Spam veya Reklam",
+  "reportReasonOther": "Diğer",
+  "reportUserAction": "Raporla",
+  "reportUserSuccess": "Kullanıcı raporlandı. İnceleyeceğiz.",
+  "reportUserFailed": "Raporlanırken hata oluştu.",
+  "gameEndedInsufficientPlayers": "Oyuncu sayısı yetersiz kaldığı için oyun sona erdi.",
+  "titlesTabSubtitle": "Oyun içinde adınızın altında görünen özel etiketler.",
+  "framesTabSubtitle": "Profil fotoğrafınızın etrafında parlayan özel efektler.",
+  "scenariosTabSubtitle": "Oyundaki görev havuzunu belirleyen tema paketleri.",
+  "errorCategoryNotSelected": "Önce kategori seçilmeli!",
+  "errorNoTasksInCategory": "Bu kategoride görev bulunamadı!",
+  "errorTaskSelectConnection": "Görev seçilirken bağlantı hatası oluştu: {message}",
+  "@errorTaskSelectConnection": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorSaveResults": "Sonuçlar kaydedilirken hata oluştu: {message}",
+  "@errorSaveResults": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorSaveResultsUnexpected": "Sonuçlar kaydedilirken beklenmeyen hata: {error}",
+  "@errorSaveResultsUnexpected": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "errorTurnAdvanceConnection": "Sıra geçerken bağlantı hatası oluştu: {message}",
+  "@errorTurnAdvanceConnection": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorGameNotFound": "Oyun bulunamadı!",
+  "errorCategoryLocked": "Bu kategori kilitli!",
+  "errorCategorySelectConnection": "Kategori seçilirken bağlantı hatası oluştu: {message}",
+  "@errorCategorySelectConnection": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorAssignCategoryConnection": "Kategori atanırken bağlantı hatası oluştu: {message}",
+  "@errorAssignCategoryConnection": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorSkipTask": "Görevi geçerken bir hata oluştu: {message}",
+  "@errorSkipTask": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorSkipTaskUnexpected": "Görevi geçerken beklenmeyen bir hata oluştu: {error}",
+  "@errorSkipTaskUnexpected": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "errorRemovePlayer": "Oyuncu oyundan çıkarılırken hata oluştu: {message}",
+  "@errorRemovePlayer": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorCreateRoomConnection": "Oda oluşturulurken bağlantı hatası oluştu: {message}",
+  "@errorCreateRoomConnection": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorCreateRoomFailed": "Oda oluşturulamadı: {error}",
+  "@errorCreateRoomFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "errorRoomNotFound": "Oda bulunamadı: {code}",
+  "@errorRoomNotFound": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "errorRoomFull": "Oda dolu! Maksimum {max} oyuncu.",
+  "@errorRoomFull": {
+    "placeholders": {
+      "max": {"type": "int"}
+    }
+  },
+  "errorJoinRoomConnection": "Odaya katılırken bağlantı hatası oluştu: {message}",
+  "@errorJoinRoomConnection": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorLeaveRoom": "Odadan ayrılırken hata oluştu: {message}",
+  "@errorLeaveRoom": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorReadyStatus": "Hazır durumu güncellenirken hata oluştu: {message}",
+  "@errorReadyStatus": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorEmoteSend": "Emote gönderilirken hata oluştu: {message}",
+  "@errorEmoteSend": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorRoomVisibility": "Oda görünürlüğü güncellenirken hata oluştu: {message}",
+  "@errorRoomVisibility": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorRoomStatus": "Oda durumu güncellenirken hata oluştu: {message}",
+  "@errorRoomStatus": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorGameAlreadyStarted": "Oyun zaten başlatılmış görünüyor.",
+  "errorMinPlayersToStart": "Oyunu başlatmak için en az 2 oyuncu gerekli.",
+  "errorStartGameTransaction": "Oyun başlatılamadı (İşlem Hatası): {message}",
+  "@errorStartGameTransaction": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "errorStartGameFailed": "Oyun başlatılamadı: {error}",
+  "@errorStartGameFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

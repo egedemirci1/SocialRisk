@@ -129,56 +129,64 @@ class _ToastWidgetState extends State<_ToastWidget> with SingleTickerProviderSta
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top + 16;
+    final maxWidth = MediaQuery.sizeOf(context).width - 32;
+    final toastWidth = maxWidth.clamp(200.0, 300.0);
     
     return Positioned(
       top: topPadding,
       right: 16,
-      child: Material(
-        color: Colors.transparent,
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: SlideTransition(
-            position: _offsetAnimation,
-            child: Container(
-              width: 300,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: widget.backgroundColor,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Icon(widget.icon, color: widget.textColor, size: 20),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      widget.message,
-                      style: AppTextStyles.labelSmall.copyWith(color: widget.textColor,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
+      left: 16,
+      child: Align(
+        alignment: Alignment.topRight,
+        child: Material(
+          color: Colors.transparent,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _offsetAnimation,
+              child: Container(
+                width: toastWidth,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: widget.backgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () {
-                      _controller.reverse().then((_) => widget.onDismiss());
-                    },
-                    child: Icon(
-                      Icons.close_rounded,
-                      color: widget.textColor.withValues(alpha: 0.5),
-                      size: 18,
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Icon(widget.icon, color: widget.textColor, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        widget.message,
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: widget.textColor,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () {
+                        _controller.reverse().then((_) => widget.onDismiss());
+                      },
+                      child: Icon(
+                        Icons.close_rounded,
+                        color: widget.textColor.withValues(alpha: 0.5),
+                        size: 18,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

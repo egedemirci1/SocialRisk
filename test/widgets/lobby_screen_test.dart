@@ -17,6 +17,7 @@ import 'package:social_risk/shared/models/enums.dart';
 import 'package:social_risk/shared/widgets/buttons/stage_button.dart';
 import '../helpers/fake_user_repository.dart';
 import '../helpers/fake_user_controller.dart';
+import '../helpers/widget_test_app.dart';
 
 // ---------------------------------------------------------------------------
 // Mock: Gerçek Firebase'e gitmemek için RoomRepository mocklanıyor;
@@ -59,10 +60,9 @@ void main() {
     bool withParentRoute = false,
   }) {
     if (withParentRoute) {
-      return ProviderScope(
+      return wrapWithLocalizedRouter(
         overrides: overrides,
-        child: MaterialApp.router(
-          routerConfig: GoRouter(
+        routerConfig: GoRouter(
             initialLocation: initialLocation ?? '/lobby',
             routes: [
               GoRoute(
@@ -82,32 +82,29 @@ void main() {
               GoRoute(path: '/home', builder: (_, __) => const SizedBox.shrink()),
             ],
           ),
-        ),
       );
     }
-    return ProviderScope(
+    return wrapWithLocalizedRouter(
       overrides: overrides,
-      child: MaterialApp.router(
-        routerConfig: GoRouter(
-          initialLocation: initialLocation ?? '/lobby',
-          routes: [
-            GoRoute(
-              path: '/lobby',
-              builder: (_, __) => MediaQuery(
-                data: const MediaQueryData(size: Size(600, 900)),
-                child: LobbyScreen(roomCode: roomCode),
-              ),
+      routerConfig: GoRouter(
+        initialLocation: initialLocation ?? '/lobby',
+        routes: [
+          GoRoute(
+            path: '/lobby',
+            builder: (_, __) => MediaQuery(
+              data: const MediaQueryData(size: Size(600, 900)),
+              child: LobbyScreen(roomCode: roomCode),
             ),
-            GoRoute(
-              path: '/task',
-              builder: (_, __) => const SizedBox.shrink(),
-            ),
-            GoRoute(
-              path: '/home',
-              builder: (_, __) => const SizedBox.shrink(),
-            ),
-          ],
-        ),
+          ),
+          GoRoute(
+            path: '/task',
+            builder: (_, __) => const SizedBox.shrink(),
+          ),
+          GoRoute(
+            path: '/home',
+            builder: (_, __) => const SizedBox.shrink(),
+          ),
+        ],
       ),
     );
   }
@@ -175,8 +172,8 @@ void main() {
       expect(find.text('Host (Sen)'), findsOneWidget);
       expect(find.text('Ali'), findsOneWidget);
       expect(find.text('Ayşe'), findsOneWidget);
-      expect(find.textContaining('HAZIR'), findsWidgets);
-      expect(find.textContaining('BEKLİYOR'), findsWidgets);
+      expect(find.text('Hazırım!'), findsOneWidget);
+      expect(find.text('Hazır Ol'), findsWidgets);
     });
 
     testWidgets('Hazır butonu (non-host): tıklanınca toggleReady tetiklenir', (tester) async {
@@ -204,8 +201,8 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       // Oyuncu host değilse "HENÜZ HAZIR DEĞİLİM" butonu görünür
-      expect(find.text('HENÜZ HAZIR DEĞİLİM'), findsOneWidget);
-      await tester.tap(find.widgetWithText(StageButton, 'HENÜZ HAZIR DEĞİLİM'));
+      expect(find.text('HAZIR OL'), findsOneWidget);
+      await tester.tap(find.widgetWithText(StageButton, 'HAZIR OL'));
       await tester.pump();
 
       verify(() => mockRepo.toggleReady(
@@ -231,9 +228,8 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.text('HENÜZ HAZIR DEĞİLİM'), findsOneWidget);
-      // Host olmadığı için "Oyunu Başlat" yok (sadece kurucuda çıkar)
-      expect(find.text('OYUNU BAŞLAT'), findsNothing);
+      expect(find.text('HAZIR OL'), findsOneWidget);
+      expect(find.text('Oyunu Başlat'), findsNothing);
     });
 
     testWidgets('Kurucu ekranda ama herkes hazır değilse "Oyunu Başlat" pasif (tıklanınca startGame çağrılmaz)', (tester) async {
@@ -262,8 +258,8 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       // allReady false (p2, p3 hazır değil) → buton pasif (onPressed: () {})
-      expect(find.text('OYUNU BAŞLAT'), findsOneWidget);
-      await tester.tap(find.text('OYUNU BAŞLAT'));
+      expect(find.text('Oyunu Başlat'), findsOneWidget);
+      await tester.tap(find.text('Oyunu Başlat'));
       await tester.pump();
 
       verifyNever(() => mockRepo.startGameInRoom(
@@ -312,8 +308,8 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 800));
 
-      expect(find.text('OYUNU BAŞLAT'), findsOneWidget);
-      await tester.tap(find.widgetWithText(StageButton, 'OYUNU BAŞLAT'));
+      expect(find.text('Oyunu Başlat'), findsOneWidget);
+      await tester.tap(find.widgetWithText(StageButton, 'Oyunu Başlat'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
@@ -364,10 +360,10 @@ void main() {
       await tester.pump();
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Hata'), findsOneWidget);
+      expect(find.text('Veriler yüklenemedi'), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('Geri (Çıkış) Butonu: leaveRoom tetiklenir ve ana sayfaya döner', (tester) async {
+    testWidgets('Geri (Çıkış) Butonu: onay sonrası leaveRoom tetiklenir', (tester) async {
       final mockRepo = MockRoomRepository();
       when(() => mockRepo.watchRoom(any())).thenAnswer((_) => Stream.value(roomWithThreePlayers));
       when(() => mockRepo.watchPlayers(any())).thenAnswer((_) => Stream.value(threePlayers));
@@ -392,8 +388,15 @@ void main() {
       final backButton = find.byIcon(Icons.arrow_back_ios_rounded);
       expect(backButton, findsOneWidget);
       await tester.tap(backButton);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Partiden Ayrıl'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Sil ve Çık'));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pump(const Duration(seconds: 4));
 
       verify(() => mockRepo.leaveRoom(roomCode: roomCode, playerId: 'host1')).called(1);
     });

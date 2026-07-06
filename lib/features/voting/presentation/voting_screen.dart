@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/game_constants.dart';
 import '../../../shared/widgets/voting/voting_panel.dart';
 import '../../../shared/models/enums.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -15,15 +16,22 @@ import '../../game/domain/game_entity.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../game/presentation/widgets/turn_counter_badge.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
+import '../../../shared/widgets/common/app_loading_indicator.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
+import '../../../shared/widgets/guards/room_exit_guard.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../shared/utils/toast_utils.dart';
+import '../../../shared/widgets/common/game_error_scaffold.dart';
+import '../../../shared/utils/error_message_utils.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
 import '../../../core/data/task_translations/task_translation_map.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
+
+part 'voting_screen.builders.part.dart';
+part 'voting_screen.widgets.part.dart';
 
 /// Oylama ekranı — Diğer oyuncular aktif oyuncuyu oyluyor (Parti Temalı).
 class VotingScreen extends ConsumerStatefulWidget {
@@ -37,10 +45,47 @@ class VotingScreen extends ConsumerStatefulWidget {
 }
 
 class _VotingScreenState extends ConsumerState<VotingScreen> {
-  static const Duration _voteDuration = Duration(seconds: 20);
   bool _isProcessing = false;
   bool _hasProcessed = false;
   bool _hasVoted = false;
+  Timer? _finalizeFallbackTimer;
+
+  Duration get _voteDuration => GameConstants.voteDuration;
+
+  @override
+  void initState() {
+    super.initState();
+    _finalizeFallbackTimer = Timer(_voteDuration + const Duration(seconds: 3), () {
+      if (mounted) _tryFinalizeWhenReady();
+    });
+  }
+
+  @override
+  void dispose() {
+    _finalizeFallbackTimer?.cancel();
+    super.dispose();
+  }
+
+  void _tryFinalizeWhenReady() {
+    if (_isProcessing || _hasProcessed || !mounted) return;
+
+    final game = ref.read(watchGameProvider(widget.gameId)).value;
+    if (game == null || game.status != GameStatus.voting) return;
+
+    final votes = ref.read(watchVotesProvider(widget.gameId)).value;
+    final players = ref.read(watchPlayersProvider(widget.roomCode)).value ?? [];
+    final activePlayerIds = players.map((p) => p.id).toList();
+    if (activePlayerIds.isEmpty) return;
+
+    final allVoted = votes != null &&
+        activePlayerIds.every(
+          (id) => id == game.currentPlayerId || votes.containsKey(id),
+        );
+
+    if (allVoted) {
+      _processResults();
+    }
+  }
 
   Future<void> _processResults() async {
     if (_isProcessing || _hasProcessed) return;
@@ -56,7 +101,8 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
       if (mounted) {
         _hasProcessed = false;
         setState(() => _isProcessing = false);
-        ToastUtils.showError(context, 'Hata: $e');
+        final l = AppLocalizations.of(context)!;
+        ToastUtils.showError(context, l.error(ErrorMessageUtils.formatUserError(e, l)));
       }
     } finally {
       if (mounted) {
@@ -90,12 +136,15 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
       }
     });
 
-    return gameAsync.when(
+    return RoomExitPopScope(
+      roomCode: widget.roomCode,
+      child: gameAsync.when(
       data: (game) {
+        final l = AppLocalizations.of(context)!;
         if (game == null) {
-          return const Scaffold(
+          return Scaffold(
             backgroundColor: Colors.transparent,
-            body: Center(child: CircularProgressIndicator()),
+            body: TheaterLoadingScreen(message: l.calculatingScore),
           );
         }
 
@@ -108,17 +157,17 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
               );
             }
           });
-          return const Scaffold(
+          return Scaffold(
             backgroundColor: Colors.transparent,
-            body: Center(child: CircularProgressIndicator()),
+            body: TheaterLoadingScreen(message: l.calculatingScore),
           );
         } else if (game.status == GameStatus.finished) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) context.go('/game-over', extra: widget.roomCode);
           });
-          return const Scaffold(
+          return Scaffold(
             backgroundColor: Colors.transparent,
-            body: Center(child: CircularProgressIndicator()),
+            body: TheaterLoadingScreen(message: l.partyOver),
           );
         }
 
@@ -138,14 +187,12 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                   votesAsync.value!.containsKey(id),
             );
 
-        final isHost = roomAsync.value?.hostId == user?.uid;
         final isMyTurn = game.currentPlayerId == user?.uid;
 
-        if (allVoted && !_isProcessing && !_hasProcessed && isHost) {
+        if (allVoted && !_isProcessing && !_hasProcessed) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted && !_isProcessing && !_hasProcessed) {
-              _processResults(
-              );
+              _processResults();
             }
           });
         }
@@ -153,11 +200,11 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
         final difficulty = game.currentTask?.difficulty ?? 'medium';
         Color glowColor;
         if (difficulty == 'hard') {
-          glowColor = Colors.red.withValues(alpha: 0.15);
+          glowColor = AppColors.error.withValues(alpha: 0.15);
         } else if (difficulty == 'easy') {
-          glowColor = Colors.green.withValues(alpha: 0.15);
+          glowColor = AppColors.votePositive.withValues(alpha: 0.15);
         } else {
-          glowColor = Colors.orange.withValues(alpha: 0.15);
+          glowColor = AppColors.voteNeutral.withValues(alpha: 0.15);
         }
 
         return Container(
@@ -224,7 +271,10 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                   padding: EdgeInsets.zero,
                   child: Column(
                     children: [
-                      const _VisualCountdownTimer(duration: _voteDuration),
+                      _VisualCountdownTimer(
+                        duration: _voteDuration,
+                        onElapsed: _tryFinalizeWhenReady,
+                      ),
                       
                       // 1. FIXED HEADER: Avatar and Name
                       Builder(
@@ -357,7 +407,7 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                                     ? _buildVotedStatus()
                                     : VotingPanel(
                                         timeLimit: _voteDuration,
-                                        onVote: (value, {timedOut = false}) {
+                                        onVote: (value, {timedOut = false}) async {
                                           if (user == null) return;
                                           setState(() => _hasVoted = true);
                                           if (timedOut && mounted) {
@@ -366,14 +416,25 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
                                               AppLocalizations.of(context)!.voteTimeoutPenalty,
                                             );
                                           }
-                                          ref
-                                              .read(voteControllerProvider.notifier)
-                                              .castVote(
-                                                gameId: widget.gameId,
-                                                voterId: user.uid,
-                                                value: VoteValue.values.byName(value),
-                                                timedOut: timedOut,
+                                          try {
+                                            await ref
+                                                .read(voteControllerProvider.notifier)
+                                                .castVote(
+                                                  gameId: widget.gameId,
+                                                  voterId: user.uid,
+                                                  value: VoteValue.values.byName(value),
+                                                  timedOut: timedOut,
+                                                );
+                                          } catch (e) {
+                                            if (mounted) {
+                                              setState(() => _hasVoted = false);
+                                              final l = AppLocalizations.of(context)!;
+                                              ToastUtils.showError(
+                                                context,
+                                                l.error(ErrorMessageUtils.formatUserError(e, l)),
                                               );
+                                            }
+                                          }
                                         },
                                       ),
                       ),
@@ -389,250 +450,18 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
         backgroundColor: Colors.transparent,
         body: TheaterLoadingScreen(message: AppLocalizations.of(context)!.calculatingScore),
       ),
-      error: (e, _) => Scaffold(
-        backgroundColor: AppColors.background,
-        body: Center(child: Text('Hata: $e')),
-      ),
-    );
-  }
-
-  Widget _buildProcessingIndicator() {
-    return Column(
-      children: [
-        const CircularProgressIndicator(color: AppColors.accent),
-        const SizedBox(height: 16),
-        Text(
-          AppLocalizations.of(context)!.countingVotes,
-          style: AppTextStyles.titleMedium.copyWith(
-            color: AppColors.accent,
-            letterSpacing: 1,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWaitingForOthers() {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white10),
-        ),
-        child: Text(
-          AppLocalizations.of(context)!.waitingForEvaluation,
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white38,
-            fontStyle: FontStyle.italic,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVotedStatus() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.green.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.check_circle_rounded, color: Colors.green, size: 20),
-          const SizedBox(width: 12),
-          Text(
-            AppLocalizations.of(context)!.evaluated,
-            style: AppTextStyles.labelSmall.copyWith(
-              color: Colors.green,
-              fontSize: 14,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 2,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _VisualCountdownTimer extends StatefulWidget {
-  final Duration duration;
-
-  const _VisualCountdownTimer({required this.duration});
-
-  @override
-  State<_VisualCountdownTimer> createState() => _VisualCountdownTimerState();
-}
-
-class _VisualCountdownTimerState extends State<_VisualCountdownTimer>
-    with TickerProviderStateMixin {
-  late AnimationController _progressController;
-  late AnimationController _shakeController;
-  late Animation<double> _shakeAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _progressController = AnimationController(
-        vsync: this, duration: widget.duration);
-
-    _shakeController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 100));
-    _shakeAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: 4.0), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: 4.0, end: -4.0), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: -4.0, end: 4.0), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: 4.0, end: 0.0), weight: 1),
-    ]).animate(_shakeController);
-
-    _progressController.forward();
-    _progressController.addListener(() {
-      final remaining =
-          (1.0 - _progressController.value) * widget.duration.inSeconds;
-      if (remaining <= 3.0 && !_shakeController.isAnimating) {
-        _shakeController.repeat();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _progressController.dispose();
-    _shakeController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([_progressController, _shakeController]),
-      builder: (context, child) {
-        final progress = 1.0 - _progressController.value;
-        final remaining = progress * widget.duration.inSeconds;
-        Color barColor;
-        if (remaining > 10) {
-          barColor = Colors.greenAccent;
-        } else if (remaining > 5) {
-          barColor = Colors.orangeAccent;
-        } else {
-          barColor = Colors.redAccent;
-        }
-
-        return Transform.translate(
-          offset: Offset(remaining <= 3.0 ? _shakeAnimation.value : 0, 0),
-          child: Container(
-            height: 4,
-            width: double.infinity,
-            color: Colors.white12,
-            alignment: Alignment.centerLeft,
-            child: FractionallySizedBox(
-              widthFactor: progress,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: barColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: barColor.withValues(alpha: 0.5),
-                      blurRadius: 8,
-                      spreadRadius: remaining <= 3.0 ? 2 : 0,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
+      error: (e, _) {
+        final l = AppLocalizations.of(context)!;
+        return GameErrorScaffold(
+          roomCode: widget.roomCode,
+          message: l.loadFailed,
+          detail: ErrorMessageUtils.formatUserError(e, l),
+          goHomeLabel: l.goHome,
+          onRetry: () => ref.invalidate(watchGameProvider(widget.gameId)),
+          onGoHome: () => context.go('/home'),
         );
       },
+    ),
     );
   }
 }
-
-class _FloatingPsychologicalTexts extends StatefulWidget {
-  @override
-  State<_FloatingPsychologicalTexts> createState() =>
-      _FloatingPsychologicalTextsState();
-}
-
-class _FloatingPsychologicalTextsState
-    extends State<_FloatingPsychologicalTexts> with TickerProviderStateMixin {
-  String _currentText = "";
-  Alignment _currentAlignment = Alignment.center;
-  late Timer _timer;
-  final Random _rng = Random();
-
-  List<String> _getLocalizedTexts(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return [
-      l10n.waitingTip1,
-      l10n.waitingTip2,
-      l10n.waitingTip3,
-      l10n.waitingTip4,
-      l10n.waitingTip5,
-    ];
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final texts = _getLocalizedTexts(context);
-      setState(() {
-        _currentText = texts[_rng.nextInt(texts.length)];
-      });
-    });
-    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (!mounted) return;
-      final texts = _getLocalizedTexts(context);
-      setState(() {
-        _currentText = texts[_rng.nextInt(texts.length)];
-        _currentAlignment = Alignment(
-          (_rng.nextDouble() * 1.6) - 0.8, // -0.8 to 0.8
-          (_rng.nextDouble() * 1.6) - 0.8,
-        );
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(seconds: 1),
-      switchInCurve: Curves.easeIn,
-      switchOutCurve: Curves.easeOut,
-      child: Align(
-        key: ValueKey<String>(_currentText),
-        alignment: _currentAlignment,
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Text(
-            _currentText,
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: Colors.white.withValues(alpha: 0.15),
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w900,
-              fontSize: 16,
-              letterSpacing: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
-

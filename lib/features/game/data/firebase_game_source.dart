@@ -3,8 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../domain/game_entity.dart';
 import '../domain/game_repository.dart';
 import 'game_model.dart';
+import '../../../core/errors/app_exception.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../core/constants/game_constants.dart';
+
+part 'firebase_game_source.heavy.part.dart';
 
 class FirebaseGameSource implements GameRepository {
   final FirebaseFirestore _firestore;
@@ -76,129 +79,8 @@ class FirebaseGameSource implements GameRepository {
   Future<void> assignTaskByCategory({
     required String gameId,
     required String category,
-  }) async {
-    // Basit test
-    if (gameId.isEmpty) throw Exception('GameId empty');
-    if (category.isEmpty) throw Exception('Category empty');
-      
-    try {
-      final gameDocRef = _gameDoc(gameId);
-      
-      // Transaction öncesi game state'i kontrol et
-      final preGameSnap = await gameDocRef.get();
-      if (!preGameSnap.exists) {
-        return;
-      }
-      
-      final preGame = GameModel.fromJson(preGameSnap.data()!, gameId);
-
-      await _firestore.runTransaction((transaction) async {
-        final snap = await transaction.get(gameDocRef);
-        
-        if (!snap.exists) {
-          return;
-        }
-
-        final game = GameModel.fromJson(snap.data()!, snap.id);
-
-        // Race condition önleme: Eğer zaten task seçilmişse işlemi iptal et
-        if (game.currentTask != null) {
-          return;
-        }
-
-        // Economy modunda kategori seçimi validation
-        if (game.categoryPickOrder.isNotEmpty) {
-          final expectedPlayer = game.categoryPickOrder[game.currentPickIndex];
-          if (game.currentPlayerId != expectedPlayer) {
-            // Sadece sırası gelen oyuncu kategori seçebilir
-            return;
-          }
-        }
-
-        final poolKey = '${category}_mixed';
-        final pool = game.taskPool[poolKey] ?? [];
-
-        // Eğer mixed mode boşsa, individual difficulty'ları dene
-        if (pool.isEmpty) {
-          final easyPool = game.taskPool['${category}_easy'] ?? [];
-          final mediumPool = game.taskPool['${category}_medium'] ?? [];
-          final hardPool = game.taskPool['${category}_hard'] ?? [];
-          
-          // Tüm zorlukları birleştir
-          final allTasks = [...easyPool, ...mediumPool, ...hardPool];
-          if (allTasks.isNotEmpty) {
-            final available = allTasks
-                .where((t) => !game.usedTaskIds.contains(t['id']))
-                .toList();
-            
-            Map<String, dynamic>? selectedTask;
-            if (available.isNotEmpty) {
-              selectedTask = available[_random.nextInt(available.length)];
-            } else {
-              selectedTask = allTasks[_random.nextInt(allTasks.length)];
-            }
-
-            if (selectedTask != null) {
-              final taskModel = TaskModel(
-                id: selectedTask['id']?.toString() ?? '',
-                category: selectedTask['category']?.toString() ?? category,
-                content: selectedTask['content']?.toString() ?? '',
-                difficulty: selectedTask['difficulty']?.toString() ?? 'medium',
-                multiplier: 2, // Mixed modda sabit 2x
-              );
-
-              final updates = <String, dynamic>{
-                'selectedCategory': category,
-                'currentTask': taskModel.toJson(),
-                'usedTaskIds': FieldValue.arrayUnion([taskModel.id]),
-                'status': 'choosingDifficulty',
-              };
-
-              transaction.update(gameDocRef, updates);
-              return;
-            }
-          }
-        }
-
-        final available = pool
-            .where((t) => !game.usedTaskIds.contains(t['id']))
-            .toList();
-
-        Map<String, dynamic>? selectedTask;
-
-        if (available.isNotEmpty) {
-          selectedTask = available[_random.nextInt(available.length)];
-        } else if (pool.isNotEmpty) {
-          selectedTask = pool[_random.nextInt(pool.length)];
-        }
-
-        if (selectedTask == null) {
-          throw Exception('Bu kategoride görev bulunamadı!');
-        }
-
-        final taskModel = TaskModel(
-          id: selectedTask['id']?.toString() ?? '',
-          category: selectedTask['category']?.toString() ?? category,
-          content: selectedTask['content']?.toString() ?? '',
-          difficulty: selectedTask['difficulty']?.toString() ?? 'medium',
-          multiplier: 2, // Mixed modda sabit 2x
-        );
-
-        final updates = <String, dynamic>{
-          'selectedCategory': category,
-          'currentTask': taskModel.toJson(),
-          'usedTaskIds': FieldValue.arrayUnion([taskModel.id]),
-          'status': 'choosingDifficulty',
-        };
-
-        transaction.update(gameDocRef, updates);
-      });
-    } on FirebaseException catch (e) {
-      throw Exception('Kategori atanırken bağlantı hatası oluştu: ${e.message}');
-    } catch (e) {
-      throw Exception(e.toString().replaceAll('Exception: ', ''));
-    }
-  }
+  }) =>
+      _fgsAssignTaskByCategory(this, gameId: gameId, category: category);
 
   @override
   Future<void> chooseDifficulty({
@@ -216,7 +98,7 @@ class FirebaseGameSource implements GameRepository {
       final category = game.selectedCategory;
 
       if (category == null) {
-        throw Exception('Önce kategori seçilmeli!');
+        throw const AppException(AppErrorCode.categoryNotSelected);
       }
 
       // Pool'dan görev seç (Firestore sorgusu yapılmaz)
@@ -238,7 +120,7 @@ class FirebaseGameSource implements GameRepository {
       }
 
       if (selectedTask == null) {
-        throw Exception('Bu kategoride görev bulunamadı!');
+        throw const AppException(AppErrorCode.noTasksInCategory);
       }
 
       // Görevin çarpanını seçilen zorluğa göre ayarla
@@ -261,9 +143,15 @@ class FirebaseGameSource implements GameRepository {
         'status': 'playing',
       });
     } on FirebaseException catch (e) {
-      throw Exception('Görev seçilirken bağlantı hatası oluştu: ${e.message}');
+      throw AppException(
+        AppErrorCode.taskSelectConnectionError,
+        {'message': e.message ?? ''},
+      );
     } catch (e) {
-      throw Exception(e.toString().replaceAll('Exception: ', ''));
+      if (e is AppException) rethrow;
+      throw AppException(AppErrorCode.taskSelectConnectionError, {
+        'message': e.toString().replaceAll('Exception: ', ''),
+      });
     }
   }
 
@@ -283,62 +171,14 @@ class FirebaseGameSource implements GameRepository {
     required String roomId,
     required String playerId,
     required int basePenalty,
-  }) async {
-    try {
-      final playerDocRef = _firestore
-          .collection('rooms')
-          .doc(roomId)
-          .collection('players')
-          .doc(playerId);
-      final gameDocRef = _gameDoc(gameId);
-
-      await _firestore.runTransaction((transaction) async {
-        final playerSnap = await transaction.get(playerDocRef);
-        final gameSnap = await transaction.get(gameDocRef);
-        if (!gameSnap.exists || gameSnap.data() == null) {
-          throw Exception('Oyun bulunamadı');
-        }
-        final game = GameModel.fromJson(gameSnap.data()!, gameSnap.id);
-
-        final currentStreak = (playerSnap.data()?['passStreak'] as int?) ?? 0;
-        final newStreak = currentStreak + 1;
-
-        final penalty = AppHelpers.calculatePenalty(basePenalty, newStreak);
-
-        transaction.update(playerDocRef, {
-          'passStreak': newStreak,
-          'score': FieldValue.increment(-penalty),
-        });
-
-        final updates = <String, dynamic>{
-          'status': 'results',
-          'lastRoundScore': -penalty,
-          'lastRoundMultiplier': 0,
-          'lastRoundPlayerId': playerId,
-        };
-
-        // Ekonomi Modu: Pas sonrası sıra bir sonraki oyuncuya geçmeli (sıra atlamama bug fix)
-        if (game.categoryPickOrder.isNotEmpty) {
-          final nextPickIndex = game.currentPickIndex + 1;
-          if (nextPickIndex >= game.categoryPickOrder.length) {
-            updates['currentPickIndex'] = 0;
-            updates['currentRound'] = game.currentRound + 1;
-            updates['currentPlayerId'] = game.categoryPickOrder[0];
-          } else {
-            updates['currentPickIndex'] = nextPickIndex;
-            updates['currentPlayerId'] =
-                game.categoryPickOrder[nextPickIndex];
-          }
-        }
-
-        transaction.update(gameDocRef, updates);
-      });
-    } on FirebaseException catch (e) {
-      throw Exception('Görevi geçerken bir hata oluştu: ${e.message}');
-    } catch (e) {
-      throw Exception('Görevi geçerken beklenmeyen bir hata oluştu: $e');
-    }
-  }
+  }) =>
+      _fgsPassTask(
+        this,
+        gameId: gameId,
+        roomId: roomId,
+        playerId: playerId,
+        basePenalty: basePenalty,
+      );
 
   @override
   Future<void> setRoundResult({
@@ -410,9 +250,16 @@ class FirebaseGameSource implements GameRepository {
         transaction.update(gameDocRef, updates);
       });
     } on FirebaseException catch (e) {
-      throw Exception('Sonuçlar kaydedilirken hata oluştu: ${e.message}');
+      throw AppException(
+        AppErrorCode.saveResultsError,
+        {'message': e.message ?? ''},
+      );
     } catch (e) {
-      throw Exception('Sonuçlar kaydedilirken beklenmeyen hata: $e');
+      if (e is AppException) rethrow;
+      throw AppException(
+        AppErrorCode.saveResultsUnexpectedError,
+        {'error': e.toString()},
+      );
     }
   }
 
@@ -484,9 +331,15 @@ class FirebaseGameSource implements GameRepository {
         transaction.update(gameDocRef, updates);
       });
     } on FirebaseException catch (e) {
-      throw Exception('Sıra geçerken bağlantı hatası oluştu: ${e.message}');
+      throw AppException(
+        AppErrorCode.turnAdvanceConnectionError,
+        {'message': e.message ?? ''},
+      );
     } catch (e) {
-      throw Exception(e.toString().replaceAll('Exception: ', ''));
+      if (e is AppException) rethrow;
+      throw AppException(AppErrorCode.turnAdvanceConnectionError, {
+        'message': e.toString().replaceAll('Exception: ', ''),
+      });
     }
   }
 
@@ -614,14 +467,16 @@ class FirebaseGameSource implements GameRepository {
         final gameDocRef = _gameDoc(gameId);
         final snap = await transaction.get(gameDocRef);
 
-        if (!snap.exists) throw Exception('Oyun bulunamadı!');
+        if (!snap.exists) {
+          throw const AppException(AppErrorCode.gameNotFound);
+        }
 
         final game = GameModel.fromJson(snap.data()!, snap.id);
         final totalCategories = game.categoryMarketValues.keys.length;
         final supportsDynamicEconomyRules = totalCategories >= 3;
 
         if (supportsDynamicEconomyRules && game.lockedCategories.contains(category)) {
-          throw Exception('Bu kategori kilitli!');
+          throw const AppException(AppErrorCode.categoryLocked);
         }
 
         // Seçim sayısını güncelle ve kilitleme kontrolü yap
@@ -652,11 +507,15 @@ class FirebaseGameSource implements GameRepository {
         transaction.update(gameDocRef, updates);
       });
     } on FirebaseException catch (e) {
-      throw Exception(
-        'Kategori seçilirken bağlantı hatası oluştu: ${e.message}',
+      throw AppException(
+        AppErrorCode.categorySelectConnectionError,
+        {'message': e.message ?? ''},
       );
     } catch (e) {
-      throw Exception(e.toString().replaceAll('Exception: ', ''));
+      if (e is AppException) rethrow;
+      throw AppException(AppErrorCode.categorySelectConnectionError, {
+        'message': e.toString().replaceAll('Exception: ', ''),
+      });
     }
   }
 
@@ -726,8 +585,9 @@ class FirebaseGameSource implements GameRepository {
       };
       await _gameDoc(gameId).update(updates);
     } on FirebaseException catch (e) {
-      throw Exception(
-        'Oyuncu oyundan çıkarılırken hata oluştu: ${e.message}',
+      throw AppException(
+        AppErrorCode.removePlayerError,
+        {'message': e.message ?? ''},
       );
     }
   }

@@ -5,8 +5,10 @@ import '../providers/admin_provider.dart';
 import '../../../shared/models/enums.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/category_constants.dart';
+import '../../../shared/utils/error_message_utils.dart';
 import '../../../shared/utils/toast_utils.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Senaryo Editörü — Tiyatro Temalı
 class TaskEditorScreen extends ConsumerStatefulWidget {
@@ -40,6 +42,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
     setState(() => _isSaving = true);
+    final l = AppLocalizations.of(context)!;
     try {
       final task = TaskItemEntity(
         id: widget.taskToEdit?.id ?? '',
@@ -60,12 +63,15 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
         await notifier.updateTask(task);
       }
       if (mounted) {
-        ToastUtils.showSuccess(context, widget.taskToEdit == null ? 'Senaryo eklendi!' : 'Senaryo güncellendi!');
+        ToastUtils.showSuccess(
+          context,
+          widget.taskToEdit == null ? l.adminScenarioAdded : l.adminScenarioUpdated,
+        );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ToastUtils.showError(context, 'Hata: $e');
+        ToastUtils.showError(context, l.error(ErrorMessageUtils.formatUserError(e, l)));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -74,11 +80,12 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          widget.taskToEdit == null ? 'YENİ SENARYO' : 'SENARYOYU DÜZENLE',
+          widget.taskToEdit == null ? l.adminNewScenario : l.adminEditScenario,
           style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w900,
             color: AppColors.accent,
             letterSpacing: 1.5,),
@@ -94,7 +101,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildLabel('SENARYO REPLİĞİ'),
+              _buildLabel(l.adminScenarioLineLabel),
               TextFormField(
                 initialValue: _content,
                 maxLines: 4,
@@ -111,7 +118,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                 style: AppTextStyles.titleMedium.copyWith(color: Colors.white,
                   fontSize: 16,),
                 validator: (v) =>
-                    v == null || v.isEmpty ? 'Boş bırakılamaz' : null,
+                    v == null || v.isEmpty ? l.fieldCannotBeEmpty : null,
                 onSaved: (v) => _content = v!,
               ),
               const SizedBox(height: 24),
@@ -121,7 +128,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildLabel('TÜR'),
+                        _buildLabel(l.adminTypeLabel),
                         _buildDropdown(
                           CategoryConstants.allCategoryNames,
                           _category,
@@ -135,7 +142,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildLabel('ZORLUK'),
+                        _buildLabel(l.difficultyLabel.toUpperCase()),
                         _buildDropdown(
                           ['easy', 'medium', 'hard'],
                           _difficulty,
@@ -147,7 +154,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-              _buildLabel('ETİKETLER'),
+              _buildLabel(l.adminTagsLabel),
               Wrap(
                 spacing: 8,
                 children: _allTags
@@ -192,7 +199,7 @@ class _TaskEditorScreenState extends ConsumerState<TaskEditorScreen> {
                   child: _isSaving
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
-                          'REPERTUARA EKLE',
+                          l.adminAddToRepertoire,
                           style: AppTextStyles.titleLarge.copyWith(color: Colors.black,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 2,),

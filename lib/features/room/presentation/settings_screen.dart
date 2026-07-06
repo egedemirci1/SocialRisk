@@ -8,7 +8,6 @@ import '../../../core/constants/app_text_styles.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
-import '../../auth/providers/auth_provider.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -24,15 +23,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late double _musicVolume;
   late double _sfxVolume;
 
-  bool get _isTr => Localizations.localeOf(context).languageCode == 'tr';
-
   void _showDeveloperTeamDialog() {
+    final l = AppLocalizations.of(context)!;
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1D1538),
         title: Text(
-          _isTr ? 'Geliştirici Ekip' : 'Developer Team',
+          l.developerTeamTitle,
           style: const TextStyle(color: Colors.white),
         ),
         content: Column(
@@ -47,7 +45,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             Text(
-              _isTr ? 'Geliştirici' : 'Developer',
+              l.developerRole,
               style: const TextStyle(color: Colors.white70),
             ),
             const SizedBox(height: 12),
@@ -59,7 +57,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             Text(
-              _isTr ? 'Geliştirici' : 'Developer',
+              l.developerRole,
               style: const TextStyle(color: Colors.white70),
             ),
             const SizedBox(height: 12),
@@ -71,7 +69,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             Text(
-              _isTr ? 'Sanat Yönetmeni' : 'Art Director',
+              l.artDirectorRole,
               style: const TextStyle(color: Colors.white70),
             ),
           ],
@@ -79,7 +77,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(AppLocalizations.of(context)!.close),
+            child: Text(l.close),
           ),
         ],
       ),
@@ -87,10 +85,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showAboutDialogCustom() {
-    final appName = AppLocalizations.of(context)!.appTitle;
-    final legalese = _isTr
-        ? '2026 Tüm Hakları Saklıdır'
-        : '2026 All rights reserved.';
+    final l = AppLocalizations.of(context)!;
+    final appName = l.appTitle;
 
     showDialog<void>(
       context: context,
@@ -98,20 +94,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         backgroundColor: const Color(0xFF1D1538),
         title: Text(appName, style: const TextStyle(color: Colors.white)),
         content: Text(
-          legalese,
+          l.allRightsReserved,
           style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(AppLocalizations.of(context)!.close),
+            child: Text(l.close),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               _showDeveloperTeamDialog();
             },
-            child: Text(_isTr ? 'Geliştirici Ekip' : 'Developer Team'),
+            child: Text(l.developerTeamTitle),
           ),
         ],
       ),
@@ -126,7 +122,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _sfxEnabled = audio.sfxEnabled;
     _musicVolume = audio.musicVolume;
     _sfxVolume = audio.sfxVolume;
-    audio.playMenuLoop();
   }
 
   @override
@@ -165,6 +160,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     onToggle: (value) async {
                       setState(() => _musicEnabled = value);
                       await audio.setMusicEnabled(value);
+                      if (value) {
+                        await audio.ensureMenuMusic();
+                      }
                     },
                     onVolume: _musicEnabled
                         ? (value) async {
@@ -231,7 +229,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            activeColor: AppColors.accent,
+            activeThumbColor: AppColors.accent,
             title: Text(
               title,
               style: AppTextStyles.titleMedium.copyWith(
@@ -291,7 +289,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
-            value: _localeValue(currentLocale),
+            key: ValueKey(_localeValue(currentLocale)),
+            initialValue: _localeValue(currentLocale),
             isExpanded: true,
             dropdownColor: const Color(0xFF1D1538),
             decoration: InputDecoration(

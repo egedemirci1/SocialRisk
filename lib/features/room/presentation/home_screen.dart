@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/player_avatar.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../shared/utils/error_message_utils.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../admin/providers/admin_provider.dart';
@@ -16,10 +17,18 @@ import '../../../shared/utils/pending_toast.dart';
 import '../../../shared/widgets/common/social_risk_logo.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
+import '../../../shared/widgets/common/async_error_view.dart';
 import '../../../shared/widgets/common/animated_mesh_background.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
-import '../../../core/audio/audio_service.dart';
-import 'package:social_risk/l10n/app_localizations.dart';
+import '../../../core/providers/lifecycle_provider.dart';
+import '../../../core/utils/game_route_resolver.dart';
+import '../../game/domain/game_entity.dart';
+import '../../game/providers/game_provider.dart';
+import '../domain/room_entity.dart';
+import '../providers/room_provider.dart';
+import '../../../shared/models/enums.dart';
+
+part 'home_screen.builders.part.dart';
 
 /// Ana menü ekranı — Parti Temalı
 class HomeScreen extends ConsumerStatefulWidget {
@@ -33,8 +42,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Ana menü müziğini menü akışlarında loop'ta tut.
-    ref.read(audioServiceProvider).playMenuLoop();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final pending = PendingToast.instance.consume();
@@ -193,6 +200,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final displayName = profile?.displayName ?? user?.displayName ?? l.player; // Changed from 'Oyuncu'
     final cosmetics = cosmeticsAsync.value ?? [];
 
+    final hasLoadError = userProfileAsync.hasError || cosmeticsAsync.hasError;
+
     // Ana menü hazır olana kadar yükleme ekranında kal:
     // - Auth çözülmemişse (user null) veya
     // - Profil / kozmetikler hâlâ yükleniyorsa
@@ -204,8 +213,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     double loadingProgress = 0.0;
     if (user != null) {
       loadingProgress = 0.33;
-      if (userProfileAsync.hasValue || userProfileAsync.hasError) loadingProgress = 0.66;
-      if (cosmeticsAsync.hasValue || cosmeticsAsync.hasError) loadingProgress = 1.0;
+      if (userProfileAsync.hasValue) loadingProgress = 0.66;
+      if (cosmeticsAsync.hasValue) loadingProgress = 1.0;
+    }
+
+    if (hasLoadError) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(
+          child: AsyncErrorView(
+            message: l.loadFailed,
+            onRetry: () {
+              if (user != null) {
+                ref.invalidate(watchUserProfileProvider(user.uid));
+              }
+              ref.invalidate(fetchCosmeticsProvider);
+            },
+          ),
+        ),
+      );
     }
 
     if (isInitialLoading) {
@@ -267,6 +293,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               user.uid,
                             ),
                             const SizedBox(height: 32),
+                            _buildActivePartySection(context, ref, user) ??
+                                const SizedBox.shrink(),
                             _buildActions(context, ref, user),
                             const Spacer(flex: 3),
                             _buildFooter(context, ref),
@@ -282,255 +310,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildWelcome(
-    BuildContext context,
-    String playerName,
-    UserEntity? profile,
-    List<CosmeticItemEntity> cosmetics,
-    String? uid,
-  ) {
-    final activeTitleItem = profile?.activeTitle != null
-        ? cosmetics.where((c) => c.id == profile!.activeTitle).firstOrNull
-        : null;
-
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () => context.push('/profile'),
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.accent, width: 2),
-            ),
-            child: PlayerAvatar(
-              uid: uid ?? '',
-              displayName: playerName,
-              radius: 32,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        const SizedBox(height: 4),
-        Text(
-          playerName,
-          style: AppTextStyles.displayLarge.copyWith(color: Colors.white,
-            fontSize: 36,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 0.5,
-            shadows: const [
-              Shadow(offset: Offset(-1.5, -1.5), color: Colors.black87),
-              Shadow(offset: Offset(1.5, -1.5), color: Colors.black87),
-              Shadow(offset: Offset(1.5, 1.5), color: Colors.black87),
-              Shadow(offset: Offset(-1.5, 1.5), color: Colors.black87),
-              Shadow(offset: Offset(0, 6), color: Colors.black54, blurRadius: 8),
-            ],),
-          textAlign: TextAlign.center,
-        ),
-        if (activeTitleItem != null) ...[
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: AppColors.accentGradient.begin,
-                end: AppColors.accentGradient.end,
-                colors: AppColors.accentGradient.colors
-                    .map((c) => c.withValues(alpha: 0.15))
-                    .toList(),
-              ),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: AppColors.accent.withValues(alpha: 0.35),
-              ),
-            ),
-            child: Text(
-              activeTitleItem.name,
-              style: AppTextStyles.labelSmall.copyWith(color: AppColors.accent,
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.5,),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildActions(BuildContext context, WidgetRef ref, User? user) {
-    final l = AppLocalizations.of(context)!; // Added for l10n
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        StageButton(
-          label: l.newParty, // Changed from 'Yeni Parti Başlat'
-          icon: Icons.add_circle_outline_rounded,
-          backgroundColor: AppColors.primary,
-          textColor: AppColors.background,
-          borderColor: Colors.transparent,
-          onPressed: () => context.push('/create-room'),
-        ),
-        const SizedBox(height: 16),
-        StageButton(
-          label: l.joinParty, // Changed from 'Partiye Katıl'
-          icon: Icons.login_rounded,
-          backgroundColor: AppColors.secondary,
-          textColor: Colors.white,
-          borderColor: Colors.transparent,
-          onPressed: () => context.push('/join-room'),
-        ),
-        const SizedBox(height: 24),
-        Row(
-          children: [
-            Expanded(
-              child: StageButton(
-                label: l.store, // Changed from 'Mağaza'
-                icon: Icons.shopping_bag_rounded,
-                backgroundColor: AppColors.surface,
-                textColor: AppColors.accent,
-                borderColor: AppColors.accent.withValues(alpha: 0.3),
-                onPressed: () => context.push('/store'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: StageButton(
-                label: l.content,
-                icon: Icons.menu_book_rounded,
-                backgroundColor: AppColors.surface,
-                textColor: AppColors.accent,
-                borderColor: AppColors.accent.withValues(alpha: 0.3),
-                onPressed: () => context.push('/custom-deck'),
-              ),
-            ),
-          ],
-        ),
-        if (isAdmin(user?.uid)) ...[
-          const SizedBox(height: 24),
-          StageButton(
-            label: l.adminPanel,
-            icon: Icons.admin_panel_settings_rounded,
-            backgroundColor: const Color(0xFF1A1A1A),
-            textColor: Colors.amber,
-            borderColor: Colors.amber.withValues(alpha: 0.5),
-            onPressed: () => context.push('/admin'),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Future<void> _handleLogout(BuildContext context, WidgetRef ref) async {
-    final user = ref.read(currentUserProvider);
-    if (user?.isAnonymous == true) {
-      final l = AppLocalizations.of(context)!;
-      final confirm = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: AppColors.surface,
-          titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-          title: Column(
-            children: [
-              const Icon(
-                Icons.warning_amber_rounded,
-                color: AppColors.error,
-                size: 40,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                l.attention,
-                style: AppTextStyles.headlineMedium.copyWith(color: AppColors.error,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 20,),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-          content: Text(
-            l.logoutWarning,
-            style: const TextStyle(color: Colors.white70),
-            textAlign: TextAlign.center,
-          ),
-          actionsAlignment: MainAxisAlignment.spaceEvenly,
-          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          actions: [
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Colors.white38),
-                foregroundColor: Colors.white54,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(l.no, style: AppTextStyles.titleSmall.copyWith(fontWeight: FontWeight.w800)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: () => Navigator.pop(context, true),
-              child: Text(l.deleteAndExit, style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
-            ),
-          ],
-        ),
-      );
-
-      if (confirm != true) return;
-    }
-
-    try {
-      await ref.read(authControllerProvider.notifier).logout();
-      if (context.mounted) {
-        final l2 = AppLocalizations.of(context)!;
-        ToastUtils.showSuccess(context, l2.logoutSuccess);
-        await Future.delayed(const Duration(milliseconds: 600));
-        if (context.mounted) context.go('/login');
-      }
-    } catch (e) {
-      if (context.mounted) {
-        final l2 = AppLocalizations.of(context)!;
-        ToastUtils.showError(context, l2.logoutError(e.toString()));
-      }
-    }
-  }
-
-  Widget _buildFooter(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        TextButton(
-          onPressed: () => context.push('/profile'),
-          child: Text(
-            l.profile,
-            style: AppTextStyles.titleSmall.copyWith(color: AppColors.accent,
-              fontSize: 14,
-              fontWeight: FontWeight.w800,),
-          ),
-        ),
-        Container(
-          height: 16,
-          width: 1,
-          color: Colors.white24,
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-        ),
-        TextButton(
-          onPressed: () => _showSettingsSheet(context, ref),
-          child: Text(
-            l.menu,
-            style: AppTextStyles.titleSmall.copyWith(color: AppColors.accent,
-              fontSize: 14,
-              fontWeight: FontWeight.w800,),
-          ),
-        ),
-      ],
     );
   }
 }

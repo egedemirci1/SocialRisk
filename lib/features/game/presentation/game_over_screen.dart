@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/audio/audio_service.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/buttons/stage_button.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../../shared/widgets/common/async_error_view.dart';
+import '../../../shared/widgets/common/theater_loading_screen.dart';
+import '../../../shared/utils/error_message_utils.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
 import '../../../shared/widgets/score/leaderboard_tile.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -48,6 +52,10 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
       curve: Curves.elasticOut,
     );
     _animController.forward();
+    Future.microtask(() {
+      if (!mounted) return;
+      ref.read(audioServiceProvider).playSfx(AppSfx.gameOverFanfare);
+    });
   }
 
   @override
@@ -265,8 +273,21 @@ class _GameOverScreenState extends ConsumerState<GameOverScreen>
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(AppLocalizations.of(context)!.error(e.toString()))),
+        loading: () => TheaterLoadingScreen(
+          message: AppLocalizations.of(context)!.partyOver,
+        ),
+        error: (e, _) {
+          final l = AppLocalizations.of(context)!;
+          return Center(
+            child: AsyncErrorView(
+              message: l.loadFailed,
+              detail: ErrorMessageUtils.formatUserError(e, l),
+              secondaryLabel: l.goHome,
+              onRetry: () => ref.invalidate(watchPlayersProvider(widget.roomCode)),
+              onSecondary: () => context.go('/home'),
+            ),
+          );
+        },
       ),
     );
   }

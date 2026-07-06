@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
 import 'package:social_risk/core/audio/audio_service.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Etkilesimli buton (tiklandiginda kuculme animasyonu)
 class InteractiveButton extends StatefulWidget {
   const InteractiveButton({
     super.key,
     required this.child,
-    required this.onTap,
+    this.onTap,
   });
 
   final Widget child;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   State<InteractiveButton> createState() => _InteractiveButtonState();
@@ -42,16 +43,42 @@ class _InteractiveButtonState extends State<InteractiveButton>
     super.dispose();
   }
 
+  void _onTapDown(TapDownDetails details) {
+    if (widget.onTap == null) return;
+    _controller.forward();
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    if (widget.onTap == null) return;
+    _controller.reverse();
+    try {
+      final audio = ProviderScope.containerOf(context, listen: false)
+          .read(audioServiceProvider);
+      audio.retryPendingMusic();
+    } catch (_) {}
+    widget.onTap!();
+  }
+
+  void _onTapCancel() {
+    _controller.reverse();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final enabled = widget.onTap != null;
+
     return GestureDetector(
-      onTapDown: (_) => _controller.forward(),
-      onTapUp: (_) {
-        _controller.reverse();
-        widget.onTap();
-      },
-      onTapCancel: () => _controller.reverse(),
-      child: ScaleTransition(scale: _scaleAnimation, child: widget.child),
+      onTapDown: enabled ? _onTapDown : null,
+      onTapUp: enabled ? _onTapUp : null,
+      onTapCancel: enabled ? _onTapCancel : null,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 200),
+          opacity: enabled ? 1.0 : 0.55,
+          child: widget.child,
+        ),
+      ),
     );
   }
 }
@@ -77,7 +104,7 @@ class StageButton extends StatelessWidget {
   final Color backgroundColor;
   final Color textColor;
   final Color borderColor;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isLoading;
   final bool compact;
 
@@ -87,12 +114,12 @@ class StageButton extends StatelessWidget {
     final iconSize = compact ? 20.0 : 24.0;
     final fontSize = compact ? 16.0 : 18.0;
     final spacing = compact ? 8.0 : 12.0;
+    final isDisabled = onPressed == null || isLoading;
 
     return InteractiveButton(
-      onTap: isLoading
-          ? () {}
+      onTap: isDisabled
+          ? null
           : () {
-              // Ortak StageButton tıklamalarında buton click SFX çal.
               try {
                 final audio = ProviderScope.containerOf(
                   context,
@@ -102,23 +129,29 @@ class StageButton extends StatelessWidget {
               } catch (_) {
                 // Provider bağlamı yoksa sessizce geç.
               }
-              onPressed();
+              onPressed!();
             },
       child: Semantics(
         button: true,
-        label: label.isNotEmpty ? label : 'Buton',
+        enabled: !isDisabled,
+        label: label.isNotEmpty
+            ? label
+            : AppLocalizations.of(context)!.buttonSemanticsLabel,
         child: Container(
           height: height,
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(height / 2),
-            boxShadow: [
-              BoxShadow(
-                color: backgroundColor.withValues(alpha: 0.4),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            border: Border.all(color: borderColor),
+            boxShadow: isDisabled
+                ? null
+                : [
+                    BoxShadow(
+                      color: backgroundColor.withValues(alpha: 0.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
           ),
           child: Center(
             child: isLoading

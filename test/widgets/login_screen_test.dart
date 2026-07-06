@@ -12,6 +12,7 @@ import 'package:social_risk/features/auth/presentation/login_screen.dart';
 import 'package:social_risk/features/auth/providers/auth_provider.dart';
 import 'package:social_risk/features/auth/providers/user_provider.dart';
 import 'package:social_risk/shared/widgets/common/social_risk_logo.dart';
+import '../helpers/widget_test_app.dart';
 
 // ---------------------------------------------------------------------------
 // Mock: Gerçek Firebase kullanmamak için AuthRepository mocklanıyor;
@@ -103,14 +104,9 @@ void main() {
       if (authController != null) {
         overrides.add(authControllerProvider.overrideWith(() => authController));
       }
-      return ProviderScope(
+      return wrapWithLocalizedApp(
         overrides: overrides,
-        child: MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(600, 900)),
-            child: const LoginScreen(),
-          ),
-        ),
+        child: const LoginScreen(),
       );
     }
 
@@ -168,14 +164,9 @@ void main() {
 
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(
-        ProviderScope(
+        wrapWithLocalizedApp(
           overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const LoginScreen(),
-            ),
-          ),
+          child: const LoginScreen(),
         ),
       );
       await tester.pump(const Duration(milliseconds: 1500));
@@ -194,14 +185,9 @@ void main() {
 
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(
-        ProviderScope(
+        wrapWithLocalizedApp(
           overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const LoginScreen(),
-            ),
-          ),
+          child: const LoginScreen(),
         ),
       );
       await tester.pump(const Duration(milliseconds: 1500));
@@ -316,19 +302,14 @@ void main() {
     testWidgets('Google signIn null (iptal) döndüğünde ekranda "Google giriş iptal edildi" hatası çıkar', (tester) async {
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(
-        ProviderScope(
+        wrapWithLocalizedApp(
           overrides: [
             authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
             signInWithGoogleCallbackProvider.overrideWithValue(
               () async => throw Exception('Google giriş iptal edildi'),
             ),
           ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const LoginScreen(),
-            ),
-          ),
+          child: const LoginScreen(),
         ),
       );
       await tester.pump(const Duration(milliseconds: 1500));
@@ -350,7 +331,7 @@ void main() {
 
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(
-        ProviderScope(
+        wrapWithLocalizedApp(
           overrides: [
             authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
             userRepositoryProvider.overrideWithValue(mockUserRepo),
@@ -358,12 +339,7 @@ void main() {
               () async => fakeUserCredential(),
             ),
           ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const LoginScreen(),
-            ),
-          ),
+          child: const LoginScreen(),
         ),
       );
       await tester.pump(const Duration(milliseconds: 1500));

@@ -8,7 +8,9 @@ import 'package:social_risk/features/auth/providers/auth_provider.dart';
 import 'package:social_risk/features/room/providers/room_provider.dart';
 import 'package:social_risk/shared/widgets/buttons/exit_room_button.dart';
 import 'package:social_risk/shared/widgets/buttons/leave_room_button.dart';
+
 import '../helpers/fake_room_repository.dart';
+import '../helpers/widget_test_app.dart';
 
 class _FakeAuthRepoWithUser implements AuthRepository {
   _FakeAuthRepoWithUser(this._user);
@@ -33,22 +35,20 @@ class _FakeAuthRepoWithUser implements AuthRepository {
 
 Widget _buildTestApp(Widget child) {
   final user = MockUser(uid: 'u1', displayName: 'Test');
-  return ProviderScope(
+  return wrapWithLocalizedApp(
     overrides: [
       authRepositoryProvider.overrideWithValue(_FakeAuthRepoWithUser(user)),
       roomRepositoryProvider.overrideWithValue(FakeRoomRepository()),
     ],
-    child: MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(actions: [child]),
-      ),
+    child: Scaffold(
+      appBar: AppBar(actions: [child]),
     ),
   );
 }
 
 void main() {
   group('Exit/Leave buttons countdown', () {
-    testWidgets('ExitRoomButton çıkış butonunu 10 saniye kilitli başlatır', (
+    testWidgets('ExitRoomButton çıkış butonunu 3 saniye kilitli başlatır', (
       tester,
     ) async {
       await tester.pumpWidget(_buildTestApp(const ExitRoomButton(roomCode: 'R1')));
@@ -60,12 +60,12 @@ void main() {
       expect(buttonFinder, findsOneWidget);
       expect(tester.widget<ElevatedButton>(buttonFinder).onPressed, isNull);
 
-      await tester.pump(const Duration(seconds: 10));
+      await tester.pump(const Duration(seconds: 3));
       await tester.pumpAndSettle();
       expect(tester.widget<ElevatedButton>(buttonFinder).onPressed, isNotNull);
     });
 
-    testWidgets('LeaveRoomButton çıkış butonunu 10 saniye kilitli başlatır', (
+    testWidgets('LeaveRoomButton çıkış butonunu 3 saniye kilitli başlatır', (
       tester,
     ) async {
       await tester.pumpWidget(_buildTestApp(const LeaveRoomButton(roomCode: 'R1')));
@@ -73,15 +73,13 @@ void main() {
       await tester.tap(find.byIcon(Icons.exit_to_app_rounded));
       await tester.pumpAndSettle();
 
-      final buttonFinder = find.widgetWithText(TextButton, 'Sil ve Çık (10)');
+      final buttonFinder = find.byType(ElevatedButton);
       expect(buttonFinder, findsOneWidget);
-      expect(tester.widget<TextButton>(buttonFinder).onPressed, isNull);
+      expect(tester.widget<ElevatedButton>(buttonFinder).onPressed, isNull);
 
-      await tester.pump(const Duration(seconds: 10));
+      await tester.pump(const Duration(seconds: 3));
       await tester.pumpAndSettle();
-      final enabledFinder = find.widgetWithText(TextButton, 'Sil ve Çık');
-      expect(enabledFinder, findsOneWidget);
-      expect(tester.widget<TextButton>(enabledFinder).onPressed, isNotNull);
+      expect(tester.widget<ElevatedButton>(buttonFinder).onPressed, isNotNull);
     });
   });
 }

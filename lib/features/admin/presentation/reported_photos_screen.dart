@@ -4,6 +4,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/admin_provider.dart';
 import 'package:social_risk/core/constants/app_text_styles.dart';
+import '../../../shared/widgets/common/async_error_view.dart';
+import '../../../shared/utils/error_message_utils.dart';
+import 'package:social_risk/l10n/app_localizations.dart';
 
 /// Raporlanan Fotoğraflar — Parti Temalı
 class ReportedPhotosScreen extends ConsumerWidget {
@@ -11,13 +14,14 @@ class ReportedPhotosScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final reportsAsync = ref.watch(watchReportsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'RAPORLU OYUNCU ADLARI',
+          l.adminReportedNamesTitle,
           style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.w900,
             color: AppColors.accent,
             letterSpacing: 1.5,),
@@ -40,7 +44,7 @@ class ReportedPhotosScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'TÜM OYUNCULAR TEMİZ 🎉',
+                    l.adminAllPlayersClean,
                     style: AppTextStyles.titleLarge.copyWith(color: Colors.white70,
                       fontSize: 18,
                       fontWeight: FontWeight.w700,),
@@ -99,7 +103,7 @@ class ReportedPhotosScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'İHBAR: ${report.reason.toUpperCase()}',
+                              l.adminReportLabel(report.reason.toUpperCase()),
                               style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,),
@@ -114,7 +118,7 @@ class ReportedPhotosScreen extends ConsumerWidget {
                               Icons.check_circle_outline,
                               color: Colors.green,
                             ),
-                            tooltip: 'ONAYLA',
+                            tooltip: l.adminApproveTooltip,
                             onPressed: () => ref
                                 .read(adminControllerProvider.notifier)
                                 .approvePhoto(report.targetUserId, report.id),
@@ -124,7 +128,7 @@ class ReportedPhotosScreen extends ConsumerWidget {
                               Icons.block,
                               color: AppColors.primary,
                             ),
-                            tooltip: 'YASAKLA',
+                            tooltip: l.adminBanTooltip,
                             onPressed: () => ref
                                 .read(adminControllerProvider.notifier)
                                 .banPhoto(report.targetUserId, report.id),
@@ -142,9 +146,10 @@ class ReportedPhotosScreen extends ConsumerWidget {
           child: CircularProgressIndicator(color: AppColors.accent),
         ),
         error: (e, _) => Center(
-          child: Text(
-            'Hata: $e',
-            style: const TextStyle(color: AppColors.primary),
+          child: AsyncErrorView(
+            message: l.loadFailed,
+            detail: ErrorMessageUtils.formatUserError(e, l),
+            onRetry: () => ref.invalidate(watchReportsProvider),
           ),
         ),
       ),

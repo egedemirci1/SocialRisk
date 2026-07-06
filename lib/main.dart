@@ -12,6 +12,8 @@ import 'package:social_risk/core/constants/app_locale_options.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
 import 'package:social_risk/core/providers/lifecycle_provider.dart';
 import 'package:social_risk/core/providers/locale_provider.dart';
+import 'package:social_risk/core/audio/audio_service.dart';
+import 'package:social_risk/core/audio/menu_music_binder.dart';
 import 'package:social_risk/shared/widgets/common/themed_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_risk/core/providers/shared_prefs_provider.dart';
@@ -66,17 +68,29 @@ class SocialRiskApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Initialize Lifecycle Manager
     ref.watch(appLifecycleManagerProvider);
     final localePreference = ref.watch(appLocaleProvider);
 
+    final locale = resolveMaterialLocale(localePreference);
+    final l = lookupAppLocalizations(locale);
+
     return MaterialApp.router(
-      title: 'Sosyal Risk',
+      title: l.appTitle,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       routerConfig: appRouter,
       builder: (context, child) {
-        return ThemedBackground(child: child!);
+        return Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (_) {
+            try {
+              ref.read(audioServiceProvider).retryPendingMusic();
+            } catch (_) {}
+          },
+          child: MenuMusicBinder(
+            child: ThemedBackground(child: child!),
+          ),
+        );
       },
       localizationsDelegates: const [
         AppLocalizations.delegate,

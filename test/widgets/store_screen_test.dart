@@ -10,6 +10,18 @@ import 'package:social_risk/features/economy/providers/economy_provider.dart';
 import 'package:social_risk/features/store/presentation/store_screen.dart';
 import '../helpers/fake_economy_controller.dart';
 import '../helpers/fake_user_repository.dart';
+import '../helpers/widget_test_app.dart';
+
+Widget _buildStore({
+  required overrides,
+  Size size = const Size(600, 900),
+}) {
+  return wrapWithLocalizedApp(
+    overrides: overrides,
+    size: size,
+    child: const StoreScreen(),
+  );
+}
 
 /// buyCosmetic çağrıldığında "Yetersiz bakiye" fırlatan controller.
 class ThrowInsufficientBalanceEconomyController extends EconomyController {
@@ -28,17 +40,9 @@ void main() {
     testWidgets('when user is null shows loading indicator', (tester) async {
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
+        _buildStore(overrides: [
             currentUserProvider.overrideWithValue(null),
-          ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const StoreScreen(),
-            ),
-          ),
-        ),
+          ], size: const Size(600, 900)),
       );
       await tester.pump();
 
@@ -66,20 +70,12 @@ void main() {
       ];
 
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
+        _buildStore(overrides: [
             currentUserProvider.overrideWithValue(mockUser),
             userRepositoryProvider.overrideWithValue(fakeUserRepo),
             fetchCosmeticsProvider.overrideWith((ref) => Future.value(fakeCosmetics)),
             economyControllerProvider.overrideWith(() => FakeEconomyController()),
-          ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const StoreScreen(),
-            ),
-          ),
-        ),
+          ], size: const Size(600, 900)),
       );
       await tester.pump();
       await tester.pumpAndSettle();
@@ -94,8 +90,7 @@ void main() {
     testWidgets('shows wallet points from user profile', (tester) async {
       final mockUser = MockUser(uid: 'test-uid', isAnonymous: false);
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
+        _buildStore(overrides: [
             currentUserProvider.overrideWithValue(mockUser),
             userRepositoryProvider.overrideWithValue(FakeUserRepository(
               profile: const UserEntity(
@@ -107,14 +102,7 @@ void main() {
             )),
             fetchCosmeticsProvider.overrideWith((ref) => Future.value(<CosmeticItemEntity>[])),
             economyControllerProvider.overrideWith(() => FakeEconomyController()),
-          ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const StoreScreen(),
-            ),
-          ),
-        ),
+          ], size: const Size(600, 900)),
       );
       await tester.pump();
       await tester.pumpAndSettle();
@@ -125,20 +113,12 @@ void main() {
     testWidgets('back button is present', (tester) async {
       final mockUser = MockUser(uid: 'test-uid', isAnonymous: false);
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
+        _buildStore(overrides: [
             currentUserProvider.overrideWithValue(mockUser),
             userRepositoryProvider.overrideWithValue(FakeUserRepository()),
             fetchCosmeticsProvider.overrideWith((ref) => Future.value(<CosmeticItemEntity>[])),
             economyControllerProvider.overrideWith(() => FakeEconomyController()),
-          ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const StoreScreen(),
-            ),
-          ),
-        ),
+          ], size: const Size(600, 900)),
       );
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.arrow_back_ios_rounded), findsOneWidget);
@@ -169,20 +149,12 @@ void main() {
 
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
+        _buildStore(overrides: [
             currentUserProvider.overrideWithValue(mockUser),
             userRepositoryProvider.overrideWithValue(FakeUserRepository(profile: fakeProfile)),
             fetchCosmeticsProvider.overrideWith((ref) => Future.value(cosmetics)),
             economyControllerProvider.overrideWith(() => spyEconomy),
-          ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const StoreScreen(),
-            ),
-          ),
-        ),
+          ], size: const Size(600, 900)),
       );
       await tester.pump();
       await tester.pumpAndSettle();
@@ -221,20 +193,12 @@ void main() {
 
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
+        _buildStore(overrides: [
             currentUserProvider.overrideWithValue(mockUser),
             userRepositoryProvider.overrideWithValue(FakeUserRepository(profile: fakeProfile)),
             fetchCosmeticsProvider.overrideWith((ref) => Future.value([kral])),
             economyControllerProvider.overrideWith(() => ThrowInsufficientBalanceEconomyController()),
-          ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const StoreScreen(),
-            ),
-          ),
-        ),
+          ], size: const Size(600, 900)),
       );
       await tester.pump();
       await tester.pumpAndSettle();
@@ -274,20 +238,12 @@ void main() {
 
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
+        _buildStore(overrides: [
             currentUserProvider.overrideWithValue(mockUser),
             userRepositoryProvider.overrideWithValue(FakeUserRepository()),
             fetchCosmeticsProvider.overrideWith((ref) => Future.value(cosmetics)),
             economyControllerProvider.overrideWith(() => FakeEconomyController()),
-          ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const StoreScreen(),
-            ),
-          ),
-        ),
+          ], size: const Size(600, 900)),
       );
       await tester.pump();
       await tester.pumpAndSettle();
@@ -302,24 +258,29 @@ void main() {
     });
 
     // ---------- Tab geçişleri: Senaryolar ----------
-    testWidgets('Senaryolar sekmesine tıklanınca sabit senaryo paketleri (Kapalı Gişe +18 vb.) görünür', (tester) async {
+    testWidgets('Senaryolar sekmesine tıklanınca kategori tipi senaryo paketleri görünür', (tester) async {
       final mockUser = MockUser(uid: 'scenario-uid', isAnonymous: false);
+      const scenario = CosmeticItemEntity(
+        id: 'scenario_18',
+        name: 'Kapalı Gişe (18+)',
+        nameEn: 'Closed Doors (18+)',
+        description: 'Daha cesur ve yetişkinlere yönelik hikayeler.',
+        descriptionEn: 'Bolder adult-themed stories.',
+        imageUrl: '🔞',
+        price: 1500,
+        type: 'category',
+        categoryName: 'Kapalı Gişe',
+      );
 
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(
-        ProviderScope(
+        _buildStore(
           overrides: [
             currentUserProvider.overrideWithValue(mockUser),
             userRepositoryProvider.overrideWithValue(FakeUserRepository()),
-            fetchCosmeticsProvider.overrideWith((ref) => Future.value(<CosmeticItemEntity>[])),
+            fetchCosmeticsProvider.overrideWith((ref) => Future.value([scenario])),
             economyControllerProvider.overrideWith(() => FakeEconomyController()),
           ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const StoreScreen(),
-            ),
-          ),
         ),
       );
       await tester.pump();
@@ -328,8 +289,11 @@ void main() {
       await tester.tap(find.text('Senaryolar'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Kapalı Gişe (+18)'), findsOneWidget);
-      expect(find.text('Özel Senaryolar'), findsOneWidget);
+      expect(find.text('Kapalı Gişe (18+)'), findsOneWidget);
+      expect(
+        find.text('Oyundaki görev havuzunu belirleyen tema paketleri.'),
+        findsOneWidget,
+      );
     });
 
     // ---------- Cüzdan + butonu ----------
@@ -346,20 +310,12 @@ void main() {
 
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
+        _buildStore(overrides: [
             currentUserProvider.overrideWithValue(mockUser),
             userRepositoryProvider.overrideWithValue(FakeUserRepository(profile: fakeProfile)),
             fetchCosmeticsProvider.overrideWith((ref) => Future.value(<CosmeticItemEntity>[])),
             economyControllerProvider.overrideWith(() => spyEconomy),
-          ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const StoreScreen(),
-            ),
-          ),
-        ),
+          ], size: const Size(600, 900)),
       );
       await tester.pump();
       await tester.pumpAndSettle();
@@ -398,20 +354,12 @@ void main() {
 
       await tester.binding.setSurfaceSize(const Size(600, 900));
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
+        _buildStore(overrides: [
             currentUserProvider.overrideWithValue(mockUser),
             userRepositoryProvider.overrideWithValue(FakeUserRepository(profile: fakeProfile)),
             fetchCosmeticsProvider.overrideWith((ref) => Future.value([kral])),
             economyControllerProvider.overrideWith(() => FakeEconomyController()),
-          ],
-          child: MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(600, 900)),
-              child: const StoreScreen(),
-            ),
-          ),
-        ),
+          ], size: const Size(600, 900)),
       );
       await tester.pump();
       await tester.pumpAndSettle();

@@ -9,7 +9,10 @@ import '../providers/game_provider.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import 'widgets/turn_counter_badge.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
+import '../../../shared/widgets/common/game_error_scaffold.dart';
+import '../../../shared/utils/error_message_utils.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/guards/room_exit_guard.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../core/constants/app_text_styles.dart';
@@ -65,8 +68,8 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
     ) {
       if (!mounted) return;
 
-      if (next.hasError || (next.hasValue && next.value == null)) {
-        // Oyun silinmiş veya hata oluşmuş (Muhtemelen host çıktığı için)
+      if (next.hasValue && next.value == null) {
+        // Oyun silinmiş (muhtemelen host çıktığı için)
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             ToastUtils.showError(context, AppLocalizations.of(context)!.gameEndedOrHostLeft);
@@ -110,12 +113,16 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
       }
     });
 
-    return gameAsync.when(
+    return RoomExitPopScope(
+      roomCode: widget.roomCode,
+      child: gameAsync.when(
       data: (game) {
         if (game == null) {
-          return const Scaffold(
+          return Scaffold(
             backgroundColor: Colors.transparent,
-            body: Center(child: CircularProgressIndicator()),
+            body: TheaterLoadingScreen(
+              message: AppLocalizations.of(context)!.preparingParty,
+            ),
           );
         }
 
@@ -264,10 +271,18 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen>
         backgroundColor: Colors.transparent,
         body: TheaterLoadingScreen(message: AppLocalizations.of(context)!.preparingParty),
       ),
-      error: (e, _) => Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Center(child: Text(AppLocalizations.of(context)!.error(e.toString()))),
-      ),
+      error: (e, _) {
+        final l = AppLocalizations.of(context)!;
+        return GameErrorScaffold(
+          roomCode: widget.roomCode,
+          message: l.loadFailed,
+            detail: ErrorMessageUtils.formatUserError(e, l),
+          goHomeLabel: l.goHome,
+          onRetry: () => ref.invalidate(watchGameProvider(widget.gameId)),
+          onGoHome: () => context.go('/home'),
+        );
+      },
+    ),
     );
   }
 }

@@ -132,7 +132,7 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
                 child: _VoteButton(
                   emoji: '👏',
                   label: AppLocalizations.of(context)!.voteLike,
-                  color: Colors.green,
+                  color: AppColors.votePositive,
                   isSelected: _selectedVote == 'like',
                   isDisabled: _selectedVote != null && _selectedVote != 'like',
                   onTap: () => _castVote('like'),
@@ -144,7 +144,7 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
                 child: _VoteButton(
                   emoji: '😶',
                   label: AppLocalizations.of(context)!.voteNeutral,
-                  color: Colors.orange,
+                  color: AppColors.voteNeutral,
                   isSelected: _selectedVote == 'neutral',
                   isDisabled:
                       _selectedVote != null && _selectedVote != 'neutral',
@@ -157,7 +157,7 @@ class _VotingPanelState extends ConsumerState<VotingPanel>
                 child: _VoteButton(
                   emoji: '🎭',
                   label: AppLocalizations.of(context)!.voteDislike,
-                  color: AppColors.primary,
+                  color: AppColors.voteNegative,
                   isSelected: _selectedVote == 'dislike',
                   isDisabled:
                       _selectedVote != null && _selectedVote != 'dislike',

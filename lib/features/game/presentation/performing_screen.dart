@@ -12,13 +12,18 @@ import 'widgets/player_spotlight.dart';
 import 'widgets/spectator_strip.dart';
 import 'widgets/turn_counter_badge.dart';
 import '../../../shared/widgets/common/theater_loading_screen.dart';
+import '../../../shared/widgets/common/app_loading_indicator.dart';
+import '../../../shared/widgets/common/async_error_view.dart';
+import '../../../shared/utils/error_message_utils.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/common/responsive_wrapper.dart';
+import '../../../shared/widgets/guards/room_exit_guard.dart';
 import '../../../shared/widgets/buttons/exit_room_button.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/data/task_translations/task_translation_map.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:social_risk/l10n/app_localizations.dart';
+import '../../../shared/utils/toast_utils.dart';
 
 /// Gösteri (Performing) Ekranı — Parti Temalı
 class PerformingScreen extends ConsumerStatefulWidget {
@@ -48,9 +53,17 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
           .read(gameControllerProvider.notifier)
           .proceedToVoting(widget.gameId);
       if (mounted) {
-        context.push(
+        context.replace(
           '/voting',
           extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        final l = AppLocalizations.of(context)!;
+        ToastUtils.showError(
+          context,
+          l.error(ErrorMessageUtils.formatUserError(e, l)),
         );
       }
     } finally {
@@ -207,7 +220,9 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
     final user = ref.watch(currentUserProvider);
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
 
-    return Scaffold(
+    return RoomExitPopScope(
+      roomCode: widget.roomCode,
+      child: Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -225,8 +240,9 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
       ),
       body: gameAsync.when(
         data: (game) {
+          final l = AppLocalizations.of(context)!;
           if (game == null) {
-            return const Center(child: CircularProgressIndicator());
+            return TheaterLoadingScreen(message: l.waitingForPlayerCapital);
           }
 
           if (game.status == GameStatus.results) {
@@ -238,19 +254,13 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                 );
               }
             });
-            return const Scaffold(
-              backgroundColor: Colors.transparent,
-              body: Center(child: CircularProgressIndicator(color: AppColors.accent)),
-            );
+            return TheaterLoadingScreen(message: l.calculatingScore);
           }
           if (game.status == GameStatus.finished) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) context.go('/game-over', extra: widget.roomCode);
             });
-            return const Scaffold(
-              backgroundColor: Colors.transparent,
-              body: Center(child: CircularProgressIndicator(color: AppColors.accent)),
-            );
+            return TheaterLoadingScreen(message: l.partyOver);
           }
 
           final isMyTurn = game.currentPlayerId == user?.uid;
@@ -415,9 +425,7 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
                                           compact: isCompact,
                                         ),
                                       ] else ...[
-                                        const CircularProgressIndicator(
-                                          color: AppColors.accent,
-                                        ),
+                                        const AppLoadingIndicator(size: 28),
                                         SizedBox(height: contentGap),
                                         Text(
                                           AppLocalizations.of(context)!.waitingForPerformance,
@@ -472,8 +480,20 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
           backgroundColor: Colors.transparent,
           body: TheaterLoadingScreen(message: AppLocalizations.of(context)!.waitingForPlayerCapital),
         ),
-        error: (e, _) => Center(child: Text(AppLocalizations.of(context)!.error(e.toString()))),
+        error: (e, _) {
+          final l = AppLocalizations.of(context)!;
+          return Center(
+            child: AsyncErrorView(
+              message: l.loadFailed,
+              detail: ErrorMessageUtils.formatUserError(e, l),
+              secondaryLabel: l.goHome,
+              onRetry: () => ref.invalidate(watchGameProvider(widget.gameId)),
+              onSecondary: () => context.go('/home'),
+            ),
+          );
+        },
       ),
+    ),
     );
   }
 }
