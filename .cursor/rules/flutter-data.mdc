@@ -1,0 +1,49 @@
+---
+description: Flutter data/domain katmanı — repository, model ve seed verisi
+globs: lib/**/{data,domain}/**/*.dart
+alwaysApply: false
+---
+
+# Data & Domain Layer
+
+## Repository sınıfları
+
+- `implements XRepository` — tüm `@override` imzaları ana sınıfta kalmalı
+- Private alanlar: `_firestore`, `_random` vb. ana sınıfta
+- 500 satırı aşan repository:
+
+```dart
+// firebase_game_source.dart
+part 'firebase_game_source.heavy.part.dart';
+
+class FirebaseGameSource implements GameRepository {
+  @override
+  Future<void> passTask({...}) => _fgsPassTask(this, ...);
+}
+
+// heavy.part.dart
+part of 'firebase_game_source.dart';
+
+Future<void> _fgsPassTask(FirebaseGameSource source, {...}) async {
+  await source._gameDoc(gameId)...;
+}
+```
+
+- Mixin + `implements` ile interface karşılama **çalışmaz**; extension da interface sayılmaz
+
+## Modeller
+
+- `fromJson` / `toJson` mevcut `*_model.dart` pattern'ini takip et
+- Entity ↔ Model dönüşümü domain/data sınırında
+
+## Seed & migration verisi
+
+- Büyük listeler: `part` + `const _tasksPart1` + spread birleştirme
+- `tasks_ahlaki.dart` / `task_seed_migration.dart` örneklerine bak
+- Her part dosyası ≤ 500 satır
+
+## Firebase
+
+- Transaction ve race-condition yorumlarını koru
+- `FirebaseException` → anlamlı `Exception` mesajı
+- Oyun/oda silme kurallarına (`firestore.rules`) uy

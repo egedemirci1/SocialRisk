@@ -1,0 +1,72 @@
+---
+description: Flutter/Dart geliştirme standartları ve SocialRisk proje kuralları
+alwaysApply: true
+---
+
+# Flutter Development — SocialRisk
+
+Expert Flutter/Dart geliştirme. Hedef: performanslı, sürdürülebilir, test edilebilir kod.
+Mevcut mimariyi koru; gereksiz rewrite yapma (`AGENTS.md` ile uyumlu).
+
+## Proje yapısı
+
+- Feature-based katmanlar: `presentation` / `domain` / `data` / `core`
+- Routing: `go_router` (`lib/core/router/`)
+- State: `flutter_riverpod` (mevcut provider pattern'ini koru)
+- L10n: `lib/l10n/*.arb` → değişiklikten sonra `flutter gen-l10n`
+
+## Dosya boyutu (zorunlu)
+
+- **Hedef: her `.dart` dosyası ≤ 500 satır** (`lib/`, `test/`)
+- **Bölme:** `part` / `part of` ile aynı library içinde böl
+- **Üretilmiş dosyaları bölme:** `*.g.dart`, `app_localizations*.dart`, `build/`
+- Ekran bölme deseni (bu projede kanıtlanmış):
+
+```
+screen.dart              → imports, part'lar, widget sınıfı, state + build()
+screen.builders.part.dart → extension ile _build* metodları
+screen.widgets.part.dart  → private widget sınıfları (_FooCard vb.)
+```
+
+- `setState` extension içinde **kullanılamaz** → ana State sınıfında `_setSelectedTab()` gibi ince yardımcılar yaz
+- `mixin X on _SameState` + `class _SameState with X` → **recursive inheritance**; mixin'i parent'ta tanımla veya extension kullan
+- `implements Repository` sınıfları: `@override` metodlar sınıfta kalmalı; ağır gövdeler `part` içinde top-level fonksiyonlara delegate edilebilir
+- Extension, aynı library'de private üyelere erişir; static alanlar extension'da qualify edilmeli (`_State._color`)
+
+## Kod kalitesi
+
+- Minimal diff; ilgisiz refactor yok
+- SOLID, composition over inheritance, immutable modeller
+- `PascalCase` sınıf, `camelCase` üye, `snake_case` dosya
+- Fonksiyonlar tek amaçlı; `build()` içinde network/ağır iş yok
+- Null safety: `!` sadece garanti varsa
+- `async`/`await` + `mounted` / `context.mounted` kontrolü
+- Log: `dart:developer` `log()`; production'da `print` yok
+- Yorum: sadece non-obvious iş kuralları
+
+## UI
+
+- Küçük private `Widget` sınıfları; `_buildFoo()` yerine `_FooSection` tercih et (büyük ekranlarda part dosyasına taşı)
+- `const` constructor mümkün olduğunca
+- Uzun listeler: `ListView.builder` / `SliverList`
+- Responsive: `LayoutBuilder`, `MediaQuery`
+- Tema: `ThemeData`, `AppColors`, `AppTextStyles` (mevcut core/theme kullan)
+
+## Test & analyze
+
+- Değişiklik sonrası: `flutter analyze --no-pub`
+- Unit: `test/unit/`; widget: `test/widgets/`
+- Arrange–Act–Assert; fake/stub tercih et
+- Test dosyaları da 500 satır altında kalmalı
+
+## Güvenlik & hata
+
+- Sessiz `catch` yok; kullanıcıya anlamlı mesaj
+- Firebase/async sonrası `context` kullanımında `mounted` kontrolü
+- Web: `dart:js` yerine `dart:js_interop`
+
+## İş bitince raporla
+
+- Değişen dosyalar
+- Kısa açıklama
+- Olası edge case'ler

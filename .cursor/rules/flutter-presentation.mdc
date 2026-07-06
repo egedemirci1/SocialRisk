@@ -1,0 +1,50 @@
+---
+description: Flutter presentation katmanı — ekran, widget ve state kuralları
+globs: lib/**/presentation/**/*.dart
+alwaysApply: false
+---
+
+# Presentation Layer
+
+## Ekran dosyası iskeleti
+
+```dart
+import '...';
+
+part 'my_screen.builders.part.dart';
+part 'my_screen.widgets.part.dart';
+
+class MyScreen extends ConsumerStatefulWidget { ... }
+
+class _MyScreenState extends ConsumerState<MyScreen> {
+  @override
+  Widget build(BuildContext context) { ... }
+}
+```
+
+- `part` direktifleri importlardan hemen sonra, sınıflardan önce
+- `build()` ana dosyada kalabilir; UI parçaları `builders` / `widgets` part'larına
+
+## State & Riverpod
+
+- `ref.watch` → rebuild; `ref.read` → event handler / init
+- Ephemeral UI state: State sınıfı; app state: mevcut provider'lar
+- `ConsumerStatefulWidget` + `ConsumerState` pattern'ini koru
+
+## Navigation
+
+- `context.push` / `context.go` (`go_router`)
+- `extra` ile parametre geçirme mevcut router convention'ına uygun olsun
+
+## Performans
+
+- `build()` içinde `ref.watch` ile gereksiz geniş scope'tan kaçın
+- Animasyon ve ağır widget'ları alt widget'lara ayır
+- `SpinWheel`, `GameCard` gibi shared widget'lar: `lib/shared/widgets/`
+
+## Bölme eşiği
+
+Presentation dosyası 400+ satıra yaklaşınca proaktif böl:
+- builders part (~_build* metodları)
+- widgets part (private StatelessWidget / ConsumerWidget)
+- Gerekirse `widgets_actions.part.dart` (lobby örneği)
