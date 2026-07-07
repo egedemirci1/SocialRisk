@@ -136,35 +136,79 @@ class _LeaveRoomCountdownDialogState
       ),
       title: Text(
         l.leavePartyTitle,
+        textAlign: TextAlign.center,
         style: AppTextStyles.titleMedium.copyWith(
           color: AppColors.accent,
           fontWeight: FontWeight.bold,
         ),
       ),
-      content: Text(
-        canExit
-            ? confirmMessage
-            : l.exitButtonActiveIn(_remaining),
-        style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l.cancel, style: const TextStyle(color: Colors.white54)),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-          ),
-          onPressed: !canExit ? null : _confirmExit,
-          child: Text(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
             canExit
+                ? confirmMessage
+                : l.exitButtonActiveIn(_remaining),
+            textAlign: TextAlign.center,
+            style: AppTextStyles.bodyMedium.copyWith(color: Colors.white70),
+          ),
+          const SizedBox(height: 24),
+          _LeaveDialogActionButton(
+            label: l.cancel,
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.background,
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          const SizedBox(height: 10),
+          _LeaveDialogActionButton(
+            label: canExit
                 ? l.deleteAndExit
                 : '${l.deleteAndExit} ($_remaining)',
+            backgroundColor: AppColors.error,
+            foregroundColor: Colors.white,
+            onPressed: canExit ? _confirmExit : null,
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LeaveDialogActionButton extends StatelessWidget {
+  const _LeaveDialogActionButton({
+    required this.label,
+    required this.backgroundColor,
+    required this.foregroundColor,
+    required this.onPressed,
+  });
+
+  final String label;
+  final Color backgroundColor;
+  final Color foregroundColor;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: backgroundColor,
+        foregroundColor: foregroundColor,
+        disabledBackgroundColor: backgroundColor.withValues(alpha: 0.35),
+        disabledForegroundColor: foregroundColor.withValues(alpha: 0.65),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
-      ],
+        elevation: 0,
+      ),
+      onPressed: onPressed,
+      child: Text(
+        label,
+        style: AppTextStyles.titleSmall.copyWith(
+          fontWeight: FontWeight.w800,
+        ),
+      ),
     );
   }
 }

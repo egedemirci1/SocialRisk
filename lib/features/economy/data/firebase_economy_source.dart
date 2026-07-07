@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import '../domain/economy_repository.dart';
 import '../domain/cosmetic_item_entity.dart';
+import '../domain/economy_exceptions.dart';
 
 class FirebaseEconomySource implements EconomyRepository {
   final FirebaseFirestore _firestore;
@@ -61,13 +62,58 @@ class FirebaseEconomySource implements EconomyRepository {
         'price': price,
         'uid': uid,
       });
+    } on EconomyException {
+      rethrow;
     } on FirebaseFunctionsException catch (e) {
-      throw Exception(e.message ?? 'Satın alma sırasında hata oluştu');
+      throw _mapBuyCosmeticFunctionsError(e);
     } on FirebaseException catch (e) {
       throw Exception('Kozmetik satın alınırken bağlantı hatası: ${e.message}');
     } catch (e) {
-      throw Exception(e.toString().replaceAll('Exception: ', ''));
+      final message =
+          e.toString().replaceFirst(RegExp(r'^Exception:\s*'), '');
+      final mapped = _tryMapBuyCosmeticMessage(message);
+      if (mapped != null) throw mapped;
+      throw Exception(
+        message.isEmpty ? 'Satın alma sırasında hata oluştu' : message,
+      );
     }
+  }
+
+  static EconomyException _mapBuyCosmeticFunctionsError(
+    FirebaseFunctionsException error,
+  ) {
+    switch (error.code) {
+      case 'failed-precondition':
+        return const InsufficientBalanceException();
+      case 'already-exists':
+        return const AlreadyOwnedCosmeticException();
+      case 'not-found':
+        final msg = (error.message ?? '').toLowerCase();
+        if (msg.contains('user')) {
+          return const UserNotFoundException();
+        }
+        break;
+    }
+    final mapped = _tryMapBuyCosmeticMessage(error.message ?? error.code);
+    if (mapped != null) return mapped;
+    throw Exception(error.message ?? 'Satın alma sırasında hata oluştu');
+  }
+
+  static EconomyException? _tryMapBuyCosmeticMessage(String message) {
+    final lower = message.toLowerCase();
+    if (lower.contains('insufficient balance') ||
+        lower.contains('yetersiz bakiye')) {
+      return const InsufficientBalanceException();
+    }
+    if (lower.contains('already owned') ||
+        lower.contains('zaten sahip')) {
+      return const AlreadyOwnedCosmeticException();
+    }
+    if (lower.contains('user not found') ||
+        lower.contains('kullanıcı bulunamadı')) {
+      return const UserNotFoundException();
+    }
+    return null;
   }
 
   @override

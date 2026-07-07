@@ -5,6 +5,14 @@ import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 import '../domain/premium_constants.dart';
+import '../domain/premium_exceptions.dart';
+
+/// IAP yalnızca native mobil / masaüstü mağaza platformlarında kullanılabilir.
+bool get isInAppPurchaseSupported =>
+    !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS);
 
 class PremiumPurchaseService {
   PremiumPurchaseService({
@@ -24,6 +32,10 @@ class PremiumPurchaseService {
       _availableProductsController.stream;
 
   Future<void> init() async {
+    if (!isInAppPurchaseSupported) {
+      _availableProductsController.add(const []);
+      return;
+    }
     final available = await _iap.isAvailable();
     if (!available) {
       _availableProductsController.add(const []);
@@ -46,6 +58,9 @@ class PremiumPurchaseService {
   }
 
   Future<void> buyLifetimePremium() async {
+    if (!isInAppPurchaseSupported) {
+      throw const PremiumPurchaseUnavailableException();
+    }
     final response = await _iap.queryProductDetails(
       PremiumConstants.productIds,
     );
@@ -68,7 +83,12 @@ class PremiumPurchaseService {
     }
   }
 
-  Future<void> restorePurchases() => _iap.restorePurchases();
+  Future<void> restorePurchases() async {
+    if (!isInAppPurchaseSupported) {
+      throw const PremiumPurchaseUnavailableException();
+    }
+    await _iap.restorePurchases();
+  }
 
   Future<void> _handlePurchases(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {

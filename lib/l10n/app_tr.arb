@@ -521,6 +521,7 @@
   "restorePurchases": "Satın Alımları Geri Yükle",
   "restoringPurchases": "Satın alımlar geri yükleniyor...",
   "purchaseFlowStarted": "Satın alma akışı başlatıldı.",
+  "purchaseMobileOnly": "Satın alma yalnızca mobil uygulamada kullanılabilir.",
   "premiumLabel": "PREMIUM",
   "leavePartyTitle": "Partiden Ayrıl",
   "leavePartyConfirm": "Oyundan çıkmak istediğinize emin misiniz? (Eğer kurucuysanız oda kapanır.)",

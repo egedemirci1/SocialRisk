@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -89,6 +90,10 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
 
   Future<void> _processResults() async {
     if (_isProcessing || _hasProcessed) return;
+
+    final game = ref.read(watchGameProvider(widget.gameId)).value;
+    if (game?.status == GameStatus.results) return;
+
     _hasProcessed = true;
     setState(() => _isProcessing = true);
 
@@ -98,12 +103,27 @@ class _VotingScreenState extends ConsumerState<VotingScreen> {
 
       if (!mounted) return;
     } catch (e) {
-      if (mounted) {
+      if (!mounted) return;
+
+      final latestGame = ref.read(watchGameProvider(widget.gameId)).value;
+      if (latestGame?.status == GameStatus.results) {
+        return;
+      }
+
+      if (e is FirebaseFunctionsException &&
+          (e.code == 'permission-denied' || e.code == 'failed-precondition')) {
         _hasProcessed = false;
         setState(() => _isProcessing = false);
-        final l = AppLocalizations.of(context)!;
-        ToastUtils.showError(context, l.error(ErrorMessageUtils.formatUserError(e, l)));
+        return;
       }
+
+      _hasProcessed = false;
+      setState(() => _isProcessing = false);
+      final l = AppLocalizations.of(context)!;
+      ToastUtils.showError(
+        context,
+        l.error(ErrorMessageUtils.formatUserError(e, l)),
+      );
     } finally {
       if (mounted) {
         setState(() => _isProcessing = false);

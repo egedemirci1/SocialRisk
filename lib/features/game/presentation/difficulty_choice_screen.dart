@@ -10,6 +10,7 @@ import '../../../core/providers/locale_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/game_constants.dart';
+import '../../../core/utils/game_route_resolver.dart';
 import '../../../shared/models/enums.dart';
 import '../../../shared/utils/toast_utils.dart';
 import '../../../shared/widgets/common/game_error_scaffold.dart';
@@ -77,6 +78,10 @@ class _DifficultyChoiceScreenState
 
   @override
   Widget build(BuildContext context) {
+    final roomMode =
+        ref.read(watchRoomProvider(widget.roomCode)).value?.mode ??
+        GameMode.classic;
+
     ref.listen(watchGameProvider(widget.gameId), (prev, next) {
       if (!mounted || _hasRedirected) return;
       final game = next.value;
@@ -88,16 +93,18 @@ class _DifficultyChoiceScreenState
       _hasRedirected = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        if (game.status == GameStatus.performing) {
-          context.replace(
-            '/performing',
-            extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-          );
-        } else if (game.status == GameStatus.finished) {
-          context.go('/game-over', extra: widget.roomCode);
+        final route = GameRouteResolver.routeForGameStatus(
+          game.status,
+          mode: roomMode,
+          gameId: widget.gameId,
+          roomCode: widget.roomCode,
+        );
+        if (route == null) return;
+        if (route == '/game-over') {
+          context.go(route, extra: widget.roomCode);
         } else {
           context.replace(
-            '/task',
+            route,
             extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
           );
         }
@@ -129,8 +136,19 @@ class _DifficultyChoiceScreenState
           _hasRedirected = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
+              final route = GameRouteResolver.routeForGameStatus(
+                game.status,
+                mode: roomMode,
+                gameId: widget.gameId,
+                roomCode: widget.roomCode,
+              );
+              if (route == null) return;
+              if (route == '/game-over') {
+                context.go(route, extra: widget.roomCode);
+                return;
+              }
               context.replace(
-                '/task',
+                route,
                 extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
               );
             }

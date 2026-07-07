@@ -123,6 +123,7 @@ extension _StoreScreenBuilders on _StoreScreenState {
     required List<CosmeticItemEntity> maskItems,
     required bool isPremium,
     required bool isAnonymous,
+    required int walletPoints,
     required AsyncValue<List<CosmeticItemEntity>> cosmeticsAsync,
   }) {
     final l = AppLocalizations.of(context)!;
@@ -198,29 +199,30 @@ extension _StoreScreenBuilders on _StoreScreenState {
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: AppColors.accent, size: 20),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(icon, color: AppColors.accent, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
                     title,
                     style: AppTextStyles.headlineMedium.copyWith(
                       color: AppColors.accent,
                       letterSpacing: 1.5,
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: AppTextStyles.labelSmall.copyWith(
-                      color: Colors.white30,
-                    ),
-                  ),
-                ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: AppTextStyles.labelSmall.copyWith(
+                color: Colors.white30,
               ),
             ),
           ],
@@ -234,6 +236,7 @@ extension _StoreScreenBuilders on _StoreScreenState {
             uid,
             item,
             isOwned,
+            walletPoints: walletPoints,
             isPremium: isPremium,
           );
         }),
@@ -252,10 +255,12 @@ extension _StoreScreenBuilders on _StoreScreenState {
     WidgetRef ref,
     String uid,
     CosmeticItemEntity item,
-    bool isOwned,
-    {required bool isPremium}
-  ) {
+    bool isOwned, {
+    required int walletPoints,
+    required bool isPremium,
+  }) {
     final isPremiumScenario = item.type == 'category';
+    final canAfford = walletPoints >= item.price;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -395,39 +400,54 @@ extension _StoreScreenBuilders on _StoreScreenState {
             )
           else
             GestureDetector(
-              onTap: () => _buyItem(context, ref, uid, item),
-              child: Container(
-                width: 85,
-                height: 40,
-                decoration: BoxDecoration(
-                  gradient: AppColors.accentGradient,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.accent.withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.monetization_on_rounded,
-                      color: Colors.white,
-                      size: 14,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '${item.price}',
-                      style: AppTextStyles.labelSmall.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 13,
+              onTap: () => _buyItem(
+                context,
+                ref,
+                uid,
+                item,
+                walletPoints: walletPoints,
+              ),
+              child: Opacity(
+                opacity: canAfford ? 1 : 0.45,
+                child: Container(
+                  width: 85,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: canAfford ? AppColors.accentGradient : null,
+                    color: canAfford ? null : Colors.white12,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: canAfford
+                        ? [
+                            BoxShadow(
+                              color: AppColors.accent.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]
+                        : null,
+                    border: canAfford
+                        ? null
+                        : Border.all(color: Colors.white24),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.monetization_on_rounded,
+                        color: canAfford ? Colors.white : Colors.white54,
+                        size: 14,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 6),
+                      Text(
+                        '${item.price}',
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: canAfford ? Colors.white : Colors.white54,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

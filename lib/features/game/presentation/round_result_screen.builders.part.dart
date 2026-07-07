@@ -147,23 +147,35 @@ extension _RoundResultScreenBuilders on _RoundResultScreenState {
     return Consumer(
       builder: (context, ref, child) {
         final room = ref.watch(watchRoomProvider(widget.roomCode)).value;
-        final isHost = room?.hostId == ref.watch(currentUserProvider)?.uid;
+        final myUid = ref.watch(currentUserProvider)?.uid;
+        final isHost = room?.hostId == myUid;
+        final isRoomPlayer = room?.players.any((p) => p.id == myUid) ?? false;
+        final canAdvanceRound = isRoomPlayer;
+        final canEndGame = isHost;
 
-        if (isHost) {
+        if (!isGameOver && canAdvanceRound) {
           return StageButton(
-                label: isGameOver ? AppLocalizations.of(context)!.partyOver : AppLocalizations.of(context)!.nextTask,
-            icon: isGameOver
-                ? Icons.emoji_events_rounded
-                : Icons.arrow_forward_rounded,
+            label: AppLocalizations.of(context)!.nextTask,
+            icon: Icons.arrow_forward_rounded,
             backgroundColor: AppColors.primary,
             textColor: Colors.white,
             borderColor: AppColors.accent.withValues(alpha: 0.3),
             onPressed: () async {
-              if (isGameOver) {
-                await ref.read(gameControllerProvider.notifier).endGame(widget.gameId);
-              } else {
-                await ref.read(gameControllerProvider.notifier).nextTurn(widget.gameId);
-              }
+              await ref.read(gameControllerProvider.notifier).nextTurn(widget.gameId);
+            },
+            compact: metrics.isCompact,
+          );
+        }
+
+        if (isGameOver && canEndGame) {
+          return StageButton(
+            label: AppLocalizations.of(context)!.partyOver,
+            icon: Icons.emoji_events_rounded,
+            backgroundColor: AppColors.primary,
+            textColor: Colors.white,
+            borderColor: AppColors.accent.withValues(alpha: 0.3),
+            onPressed: () async {
+              await ref.read(gameControllerProvider.notifier).endGame(widget.gameId);
             },
             compact: metrics.isCompact,
           );

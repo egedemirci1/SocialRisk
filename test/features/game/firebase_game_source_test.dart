@@ -77,6 +77,54 @@ void main() {
       expect(snap.data()?['categoryPickCounts'][category], 3);
       expect(snap.data()?['lockedCategories'], contains(category));
     });
+
+    test('pickCategoryEconomy currentPlayer dışındaki kullanıcıyı reddeder', () async {
+      const gameId = 'gameWrongPicker';
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': 'room1',
+        'currentPlayerId': 'p1',
+        'turnOrder': ['p1', 'p2'],
+        'categoryPickOrder': ['p1', 'p2'],
+        'lockedCategories': [],
+        'categoryMarketValues': {'Dijital': 10, 'Bilgi': 10, 'Fiziksel': 10},
+        'categoryPickCounts': {'Dijital': 0},
+        'status': 'playing',
+        'mode': 'economy',
+      });
+
+      expect(
+        () => gameSource.pickCategoryEconomy(
+          gameId: gameId,
+          playerId: 'p2',
+          category: 'Dijital',
+        ),
+        throwsA(isA<AppException>()),
+      );
+    });
+
+    test('pickCategoryEconomy playing dışı statüde seçim yapmaz', () async {
+      const gameId = 'gameVotingPicker';
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': 'room1',
+        'currentPlayerId': 'p1',
+        'turnOrder': ['p1', 'p2'],
+        'categoryPickOrder': ['p1', 'p2'],
+        'lockedCategories': [],
+        'categoryMarketValues': {'Dijital': 10, 'Bilgi': 10, 'Fiziksel': 10},
+        'categoryPickCounts': {'Dijital': 0},
+        'status': 'voting',
+        'mode': 'economy',
+      });
+
+      expect(
+        () => gameSource.pickCategoryEconomy(
+          gameId: gameId,
+          playerId: 'p1',
+          category: 'Dijital',
+        ),
+        throwsA(isA<AppException>()),
+      );
+    });
   });
 
   group('FirebaseGameSource - Basic Updates', () {
@@ -498,6 +546,72 @@ void main() {
       expect(snap.data()?['currentPickIndex'], 1); // p3 yeni listede index 1
     });
 
+    test('3 oyuncuda choosingDifficulty fazında currentPlayer çıkarsa index doğru kayar', () async {
+      const gameId = 'gameLeaveChoosing3';
+      const roomId = 'roomLeaveChoosing3';
+
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': 'p2',
+        'turnOrder': ['p1', 'p2', 'p3'],
+        'categoryPickOrder': ['p1', 'p2', 'p3'],
+        'currentPickIndex': 1,
+        'status': 'choosingDifficulty',
+      });
+
+      await gameSource.removePlayerFromGame(gameId: gameId, playerId: 'p2');
+
+      final snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['turnOrder'], ['p1', 'p3']);
+      expect(snap.data()?['categoryPickOrder'], ['p1', 'p3']);
+      expect(snap.data()?['currentPlayerId'], 'p3');
+      expect(snap.data()?['currentPickIndex'], 1);
+    });
+
+    test('4 oyuncuda performing fazında ortadaki oyuncu çıkarsa sıra korunur', () async {
+      const gameId = 'gameLeavePerforming4';
+      const roomId = 'roomLeavePerforming4';
+
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': 'p3',
+        'turnOrder': ['p1', 'p2', 'p3', 'p4'],
+        'categoryPickOrder': ['p1', 'p2', 'p3', 'p4'],
+        'currentPickIndex': 2,
+        'status': 'performing',
+      });
+
+      await gameSource.removePlayerFromGame(gameId: gameId, playerId: 'p2');
+
+      final snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['turnOrder'], ['p1', 'p3', 'p4']);
+      expect(snap.data()?['categoryPickOrder'], ['p1', 'p3', 'p4']);
+      expect(snap.data()?['currentPlayerId'], 'p3');
+      expect(snap.data()?['currentPickIndex'], 1);
+    });
+
+    test('4 oyuncuda voting fazında currentPlayer çıkarsa bir sonrakine geçer', () async {
+      const gameId = 'gameLeaveVoting4';
+      const roomId = 'roomLeaveVoting4';
+
+      await fakeFirestore.collection('games').doc(gameId).set({
+        'roomId': roomId,
+        'currentPlayerId': 'p2',
+        'turnOrder': ['p1', 'p2', 'p3', 'p4'],
+        'categoryPickOrder': ['p1', 'p2', 'p3', 'p4'],
+        'currentPickIndex': 1,
+        'status': 'voting',
+      });
+
+      await gameSource.removePlayerFromGame(gameId: gameId, playerId: 'p2');
+
+      final snap = await fakeFirestore.collection('games').doc(gameId).get();
+      expect(snap.data()?['turnOrder'], ['p1', 'p3', 'p4']);
+      expect(snap.data()?['categoryPickOrder'], ['p1', 'p3', 'p4']);
+      expect(snap.data()?['currentPlayerId'], 'p3');
+      expect(snap.data()?['currentPickIndex'], 1);
+    });
+
     test('son kalan oyuncu çıkınca oyun biter', () async {
       const gameId = 'gameLeaveLast';
       const roomId = 'roomLeaveLast';
@@ -522,7 +636,7 @@ void main() {
       expect(snap.data()?['status'], 'finished');
     });
 
-    test('oyun playing değilse güncelleme yapmaz', () async {
+    test('oyun finished ise güncelleme yapmaz', () async {
       const gameId = 'gameLeaveFinished';
       await fakeFirestore.collection('games').doc(gameId).set({
         'roomId': 'r1',

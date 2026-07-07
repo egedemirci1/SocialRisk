@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:social_risk/core/errors/app_exception.dart';
 import 'package:social_risk/features/economy/domain/economy_exceptions.dart';
+import 'package:social_risk/features/premium/domain/premium_exceptions.dart';
 import 'package:social_risk/l10n/app_localizations_en.dart';
 import 'package:social_risk/shared/utils/error_message_utils.dart';
 
@@ -220,6 +221,26 @@ void main() {
           l,
         ),
         'Giriş başarısız',
+      );
+    });
+
+    test('maps premium unavailable to mobile-only message', () {
+      expect(
+        ErrorMessageUtils.formatUserError(
+          const PremiumPurchaseUnavailableException(),
+          l,
+        ),
+        l.purchaseMobileOnly,
+      );
+    });
+
+    test('maps raw insufficient balance message', () {
+      expect(
+        ErrorMessageUtils.formatUserError(
+          Exception('Insufficient balance.'),
+          l,
+        ),
+        l.insufficientBalance,
       );
     });
   });

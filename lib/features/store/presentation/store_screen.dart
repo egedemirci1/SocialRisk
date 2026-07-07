@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../economy/providers/economy_provider.dart';
 import '../../economy/domain/cosmetic_item_entity.dart';
-import '../../economy/domain/economy_exceptions.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/providers/user_provider.dart';
 import '../../premium/providers/premium_provider.dart';
@@ -33,27 +32,30 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     BuildContext context,
     WidgetRef ref,
     String uid,
-    CosmeticItemEntity item,
-  ) async {
+    CosmeticItemEntity item, {
+    required int walletPoints,
+  }) async {
+    final l = AppLocalizations.of(context)!;
+    if (walletPoints < item.price) {
+      ToastUtils.showError(context, l.insufficientBalance);
+      return;
+    }
+
     try {
-      final l = AppLocalizations.of(context)!;
       await ref
           .read(economyControllerProvider.notifier)
           .buyCosmetic(uid: uid, cosmeticId: item.id, price: item.price);
       if (!context.mounted) return;
-      
+
       final isTr = Localizations.localeOf(context).languageCode == 'tr';
       final itemName = isTr ? item.name : item.nameEn;
-      
+
       ToastUtils.showSuccess(context, l.itemPurchased(itemName));
     } catch (e) {
       if (!context.mounted) return;
-      final l = AppLocalizations.of(context)!;
-      final msg = ErrorMessageUtils.formatUserError(e, l);
-      final isInsufficient = e is InsufficientBalanceException;
       ToastUtils.showError(
         context,
-        isInsufficient ? l.insufficientBalance : l.buyError(msg),
+        ErrorMessageUtils.formatUserError(e, l),
       );
     }
   }
@@ -71,8 +73,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     final isAnonymous = user.isAnonymous;
     final userProfileAsync = ref.watch(watchUserProfileProvider(user.uid));
     final cosmeticsAsync = ref.watch(fetchCosmeticsProvider);
-    final premiumService = ref.read(premiumPurchaseServiceProvider);
-    premiumService.init();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -165,6 +165,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                           maskItems: maskItems,
                           isPremium: profile?.isPremium ?? false,
                           isAnonymous: isAnonymous,
+                          walletPoints: profile?.walletPoints ?? 0,
                           cosmeticsAsync: cosmeticsAsync,
                         ),
                       ),

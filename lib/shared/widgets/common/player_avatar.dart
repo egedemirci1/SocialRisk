@@ -96,8 +96,10 @@ class PlayerAvatar extends ConsumerWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: _borderColor,
-                    width: score >= 500 ? 2.5 : 0,
+                    color: score >= 500
+                        ? _borderColor
+                        : Colors.white.withValues(alpha: 0.14),
+                    width: score >= 500 ? 2.5 : 1,
                   ),
                   boxShadow: hasFrame
                       ? [
@@ -120,7 +122,7 @@ class PlayerAvatar extends ConsumerWidget {
                 ),
                 child: CircleAvatar(
                   radius: radius,
-                  backgroundColor: AppColors.surfaceElevated,
+                  backgroundColor: AppColors.surface,
                   child: useAvatarImage
                       ? ClipOval(
                           child: CachedNetworkImage(
@@ -129,11 +131,11 @@ class PlayerAvatar extends ConsumerWidget {
                             height: avatarDiameter,
                             fit: BoxFit.cover,
                             placeholder: (_, __) => ColoredBox(
-                              color: AppColors.surfaceElevated,
+                              color: AppColors.surface,
                               child: Center(child: _initialsText(radius)),
                             ),
                             errorWidget: (_, __, ___) => ColoredBox(
-                              color: AppColors.surfaceElevated,
+                              color: AppColors.surface,
                               child: Center(child: _initialsText(radius)),
                             ),
                           ),

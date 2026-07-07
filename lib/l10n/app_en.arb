@@ -521,6 +521,7 @@
   "restorePurchases": "Restore Purchases",
   "restoringPurchases": "Restoring purchases...",
   "purchaseFlowStarted": "Purchase flow started.",
+  "purchaseMobileOnly": "Purchases are only available in the mobile app.",
   "premiumLabel": "PREMIUM",
   "leavePartyTitle": "Leave Party",
   "leavePartyConfirm": "Are you sure you want to leave? If you are the host, the room will be closed.",

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import '../../core/errors/app_exception.dart';
 import '../../features/economy/domain/economy_exceptions.dart';
+import '../../features/premium/domain/premium_exceptions.dart';
 import '../../l10n/app_localizations.dart';
 
 /// Kullanıcıya gösterilecek hata metinlerini normalize eder.
@@ -18,6 +19,10 @@ class ErrorMessageUtils {
   );
 
   static String formatUserError(Object error, AppLocalizations l10n) {
+    if (error is PremiumPurchaseUnavailableException) {
+      return l10n.purchaseMobileOnly;
+    }
+
     if (error is AppException) {
       return _localizeAppException(error, l10n);
     }
@@ -33,6 +38,10 @@ class ErrorMessageUtils {
     var message = error.toString();
     message = message.replaceFirst(RegExp(r'^Exception:\s*'), '');
     message = message.replaceFirst(RegExp(r'^FirebaseException:\s*'), '');
+
+    if (_isInsufficientBalanceMessage(message)) {
+      return l10n.insufficientBalance;
+    }
 
     final cooldownSeconds = _parseEmoteCooldownSeconds(message);
     if (cooldownSeconds != null) {
@@ -233,6 +242,12 @@ class ErrorMessageUtils {
   static bool _isPermissionMessage(String text) {
     final lower = text.toLowerCase();
     return lower.contains('permission') || lower.contains('yetki');
+  }
+
+  static bool _isInsufficientBalanceMessage(String text) {
+    final lower = text.toLowerCase();
+    return lower.contains('insufficient balance') ||
+        lower.contains('yetersiz bakiye');
   }
 
   static String _stringParam(

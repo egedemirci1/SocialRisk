@@ -129,6 +129,22 @@ class _RoundResultScreenState extends ConsumerState<RoundResultScreen>
             );
           }
 
+          // ref.listen yalnızca geçişleri yakalar; pas sonrası hızlı nextTurn'de
+          // ekran açıldığında status zaten playing olabilir.
+          if (game.status == GameStatus.playing ||
+              game.status == GameStatus.choosingDifficulty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+              context.go(
+                '/task',
+                extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+              );
+            });
+            return TheaterLoadingScreen(
+              message: AppLocalizations.of(context)!.partyStarting,
+            );
+          }
+
           _tryPlayVoteOutcomeSfx(game);
 
           final earnedScore = game.lastRoundScore ?? 0;

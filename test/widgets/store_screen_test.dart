@@ -211,6 +211,47 @@ void main() {
       await tester.pump(const Duration(seconds: 4));
     });
 
+    testWidgets('yetersiz bakiyede buton soluk görünür ve sunucuya gitmeden uyarı verir', (tester) async {
+      const uid = 'store-poor-client-uid';
+      final mockUser = MockUser(uid: uid, isAnonymous: false);
+      final fakeProfile = const UserEntity(
+        uid: uid,
+        displayName: 'Poor',
+        walletPoints: 100,
+        ownedCosmetics: [],
+      );
+      const kral = CosmeticItemEntity(
+        id: 'title_king',
+        name: 'Kral',
+        nameEn: 'King',
+        description: 'Unvan',
+        descriptionEn: 'Title',
+        imageUrl: '👑',
+        price: 500,
+        type: 'title',
+      );
+      final spyEconomy = SpyEconomyController();
+
+      await tester.binding.setSurfaceSize(const Size(600, 900));
+      await tester.pumpWidget(
+        _buildStore(overrides: [
+            currentUserProvider.overrideWithValue(mockUser),
+            userRepositoryProvider.overrideWithValue(FakeUserRepository(profile: fakeProfile)),
+            fetchCosmeticsProvider.overrideWith((ref) => Future.value([kral])),
+            economyControllerProvider.overrideWith(() => spyEconomy),
+          ], size: const Size(600, 900)),
+      );
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('500'));
+      await tester.pumpAndSettle();
+
+      expect(spyEconomy.buyCosmeticCalls, isEmpty);
+      expect(find.text('Yetersiz bakiye'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 4));
+    });
+
     // ---------- Tab geçişleri: Çerçeveler ----------
     testWidgets('Çerçeveler sekmesine tıklanınca sadece çerçeve tipi ürünler listelenir', (tester) async {
       final mockUser = MockUser(uid: 'tab-uid', isAnonymous: false);

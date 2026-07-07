@@ -86,6 +86,7 @@ class GameCard extends StatelessWidget {
                 Expanded(
                   child: LayoutBuilder(
                     builder: (context, textConstraints) {
+                      final lineHeight = dense ? 1.08 : (compact ? 1.16 : 1.22);
                       final contentFont = _fitContentFontSize(
                         context: context,
                         text: content,
@@ -93,18 +94,29 @@ class GameCard extends StatelessWidget {
                         maxHeight: textConstraints.maxHeight,
                         maxFontSize: dense ? 18.0 : (compact ? 20.0 : 24.0),
                         minFontSize: 5.0,
+                        lineHeight: lineHeight,
                       );
 
-                      return Center(
-                        child: Text(
-                          content,
-                          style: AppTextStyles.displayMedium.copyWith(
-                            color: Colors.white,
-                            height: dense ? 1.08 : (compact ? 1.16 : 1.22),
-                            fontSize: contentFont,
+                      final textStyle = AppTextStyles.displayMedium.copyWith(
+                        color: Colors.white,
+                        height: lineHeight,
+                        fontSize: contentFont,
+                        fontWeight: FontWeight.w900,
+                      );
+
+                      return Align(
+                        alignment: Alignment.center,
+                        child: SingleChildScrollView(
+                          physics: const ClampingScrollPhysics(),
+                          child: SizedBox(
+                            width: textConstraints.maxWidth,
+                            child: Text(
+                              content,
+                              style: textStyle,
+                              textAlign: TextAlign.center,
+                              softWrap: true,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                          softWrap: true,
                         ),
                       );
                     },
@@ -157,6 +169,7 @@ class GameCard extends StatelessWidget {
     required double maxHeight,
     required double maxFontSize,
     required double minFontSize,
+    required double lineHeight,
   }) {
     if (maxWidth <= 0 || maxHeight <= 0) return minFontSize;
 
@@ -164,6 +177,7 @@ class GameCard extends StatelessWidget {
     var low = minFontSize;
     var high = maxFontSize;
     var best = minFontSize;
+    const heightSafety = 4.0;
 
     while ((high - low) > 0.25) {
       final mid = (low + high) / 2;
@@ -172,14 +186,15 @@ class GameCard extends StatelessWidget {
           text: text,
           style: AppTextStyles.displayMedium.copyWith(
             fontSize: mid,
-            height: compact ? 1.16 : 1.22,
+            height: lineHeight,
+            fontWeight: FontWeight.w900,
           ),
         ),
         textAlign: TextAlign.center,
         textDirection: textDirection,
       )..layout(maxWidth: maxWidth);
 
-      final fits = painter.height <= maxHeight;
+      final fits = painter.height <= maxHeight - heightSafety;
       if (fits) {
         best = mid;
         low = mid;

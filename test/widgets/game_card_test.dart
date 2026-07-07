@@ -125,7 +125,13 @@ void main() {
       );
 
       expect(find.text('Scroll sonrası görev'), findsOneWidget);
-      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -400));
+      await tester.drag(
+        find.descendant(
+          of: find.byType(Scaffold),
+          matching: find.byType(SingleChildScrollView),
+        ).first,
+        const Offset(0, -400),
+      );
       await tester.pumpAndSettle();
       expect(find.text('Scroll sonrası görev'), findsOneWidget);
     });

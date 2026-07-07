@@ -40,14 +40,13 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
     _focusNodes = List.generate(_codeLength, (i) {
       final node = FocusNode();
       node.addListener(() {
-        if (node.hasFocus && _controllers[i].text.isNotEmpty) {
-          // Auto-select the character when box gains focus
+        if (!node.hasFocus || !mounted) return;
+        if (_controllers[i].text.isNotEmpty) {
           _controllers[i].selection = TextSelection(
             baseOffset: 0,
             extentOffset: _controllers[i].text.length,
           );
         }
-        setState(() {});
       });
       return node;
     });
@@ -228,10 +227,7 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
                                 },
                               ),
                             },
-                            child: Focus(
-                              autofocus: true,
-                              child: _buildCodeInputs(),
-                            ),
+                            child: _buildCodeInputs(),
                           ),
                           const SizedBox(height: 12),
                           TextButton.icon(
@@ -285,26 +281,34 @@ class _JoinRoomScreenState extends ConsumerState<JoinRoomScreen> {
             child: SizedBox(
               width: 42,
               height: 54,
-              child: KeyboardListener(
+              child: Focus(
                 focusNode: _focusNodes[index],
-                onKeyEvent: (event) {
-                  if (event is! KeyDownEvent) return;
-                  
+                onKeyEvent: (_, event) {
+                  if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
                   if (event.logicalKey == LogicalKeyboardKey.backspace &&
                       _controllers[index].text.isEmpty &&
                       index > 0) {
                     _controllers[index - 1].clear();
                     _focusNodes[index - 1].requestFocus();
                     setState(() {});
-                  } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && index > 0) {
-                    _focusNodes[index - 1].requestFocus();
-                  } else if (event.logicalKey == LogicalKeyboardKey.arrowRight && index < _codeLength - 1) {
-                    _focusNodes[index + 1].requestFocus();
+                    return KeyEventResult.handled;
                   }
+                  if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&
+                      index > 0) {
+                    _focusNodes[index - 1].requestFocus();
+                    return KeyEventResult.handled;
+                  }
+                  if (event.logicalKey == LogicalKeyboardKey.arrowRight &&
+                      index < _codeLength - 1) {
+                    _focusNodes[index + 1].requestFocus();
+                    return KeyEventResult.handled;
+                  }
+                  return KeyEventResult.ignored;
                 },
                 child: TextField(
                   controller: _controllers[index],
-                  focusNode: _focusNodes[index],
+                  autofocus: index == 0,
                   textAlign: TextAlign.center,
                   maxLength: 1,
                   autocorrect: false,

@@ -173,23 +173,16 @@ Future<void> _fgsPassTask(
         final updates = <String, dynamic>{
           'status': 'results',
           'lastRoundScore': -penalty,
+          'lastRoundAudienceScore': 0,
           'lastRoundMultiplier': 0,
           'lastRoundPlayerId': playerId,
         };
 
-        // Ekonomi Modu: Pas sonrası sıra bir sonraki oyuncuya geçmeli (sıra atlamama bug fix)
-        if (game.categoryPickOrder.isNotEmpty) {
-          final nextPickIndex = game.currentPickIndex + 1;
-          if (nextPickIndex >= game.categoryPickOrder.length) {
-            updates['currentPickIndex'] = 0;
-            updates['currentRound'] = game.currentRound + 1;
-            updates['currentPlayerId'] = game.categoryPickOrder[0];
-          } else {
-            updates['currentPickIndex'] = nextPickIndex;
-            updates['currentPlayerId'] =
-                game.categoryPickOrder[nextPickIndex];
-          }
-        }
+        source._applyEconomyRoundAdvance(
+          game,
+          updates,
+          selectedCategory: game.selectedCategory,
+        );
 
         transaction.update(gameDocRef, updates);
       });

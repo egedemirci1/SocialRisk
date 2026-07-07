@@ -21,6 +21,7 @@ import '../../../shared/utils/error_message_utils.dart';
 import '../../../shared/widgets/score/scoreboard_bottom_sheet.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../room/providers/room_provider.dart';
+import '../domain/game_entity.dart';
 import '../providers/game_provider.dart';
 
 part 'economy_pick_screen.widgets.part.dart';
@@ -42,6 +43,53 @@ class EconomyPickScreen extends ConsumerStatefulWidget {
 class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
   bool _isPicking = false;
   bool _autoPickFailed = false;
+
+  bool _redirectIfNeeded(GameEntity game) {
+    if (!mounted) return false;
+
+    if (game.status == GameStatus.finished) {
+      context.replace('/game-over', extra: widget.roomCode);
+      return true;
+    }
+    if (game.status == GameStatus.results) {
+      context.replace(
+        '/round-result',
+        extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+      );
+      return true;
+    }
+    if (game.status == GameStatus.voting) {
+      context.replace(
+        '/voting',
+        extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+      );
+      return true;
+    }
+    if (game.status == GameStatus.performing) {
+      context.replace(
+        '/performing',
+        extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+      );
+      return true;
+    }
+    if (game.currentTask != null) {
+      context.replace(
+        '/task',
+        extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+      );
+      return true;
+    }
+    if (game.status == GameStatus.choosingDifficulty ||
+        game.selectedCategory != null) {
+      context.replace(
+        '/difficulty',
+        extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+      );
+      return true;
+    }
+
+    return false;
+  }
 
   Future<void> _pickCategory(String category) async {
     if (_isPicking) return;
@@ -66,6 +114,18 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<GameEntity?>>(watchGameProvider(widget.gameId), (
+      previous,
+      next,
+    ) {
+      final game = next.value;
+      if (game == null) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _redirectIfNeeded(game);
+      });
+    });
+
     final gameAsync = ref.watch(watchGameProvider(widget.gameId));
     final playersAsync = ref.watch(watchPlayersProvider(widget.roomCode));
     final user = ref.read(currentUserProvider);
@@ -92,38 +152,17 @@ class _EconomyPickScreenState extends ConsumerState<EconomyPickScreen> {
         final singleCategory = isSingleCategory ? categories.first : null;
         final isMyPick = game.currentPlayerId == user?.uid;
 
+        if (_redirectIfNeeded(game)) {
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            body: TheaterLoadingScreen(
+              message: AppLocalizations.of(context)!.partyStarting,
+            ),
+          );
+        }
+
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
-
-          // 1. Durum Kontrolü ve Yönlendirme (Öncelikli)
-          if (game.status == GameStatus.finished) {
-            context.replace('/game-over', extra: widget.roomCode);
-            return;
-          }
-          
-          if (game.status == GameStatus.results) {
-            context.replace(
-              '/round-result',
-              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-            );
-            return;
-          }
-
-          if (game.currentTask != null) {
-            context.replace(
-              '/task',
-              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-            );
-            return;
-          }
-
-          if (game.status == GameStatus.choosingDifficulty || game.selectedCategory != null) {
-            context.replace(
-              '/difficulty',
-              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
-            );
-            return;
-          }
 
           // 2. Tek Kategori Otomatik Seçim (Sadece sırası gelende)
           if (isSingleCategory &&

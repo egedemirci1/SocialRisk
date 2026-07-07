@@ -110,14 +110,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     setState(() => _isAccepting = true);
     try {
       await ref.read(gameControllerProvider.notifier).acceptTask(widget.gameId);
-      
-      // Economy modunda kabul ettikten sonra next turn yap
-      if (mounted) {
-        final game = ref.read(watchGameProvider(widget.gameId)).value;
-        if (game != null && game.categoryPickOrder.isEmpty) {
-          await ref.read(gameControllerProvider.notifier).nextTurn(widget.gameId);
-        }
-      }
     } catch (e) {
       if (mounted) {
         final l = AppLocalizations.of(context)!;
@@ -142,10 +134,10 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             playerId: uid,
           );
       
-      // Economy modunda reddettikten sonra next turn yap
+      // Çark modunda round-result ekranında host ilerletir; ekonomi modunda otomatik geç
       if (mounted) {
         final game = ref.read(watchGameProvider(widget.gameId)).value;
-        if (game != null && game.categoryPickOrder.isEmpty) {
+        if (game != null && game.categoryPickOrder.isNotEmpty) {
           await ref.read(gameControllerProvider.notifier).nextTurn(widget.gameId);
         }
         setState(() => _contentRevealed = false);
@@ -221,6 +213,22 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             backgroundColor: Colors.transparent,
             body: TheaterLoadingScreen(
               message: AppLocalizations.of(context)!.partyStarting,
+            ),
+          );
+        }
+
+        if (game.status == GameStatus.results) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!context.mounted) return;
+            context.replace(
+              '/round-result',
+              extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+            );
+          });
+          return Scaffold(
+            backgroundColor: Colors.transparent,
+            body: TheaterLoadingScreen(
+              message: AppLocalizations.of(context)!.calculatingScore,
             ),
           );
         }

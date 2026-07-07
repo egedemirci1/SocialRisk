@@ -1,6 +1,8 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:social_risk/features/economy/data/firebase_economy_source.dart';
+import 'package:social_risk/features/economy/domain/economy_exceptions.dart';
 import '../../helpers/mock_firebase_functions.dart';
 
 void main() {
@@ -49,9 +51,13 @@ void main() {
         expect(mockFunctions.calls.first.parameters['price'], 500);
       });
 
-      test('puan yetersizse Exception fırlatır', () async {
-        mockFunctions.handlers['buyCosmetic'] =
-            (_) async => throw Exception('Yetersiz bakiye.');
+      test('puan yetersizse InsufficientBalanceException fırlatır', () async {
+        mockFunctions.handlers['buyCosmetic'] = (_) async {
+          throw FirebaseFunctionsException(
+            code: 'failed-precondition',
+            message: 'Insufficient balance.',
+          );
+        };
 
         const uid = 'user2';
         await seedUser(uid: uid, walletPoints: 100, ownedCosmetics: []);
@@ -62,7 +68,7 @@ void main() {
             cosmeticId: 'frame_fire',
             price: 500,
           ),
-          throwsA(isA<Exception>()),
+          throwsA(isA<InsufficientBalanceException>()),
         );
       });
 

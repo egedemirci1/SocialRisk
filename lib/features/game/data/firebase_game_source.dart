@@ -34,10 +34,50 @@ class FirebaseGameSource implements GameRepository {
       categories: categories,
       excludedCategories: [
         ...lockedCategories,
-        if (excludedCategory != null) excludedCategory,
+        ...(excludedCategory == null
+            ? const <String>[]
+            : <String>[excludedCategory]),
       ],
       random: _random,
     );
+  }
+
+  void _applyEconomyRoundAdvance(
+    GameModel game,
+    Map<String, dynamic> updates, {
+    String? selectedCategory,
+  }) {
+    if (game.categoryPickOrder.isEmpty) return;
+
+    final nextPickIndex = game.currentPickIndex + 1;
+    final categories = game.categoryMarketValues.keys.toList(growable: false);
+    final penalizedCategory = GameConstants.economyPenaltyCategoryForNextTurn(
+      categoryCount: categories.length,
+      selectedCategory: selectedCategory,
+      currentHotCategory: game.hotCategory,
+    );
+    final nextHotCategory = _pickEconomyHotCategory(
+      categories: categories,
+      lockedCategories: game.lockedCategories,
+      excludedCategory: penalizedCategory,
+    );
+    final nextTurnMarketValues = GameConstants.buildEconomyTurnValues(
+      categories: categories,
+      hotCategory: nextHotCategory,
+      penalizedCategory: penalizedCategory,
+    );
+
+    if (nextPickIndex >= game.categoryPickOrder.length) {
+      updates['currentPickIndex'] = 0;
+      updates['currentRound'] = game.currentRound + 1;
+      updates['currentPlayerId'] = game.categoryPickOrder[0];
+    } else {
+      updates['currentPickIndex'] = nextPickIndex;
+      updates['currentPlayerId'] = game.categoryPickOrder[nextPickIndex];
+    }
+
+    updates['categoryMarketValues'] = nextTurnMarketValues;
+    updates['hotCategory'] = nextHotCategory;
   }
 
   @override
@@ -214,38 +254,11 @@ class FirebaseGameSource implements GameRepository {
           'lastRoundPlayerId': playerId,
         };
 
-        // Ekonomi Modu: Sıra Değişimi Hazırlığı
-        if (game.categoryPickOrder.isNotEmpty) {
-          final nextPickIndex = game.currentPickIndex + 1;
-          final categories = game.categoryMarketValues.keys.toList(growable: false);
-          final penalizedCategory = GameConstants.economyPenaltyCategoryForNextTurn(
-            categoryCount: categories.length,
-            selectedCategory: game.selectedCategory,
-            currentHotCategory: game.hotCategory,
-          );
-          final nextHotCategory = _pickEconomyHotCategory(
-            categories: categories,
-            lockedCategories: game.lockedCategories,
-            excludedCategory: penalizedCategory,
-          );
-          final nextTurnMarketValues = GameConstants.buildEconomyTurnValues(
-            categories: categories,
-            hotCategory: nextHotCategory,
-            penalizedCategory: penalizedCategory,
-          );
-
-          if (nextPickIndex >= game.categoryPickOrder.length) {
-            updates['currentPickIndex'] = 0;
-            updates['currentRound'] = game.currentRound + 1;
-            updates['currentPlayerId'] = game.categoryPickOrder[0];
-          } else {
-            updates['currentPickIndex'] = nextPickIndex;
-            updates['currentPlayerId'] = game.categoryPickOrder[nextPickIndex];
-          }
-
-          updates['categoryMarketValues'] = nextTurnMarketValues;
-          updates['hotCategory'] = nextHotCategory;
-        }
+        _applyEconomyRoundAdvance(
+          game,
+          updates,
+          selectedCategory: game.selectedCategory,
+        );
 
         transaction.update(gameDocRef, updates);
       });
@@ -472,6 +485,16 @@ class FirebaseGameSource implements GameRepository {
         }
 
         final game = GameModel.fromJson(snap.data()!, snap.id);
+        if (game.status != 'playing') {
+          throw const AppException(AppErrorCode.categorySelectConnectionError, {
+            'message': 'Game is not in playing state',
+          });
+        }
+        if (game.currentPlayerId != playerId) {
+          throw const AppException(AppErrorCode.categorySelectConnectionError, {
+            'message': 'Only current player can pick category',
+          });
+        }
         final totalCategories = game.categoryMarketValues.keys.length;
         final supportsDynamicEconomyRules = totalCategories >= 3;
 
@@ -529,7 +552,7 @@ class FirebaseGameSource implements GameRepository {
       if (!snap.exists) return;
 
       final game = GameModel.fromJson(snap.data()!, snap.id);
-      if (game.status != 'playing') return;
+      if (game.status == 'finished' || game.status == 'waiting') return;
 
       final newTurnOrder =
           game.turnOrder.where((id) => id != playerId).toList();

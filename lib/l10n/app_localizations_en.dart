@@ -1200,6 +1200,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseFlowStarted => 'Purchase flow started.';
 
   @override
+  String get purchaseMobileOnly =>
+      'Purchases are only available in the mobile app.';
+
+  @override
   String get premiumLabel => 'PREMIUM';
 
   @override

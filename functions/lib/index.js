@@ -568,7 +568,7 @@ exports.finalizeVotingRound = functions.https.onCall(async (data, context) => {
     }
     const gameRef = db.collection("games").doc(gameId);
     const result = await db.runTransaction(async (transaction) => {
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c;
         const gameSnap = await transaction.get(gameRef);
         if (!gameSnap.exists) {
             throw new functions.https.HttpsError("not-found", "Game not found.");
@@ -583,9 +583,21 @@ exports.finalizeVotingRound = functions.https.onCall(async (data, context) => {
         if (!roomSnap.exists) {
             throw new functions.https.HttpsError("not-found", "Room not found.");
         }
-        const room = (_b = roomSnap.data()) !== null && _b !== void 0 ? _b : {};
-        if (room.hostId !== ((_c = context.auth) === null || _c === void 0 ? void 0 : _c.uid)) {
-            throw new functions.https.HttpsError("permission-denied", "Only host can finalize voting.");
+        const callerId = context.auth.uid;
+        const playerSnap = await transaction.get(roomRef.collection("players").doc(callerId));
+        if (!playerSnap.exists) {
+            throw new functions.https.HttpsError("permission-denied", "Only room players can finalize voting.");
+        }
+        if (game.status === "results") {
+            return {
+                totalScore: typeof game.lastRoundScore === "number" ? game.lastRoundScore : 0,
+                audienceScore: typeof game.lastRoundAudienceScore === "number"
+                    ? game.lastRoundAudienceScore
+                    : 0,
+                mood: typeof game.lastRoundMood === "string" ? game.lastRoundMood : "neutral",
+                penalizedCount: 0,
+                alreadyFinalized: true,
+            };
         }
         if (game.status !== "voting") {
             throw new functions.https.HttpsError("failed-precondition", "Game is not in voting state.");
@@ -594,11 +606,11 @@ exports.finalizeVotingRound = functions.https.onCall(async (data, context) => {
         if (!currentPlayerId) {
             throw new functions.https.HttpsError("failed-precondition", "Game has no current player.");
         }
-        const currentTask = ((_d = game.currentTask) !== null && _d !== void 0 ? _d : {});
+        const currentTask = ((_b = game.currentTask) !== null && _b !== void 0 ? _b : {});
         const taskMultiplier = typeof currentTask.multiplier === "number" ? currentTask.multiplier : 1;
         const selectedCategory = typeof game.selectedCategory === "string" ? game.selectedCategory : null;
         const hotCategory = typeof game.hotCategory === "string" ? game.hotCategory : null;
-        const marketValues = ((_e = game.categoryMarketValues) !== null && _e !== void 0 ? _e : {});
+        const marketValues = ((_c = game.categoryMarketValues) !== null && _c !== void 0 ? _c : {});
         const categoryNames = Object.keys(marketValues);
         const votesQuery = gameRef.collection("votes");
         const votesSnap = await transaction.get(votesQuery);

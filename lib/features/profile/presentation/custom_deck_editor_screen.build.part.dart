@@ -39,7 +39,6 @@ extension _CustomDeckEditorBody on _CustomDeckEditorScreenState {
         if (user == null) return const SizedBox.shrink();
 
         final premiumService = ref.read(premiumPurchaseServiceProvider);
-        premiumService.init();
 
         if (!user.isPremium) {
           return Scaffold(

@@ -2282,6 +2282,12 @@ abstract class AppLocalizations {
   /// **'Satın alma akışı başlatıldı.'**
   String get purchaseFlowStarted;
 
+  /// No description provided for @purchaseMobileOnly.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın alma yalnızca mobil uygulamada kullanılabilir.'**
+  String get purchaseMobileOnly;
+
   /// No description provided for @premiumLabel.
   ///
   /// In tr, this message translates to:

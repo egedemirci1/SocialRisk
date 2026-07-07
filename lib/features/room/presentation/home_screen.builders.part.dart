@@ -99,9 +99,13 @@ extension _HomeScreenBuilders on _HomeScreenState {
     if (room.status == GameStatus.finished) return null;
 
     final gameId = room.gameId;
-    final game = (gameId != null && gameId.isNotEmpty)
-        ? ref.watch(watchGameProvider(gameId)).value
-        : null;
+    final gameAsync = (gameId != null && gameId.isNotEmpty)
+        ? ref.watch(watchGameProvider(gameId))
+        : const AsyncValue<GameEntity?>.data(null);
+    if (gameId != null && gameId.isNotEmpty && gameAsync.isLoading) {
+      return null;
+    }
+    final game = gameAsync.value;
 
     if (game?.status == GameStatus.finished) return null;
 

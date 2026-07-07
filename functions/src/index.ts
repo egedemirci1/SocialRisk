@@ -729,9 +729,28 @@ export const finalizeVotingRound = functions.https.onCall(async (data, context) 
       throw new functions.https.HttpsError("not-found", "Room not found.");
     }
 
-    const room = roomSnap.data() ?? {};
-    if (room.hostId !== context.auth?.uid) {
-      throw new functions.https.HttpsError("permission-denied", "Only host can finalize voting.");
+    const callerId = context.auth!.uid;
+    const playerSnap = await transaction.get(
+      roomRef.collection("players").doc(callerId),
+    );
+    if (!playerSnap.exists) {
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        "Only room players can finalize voting.",
+      );
+    }
+
+    if (game.status === "results") {
+      return {
+        totalScore: typeof game.lastRoundScore === "number" ? game.lastRoundScore : 0,
+        audienceScore:
+          typeof game.lastRoundAudienceScore === "number"
+            ? game.lastRoundAudienceScore
+            : 0,
+        mood: typeof game.lastRoundMood === "string" ? game.lastRoundMood : "neutral",
+        penalizedCount: 0,
+        alreadyFinalized: true,
+      };
     }
 
     if (game.status !== "voting") {

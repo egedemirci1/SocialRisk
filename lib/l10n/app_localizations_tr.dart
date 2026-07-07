@@ -1204,6 +1204,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get purchaseFlowStarted => 'Satın alma akışı başlatıldı.';
 
   @override
+  String get purchaseMobileOnly =>
+      'Satın alma yalnızca mobil uygulamada kullanılabilir.';
+
+  @override
   String get premiumLabel => 'PREMIUM';
 
   @override

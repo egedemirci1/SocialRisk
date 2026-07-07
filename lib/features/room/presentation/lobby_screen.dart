@@ -9,6 +9,7 @@ import 'package:social_risk/l10n/app_localizations.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/utils/game_route_resolver.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../shared/models/enums.dart';
 import '../../../shared/utils/toast_utils.dart';
@@ -102,7 +103,9 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
           }
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
-              context.go('/task', extra: {'gameId': gameId, 'roomCode': widget.roomCode});
+              final route = GameRouteResolver.resolveRoute(room);
+              final extra = GameRouteResolver.extraForRoom(room);
+              context.go(route, extra: extra);
             }
           });
         }
@@ -235,7 +238,17 @@ class _LobbyScreenState extends ConsumerState<LobbyScreen> {
                             );
 
                         if (!context.mounted) return;
-                        context.go('/task', extra: {'gameId': gameId, 'roomCode': widget.roomCode});
+                        final mode = room?.mode ?? GameMode.classic;
+                        final route = GameRouteResolver.routeForGameStatus(
+                          GameStatus.playing,
+                          mode: mode,
+                          gameId: gameId,
+                          roomCode: widget.roomCode,
+                        );
+                        final extra = route == '/game-over'
+                            ? widget.roomCode
+                            : {'gameId': gameId, 'roomCode': widget.roomCode};
+                        context.go(route ?? '/task', extra: extra);
                       } catch (e) {
                         if (!context.mounted) return;
                         final l = AppLocalizations.of(context)!;

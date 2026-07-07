@@ -177,8 +177,6 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
       final prevStatus = previous?.value?.status;
       final prevTaskId = previous?.value?.currentTask?.id;
       final nextTaskId = game.currentTask?.id;
-      final user = ref.read(currentUserProvider);
-      final isMyTurn = game.currentPlayerId == user?.uid;
 
       if (prevTaskId != nextTaskId) {
         _resetStopwatch();
@@ -201,8 +199,7 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
         });
         return;
       }
-      if (!isMyTurn &&
-          game.status == GameStatus.voting &&
+      if (game.status == GameStatus.voting &&
           previous?.value?.status != GameStatus.voting) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
@@ -255,6 +252,17 @@ class _PerformingScreenState extends ConsumerState<PerformingScreen> {
               }
             });
             return TheaterLoadingScreen(message: l.calculatingScore);
+          }
+          if (game.status == GameStatus.voting) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                context.go(
+                  '/voting',
+                  extra: {'gameId': widget.gameId, 'roomCode': widget.roomCode},
+                );
+              }
+            });
+            return TheaterLoadingScreen(message: l.partyStarting);
           }
           if (game.status == GameStatus.finished) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
