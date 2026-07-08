@@ -1,11 +1,10 @@
 /// Ahlaki (Etik İkilemler ve Şeytanın Avukatlığı) — Tam 120 görev.
 /// 4 Alt Kategori:
-/// 1. Tanrı Kompleksi (Genel Vahşet & Makro Etik)
-/// 2. Satış Noktası (Bireysel İhanet & Mikro Etik)
-/// 3. Kutsal Yalanlar (Paradoksal Savunma)
-/// 4. Kirli Ayna (Karanlık İtiraf & Analiz)
-/// Format: Oyuncu ahlaken savunulması zor olanı savunur veya masadakilerle acımasızca yüzleşir.
-/// Masa, oyuncunun performansını ve ikna ediciliğini oylar.
+/// 1. Şeytanın Avukatı (Genel Vahşet & Makro Etik)
+/// 2. Sırt Bıçağı (Bireysel İhanet & Mikro Etik)
+/// 3. Kırmızı Çizgi (Ahlaki Sınır) + Pişman Olmam (Gururlu Savunma)
+/// 4. Hangisi Daha Az Kötü? (Zorunlu İkilem & Gerekçelendirme)
+/// Format: Oyuncu rol canlandırır, ikilemde karar verir veya masayı ikna eder; masa performansı oylar.
 
 
 part 'tasks_ahlaki.dart.tanri.part.dart';

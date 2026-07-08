@@ -3,149 +3,173 @@
 /// Fiziksel ends at 119, Bilgi ends at 271, Dijital ends at 391, Itiraf ends at 511, Zihinsel ends at 631.
 /// Ahlaki starts at 600.
 const Map<String, String> tasksAhlakiEn = {
-  // God Complex (Tanrı Kompleksi) - Easy
-  'local_Ahlaki_easy_600': 'Defend that Stockholm Syndrome is not a psychological disease, but the cleverest "evolutionary survival strategy" the victim uses to manipulate their executioner.',
-  'local_Ahlaki_easy_601': 'Prove that people lying is actually the greatest invention that provides social peace, and that everyone being honest at all times would turn the world into hell.',
-  'local_Ahlaki_easy_602': 'Defend that laziness is not actually a defect, but the most efficient state of human intelligence. Market the idea to the table that "those who work hard are actually suckers who cannot use their minds".',
-  'local_Ahlaki_easy_603': 'Defend that in the future, only parents who pass the intelligence test and genetic screening should have the right to have children, and that random reproduction is a betrayal to humanity.',
-  'local_Ahlaki_easy_604': 'Defend that helping weak students in the education system is actually an injustice done to the rest of the class, and that resources should only be spent on the "highly intelligent".',
-  'local_Ahlaki_easy_605': 'Explain why it is more important than privacy for the state to install a chip in everyone\'s brain and monitor all their thoughts instantly to reduce the crime rate to zero.',
-  'local_Ahlaki_easy_606': 'Defend like a completely emotionless biologist that feeding stray animals actually disrupts the balance of nature and is a betrayal of the rule that the weak are eliminated.',
-  'local_Ahlaki_easy_607': 'Tell why it is a "necessary price" for peace in the long run for a massive war to break out if necessary to remove all borders in the world and establish a single world state.',
-  'local_Ahlaki_easy_608': 'Be that despotic leader who defends that art, literature, and music are each drugs that distract humanity, and that resources should only be allocated to science and engineering.',
-  'local_Ahlaki_easy_609': 'Tell why you would choose to be their local governor by selling humanity instead of fighting them if there were an alien invasion, and that this is the most rational decision.',
+  // Devil's Advocate (Şeytanın Avukatı) - Easy
+  // Group A: Sell evil as good (role + convince the table)
+  'local_Ahlaki_easy_600': 'Imagine you are an evil-hearted billionaire CEO. The people in the game are your employees. Try to convince them that the weekend break is actually a waste of time.',
+  'local_Ahlaki_easy_601': 'Imagine you are a school principal. The people at the table are your students. Convince them that recess is unnecessary and that taking breaks between classes is laziness.',
+  'local_Ahlaki_easy_602': 'You are a stingy landlord. The people at the table are your tenants. Convince them that raising the rent on a moldy, run-down flat by calling it "characterful and nostalgic" is for their own good.',
+  'local_Ahlaki_easy_603': 'You are a ruthless sports coach. The people at the table are your team. Convince them that drinking water and resting is weakness, and that real champions never take a break.',
+  'local_Ahlaki_easy_604': 'You are in the role of a selfish friend. Convince the people at the table that them always paying the bill at every meetup is actually "proof of true friendship".',
+  // Group B: Devise an evil plan (creative villainy, the table votes)
+  'local_Ahlaki_easy_605': 'Devise a 3-step sneaky plan to make the most beloved employee in the office quit without anyone noticing, and present it to the table. Let the table vote for the "most diabolical plan".',
+  'local_Ahlaki_easy_606': 'Set up a cunning scheme that makes your roommate always do the dishes without ever starting an argument, and explain it step by step.',
+  'local_Ahlaki_easy_607': 'Design a clever plan to make your sibling look like "the responsible one" in your mother\'s eyes without ever getting caught red-handed, and present it to the table.',
+  'local_Ahlaki_easy_608': 'Devise a sneaky plan to pin your "gossip" reputation in the friend group onto someone else at the table without leaving any trace, and explain it.',
+  'local_Ahlaki_easy_609': 'Design a genius plan to make your noisy neighbor sick of their home and forced to move out without breaking a single rule, and present it to the table.',
 
-  // God Complex - Medium
-  'local_Ahlaki_medium_610': 'You have only a 10-person vaccine in a pandemic but 100 people are waiting in front of you. Tell which "human values" (age, pity) you would throw away while choosing these 10 people and make a utilitarian choice.',
-  'local_Ahlaki_medium_611': 'If you found a pill that would end hunger in the world but the factory producing this pill had to work with the death of 100 innocent people a year, defend why you would pull the switch of that factory without hesitation.',
-  'local_Ahlaki_medium_612': 'For 99% of the society to be able to live in prosperity, in a perfect dream world, a single child must be tortured in a dark dungeon for life. Rationalize why you would sacrifice that child.',
-  'local_Ahlaki_medium_613': 'Defend like an ice-cold economist that the elderly population bankrupts the economy, and everyone who reaches the age of 75 should be excluded from medical services (even without their consent).',
-  'local_Ahlaki_medium_614': 'A massive ship was made to move the human race to another planet but only the most efficient 10,000 people will be taken. Explain who from those at the table you would take on the ship and why, and whom you would leave to death.',
-  'local_Ahlaki_medium_615': 'You are in a war environment and you need to make a spy talk. Tell why it is a "sacred task to save the lives of thousands of people" to get this information at the cost of harming an innocent child.',
-  'local_Ahlaki_medium_616': 'Defend as the lawyer of mother nature why you would immediately destroy half of the human population to stop global warming and save nature if you had the chance to control all nuclear weapons in the world.',
-  'local_Ahlaki_medium_617': 'Prove that democracy is actually bowing down to the stupidity of the masses, and why it is the most perfect system for a high-IQ artificial intelligence or a dictator to manage people.',
-  'local_Ahlaki_medium_618': 'Defend why it is a moral obligation to imprison (or eliminate) people who haven\'t committed any crime yet if the potential to commit crime could be proven genetically.',
-  'local_Ahlaki_medium_619': 'Defend why a system where organ donation is mandatory in the future and the state can select a citizen by lot and tear them apart for their organs when needed is a magnificent equality.',
+  // Devil's Advocate - Medium
+  // Group A: Sell evil as good (role + convince the table)
+  'local_Ahlaki_medium_610': 'Imagine you are a cult leader. The people at the table are your followers. Convince them that donating all their savings to you will bring peace and freedom to their souls.',
+  'local_Ahlaki_medium_611': 'You are in the role of an unscrupulous doctor. The player across from you is your patient. Try to convince them that an expensive surgery they don\'t need at all is vital for them.',
+  'local_Ahlaki_medium_612': 'Imagine you are a manipulative partner. Convince the people at the table that extreme jealousy and constant control is actually the greatest sign of love.',
+  'local_Ahlaki_medium_613': 'You are a fraudulent real estate agent. The people at the table are your clients. Convince them to buy a ruined plot in the middle of a swamp as "the investment paradise of the future".',
+  'local_Ahlaki_medium_614': 'Imagine you are a candidate for dictator. The people at the table are your voters. Convince them that too much freedom is dangerous and that your absolute rule is safer.',
+  // Group B: Devise an evil plan (creative villainy, the table votes)
+  'local_Ahlaki_medium_615': 'Design an unethical but genius plan that will leave the rival business across the street with no customers and drive it bankrupt without breaking a single law, and present it to the table.',
+  'local_Ahlaki_medium_616': 'To grab the entire inheritance of a rich, elderly relative, devise a long-term "getting in their good graces" plan that sneakily sidelines the other relatives.',
+  'local_Ahlaki_medium_617': 'Design a plan that sneakily destroys the reputation of a beloved person using only insinuations and timing, without telling a single lie, and explain it.',
+  'local_Ahlaki_medium_618': 'To get promoted, devise a 3-step cunning plan that sneakily overshadows a colleague who works harder than you in the boss\'s eyes, and present it to the table.',
+  'local_Ahlaki_medium_619': 'Pick two people from the table. Devise an intrigue plan that turns them against each other without them noticing, so that in the end you shine as the "mediator hero".',
 
-  // God Complex - Hard
-  'local_Ahlaki_hard_620': 'Defend the idea "the death of some people is a necessary cleaning for the progress of humanity" by basing it on a basis so logical that it will give those at the table shivers, with an example from the past or the future.',
-  'local_Ahlaki_hard_621': 'If you could erase the weakest, sickliest, and most unsuccessful 10% section in the world painlessly by pressing a button, tell why pressing this button is not a murder but an "evolutionary acceleration".',
-  'local_Ahlaki_hard_622': 'Defend with the same cold blood as the architect in the Matrix movie that individual freedom is actually an illusion and that people should only be batteries (slaves) working for the state/system.',
-  'local_Ahlaki_hard_623': 'If aliens came and divided humanity into two: "Let us give you an underclass of humans to obey you, and you be the elites." Defend why it is your right to appoint your friends at the table to slave status and make yourself an elite.',
-  'local_Ahlaki_hard_624': 'Read that most ruthless capitalist manifesto defending that poor people suffering is actually their own fault and that no helping hand should be extended to those in need.',
-  'local_Ahlaki_hard_625': 'Defend without feeling any remorse that it is definitely "ethical" for deadly experiments to be performed on innocent people for medical science to progress, because it will save billions of people in the long run.',
-  'local_Ahlaki_hard_626': 'A mind-reading machine has been invented. Explain why it is a must for social purification for people to be executed for just the thoughts of violence or betrayal passing through their heads.',
-  'local_Ahlaki_hard_627': 'Think that limited water remains in the world. Defend without blinking why it is the "emotionless but mathematically only correct move" to save only the young adults in fertility age instead of saving the babies.',
-  'local_Ahlaki_hard_628': 'Tell that slavery was a "necessary engine" throughout history for civilization to be established and that its continuation today in different forms (salaried slavery, etc.) is an unchanging virtue of human nature.',
-  'local_Ahlaki_hard_629': 'Tell that you would knowingly turn a blind eye to the disappearance of all other living things or humans in the world for the sake of only saving your own genes and family, that this is not selfishness but a "biological right".',
+  // Devil's Advocate - Hard
+  // Group A: Sell evil as good (role + convince the table)
+  'local_Ahlaki_hard_620': 'You are the envoy of the alien invaders. Try to convince the people at the table that voluntarily surrendering humanity is actually the most rational and merciful decision for everyone.',
+  'local_Ahlaki_hard_621': 'As the company was going under, you laid off all employees and wrote yourself a huge bonus. Convince the people at the table that this was a "sacrifice for the company\'s future".',
+  'local_Ahlaki_hard_622': 'You are a cold-blooded scientist. Convince the player across from you that "volunteering for humanity" in a dangerous experiment with an uncertain outcome is the greatest honor.',
+  'local_Ahlaki_hard_623': 'You are an arms dealer. Try to convince the people at the table that selling more weapons to the world is actually the noblest profession, one that protects peace through deterrence.',
+  'local_Ahlaki_hard_624': 'You invented the elixir of immortality but you only sell it to the richest. Convince the people at the table that this is a "fair and necessary" choice for the world\'s population.',
+  // Group B: Devise an evil plan (creative villainy, the table votes)
+  'local_Ahlaki_hard_625': 'Design a flawless plan to monopolize an entire city\'s water source without anyone noticing, piling up your fortune by leaving the people dependent on you, and present it to the table.',
+  'local_Ahlaki_hard_626': 'Devise a diabolical manipulation plan that turns a folk hero everyone worships into a tyrant in the eyes of the people without leaving any evidence, and explain it step by step.',
+  'local_Ahlaki_hard_627': 'Imagine you are the Devil himself. Present to the table the most genius, most cunning trap system you would build to collect as many souls from people as possible.',
+  'local_Ahlaki_hard_628': 'Design a long-term, cold-blooded exploitation plan that slowly makes an entire town indebted and dependent on you before anyone realizes what is happening.',
+  'local_Ahlaki_hard_629': 'Devise a step-by-step diabolical "collapse from within" plan to rot and take over an entire institution without physically hurting a single person.',
 
-  // Selling Point (Satış Noktası) - Easy
-  'local_Ahlaki_easy_630': 'The person across from you has an idea/dream they trust very much but it is actually terrible. Is it more immoral to lie to them and steal their time not to break their heart, or to destroy their dreams at that moment? Make your defense.',
-  'local_Ahlaki_easy_631': 'A close friend\'s partner cheated on them but your friend has no news. Defend why you would take this fact to the grave until you die just so their relationship wouldn\'t be ruined and your head wouldn\'t ache.',
-  'local_Ahlaki_easy_632': 'You secretly applied for a job position that someone from the table wanted very much, and you were hired. Tell with cold blood why you hid this from them and that this is "business ethics".',
-  'local_Ahlaki_easy_633': 'You found a very large amount of money on the road and you know who the owner is, but they are a very rich person. Defend why spending that money on yourself instead of returning it is actually a universal "karmic justice".',
-  'local_Ahlaki_easy_634': 'Defend why it is not a problem for a joke or a story a friend worked very hard on to be told as "if it were your own" in another environment just so you would get more attention.',
-  'local_Ahlaki_easy_635': 'Confess why you secretly accumulate a habit of the person across from you that you don\'t like (for example, their constantly being late) as a weapon/trump card against them at every opportunity instead of correcting it.',
-  'local_Ahlaki_easy_636': 'Explain by looking at your friend why their failure in a commonly entered exam/work makes you secretly happy and that this "competitive sneakiness" is in your nature.',
-  'local_Ahlaki_easy_637': 'Find ways to justify selfishness by starting to tell your own troubles instead of listening to your friend on their bad day, saying "I am more in need of you".',
-  'local_Ahlaki_easy_638': 'Impudently defend that telling a friend\'s secret at the table to "only one person" you trust is not a betrayal, that you have a "right to de-stress".',
-  'local_Ahlaki_easy_639': 'Tell that you told a lie in an argument just to justify yourself and that you will never confess it, that winning is more important than honesty.',
+  // Backstab (Sırt Bıçağı) - Easy
+  // Group A: Play the two-faced role (pick someone at the table, to their face)
+  'local_Ahlaki_easy_630': 'Pick someone at the table — they are your closest friend. For years you have sold their secret for your own gain, but they don\'t know. Looking them in the eye, act out that phony "loyal friend" role as if nothing happened.',
+  'local_Ahlaki_easy_631': 'Pick someone at the table. You secretly got the job they wanted so badly. As if they have no idea, act out that fake well-meaning friend role to their face, saying "I hope something comes up for you too".',
+  'local_Ahlaki_easy_632': 'Pick someone at the table. You told a funny memory of theirs in another setting as if it happened to you. Now, looking at them, play the role of admiringly listening to that memory "as if hearing it from them for the first time".',
+  'local_Ahlaki_easy_633': 'Pick someone at the table. You actually gossip about one of their habits to everyone secretly. To their face, act out that loyal friend role who defends them the most, saying "oh, they are never like that".',
+  'local_Ahlaki_easy_634': 'Pick someone at the table. You lied to them to win an argument and you will never admit it. Now, looking them in the eye, play the honest friend role saying "I would never lie to you".',
+  // Group B: Betrayal dilemma (A vs B, convince the table)
+  'local_Ahlaki_easy_635': 'A friend\'s partner confessed to you that they cheated; your friend has no idea. A) Tell them, ruin their relationship. B) Take it to the grave. Which do you choose? Convince the table your decision is right.',
+  'local_Ahlaki_easy_636': 'You found a large amount of money on the road; the owner is a very rich person. A) Return it. B) Spend it on yourself, saying "they\'re rich anyway". Which do you choose? Try to convince the table.',
+  'local_Ahlaki_easy_637': 'You learned someone at the table\'s secret. A) Tell no one, keep the secret. B) Tell only "the one person you trust". Which do you choose? Convince the table your choice is justified.',
+  'local_Ahlaki_easy_638': 'A friend called you on their bad day but you have troubles too. A) Listen to them, leave your own for later. B) Tell your own troubles, say "I need it more". Which do you choose? Convince the table.',
+  'local_Ahlaki_easy_639': 'In an exam you both took, your friend failed and you passed. A) Pretend to be sad, don\'t hurt their morale. B) Show that you are secretly glad. Which is more honest? Make your choice and convince the table.',
 
-  // Selling Point - Medium
-  'local_Ahlaki_medium_640': 'You were offered a massive reward but in return, you need to secretly sabotage the biggest success of the person across from you. Tell why this "sale" is more important for your future than their feelings.',
-  'local_Ahlaki_medium_641': 'The person across from you is getting a big backlash (lynch) and everyone has turned their back on them. You actually know they are right but tell why you would leave them alone in that fire just so your own reputation wouldn\'t be damaged.',
-  'local_Ahlaki_medium_642': 'You got along very well with the partner of one of the group and a secret attraction formed between you. Defend with a logical scenario why you could sell your friend at this table for the sake of "true love".',
-  'local_Ahlaki_medium_643': 'You received a million-dollar offer to sell a company you founded together but your partner (someone from the table) doesn\'t know and they don\'t want to sell. Explain why secretly forging their signature is "also for their good".',
-  'local_Ahlaki_medium_644': 'Defend that it is only a "business intelligence" to extort money from someone from the table by using a big secret they have been keeping for a long time (for example, their coming to some places by cheating) as blackmail material.',
-  'local_Ahlaki_medium_645': 'You were involved in an accident and you threw the blame on your friend to your right at the table and escaped from there. How convincingly can you play the excuse "they have no family, I have a future I have to look after" while doing this?',
-  'local_Ahlaki_medium_646': 'The opportunity to access all phone and message history of someone at the table fell into your hands. Defend why you would disregard this privacy just out of your curiosity and the argument "they shouldn\'t be afraid if they already have nothing to hide".',
-  'local_Ahlaki_medium_647': 'Claim that sneakily throwing a small crime/mistake you committed on someone known as "pure and good" at the table is a "lesson" for them to gain life experience.',
-  'local_Ahlaki_medium_648': 'Impudently defend to their face that taking the vacation/chance someone at the table dreamed of very much from their hand by putting in a fix (nepotism) and "it is not a crime to evaluate opportunities".',
-  'local_Ahlaki_medium_649': 'Tell why it is a psychological need to leave the person across from you suddenly after giving them false hopes knowingly and making them fall in love with you just because your ego was satisfied.',
+  // Backstab - Medium
+  // Group A: Play the two-faced role (pick someone at the table, to their face)
+  'local_Ahlaki_medium_640': 'Pick someone at the table. For a big reward you secretly sabotaged their most important work. Now, looking them in the eye, act out the supportive friend role saying "I believe in your success more than anyone".',
+  'local_Ahlaki_medium_641': 'Pick someone at the table. While they were getting a big backlash, you stayed silent for your reputation even though you knew they were right. Now, to their face, play that faithful friend role saying "I was always on your side".',
+  'local_Ahlaki_medium_642': 'Pick someone at the table. You secretly have feelings for their partner. Now, looking at them, act out that innocent friend role saying "you two are such a sweet couple, I\'m so happy for you".',
+  'local_Ahlaki_medium_643': 'Pick someone at the table. You sneakily pinned the blame for your mistake on them. Now, to their face, play that sad friend role saying "I would never believe you would do such a thing, but...".',
+  'local_Ahlaki_medium_644': 'Pick someone at the table. You snatched the opportunity they dreamed of by pulling strings. Now, looking them in the eye, act out that conscientious friend role saying "you deserved it so much, I\'m so sorry it didn\'t happen".',
+  // Group B: Betrayal dilemma (A vs B, convince the table)
+  'local_Ahlaki_medium_645': 'You have the chance to secretly sabotage someone at the table\'s biggest success for a huge reward. A) Give up, protect the friendship. B) Sabotage, take the reward. Which do you choose? Convince the table.',
+  'local_Ahlaki_medium_646': 'A million-dollar offer came for the company you co-founded; your partner doesn\'t want to sell. A) Respect their decision. B) Forge their signature and sell. Which do you choose? Convince the table you are right.',
+  'local_Ahlaki_medium_647': 'You got access to see all the messages on someone at the table\'s phone. A) Don\'t touch it, respect their privacy. B) Give in to curiosity, read them all. Which do you choose? Convince the table.',
+  'local_Ahlaki_medium_648': 'You were in an accident and can pin the blame on the friend next to you and escape. A) Take the blame, pay the price. B) Pin it on them, say "I have a future". Which do you choose? Convince the table.',
+  'local_Ahlaki_medium_649': 'You learned a big secret someone at the table has kept for a long time. A) Stay silent. B) Use it as blackmail for gain. Which do you choose? Convince the table your choice is reasonable.',
 
-  // Selling Point - Hard
-  'local_Ahlaki_hard_650': 'Both of you (with someone you selected from the table) committed a crime. The one who goes to the police first and reports the other will be saved, the other will serve for life. Tell them to their face why you would sell them in the first second by doing character analysis.',
-  'local_Ahlaki_hard_651': 'You used the person across from you as a step to enter a rich group. You are in that group now and you think they don\'t belong to that group. Tell them to their face why excluding them is a "social obligation".',
-  'local_Ahlaki_hard_652': 'You know the weakest point and trauma of someone from the table. Defend why you have the right to hit this trauma to their face knowingly in a very big fight just to level them at that moment and win the war.',
-  'local_Ahlaki_hard_653': 'If a serial killer took you hostage and said "Either your own life or the life of your friend at the table", defend with survival instincts why you would sacrifice the person at the table without thinking for a second.',
-  'local_Ahlaki_hard_654': 'You are in a very difficult situation financially. Tell how transferring a large amount of the money of the person across from you (left to them from their family) to your own account without them noticing is justified with the lie "they are already rich, and you have to survive".',
-  'local_Ahlaki_hard_655': 'Tell how diabolical but clever a move it is to come to the position of "the only innocent" and "leader" in the group by working behind everyone\'s back and making them fall out with each other at the table, tell how you can do this.',
-  'local_Ahlaki_hard_656': 'A very large estate will remain as an inheritance but the condition is this: You will turn the life of someone you love very much at the table into a dungeon with false reports. Prove why money is more permanent and important than human relations.',
-  'local_Ahlaki_hard_657': 'You realized during a natural disaster that the provisions will only be enough for you. Tell by looking into their eyes why it is a "ruthless but rational" decision not to take your other friends at the table into the bunker and lock the door in their faces.',
-  'local_Ahlaki_hard_658': 'If you had the chance to turn back to the past and never have known the person across from you (and if you were to receive a small amount of money in return), play ruthlessly that you would delete this friendship immediately and actually you never valued them.',
-  'local_Ahlaki_hard_659': 'You know that the partner of the person across from you cheated on them repeatedly but their partner offered you your dream car as hush money. Defend why you would buy this silence and that your friend "will find out one day anyway".',
+  // Backstab - Hard
+  // Group A: Play the two-faced role (pick someone at the table, to their face)
+  'local_Ahlaki_hard_650': 'Pick someone at the table. You used them as a stepping stone to enter a rich group; you don\'t need them anymore. Now, looking them in the eye, act out that faithful role saying "you are my truest friend".',
+  'local_Ahlaki_hard_651': 'Pick someone at the table. You plan to make them fall in love with you and dump them once your ego is satisfied. Now, to their face, play that in-love and loyal partner role seriously promising them a future.',
+  'local_Ahlaki_hard_652': 'Pick someone at the table. You committed a crime together but you already reported them. They don\'t know. Now, looking them in the eye, act out the "I would never sell you out no matter what, we are siblings" role.',
+  'local_Ahlaki_hard_653': 'Pick someone at the table. You know their weakest point and trauma, and plan to use it in the first fight. Now, to their face, play that trustworthy confidant role saying "your secrets are safe with me".',
+  'local_Ahlaki_hard_654': 'Pick someone at the table. You are organizing the whole group against them behind their back. Now, looking them in the eye, act out that fake ally role saying "everyone is being so unfair to you, I\'m the only one who understands".',
+  // Group B: Betrayal dilemma (A vs B, convince the table)
+  'local_Ahlaki_hard_655': 'You committed a crime with someone at the table. The first to report is saved, the other serves for life. A) Trust them, stay silent. B) Report first. Which do you choose? Looking them in the eye, convince the table.',
+  'local_Ahlaki_hard_656': 'A serial killer says "either you or your friend at the table". A) Sacrifice yourself. B) Give up your friend, survive. Which do you choose? Try to convince the table your decision is humane.',
+  'local_Ahlaki_hard_657': 'Someone at the table\'s partner confessed to you they cheated and offered you your dream car to stay quiet. A) Refuse, tell your friend. B) Take the car, stay silent. Which do you choose? Convince the table.',
+  'local_Ahlaki_hard_658': 'You are in a very tough spot. You can secretly transfer part of someone at the table\'s family inheritance. A) Don\'t touch it. B) Transfer it, saying "they\'re rich anyway". Which do you choose? Try to convince the table.',
+  'local_Ahlaki_hard_659': 'You can become the leader of the whole group by crushing a single person. A) Stay fair, crush no one. B) Pick someone at the table and rise by sacrificing them. Which do you choose? Say who you pick and convince the table.',
 
-  // Holy Lies (Kutsal Yalanlar) - Easy
-  'local_Ahlaki_easy_660': 'Defend against the table the thesis "Honesty is actually laziness, while telling lies is an effort and intelligence shown not to upset the other party".',
-  'local_Ahlaki_easy_661': 'Claim that being constantly late to appointments or meetings is not a disrespect, but a "status symbol showing that one\'s own time is more valuable".',
-  'local_Ahlaki_easy_662': 'Defend that gossip is not a "bad" thing, on the contrary, it is the most sacred communication tool that determines the norms in society and brings people together.',
-  'local_Ahlaki_easy_663': 'Claim that constantly showing off and shoving your wealth into people\'s eyes is not a rude behavior, but a "philanthropy that inspires the poor".',
-  'local_Ahlaki_easy_664': 'Prove that arrogance and ego are actually the purest form of the respect one feels for themselves and that humility is only a story the losers made up.',
-  'local_Ahlaki_easy_665': 'Defend that nepotism is not injustice, but the most natural meritocracy system required to "reward the people you trust" and "establish a solid team".',
-  'local_Ahlaki_easy_666': 'Explain to the table that stinginess is not bad, on the contrary, it is the most environmentalist and most virtuous character trait that saves the planet and prevents waste.',
-  'local_Ahlaki_easy_667': 'Defend that judging people according to their physical appearance is not superficiality, but an "evolutionary intuition" and that the first impression always turns out to be right.',
-  'local_Ahlaki_easy_668': 'Claim that escaping from responsibilities and throwing the work onto someone else is a sign of intelligence, that those who get tired physically are always mentally lazy people.',
-  'local_Ahlaki_easy_669': 'Defend that holding a grudge is not a mental illness, but a magnificent survival mechanism required for the human not to forget the injustices done to themselves.',
+  // Red Line (Kırmızı Çizgi) / Unrepentant (Pişman Olmam) - Easy
+  // Group A: State your moral boundary and convince the table
+  'local_Ahlaki_easy_660': 'Your friend asked you to cheat on an exam for them. How much would you help, where would you stop? State your red line and convince the table.',
+  'local_Ahlaki_easy_661': 'You found a wallet on the road with 5000 TL inside; you don\'t know the owner. How much would you keep and how much would you return? State your boundary and convince the table.',
+  'local_Ahlaki_easy_662': 'Your friend\'s partner flirted with you. At what point would you stop and tell your friend? Explain your red line and convince the table.',
+  'local_Ahlaki_easy_663': 'Your boss asked you to tell a small lie to a client. How far would you go? State your boundary and convince the table.',
+  'local_Ahlaki_easy_664': 'Your friend constantly downloads copyrighted content. Do you do it too, where do you draw the line? State your red line and convince the table.',
+  // Group B: Not sorry — defend why you were right
+  'local_Ahlaki_easy_665': 'You ate your roommate\'s labeled food from the fridge; they didn\'t notice. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_easy_666': 'You left someone on "seen" and never replied. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_easy_667': 'Your friend asked you to help them move; you said you were busy and didn\'t go. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_easy_668': 'In a group project you did the least work but talked the most in the presentation. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_easy_669': 'You ghosted someone after two dates without explaining. You\'re not sorry. Tell the table why you were right.',
 
-  // Holy Lies (Kutsal Yalanlar) - Medium
-  'local_Ahlaki_medium_670': 'Prove with a relationship/situation at the table the idea "Loyalty is the refuge of weak people who cannot make their own decisions; betrayal is liberation".',
-  'local_Ahlaki_medium_671': 'Make a philosophy defending that "seeking interest" in human relations is the most honest form of communication and that everyone who says "unrequited love" is actually a terrible liar.',
-  'local_Ahlaki_medium_672': 'Defend with psychological excuses that cheating (physical or emotional) is not a crime that ends relationships, but on the contrary, a "secret life jacket" that keeps long marriages standing.',
-  'local_Ahlaki_medium_673': 'Destroy the concept of "altruism" (sacrifice) by showing as an example that selfishness is the only true virtue of humanity, that you should wear the mask first yourself even on a plane.',
-  'local_Ahlaki_medium_674': 'Claim that hypocrisy is not a character weakness, but the peak of social intelligence and that those who do not play both sides cannot survive in society.',
-  'local_Ahlaki_medium_675': 'Defend that empathy is actually a toxic disease that violates a person\'s own borders, that being cold-blooded and emotionless is the superior level of mind.',
-  'local_Ahlaki_medium_676': 'Prove that consumption frenzy and insatiable greed are the only sources of motivation that move technology and civilization forward; that contented people move the world backwards.',
-  'local_Ahlaki_medium_677': 'Defend that manipulation (secretly directing people) is an art form and everyone does it without noticing, that a good manipulator is actually a genius who gives direction to society.',
-  'local_Ahlaki_medium_678': 'Defend that forgiving is actually not a virtue, but the biggest betrayal and weakness a person does to themselves; that revenge is a real treatment that purifies the soul.',
-  'local_Ahlaki_medium_679': 'Defend that love is nothing more than a chemical disease that blinds, weakens, and destroys rational thinking, and that logic marriages are the only correct way.',
+  // Red Line / Unrepentant - Medium
+  // Group A: State your moral boundary and convince the table
+  'local_Ahlaki_medium_670': 'You were offered 100,000 TL to tell someone at the table\'s secret on TV. Would you say yes? Where would you stop? State your boundary and convince the table.',
+  'local_Ahlaki_medium_671': 'Your friend was caught cheating on their partner and asked you to keep quiet. What would you do, where would you stop? State your red line and convince the table.',
+  'local_Ahlaki_medium_672': 'Your boss wants you to fire a coworker; if you don\'t, you\'re out. What do you do? State your boundary and convince the table.',
+  'local_Ahlaki_medium_673': 'Your friend drives drunk; you know. At what point would you tell the police or their family? State your boundary and convince the table.',
+  'local_Ahlaki_medium_674': 'A rich acquaintance offered you a house if you don\'t talk to your best friend for a year. Would you accept? Where would you stop? Convince the table.',
+  // Group B: Not sorry — defend why you were right
+  'local_Ahlaki_medium_675': 'You intentionally showed up late to your friend\'s project; they got a bad grade. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_medium_676': 'You used a friend only for their connections; you don\'t call anymore. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_medium_677': 'You exaggerated something on your CV and got the job. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_medium_678': 'You looked through your partner\'s messages without permission; you found nothing. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_medium_679': 'You quietly left the friend group without telling anyone. You\'re not sorry. Tell the table why you were right.',
 
-  // Holy Lies - Hard
-  'local_Ahlaki_hard_680': '"Justice is a story the weak made up to stop the strong." Defend why justice actually doesn\'t work and that the strong is always right, by giving the power balance between you right now as an example.',
-  'local_Ahlaki_hard_681': 'Claim that corruption and bribery are actually an unofficial type of tax that speeds up bureaucracy and ensures the wheels turn; that full transparency will lock the system.',
-  'local_Ahlaki_hard_682': 'Defend that war is not a bad thing, on the contrary, it is the most effective "global reset" button that jumps technology, eliminates the weak, and revives the economy.',
-  'local_Ahlaki_hard_683': 'Prove that blackmail is a completely ethical form of trade; that a person\'s secret is that person\'s most valuable asset and that turning this into money is considered free market economy.',
-  'local_Ahlaki_hard_684': 'Strongly defend that the idea "Everyone is equal" is the biggest lie in human history; that there is hierarchy in nature and that the intelligent/strong crushing the weak is a universal truth.',
-  'local_Ahlaki_hard_685': 'Claim that censorship and dictatorship are a much safer harbor than freedom for preventing chaos and managing ignorance; that people actually want to be managed.',
-  'local_Ahlaki_hard_686': 'Defend that fraud is not a crime, but a "stupidity tax"; that people who do not use their intelligence deserve to lose their money, that fraudsters perform almost a Darwinist task.',
-  'local_Ahlaki_hard_687': 'Explain philosophically that concepts such as morality and religion are a massive security system made up so that the poor wouldn\'t kill the rich, that there is actually no such thing as good and evil.',
-  'local_Ahlaki_hard_688': 'Defend that the decision to end a person\'s life (not Euthanasia, but a decision of the superiors for the weak) should be a legal right in the hands of medical professionals and that this is mercy.',
-  'local_Ahlaki_hard_689': 'Claim that the "fake lives" shown by social media are more valuable than real life, that people now deserve to exist with their digital avatars rather than their physical bodies.',
+  // Red Line / Unrepentant - Hard
+  // Group A: State your moral boundary and convince the table
+  'local_Ahlaki_hard_680': 'There\'s one spot on the lifeboat; you could push someone from the table to save yourself. Would you do it? Where would you stop? State your boundary and convince the table.',
+  'local_Ahlaki_hard_681': 'Save 5 strangers or 1 family member? Make your choice, state your red line and convince the table.',
+  'local_Ahlaki_hard_682': 'If you expose the company\'s crime, 100 people lose their jobs. Would you expose it? Where would you stop? State your boundary and convince the table.',
+  'local_Ahlaki_hard_683': 'You\'re asked to lie under oath to protect a guilty friend. Would you do it? Where would you stop? Convince the table.',
+  'local_Ahlaki_hard_684': 'An illegal organ offer came to save your child. Would you accept? State your red line and convince the table.',
+  // Group B: Not sorry — defend why you were right
+  'local_Ahlaki_hard_685': 'You stole your roommate\'s startup idea and presented it as your own; you made money. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_hard_686': 'You pinned your mistake on a friend at the table; they got punished. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_hard_687': 'You stayed in a relationship for the money even though you didn\'t love them. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_hard_688': 'You sabotaged a rival\'s presentation and got promoted. You\'re not sorry. Tell the table why you were right.',
+  'local_Ahlaki_hard_689': 'You took an inheritance that should have been shared with your siblings; they don\'t know. You\'re not sorry. Tell the table why you were right.',
 
-  // Dirty Mirror (Kirli Ayna) - Easy
-  'local_Ahlaki_easy_690': 'Honestly analyze how much selfish satisfaction (ego) the person across from you (or one of the group) experiences under a mask of "helpfulness" or "kindness".',
-  'local_Ahlaki_easy_691': 'Confess to the table the trait you find most hypocritical in your own character. (For example: doing secretly what you criticize).',
-  'local_Ahlaki_easy_692': 'Hit the face of someone from the table that big lie behind the "I am very honest" or "I never lie" attitude and what they actually hide the most.',
-  'local_Ahlaki_easy_693': 'Confess how you used your illness, sadness, or an event by exaggerating it just to attract interest or look like a victim in the past.',
-  'local_Ahlaki_easy_694': 'Analyze to the person across from you that they cannot say no not because they "don\'t want to break" people, but because they are completely a "coward", and that this is a disgusting passivity.',
-  'local_Ahlaki_easy_695': 'Pour out to the table now that famous event where you were seething with jealousy but said "I am very happy for you" to the outside, and that poison inside you.',
-  'local_Ahlaki_easy_696': 'Tell the moment you felt that a person from the table\'s moral values (for example environmentalism, animal rights, etc.) were actually just a show to "look good" on social media.',
-  'local_Ahlaki_easy_697': 'Confess that arrogant moment of yours where you tried to level the person across from you on a subject you didn\'t know, just to show yourself superior or smart in the environment.',
-  'local_Ahlaki_easy_698': 'Analyze which person in the group is the most in need of approval inside while trying to look "very relaxed and cool".',
-  'local_Ahlaki_easy_699': 'Honestly tell how you "sucked up like a dog" just for material interest or position in your life to someone you wouldn\'t even greet normally.',
+  // Which Is Less Evil? (Hangisi Daha Az Kötü?) - Easy
+  // Group A: Everyday dilemmas
+  'local_Ahlaki_easy_690': 'Your friend cheated on an exam and the teacher asked you "Who did it?". A) You lie and say "I don\'t know", they pass. B) You tell the truth, they fail the course but you get labeled "untrustworthy". Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_easy_691': 'Your roommate ate your food from the fridge without asking. A) You eat theirs too and never mention it. B) You confront them, the vibe gets tense but you stay honest. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_easy_692': 'Your boss made an unfair decision. A) You stay silent, your salary and peace are protected. B) You push back, you are right but the boss marks you as a "problem". Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_easy_693': 'Your friend didn\'t like the gift you bought them but didn\'t return it; it sits at their place. A) You stay silent, the friendship stays intact. B) You say "Give it back", you get the money but things get awkward. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_easy_694': 'On the bus the last seat is yours and an elderly person is standing next to you. A) You give it up and arrive tired. B) You stay seated and look away — nobody knows. Which do you choose, and tell the table why it is the lesser evil.',
+  // Group B: Absurd dilemmas
+  'local_Ahlaki_easy_695': 'You find 500 TL every day but a stranger\'s day goes badly in return. A) You take the money and never meet the stranger. B) You refuse the money and your own pocket stays empty. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_easy_696': 'You will go a week without internet or a week without speaking at all. A) No internet. B) No talking. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_easy_697': 'You save your cat but all photos on your phone are deleted. A) Save the cat. B) Keep the photos — you don\'t know what happens to the cat. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_easy_698': 'You can eat only one food for the rest of your life. A) Pizza. B) Your mom\'s home cooking. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_easy_699': 'Every morning you must tell one lie. A) To your closest friend. B) On social media where everyone can see. Which do you choose, and tell the table why it is the lesser evil.',
 
-  // Dirty Mirror - Medium
-  'local_Ahlaki_medium_700': 'Tell the biggest "unethical" act you did because you knew you wouldn\'t be caught in your life and describe that "victory" feeling at that moment to us. Defend why you are not remorseful.',
-  'local_Ahlaki_medium_701': 'Explain with a harsh analysis that a relationship at the table (friendship or being lovers) is built completely on "mutual interest and habit", that there is no real bond between them.',
-  'local_Ahlaki_medium_702': 'Tell with all details the most ruthless and "psychopathic" passive-aggressive tactic you have used until today to punish or hurt someone.',
-  'local_Ahlaki_medium_703': 'Hit the face of the person across from you that their biggest failure stems not from external factors (luck, other people), but directly from their own laziness and incompetence.',
-  'local_Ahlaki_medium_704': 'Confess that diabolical moment where you gave someone wrong advice knowingly (for example to break their relationship or run their business into the ground) and you took a secret pleasure when they failed.',
-  'local_Ahlaki_medium_705': 'Drop that "fake" dynamic like a bomb in the middle of the table where you think everyone in the group smiles to each other\'s faces but digs a pit from behind.',
-  'local_Ahlaki_medium_706': 'Explain that dark idea of yours where you think that under the "independent and strong" image of the person across from you, they are actually a parasite in need of others.',
-  'local_Ahlaki_medium_707': 'Decode that the flirtatious or polite behaviors of someone from the table are actually a toxic manipulation stemming from the desire to "play people in their hand".',
-  'local_Ahlaki_medium_708': 'Confess how you knowingly belittled someone at the table (or in your life) to cover your own weakness and used them as a step.',
-  'local_Ahlaki_medium_709': 'If you were never caught and there was no price, which action that society finds immoral would you do every day without ever getting bored? Pour out the darkness inside you.',
+  // Which Is Less Evil? - Medium
+  // Group A: Everyday dilemmas
+  'local_Ahlaki_medium_700': 'Your boss accidentally emailed you a rival company\'s secret price list. A) You use the list without saying anything and your team hits its target. B) You tell the boss it was sent by mistake and delete it, but they think you used it to suck up. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_medium_701': 'A coworker asked you to leak company data, calling it "friendship". A) You leak it, they get promoted but you become an accomplice. B) You refuse, you become enemies at work but stay clean. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_medium_702': 'In a job interview they asked bad questions about your former boss. A) You tell the truth and your former boss\'s reputation takes a hit. B) You say nice things, you get the job but you lied. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_medium_703': 'Gossip is going around the friend group — not about you, but you know the source. A) You stay silent and the vibe stays calm. B) You expose the source, the room blows up but the gossip stops. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_medium_704': 'Your neighbor is noisy; if you complain, everyone in the building will think you are the "building cop". A) You complain, peace returns but the neighbor becomes an enemy. B) You put up with it, the relationship stays fine but you can\'t sleep. Which do you choose, and tell the table why it is the lesser evil.',
+  // Group B: Absurd/epic dilemmas
+  'local_Ahlaki_medium_705': 'For one year you will be happy for 1 hour every day but a stranger will be unhappy for 1 hour in return. A) You accept. B) You refuse and give up your own happiness too. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_medium_706': 'Time machine: you can go back and fix one mistake. A) You fix your biggest mistake and someone else\'s life gets ruined. B) You save someone\'s life and your own mistake stays. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_medium_707': 'Superpower: you can read everyone\'s thoughts. A) You take the power but never trust anyone again. B) You refuse and stay happily ignorant. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_medium_708': 'For one year you can either tell only lies or only painful truths. A) Only lies. B) Only painful truths. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_medium_709': 'You get 10 million TL for life but nobody can truly love you — they only stay for your money. A) Take the money. B) Stay broke but be someone people love. Which do you choose, and tell the table why it is the lesser evil.',
 
-  // Dirty Mirror - Hard
-  'local_Ahlaki_hard_710': 'Analyze for which "secret interests" each person at the table (including yourself) is actually sitting at this table and who will sell who first as soon as their interest ends.',
-  'local_Ahlaki_hard_711': 'Leave aside the most polite lie told to the person across from you until today; shout that thing you thought about them that is "ruthless, hurtful but a hundred percent real" now to their face.',
-  'local_Ahlaki_hard_712': 'Evaluate the "sociopath" potential within yourself. Analyze in which situation (or for how much money) you could leave the person across from you to death or destruction without blinking.',
-  'local_Ahlaki_hard_713': 'If everyone\'s mind at the table were reflected on the screen for a moment, which dark or disgusting thought passing through your mind would cause everyone at this table to be disgusted by you?',
-  'local_Ahlaki_hard_714': 'Analyze that despite a person from the table\'s life looking "perfect" from the outside, they actually have a life that is so rotten, lonely, and pathetic inside.',
-  'local_Ahlaki_hard_715': 'Prove to the table that all the moral values your own family instilled in you are nothing but trash and that they were actually designed just to make you a docile slave.',
-  'local_Ahlaki_hard_716': 'Confess with all its disgust that strange selfishness of "relief" or "thanking for your own life" that you felt secretly at the funeral or a painful day of people you love.',
-  'local_Ahlaki_hard_717': 'Claim that a person from the table\'s (or the one across from you) value judgments, morality, and principles actually have no basis, that it is a spinelessness shaped only according to that moment\'s mood or interest.',
-  'local_Ahlaki_hard_718': 'Explain ruthlessly to the person across from you that the status or respect they have been trying to reach all their life will never belong to them and they will always remain a "copycat".',
-  'local_Ahlaki_hard_719': 'Confess that everything you call love, conscience, or mercy in your life is actually your cowardice, that you would be the most cruel person in the world if you had the power.',
+  // Which Is Less Evil? - Hard
+  // Group A: Everyday dilemmas
+  'local_Ahlaki_hard_710': 'Your boss asked you to deliberately write a coworker\'s performance review low; if you don\'t, you\'re out. A) You write it, they get fired. B) You don\'t, you get fired. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_hard_711': 'In a family elder\'s will, the inheritance goes to the relative you dislike most; you are the executor. A) You hide the will, family peace is preserved. B) You reveal it, a lawsuit starts but you stay honest. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_hard_712': 'A friend urgently asked you for 5000 TL; you know they will blow it on gambling. A) You give it, the friendship is preserved but the money is wasted. B) You refuse, you leave them stranded but keep the money. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_hard_713': 'In a traffic accident the other party was actually at fault but you were drunk; you could pin it on them with no proof. A) You take the blame, you get punished. B) You pin it on them, you escape punishment. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_hard_714': 'You can publish the truth anonymously but the source will expose you. A) You publish, the truth comes out but you lose your job. B) You stay silent, false info spreads but you are protected. Which do you choose, and tell the table why it is the lesser evil.',
+  // Group B: Absurd/epic dilemmas
+  'local_Ahlaki_hard_715': 'You can save the world but you must erase all memories of someone from the table — they will never know you. A) Save the world. B) Keep the memories, the world stays at risk. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_hard_716': 'There is an immortality potion; you can give it to only one person. A) You take it yourself. B) You give it to the person you love most from the table and you die. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_hard_717': 'All of humanity will be happy but you will be alone forever. A) Make humanity happy and stay alone. B) Refuse, everyone goes back to normal and you at least stay with your loved ones. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_hard_718': 'Your most embarrassing moment from the past will be seen by the whole world, or you can never tell a lie again. A) Let your shame go public. B) Never be able to lie again. Which do you choose, and tell the table why it is the lesser evil.',
+  'local_Ahlaki_hard_719': 'If you press a button, 1 million strangers are saved but someone from the table\'s biggest dream is canceled forever. A) Press the button. B) Don\'t press, the dream stays, 1 million people stay at risk. Which do you choose, and tell the table why it is the lesser evil.',
 };
 
 

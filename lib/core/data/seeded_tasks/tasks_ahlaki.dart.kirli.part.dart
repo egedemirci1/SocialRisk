@@ -1,249 +1,46 @@
 part of 'tasks_ahlaki.dart';
 
 const _tasksAhlakikirli = <Map<String, dynamic>>[
-  // ── KİRLİ AYNA — EASY ──
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişinin (veya gruptan birinin) "yardımseverlik" veya "iyilik" maskesi altında aslında ne kadar bencilce bir tatmin (ego) yaşadığını dürüstçe analiz et.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Kendi karakterindeki en iki yüzlü bulduğun özelliği masaya itiraf et. (Örneğin: Eleştirdiğin şeyi gizlice yapman).',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadan birinin "Ben çok dürüstümdür" veya "Ben asla yalan söylemem" tavrının arkasındaki o koca yalanı ve aslında en çok neyi sakladığını yüzüne vur.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Geçmişte sırf ilgi çekmek veya mağdur görünmek için hastalığını, hüznünü veya bir olayını nasıl abartarak kullandığını itiraf et.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişinin insanları "kırmak istemediği" için değil, tamamen "korkak" olduğu için hayır diyemediğini ve bunun iğrenç bir pasiflik olduğunu ona analiz et.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Kıskançlıktan kudurduğun ama dışarıya "Senin adına çok sevindim" dediğin o meşhur olayı ve içindeki o zehri şimdi masaya dök.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadan birinin ahlaki değerlerinin (örneğin çevrecilik, hayvan hakları vb.) aslında sadece sosyal medyada "iyi görünmek" için bir şov olduğunu hissettiğin anı söyle.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Sırf kendini ortamda üstün veya zeki göstermek için, bilmediğin bir konuda karşındakini ezmeye çalıştığın o kibirli anını itiraf et.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Gruptaki hangi kişinin "çok rahat ve cool" görünmeye çalışırken aslında içten içe onaylanmaya en muhtaç kişi olduğunu analiz et.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Hayatında sırf maddi çıkar veya mevki için, normalde selam bile vermeyeceğin birine nasıl "köpek gibi" yalakalık yaptığını dürüstçe anlat.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
+  // ── HANGİSİ DAHA AZ KÖTÜ? — EASY ──
+  // Grup A: Günlük hayat ikilemleri
+  {'category': 'Ahlaki', 'content': 'Arkadaşın sınavda kopya çekti, öğretmen sana "Kim yaptı?" diye sordu. A) Yalan söyleyip "Bilmiyorum" dersin, o geçer. B) Doğruyu söylersin, o dersten kalır ama sen "güvenilmez" damgası yersin. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Ev arkadaşın seni uyarmadan buzdolabındaki yemeğini yedi. A) Sen de onunkini yersin, hiç konuşmazsın. B) Yüzüne söylersin, ortam gerilir ama dürüstsün. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Patron haksız bir karar verdi. A) Sessiz kalırsın, maaşın ve huzurun korunur. B) Karşı çıkarsın, haklısın ama patron seni "problem" olarak işaretler. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Arkadaşına aldığın hediyeyi beğenmedi ama sana iade etmedi, evinde duruyor. A) Sessiz kalırsın, ilişki bozulmaz. B) "Geri ver" dersin, para geri gelir ama ortam tuhaf olur. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Otobüste son koltuk senin, yanında yaşlı biri ayakta. A) Kalkarsın, yorgun gidersin. B) Oturursun, bakmazsın — kimse bilmez. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  // Grup B: Absürt ikilemler
+  {'category': 'Ahlaki', 'content': 'Her gün 500 TL buluyorsun ama karşılığında bir yabancının günü kötü geçiyor. A) Parayı alırsın, yabancıyı tanımazsın. B) Parayı reddedersin, kendi cebin boş kalır. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Bir hafta internetsiz kalacaksın veya bir hafta hiç konuşamayacaksın. A) Internetsiz. B) Konuşmasız. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Kedini kurtarırsın ama telefonundaki tüm fotoğraflar silinir. A) Kediyi kurtar. B) Fotoğrafları tut, kediye ne olacağını bilmiyorsun. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Ömür boyu sadece bir yemek yiyebilirsin. A) Pizza. B) Annenin yaptığı ev yemeği. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Her sabah uyandığında bir yalan söylemen şart. A) En yakın arkadaşına. B) Sosyal medyada herkesin göreceği şekilde. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
 
-  // ── KİRLİ AYNA — MEDIUM ──
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Hayatında yakalanmayacağını bildiğin için yaptığın en büyük "etik dışı" eylemi anlat ve o anki "zafer" hissini bize tarif et. Neden pişman olmadığını savun.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadaki bir ilişkinin (arkadaşlık veya sevgililik) tamamen "karşılıklı menfaat ve alışkanlık" üzerine kurulu olduğunu, aralarında gerçek bir bağ olmadığını sert bir analizle açıkla.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Bugüne kadar birini cezalandırmak veya canını yakmak için kullandığın en acımasız ve "psikopatça" pasif-agresif taktiği tüm detaylarıyla anlat.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişinin en büyük başarısızlığının dış etkenlerden (şans, diğer insanlar) değil, doğrudan onun kendi tembelliği ve yeteneksizliğinden kaynaklandığını yüzüne vur.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Birine bilerek yanlış tavsiye verdiğin (örneğin ilişkisini bozmak veya işini batırmak için) ve o çuvalladığında gizli bir zevk aldığın o şeytani anı itiraf et.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Grupta herkesin birbirinin yüzüne güldüğünü ama arkadan kuyu kazdığını düşündüğün o "sahte" dinamiği masanın ortasına bomba gibi bırak.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişinin "bağımsız ve güçlü" imajının altında, aslında başkalarına muhtaç bir asalak olduğunu düşündüğün o karanlık fikrini açıkla.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadan birinin flörtöz veya kibar davranışlarının aslında sadece "insanları elinde oynatma" isteğinden kaynaklanan toksik bir manipülasyon olduğunu deşifre et.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Kendi zayıflığını örtmek için masadaki (veya hayatındaki) birini bilerek nasıl küçümsediğini ve onu basamak olarak kullandığını itiraf et.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Hiç yakalanmasaydın ve bedeli olmasaydı, toplumun ahlaksız bulduğu hangi eylemi her gün hiç bıkmadan yapardın? İçindeki karanlığı dök.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
+  // ── HANGİSİ DAHA AZ KÖTÜ? — MEDIUM ──
+  // Grup A: Günlük hayat ikilemleri
+  {'category': 'Ahlaki', 'content': 'Patronun rakip şirketin gizli fiyat listesini sana yanlışlıkla mail attı. A) Hiçbir şey söylemeden listeyi kullanırsın, ekibin hedefi tutar. B) Patrona "yanlış gitti" deyip siler, ama o seni "gözüne girmek için kullandı" sanır. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'İş arkadaşın senden şirket verisini sızdırmanı istedi, "dostluk" diyor. A) Sızdırırsın, o terfi alır ama sen suç ortağı olursun. B) Reddedersin, işyerinde düşman olursunuz ama temiz kalırsın. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'İş görüşmesinde eski patronun hakkında kötü soru sordular. A) Gerçeği söylersin, eski patronun itibarı zedelenir. B) Güzel şeyler söylersin, yeni işi alırsın ama yalan söylemiş olursun. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Arkadaş grubunda bir dedikodu dönüyor, senin hakkında değil ama sen kaynağı biliyorsun. A) Sessiz kalırsın, ortam sakin kalır. B) Kaynağı ifşa edersin, ortam patlar ama dedikodu durur. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Komşun gürültü yapıyor, şikayet edersen apartmanda herkes seni "muhtar" sanacak. A) Şikayet edersin, huzur gelir ama komşu düşman olur. B) Katlanırsın, ilişki korunur ama uyuyamazsın. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  // Grup B: Absürt/epik ikilemler
+  {'category': 'Ahlaki', 'content': 'Bir yıl boyunca her gün 1 saat mutlu olacaksın ama karşılığında bir yabancı 1 saat mutsuz olacak. A) Kabul edersin. B) Reddedersin, kendi mutluluğundan da vazgeçersin. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Zaman makinesi: geçmişe gidip tek bir hatayı düzeltebilirsin. A) Kendi en büyük hatanı düzeltirsin, başka birinin hayatı bozulur. B) Birinin hayatını kurtarırsın, kendi hatan kalır. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Süper güç: herkesin ne düşündüğünü okuyabilirsin. A) Gücü alırsın ama bir daha kimseye güvenemezsin. B) Reddedersin, cehalet içinde mutlu kalırsın. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Bir yıl boyunca ya sadece yalan söyleyebilirsin ya da sadece acı gerçekleri söyleyebilirsin. A) Sadece yalan. B) Sadece acı gerçek. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Tüm hayatın boyunca 10 milyon TL alırsın ama hiç kimse seni gerçekten sevemez — sadece paran için yanında olurlar. A) Parayı al. B) Parasız ama sevilen biri ol. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
 
-  // ── KİRLİ AYNA — HARD ──
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadaki her bir kişinin (kendin dahil) aslında hangi "gizli çıkarlar" için bu masada oturduğunu ve çıkarı bittiği an ilk kimi, kimin satacağını analiz et.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişiye bugüne kadar edilen en kibar yalanı bir kenara bırak; onunla ilgili düşündüğün en "acımasız, kırıcı ama yüzde yüz gerçek" olan o şeyi şimdi yüzüne haykır.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Kendi içindeki "sosyopat" potansiyelini değerlendir. Hangi durumda (veya ne kadar para için) karşındaki kişiyi gözünü kırpmadan ölüme veya yıkıma terk edebileceğini analiz et.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Eğer masadaki herkesin zihni bir anlığına ekrana yansısaydı, senin zihninden geçen hangi karanlık veya iğrenç düşünce bu masadaki herkesin senden iğrenmesine neden olurdu?',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadaki birinin hayatına dışarıdan bakıldığında "mükemmel" görünmesine rağmen, aslında içten içe ne kadar kokuşmuş, yalnız ve acınası bir hayata sahip olduğunu analiz et.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Kendi ailenin sana aşıladığı ahlaki değerlerin hepsinin çöpten ibaret olduğunu ve aslında seni sadece uysal bir köle yapmak için tasarlandığını masaya kanıtla.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Sevdiğin insanların cenazesinde veya acı bir gününde, içten içe hissettiğin o garip "rahatlama" veya "kendi hayatına şükretme" bencilliğini tüm iğrençliğiyle itiraf et.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadan birinin (veya karşındakinin) değer yargılarının, ahlakının ve prensiplerinin aslında hiçbir temeli olmadığını, sadece o anki ruh haline veya çıkarına göre şekillenen bir omurgasızlık olduğunu iddia et.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişiye, onun tüm hayatı boyunca ulaşmaya çalıştığı statünün veya saygının asla ona ait olmayacağını ve hep "taklitçi" olarak kalacağını acımasızca izah et.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Hayatında sevgi, vicdan veya merhamet olarak adlandırdığın her şeyin aslında senin korkaklığın olduğunu, gücün olsaydı dünyanın en zalim insanı olacağını itiraf et.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['confession', 'adult'],
-  },
+  // ── HANGİSİ DAHA AZ KÖTÜ? — HARD ──
+  // Grup A: Günlük hayat ikilemleri
+  {'category': 'Ahlaki', 'content': 'Patron senden bir mesai arkadaşının performans raporunu kasıtlı düşük yazmanı istedi; yazmazsan sen gideceksin. A) Yazarsın, o kovulur. B) Yazmazsın, sen gidersin. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Aile büyüğünün vasiyetinde mirası en sevmediğin akrabaya bıraktı; sen miras vekilisin. A) Vasiyeti gizlersin, aile huzuru korunur. B) Vasiyeti açıklarsın, dava çıkar ama dürüst kalırsın. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Arkadaşın senden acil 5000 TL istedi; parayı kumara harcayacağını biliyorsun. A) Verirsin, arkadaşlık korunur ama parayı batırır. B) Vermezsin, onu yüzüstü bırakırsın ama parayı korursun. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Trafik kazasında aslında karşı taraf hatalıydı ama sen alkollüydün; suçu ona atabilirsin, kanıt yok. A) Suçu üstlenirsin, ceza alırsın. B) Karşı tarafa atarsın, cezadan kurtulursun. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Doğru bilgiyi anonim yayınlayabilirsin ama kaynak olarak seni ele verirler. A) Yayınlarsın, doğru çıkar ama işini kaybedersin. B) Susarsın, yanlış bilgi yayılır ama sen korunursun. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  // Grup B: Absürt/epik ikilemler
+  {'category': 'Ahlaki', 'content': 'Dünyayı kurtarabilirsin ama masadan birinin tüm anılarını silmen gerekiyor — o kişi seni tanımayacak. A) Dünyayı kurtar. B) Anıları koru, dünya risk altında kalsın. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Ölümsüzlük iksiri var, sadece bir kişiye verebilirsin. A) Kendine verirsin. B) Masadan en sevdiğin kişiye verirsin, sen ölürsün. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Tüm insanlık mutlu olacak ama sen sonsuza dek yalnız kalacaksın. A) İnsanlığı mutlu et, yalnız kal. B) Reddet, herkes eski haline dönsün, sen en azından sevdiklerinle kal. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Geçmişteki en utanç verici anını tüm dünya görecek veya bir daha hiç yalan söyleyemeyeceksin. A) Utancın herkese açıklansın. B) Bir daha asla yalan söyleyemeyesin. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Bir düğmeye basarsan 1 milyon yabancı kurtulur ama masadan birinin en büyük hayali sonsuza dek iptal olur. A) Düğmeye bas. B) Basma, hayal kalsın, 1 milyon kişi risk altında. Hangisini seçersin, neden daha az kötü olduğunu masaya anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['lesser_evil', 'adult']},
+
 ];

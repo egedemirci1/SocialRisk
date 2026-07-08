@@ -1,250 +1,46 @@
 part of 'tasks_ahlaki.dart';
 
 const _tasksAhlakisatis = <Map<String, dynamic>>[
-  // ── SATIŞ NOKTASI — EASY ──
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişinin çok güvendiği ama aslında berbat olan bir fikri/hayali var. Onu kırmamak için yalan söyleyip vaktini çalmak mı daha ahlaksızca, yoksa hayallerini o an yıkmak mı? Savunmanı yap.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Yakın bir arkadaşının partneri seni aldattı ama arkadaşının haberi yok. Sırf araları bozulmasın ve senin başın ağrımasın diye bu gerçeği neden ölene kadar mezara götüreceğini savun.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadan birinin çok istediği bir iş pozisyonuna sen de gizlice başvurdun ve işe sen alındın. Bunu ondan neden gizlediğini ve bunun "iş etiği" olduğunu soğukkanlılıkla anlat.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Yolda çok yüklü miktarda para buldun ve sahibinin kim olduğunu biliyorsun ama çok zengin biri. O parayı iade etmeyip kendine harcamanın neden aslında evrensel bir "karmik adalet" olduğunu savun.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Bir arkadaşının çok emek verdiği bir şakanın veya anının, başka bir ortamda sırf sen daha çok ilgi gör diye "kendi başınaymış gibi" anlatılmasının neden sorun olmadığını savun.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişinin sevmediğin bir alışkanlığını (örneğin sürekli geç kalmasını), onu düzeltmek yerine neden her fırsatta ona karşı bir silah/koz olarak gizlice biriktirdiğini itiraf et.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Ortak girilen bir sınavda/işte, arkadaşının başarısız olmasının seni içten içe neden mutlu ettiğini ve bu "rekabetçi sinsiliğin" doğanda olduğunu ona bakarak açıkla.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Arkadaşının kötü bir gününde onu dinlemek yerine kendi dertlerini anlatmaya başlamanın, "ben sana daha muhtacım" diyerek bencilliği meşrulaştırmanın yollarını bul.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadan birinin sırrını sadece güvendiğin "tek bir kişiye" anlatmanın ihanet olmadığını, "stres atma hakkın" olduğunu arsızca savun.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Sırf kendini haklı çıkarmak için bir tartışmada yalan söylediğini ve bunu asla itiraf etmeyeceğini, kazanmanın dürüstlükten önemli olduğunu anlat.',
-    'difficulty': 'easy',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
+  // ── SIRT BIÇAĞI — EASY ──
+  // Grup A: İkiyüzlü rol canlandır (masadan birini seç, yüzüne karşı)
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç — o senin en yakın arkadaşın. Yıllardır onun sırrını çıkar için sattın ama o bilmiyor. Yüzüne bakarak, hiçbir şey olmamış gibi o sahtekar "sadık dost" rolünü canlandır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Onun çok istediği işe gizlice sen girdin. Ondan haberi yokmuş gibi, "keşke sana da bir şey çıksa" diyen o sahte iyi niyetli arkadaş rolünü yüzüne karşı oyna.', 'difficulty': 'easy', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Onun anlattığı komik anıyı başka ortamda kendi başından geçmiş gibi anlattın. Şimdi ona bakarak, o anıyı "ilk kez senden duyuyormuş" gibi hayranlıkla dinleyen rolü yap.', 'difficulty': 'easy', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Aslında onun bir alışkanlığını herkese gizlice çekiştiriyorsun. Yüzüne karşı ise onu en çok savunan, "aa hiç öyle biri değildir" diyen o sadık dost rolünü canlandır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Bir tartışmada haklı çıkmak için ona yalan söyledin ve asla itiraf etmeyeceksin. Şimdi yüzüne bakarak, "ben sana hiç yalan söylemem" diyen dürüst dost rolünü oyna.', 'difficulty': 'easy', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  // Grup B: İhanet ikilemi (A vs B, masayı ikna et)
+  {'category': 'Ahlaki', 'content': 'Bir arkadaşının partneri seni aldattığını itiraf etti, arkadaşının haberi yok. A) Söyle, araları bozulsun. B) Mezara kadar götür. Hangisini seçersin? Masayı kararının doğru olduğuna ikna et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Yolda çok yüklü para buldun, sahibi çok zengin biri. A) İade et. B) Kendine harca, "zaten zengin" de. Hangisini seçersin? Masayı ikna etmeye çalış.', 'difficulty': 'easy', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birinin sırrını öğrendin. A) Kimseye söyleme, sırrı koru. B) Sadece "tek güvendiğin kişiye" anlat. Hangisini seçersin? Masayı seçiminin haklı olduğuna ikna et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Arkadaşın kötü bir gününde seni aradı ama senin de derdin var. A) Onu dinle, kendi derdini sonraya bırak. B) Kendi derdini anlat, "ben daha muhtacım" de. Hangisini seçersin? Masayı ikna et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Ortak girdiğiniz sınavda arkadaşın kaldı, sen geçtin. A) Üzülmüş gibi yap, moralini düşünme. B) İçten içe sevindiğini belli et. Hangisi daha dürüst? Seçimini yap ve masayı ikna et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['betrayal', 'adult']},
 
-  // ── SATIŞ NOKTASI — MEDIUM ──
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Sana devasa bir ödül teklif edildi ama karşılığında karşındaki kişinin en büyük başarısını gizlice sabote etmen gerekiyor. Bu "satışın" neden senin geleceğin için onun duygularından daha önemli olduğunu anlat.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişi büyük bir linç yiyor ve herkes ona sırtını dönmüş. Sen aslında onun haklı olduğunu biliyorsun ama sırf kendi itibarın zedelenmesin diye onu neden o ateşte yalnız bırakacağını anlat.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Gruptan birinin partneriyle çok iyi anlaştın ve aranızda gizli bir çekim oluştu. Sırf "gerçek aşk" uğruna bu masadaki arkadaşını neden satabileceğini mantıklı bir senaryoyla savun.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Ortak kurduğunuz bir şirketi satmak için milyon dolarlık bir teklif aldın ama ortağının (masadan biri) haberi yok ve o satmak istemiyor. Onun imzasını gizlice taklit etmenin neden "onun da iyiliğine" olduğunu açıkla.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadan birinin uzun süredir sakladığı büyük bir sırrını (örneğin hileyle bir yerlere gelmesini) şantaj malzemesi olarak kullanarak ondan para koparmanın neden sadece bir "iş zekası" olduğunu savun.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Bir kazaya karıştınız ve suçu masadaki sağındaki arkadaşının üzerine atıp oradan kaçtın. Bunu yaparken "onun ailesi yok, benim bakmak zorunda olduğum bir geleceğim var" mazeretini ne kadar inandırıcı oynayabilirsin?',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Eline masadan birinin tüm telefon ve mesaj geçmişine erişim imkanı geçti. Sırf merakından ötürü bu mahremiyeti neden hiçe sayacağını ve "zaten saklayacak bir şeyi yoksa korkmamalı" argümanını savun.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Kendi işlediğin ufak bir suçu/hatayı, masada her zaman "saf ve iyi" olarak bilinen birinin üzerine sinsice yıkmanın, onun hayat tecrübesi kazanması için bir "ders" olduğunu iddia et.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadan birinin çok hayalini kurduğu tatili/şansı, araya torpil sokarak onun elinden almanın ve "fırsatları değerlendirmenin suç olmadığını" arsızca ona bakarak savun.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişiye bilerek yalan umutlar verip onu kendine aşık ettikten sonra, sırf egon tatmin olduğu için onu bir anda terk etmenin neden psikolojik bir ihtiyaç olduğunu anlat.',
-    'difficulty': 'medium',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
+  // ── SIRT BIÇAĞI — MEDIUM ──
+  // Grup A: İkiyüzlü rol canlandır (masadan birini seç, yüzüne karşı)
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Büyük bir ödül için onun en önemli işini gizlice sabote ettin. Şimdi yüzüne bakarak, ona "senin başarına herkesten çok inanıyorum" diyen destekçi dost rolünü canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. O büyük bir linç yerken, haklı olduğunu bildiğin halde itibarın için sustun. Şimdi yüzüne karşı, "ben hep senin yanındaydım" diyen o vefalı dost rolünü oyna.', 'difficulty': 'medium', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Onun partnerine gizli bir ilgi duyuyorsun. Şimdi ona bakarak, ilişkileri için "siz çok tatlı bir çiftsiniz, çok mutluyum" diyen o masum arkadaş rolünü canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Yaptığın bir hatanın suçunu sinsice onun üstüne yıktın. Şimdi yüzüne karşı, "böyle bir şeyi asla senin yapacağına inanmam ama..." diyen o üzgün dost rolünü oyna.', 'difficulty': 'medium', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Onun hayalini kurduğu fırsatı araya torpil sokarak elinden aldın. Şimdi yüzüne bakarak, "çok haketmiştin, olmamasına çok üzüldüm" diyen o vicdanlı dost rolünü canlandır.', 'difficulty': 'medium', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  // Grup B: İhanet ikilemi (A vs B, masayı ikna et)
+  {'category': 'Ahlaki', 'content': 'Devasa bir ödül için masadan birinin en büyük başarısını gizlice sabote etme şansın var. A) Vazgeç, dostluğu koru. B) Sabote et, ödülü al. Hangisini seçersin? Masayı ikna et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Ortak kurduğunuz şirkete milyonluk teklif geldi, ortağın satmak istemiyor. A) Onun kararına saygı duy. B) İmzasını taklit edip sat. Hangisini seçersin? Masayı haklı olduğuna ikna et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birinin telefonuna tüm mesajlarını görebileceğin erişimin oldu. A) Dokunma, mahremiyetine saygı duy. B) Merakına yenil, hepsini oku. Hangisini seçersin? Masayı ikna et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Bir kazaya karıştın, suçu yanındaki arkadaşına atıp kaçabilirsin. A) Suçu üstlen, bedelini öde. B) Ona at, "benim geleceğim var" de. Hangisini seçersin? Masayı ikna et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birinin uzun süredir sakladığı büyük bir sırrını öğrendin. A) Sessiz kal. B) Şantaj malzemesi yapıp çıkar sağla. Hangisini seçersin? Masayı seçiminin mantıklı olduğuna ikna et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['betrayal', 'adult']},
 
-  // ── SATIŞ NOKTASI — HARD ──
-  {
-    'category': 'Ahlaki',
-    'content':
-        'İkiniz (masadan seçtiğin biriyle) bir suç işlediniz. Polise ilk giden ve diğerini ihbar eden kurtulacak, diğeri ömür boyu yatacak. Onu neden ilk saniyede satacağını karakter analizi yaparak yüzüne söyle.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişiyi zengin bir gruba girmek için basamak olarak kullandın. Artık o gruptasın ve onun o gruba ait olmadığını düşünüyorsun. Onu dışlamanın neden "sosyal bir zorunluluk" olduğunu yüzüne söyle.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadan birinin en zayıf noktasını ve travmasını biliyorsun. Çok büyük bir kavgada, sırf o an onu yerle bir etmek ve savaşı kazanmak için bu travmayı bilerek yüzüne vurmanın neden hakkın olduğunu savun.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Eğer bir seri katil seni rehin alsa ve "Ya kendi hayatın ya da masadaki arkadaşının hayatı" dese, neden saniye düşünmeden masadaki kişiyi feda edeceğini hayatta kalma içgüdüleriyle savun.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Maddi olarak çok zordasın. Karşındaki kişinin (ailesinden ona kalan) yüklü miktarda parasını ona çaktırmadan kendi hesabına geçirmenin, "onun zaten zengin olduğu, senin ise hayatta kalman gerektiği" yalanıyla nasıl meşrulaştırıldığını anlat.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Masadaki herkesin arkasından iş çevirip onları birbirine düşürerek gruptaki "tek masum" ve "lider" konumuna gelmenin ne kadar şeytani ama zekice bir hamle olduğunu, bunu nasıl yapabileceğini anlat.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Çok büyük bir servet miras kalacak ama şart şu: Masadan çok sevdiğin birinin hayatını yalan ihbarlarla zindana çevireceksin. Paranın insan ilişkilerinden neden daha kalıcı ve önemli olduğunu kanıtla.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Bir doğal afet anında, erzakların sadece sana yeteceğini fark ettin. Masadaki diğer arkadaşlarını sığınağa almayıp kapıyı yüzlerine kilitlemenin neden "acımasız ama rasyonel" bir karar olduğunu gözlerine bakarak anlat.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Eğer geçmişe dönüp karşındaki kişiyi hiç tanımamış olma şansın olsaydı (ve karşılığında küçük bir miktar para alacak olsan), bu arkadaşlığı neden anında sileceğini ve aslında ona hiç değer vermediğini acımasızca oyna.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
-  {
-    'category': 'Ahlaki',
-    'content':
-        'Karşındaki kişinin partnerinin onu defalarca aldattığını biliyorsun ama partneri sana sus payı olarak hayalindeki arabayı teklif etti. Bu sessizliği neden satın alacağını ve arkadaşının "zaten bir gün öğreneceğini" savun.',
-    'difficulty': 'hard',
-    'type': 'action',
-    'tags': ['betrayal', 'adult'],
-  },
+  // ── SIRT BIÇAĞI — HARD ──
+  // Grup A: İkiyüzlü rol canlandır (masadan birini seç, yüzüne karşı)
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Onu zengin bir gruba girmek için basamak olarak kullandın, artık ona ihtiyacın yok. Şimdi yüzüne bakarak, "sen benim en gerçek dostumsun" diyen o vefalı rolü canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Onu kendine aşık edip egon tatmin olunca terk etmeyi planlıyorsun. Şimdi yüzüne karşı, ona ciddi ciddi bir gelecek vaat eden o âşık ve sadık partner rolünü oyna.', 'difficulty': 'hard', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Onunla birlikte suç işlediniz ama sen çoktan onu ihbar ettin. O bunu bilmiyor. Şimdi yüzüne bakarak, "ne olursa olsun seni asla satmam, biz kardeşiz" rolünü canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. En zayıf noktasını ve travmasını biliyorsun, ilk kavgada kullanmayı planlıyorsun. Şimdi yüzüne karşı, "senin sırların benimle güvende" diyen o güvenilir sırdaş rolünü oyna.', 'difficulty': 'hard', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birini seç. Arkasından tüm grubu ona karşı örgütlüyorsun. Şimdi yüzüne bakarak, "herkes sana çok haksızlık ediyor, tek anlayan benim" diyen o sahte müttefik rolünü canlandır.', 'difficulty': 'hard', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  // Grup B: İhanet ikilemi (A vs B, masayı ikna et)
+  {'category': 'Ahlaki', 'content': 'Masadan biriyle suç işlediniz. İlk ihbar eden kurtulur, diğeri ömür boyu yatar. A) Ona güven, sessiz kal. B) İlk sen ihbar et. Hangisini seçersin? Yüzüne bakarak masayı ikna et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Bir seri katil "ya sen ya masadaki arkadaşın" diyor. A) Kendini feda et. B) Arkadaşını ver, hayatta kal. Hangisini seçersin? Masayı kararının insani olduğuna ikna etmeye çalış.', 'difficulty': 'hard', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Masadan birinin partneri sana onu aldattığını itiraf edip, susman için hayalindeki arabayı teklif etti. A) Reddet, arkadaşına söyle. B) Arabayı al, sus. Hangisini seçersin? Masayı ikna et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Çok zor durumdasın. Masadan birinin ailesinden kalan mirasından habersizce pay aktarabilirsin. A) Dokunma. B) "Zaten zengin" deyip aktar. Hangisini seçersin? Masayı ikna etmeye çalış.', 'difficulty': 'hard', 'type': 'action', 'tags': ['betrayal', 'adult']},
+  {'category': 'Ahlaki', 'content': 'Tek bir kişiyi ezerek tüm grubun lideri olabilirsin. A) Adil kal, kimseyi ezme. B) Masadan birini seçip onu harcayarak yüksel. Hangisini seçersin? Kimi seçtiğini söyle ve masayı ikna et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['betrayal', 'adult']},
 
 ];
