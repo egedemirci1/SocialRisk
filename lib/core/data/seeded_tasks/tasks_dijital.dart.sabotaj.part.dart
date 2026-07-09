@@ -51,7 +51,7 @@ const _tasksDijitalsabotaj = <Map<String, dynamic>>[
   },
   {
     'category': 'Dijital',
-    'content': 'Rehberindeki 5. kişiye sadece bir soru işareti (?) gönder.',
+    'content': 'WhatsApp\'ta rehberindeki 5. kişiye sadece bir soru işareti (?) gönder.',
     'difficulty': 'easy',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -67,7 +67,7 @@ const _tasksDijitalsabotaj = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Şu an masada oturan birinin Instagram DM kutusuna sadece "Gördüm." yaz.',
+        'Masada oturan birinin bir arkadaşına Instagram DM\'den sadece "Gördüm." yaz.',
     'difficulty': 'easy',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -117,7 +117,7 @@ const _tasksDijitalsabotaj = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Rehberinden rastgele birine sesli mesaj at: Sadece 5 saniye boyunca boğazını temizle/öksür.',
+        'Masadakiler hariç rehberinden rastgele birine sesli mesaj at: Sadece 5 saniye boyunca boğazını temizle/öksür.',
     'difficulty': 'medium',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -133,7 +133,7 @@ const _tasksDijitalsabotaj = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Annene veya babana "Sana çok önemli bir şey söylemem lazım, beni bekle." yaz ve 10 dakika cevap verme.',
+        'Annene, babana veya güvendiğin bir yakınına "Müsait olunca beni ara, bir şey danışacağım." yaz ve 2 dakika cevap verme.',
     'difficulty': 'medium',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -149,7 +149,7 @@ const _tasksDijitalsabotaj = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Rehberindeki "A" harfi ile başlayan ilk kişiye "Acil dönüş yap." yaz.',
+        'Rehberindeki "A" harfiyle başlayan ilk kişiye "Müsait olunca bir bakar mısın?" yaz.',
     'difficulty': 'medium',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -205,7 +205,7 @@ const _tasksDijitalsabotaj = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Masadan birinin telefonunu al, kendi numarana "Sana başından beri hayranım." yaz.',
+        'Bir restoranı ara, bilinçli şekilde absürt bir sipariş vermeye çalış; sonra şaka yaptığını söyleyip hemen özür dile.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -221,7 +221,7 @@ const _tasksDijitalsabotaj = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'LinkedIn\'den rastgele bir bağlantına "İş arıyorum, bana yardım et." yaz.',
+        'LinkedIn\'den tanıdıkların hariç rastgele bir bağlantına "İş arıyorum, bana yardım et." yaz.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],

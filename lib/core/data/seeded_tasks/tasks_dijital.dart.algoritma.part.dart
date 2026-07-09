@@ -29,7 +29,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'X (Twitter) hesabını aç ve en son beğendiğin 3 gönderiyi yüksek sesle oku.',
+        'X veya Instagram hesabını aç ve en son beğendiğin 3 gönderiyi yüksek sesle oku.',
     'difficulty': 'easy',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -53,7 +53,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'TikTok "Sizin İçin" sayfanı aç, çıkan ilk videoyu gruba sesli izlet.',
+        'TikTok "Sizin İçin" sayfanı aç, çıkan ilk videoyu gruba sesli izlet; hesabın yoksa neden TikTok kullanmadığını açıkla.',
     'difficulty': 'easy',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -69,7 +69,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Instagram\'da "Kaydedilenler" bölümüne gir ve ilk klasörünün ismini/içeriğini söyle.',
+        'Instagram\'da "Kaydedilenler" bölümüne gir ve ilk 3 klasörünün ismini/içeriğini söyle.',
     'difficulty': 'easy',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -87,7 +87,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Instagram "Keşfet" sayfanı aç. Masadakiler, keşfetinin seni nasıl bir insan olarak tanımladığını analiz etsin.',
+        'Instagram "Keşfet" sayfanı aç ve çıkan içeriklere bakarak seni dışarıdan nasıl bir insan gibi gösterdiğini 3 maddede kendin analiz et.',
     'difficulty': 'medium',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -119,7 +119,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Spotify\'da kendi oluşturduğun çalma listelerini aç. İçlerinden ismini okurken en çok utandığın (en cringe) olanı söyle.',
+        'Spotify veya YouTube\'da kendi oluşturduğun listeleri aç. İçlerinden ismini okurken en çok utandığın (en cringe) olanı söyle.',
     'difficulty': 'medium',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -135,7 +135,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Instagram "Hareketlerin" kısmına girip son 1 haftada stalkladığın (arattığın) en alakasız kişiyi itiraf et.',
+        'Son 1 haftada stalkladığın (arattığın) en alakasız kişiyi itiraf et.',
     'difficulty': 'medium',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -159,7 +159,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Yemek veya alışveriş uygulamanı aç, sepetinde unuttuğun veya en son baktığın o gereksiz ürünü göster.',
+        'Yemek veya alışveriş uygulamanı aç; sepetinde unuttuğun ya da en son satın aldığın gereksiz ürünü göster.',
     'difficulty': 'medium',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -193,7 +193,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'TikTok\'ta "Beğenilenler" klasörünü aç, en son beğendiğin 5 videoyu durdurmadan sırayla gruba izlet.',
+        'TikTok\'ta "Beğenilenler" klasörünü aç, en son beğendiğin 5 videoyu durdurmadan sırayla gruba izlet; TikTok yoksa Instagram\'da son beğendiğin 5 gönderiyi göster.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -201,7 +201,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Tarayıcı geçmişini aç, gözlerini kapatıp rastgele kaydır. Parmağının durduğu web sitesini yüksek sesle oku.',
+        'Tarayıcı geçmişini aç ve son 10 web sitesini gruba göster.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -209,7 +209,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Sosyal medyada (Instagram veya Twitter) "Engellenenler" listeni aç. Oradaki sayıyı ve engellediğin en saçma nedeni itiraf et.',
+        'Sosyal medyada (Instagram veya Twitter) "Engellenenler" listeni aç ve son 10 kişiyi sesli oku.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -217,7 +217,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Google arama çubuğuna sadece "Neden ben" yaz ve klavyenin/Google\'ın sana sunduğu otomatik tamamlama sonuçlarını oku.',
+        'Google arama geçmişini aç ve son 10 aramandan en garip bulduğun 3 tanesini sesli oku.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -225,7 +225,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Spotify müzik geçmişini aç. "Asla dinlemem" dediğin ama gizlice dinlediğin o sanatçıyı itiraf et.',
+        'Spotify veya YouTube Music geçmişini aç. "Asla dinlemem" dediğin ama gizlice dinlediğin o sanatçıyı itiraf et.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -241,7 +241,7 @@ const _tasksDijitalalgoritma = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Telefonundaki "Satın Alma Geçmişi" veya uygulama aboneliklerini aç. En çok parayı sokağa attığın o utanç verici aboneliği söyle.',
+        'Telefonundaki uygulamalar arasından en utandığın uygulamayı açıp gruba göster.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],

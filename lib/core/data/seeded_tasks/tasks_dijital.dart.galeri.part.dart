@@ -53,7 +53,7 @@ const _tasksDijitalgaleri = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Telefonunun şu anki Ana Ekran ve Kilit Ekranı duvar kağıdını masaya göster.',
+        'Telefonunun şu anki Ana Ekran ve Kilit Ekranı duvar kağıdını masaya göster ve nedenini açıkla.',
     'difficulty': 'easy',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -61,7 +61,7 @@ const _tasksDijitalgaleri = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Galerini albümler modunda aç. Hangi albümde kaç fotoğraf olduğunu (Örn: WhatsApp Images 450) oku.',
+        'Galerini albümler modunda aç. En kalabalık 3 albümü göster ve her birinin neden bu kadar dolu olduğunu kısaca açıkla.',
     'difficulty': 'easy',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -201,7 +201,7 @@ const _tasksDijitalgaleri = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Instagram "Hikaye Arşivi"ne gir ve paylaştığın ilk (en eski) hikayeni bulup masaya izlet.',
+        'Instagram "Hikaye Arşivi"ni aç. Masadan biri arşivde en eskilere gitsin ve en komik bulduğu hikayeni seçip masaya izletsin.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -209,7 +209,7 @@ const _tasksDijitalgaleri = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Notlar uygulamasını aç. Sadece senin anlayacağın şekilde şifreli veya garip yazdığın bir metni bulup sesli oku.',
+        'Galerindeki gizli/özel görseller klasörünü aç ve içinden 1 tanesini masaya göster.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],

@@ -13,7 +13,7 @@ const _tasksDijitalveri = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Telefonunun "Ekran Süresi" günlük ortalamanı gruba göster. Sürenin fazlalığına göre linç yemeye hazır ol.',
+        'Telefonunun "Ekran Görüntüleri" albümünü aç ve son 10 ekran görüntüsünden en anlamsız bulduğun 3 tanesini göster.',
     'difficulty': 'easy',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -135,7 +135,7 @@ const _tasksDijitalveri = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Haritalar uygulamasını aç. "Ev" ve "İş" adresi olarak nerelerin kayıtlı olduğunu göster.',
+        'Telefonunun uygulama izinleri bölümüne gir ve hem kamera hem mikrofon izni olan ilk 3 uygulamayı göster. İçlerinden en şüpheli geleni savun.',
     'difficulty': 'medium',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -209,7 +209,7 @@ const _tasksDijitalveri = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Ekran kilidi şifreni (veya desenini) söylemeden, masadakilere senin karakterine bakarak sadece 3 tahmin hakkı ver. Bulurlarsa eksi oy yersin.',
+        'Notlar uygulamanı aç ve son 10 notundan en garip bulduğun 3 tanesinin başlığını sesli oku.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -217,7 +217,7 @@ const _tasksDijitalveri = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Telefonunda yüklü olan ama kimsenin bilmediği, en "utanç verici" (cringe) uygulamayı itiraf et ve logosunu göster.',
+        'SMS mesajlarını aç ve son 10 mesaj içinden en anlamsız bulduğun 3 mesaj başlığını (isim + ilk birkaç kelime) sesli oku.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -225,7 +225,7 @@ const _tasksDijitalveri = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Cihazının genel "Arama" çubuğuna (Spotlight) masadan biri rastgele bir kelime yazsın. Çıkan sonuçlarla (dosya/mesaj) yüzleş.',
+        'WhatsApp arama çubuğunu aç. Masadan biri istediği 1 kelimeyi yazsın, çıkan ilk 3 sonucu sesli oku.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],
@@ -233,7 +233,7 @@ const _tasksDijitalveri = <Map<String, dynamic>>[
   {
     'category': 'Dijital',
     'content':
-        'Telefonunu sağındaki kişiye ver. Senin Notlar uygulamana "Gizli bir itiraf/yalan" yazsın, sen de onu ciddi bir şekilde gruba oku.',
+        'Telefonunu sağındaki kişiye ver. Instagram\'da bir kişiye rahatsız edici olmayan kısa bir mesaj göndersin; Instagram yoksa X (Twitter) üzerinden mesaj atsın. Sonra ne yazdığını sesli oku.',
     'difficulty': 'hard',
     'type': 'action',
     'tags': ['digital', 'party'],
