@@ -3,7 +3,7 @@
 /// 1. Kelime ve Hafıza Avı (Hızlı Düşünme & Geri Çağırma)
 /// 2. Odak ve Koordinasyon (Aynı Anda Çoklu İşlem & Dikkat)
 /// 3. Kısıtlı İfade (Sınırlandırılmış İletişim & Dil Becerisi)
-/// 4. Grup Zihin Senkronu (Çağrışım & Ortak Akıl)
+/// 4. Yaratıcı Muhakeme (Hikaye · Bağlantı · Perspektif · Karar · İcat)
 /// Format: Oyuncu verilen zihinsel görevi kısıtlı sürede veya şartlara uyarak yapmaya çalışır.
 /// Masa, oyuncunun performansını ve zekasını oylar.
 
@@ -14,81 +14,80 @@ final List<Map<String, dynamic>> tasksZihinsel = [
   // ==========================================
 
   // ── KELİME VE HAFIZA AVI — EASY ──
-  {'category': 'Zihinsel', 'content': '10 saniye içinde, içinde kesinlikle "E" harfi olmayan 5 farklı hayvan say.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri sana bir kelime söylesin; hiç düşünmeden anında zıt anlamlısını söyle. Bunu art arda 3 farklı kelime için başarıyla yap.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '10 saniye içinde "A" harfi ile başlayan 5 farklı şehir veya ülke say.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadaki bir oyuncu sana rastgele bir renk söylesin; sen 3 saniye içinde o renkte bir meyve veya sebze söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '"ELMA" kelimesinin harflerini alfabetik sıraya göre (A-E-L-M) hızlıca söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Son 1 dakika içinde masada senin dışında konuşulan 3 farklı kelimeyi veya kısa cümleyi eksiksiz hatırla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '15 saniye içinde "K" harfi ile başlayan 5 farklı ev eşyası say.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri 4 kelimelik anlamsız bir cümle kursun. 15 saniye bekledikten sonra aynısını hatasız tekrar et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '10 saniye içinde, içinde "S" harfi geçen 4 farklı insan ismi say.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadaki herkesin adının sadece "son harflerini" soldan sağa doğru hızlıca söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Bugün yediğin son yemeği, bir restoran eleştirmeni ciddiyetiyle 2 cümlede değerlendir.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Şu an üzerindeki kıyafeti, bir müzayede sunucusu gibi 20 saniyede pazarla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Bugünkü ruh haline, bir CVde geçecek kadar resmi bir iş unvanı uydur ve 10 saniyede gerekçelendir.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Bugünün özetini, bir haber spikerinin "son dakika" tonuyla tek cümlelik bir başlığa dönüştür.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Cebinde veya çantanda bulunan 3 nesneyi, bir dedektifin ipucu sunumu gibi ciddiyetle anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Şu anki oturuş pozisyonuna bir yoga hareketi ismi uydur ve faydasını 10 saniyede açıkla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Bugün aldığın sıradan bir kararı, bir spor yorumcusunun maç heyecanıyla 20 saniyede anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Kendini, "kod adı + bugünkü görev" formatında bir gizli ajan brifingi gibi 15 saniyede tanıt.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': '15 saniye içinde, içinde "S" harfi geçen 6 farklı insan ismi say.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': '15 saniye içinde 2, 4, 8, 16 diye başlayıp her adımda ikiyle çarparak en az 8 sayı söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
 
   // ── KELİME VE HAFIZA AVI — MEDIUM ──
-  {'category': 'Zihinsel', 'content': '15 saniye içinde "M" harfi ile biten 5 farklı isim veya eşya say.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '15 saniye içinde "S" harfi ile başlayan, insanı tanımlayan 5 adet sıfat say (Örn: Sinirli, Sempatik).', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Kendi adının ve soyadının harflerini alfabetik sıraya dizerek 10 saniye içinde söylemeye çalış.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri arka arkaya 5 farklı kelime söylesin. 10 saniye bekle ve bu 5 kelimeyi aynı sırayla tekrar et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Bugün bu masada ilk konuşulan konuyu veya buluştuğunuzda kurulan ilk cümleyi eksiksiz hatırlayıp gruba anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '"TÜRKİYE" kelimesinin harflerini zihninde alfabetik sıraya diz ve masaya doğru şekilde oku.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '15 saniye içinde dışı yeşil, içi farklı renk olan 3 meyve veya sebze say.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '"Şu köşe yaz köşesi, şu köşe kış köşesi" tekerlemesini kelime kelime tersten (Köşesi kış köşe şu...) söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri bir şarkı mırıldansın; sen 15 saniye içinde şarkının adını ve sanatçısını bul.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptaki herkesin burcunu veya doğduğu ayı 10 saniye içinde sırayla ve hatasız say.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': '100den geriye doğru 7şer 7şer eksilterek en az 6 sayıyı hatasız ve duraksamadan say.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Günlük rutinini, bir belgesel anlatıcısının ciddiyetiyle 30 saniyede özetle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': '20 saniye içinde 3, 6, 12, 24 diye başlayıp her adımda ikiyle çarparak en az 8 sayı söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Hayatındaki son 3 önemli kararı, bir yatırımcıya sunum yapan girişimci gibi risk/getiri diliyle 30 saniyede anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Kendi adını ve soyadını, harflerini alfabetik sıraya dizerek 15 saniyede söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Son bir hafta içinde aldığın bir kararı, mahkemede savunma yapan bir avukat ciddiyetiyle 30 saniyede gerekçelendir.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Bir duvara veya duvar köşesine 10 saniye bak, sonra gözlerini kapat ve gördüğün 5 detayı konumlarıyla birlikte sırasıyla söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Evinin yakınındaki bir markete gidiş yolunu, başlangıç noktasından itibaren en az 5 adımda net bir konum tarifiyle anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Doğum tarihindeki tüm rakamları (gün, ay, yıl) zihninden topla ve tek haneli bir sayıya inene kadar toplamaya devam et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 3. kişinin evine gidiş yolunu, başlangıç noktasından itibaren en az 5 adımda net bir konum tarifiyle anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
 
   // ── KELİME VE HAFIZA AVI — HARD ──
-  {'category': 'Zihinsel', 'content': '15 saniye içinde "Z" harfi ile başlayan ve birbiriyle hiçbir alakası olmayan 5 nesne say.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri 7 harfli rastgele bir kelime söylesin. Bu kelimeyi 10 saniye içinde harf harf tersten kodla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri 5 farklı kelime söylesin. Sen bu kelimeleri sondan başa doğru (tersten) eksiksiz tekrar et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Bir tekerlemeyi (örn: Kartal kalkar dal sarkar) kelime kelime tersten sıralayarak hatasız söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '15 saniye içinde içinde hem "A" hem de "Z" harfi geçen 4 farklı kelime bul ve söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri telefonundan uzun bir cümle okusun. Cümlenin tam ortasındaki (veya baştan 4.) kelimenin ne olduğunu tek seferde bil.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '20 saniye içinde birbirine kafiyeli olan 6 farklı kelime say.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Kendi adını, soyadını ve doğum yılını tamamen tersten (yıl, soyad, ad ve harfleri ters) söylemeye çalış.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadan biri sana ardışık olmayan 5 rakam söylesin. Sen o rakamları küçükten büyüğe anında sıralayarak geri söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '15 saniye içinde sadece "O" ve "U" sesli harflerini içeren 4 kelime üret (Örn: Tohum, Koku).', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-
+  {'category': 'Zihinsel', 'content': 'Hayat hikayeni, bir borsa analistinin trend diliyle (yükseliş, düşüş, dip, zirve) 30 saniyede özetle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Son 24 saatini, resmi bir mahkeme ifadesi ciddiyetiyle, sadece kronolojik sırayla ve duraksamadan 45 saniyede anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': '250\'den başlayıp 7\'şer geri sayarak en az 10 sayı söyle; bir yerde hata yaparsan baştan başla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': '400\'den başlayarak 25\'er geri say ve 8 adım boyunca hiç duraksamadan doğru sırayla söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Hayatının en gurur duyduğun anını, bir spor yorumcusunun maç anlatım hızı ve heyecanıyla 20 saniyede anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Az önce masada konuşulan bir konuyu hatırla ve tam tersi bir görüşü, gerçekten inanıyormuş gibi 30 saniye savun.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Boyunla kilonu topla, çıkan sonucu yaşına böl ve sonucu en yakın tam sayıya yuvarlayıp söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Kendi ismindeki her harfin alfabedeki sıra numarasını zihninden topla ve toplam sonucu 20 saniyede söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Son 1 yıl içinde seni en çok utandıran anını, olay sırasını bozmadan 20 saniyede anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Hayatındaki gerçek bir pişmanlığı, "keşke" veya "pişman" kelimelerini hiç kullanmadan 30 saniyede anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
 
   // ==========================================
   // 2. ODAK VE KOORDİNASYON (AYNI ANDA ÇOKLU İŞLEM)
   // ==========================================
 
   // ── ODAK VE KOORDİNASYON — EASY ──
-  {'category': 'Zihinsel', 'content': 'Bir elinle karnını saat yönünde dairesel ovuştururken, aynı anda diğer elinle kafana hafifçe vur (10 saniye bozmadan yap).', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '20\'den geriye doğru 2\'şer 2\'şer hızlıca ve hiç takılmadan say.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gözlerini kapat. Masadaki en az 3 nesnenin tam yerini, rengini ve kime ait olduğunu söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'İki elini havaya kaldır; sağ elinle havada görünmez bir üçgen, sol elinle görünmez bir kare çizmeye çalış (10 saniye).', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri elleriyle masaya 3 farklı tempoda vursun (ritim tutsun); aynısını hatasız tekrar et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Alfabeyi "A, C, E, G..." şeklinde birer harf atlayarak 15 saniyede sayabildiğin yere kadar say.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Sağ ayağınla yere hafifçe tempo tutarken, her 3 vuruşta bir sol elinle burnuna dokun (15 saniye bozmadan).', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Odadaki veya masadaki en büyük ve en küçük nesneyi anında göster.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadaki 3 farklı nesneyi elinle işaret et ama isimlerini bilerek birbiriyle değiştirerek söyle (Örn: Bardağa telefon, telefona anahtar de).', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '15\'ten geriye doğru sayarken, ağzından çıkan her rakamla eşzamanlı olarak ellerini bir kez çırp.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': '10 saniye bir duvara bak, sonra gözlerini kapatıp gördüğün 4 detayı soldan sağa sırayla anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': '20 saniye boyunca sağ elinle kare, sol elinle daire çiz; iki şekli aynı anda bozmadan sürdür.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Kendi adını bir kez normal, bir kez heceleyerek, bir kez de tersten söyle; sırayı karıştırmadan bitir.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': '20 saniye boyunca gözlerini kapatıp bulunduğun yerde sabit kal; omuz hizanı bozmadan görevi tamamla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Son 1 saatte yaptığın 3 işi kronolojik sırayla, her birini en fazla 3 kelimeyle anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Alfabeden bir harf atlayarak (A, C, E...) en az 12 harfi doğru sırayla söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Gözlerini kapatıp odadaki 3 sabit noktayı (kapı, pencere, lamba) yön tarifleriyle sırayla söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Son 12 saatte yaptığın 4 işi ters kronolojik sırayla (en sondan başa) net biçimde söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 5. kişi tek kelime söyler. 1 saniye içinde aklına gelen ilk kelimeyi söyle; 5 tur üst üste duraksamadan tamamla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 2. kişi "sağ/sol/yukarı/aşağı" komutları verir; her komutta başını bilinçli olarak ters yöne çevir ve 10 komutu hatasız tamamla. (gecikmede düşük puan alınır)', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
 
   // ── ODAK VE KOORDİNASYON — MEDIUM ──
-  {'category': 'Zihinsel', 'content': '50\'den geriye doğru sadece "tek sayıları" kullanarak hızlıca say.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Aynı anda sol ayağınla yerde saat yönünde daire çizerken, sağ elinle havada ters yönde daire çiz (15 saniye).', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gözlerini kapat. Karşında/arkanda duran birinin üzerindeki kıyafet veya aksesuarlara dair 3 ince detayı hatırla.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Odadaki en parlak renge sahip nesne ile en mat/karanlık nesneyi 5 saniye içinde bul ve göster.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadaki (veya odadaki) herkesin yaşlarının toplamını 10 saniye içinde zihninden hesapla ve tahmini bir rakam söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri telefonundan rastgele 5 kelimelik bir cümle göstersin. Bu cümleyi soldan sağa değil, kelimeleri sondan başa doğru oku.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gözlerini kapat, gruptan iki kişi sessizce yer veya kıyafet detayı değiştirsin. Gözünü açtığında 5 saniyede farkı bul.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Grupta toplam kaç adet düğme (kıyafetlerdeki) olduğunu yerinden kalkmadan 10 saniyede tahmin et/say.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Sen 1\'den 10\'a kadar sayarken, karşındaki kişi aynı anda A\'dan J\'ye kadar saysın. Karışmadan ve senkronize bitirin.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Kendi cep telefonu numaranı (veya çok iyi bildiğin bir numarayı) rakam rakam tersten söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Telefonunun şarjı bitti ve bir arkadaşına acil ulaşman gerekiyor. 20 saniye içinde 5 adımlık ani bir plan çıkar.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 1. kişi bir harf seçsin. Sağındaki 4. kişi sana peş peşe 2 soru sorsun; 30 saniye boyunca her cevabında cümledeki her kelime seçilen harfle başlasın.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Gözlerini kapatıp 15 saniye içinde odada 4 sabit referans noktası belirle ve saat yönü mantığıyla sırala.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Kendi doğum tarihinin rakamlarını büyükten küçüğe sırala, sonra tek ve çift olarak iki gruba ayırıp söyle.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Gece geç saatte eve döndün ve anahtarını bulamıyorsun. Panik yapmadan 5 adımlık net bir çözüm planı anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Toplu taşımayı kaçırdın ve 20 dakika içinde yetişmen gereken bir yer var. 5 adımda uygulanabilir kurtarma planı kur.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'İnternetin kesildi ama 10 dakika içinde önemli bir işi göndermen lazım. 5 aşamalı acil plan üret.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Cüzdanını fark etmeden evde unuttun ve ödeme yapman gerekiyor. 5 adımda durumu nasıl yönetirsin anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Gözlerin kapalıyken bulunduğun noktadan kapıya gidişi 5 adımda tarif et, sonra aynı yolu ters sırada anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Yanlış kişiye özel bir mesaj attığını fark ettin. Hasarı büyütmeden 5 adımlık toparlama planını hemen anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
 
   // ── ODAK VE KOORDİNASYON — HARD ──
-  {'category': 'Zihinsel', 'content': '100\'den geriye doğru 7\'şer 7\'şer eksilterek (100, 93, 86...) en az 5 sayıyı hatasız söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadaki herkesin boy uzunluklarının (santimetre cinsinden) sadece SON rakamlarını zihninde topla ve sonucu söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gözlerini sıkıca kapat. Masadaki seslerden, kimin kahve/su içtiğini, kimin telefona dokunduğunu veya hareket ettiğini tahmin et (1 dakika).', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'İki elinle havaya yazarak; sağ elinle kendi adını yazarken, sol elinle soyadını yazmaya çalış.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Odadaki toplam harf veya rakam içeren yüzeyleri (tablo, kitap sırtı, tişört baskısı, ekran) 15 saniye içinde say.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri sana aralıksız 5 basit matematik işlemi söylesin (Örn: 5+3, çarp 2, çıkar 4). İşlemi zihninde tutup sadece nihai sonucu söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gözlerini kapat ve bir bacağının üzerinde dengede dururken, 30\'dan geriye 3\'er 3\'er say. Düşersen veya takılırsan ceza alırsın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Karşındaki kişinin gözlerinin içine bakarak, onun sorduğu 5 basit soruya "Evet" veya "Hayır" kelimelerini KULLANMADAN cevap ver.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Sen sağ elinle masaya 2 kez vururken, sol elinle 3 kez vur. Bu asimetrik ritmi 10 saniye boyunca karıştırmadan sürdür.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri sana 3 farklı kelime söylesin. Sen bu kelimelerin her birinin içindeki "sesli harf" sayısını sırasıyla söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Gözlerin kapalıyken 30 saniye sabit dur ve bu sürede odadaki 5 referans noktasını zihninde saat yönüne göre sırala.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Arkanı dön ve 10 saniye bekle. Solundaki 1. kişi tek bir detayını değiştirsin (aksesuar, oturuş, kol pozisyonu). Dönünce 5 saniyede değişikliği bul.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Gözlerini kapat. Masada 3+ kişi varsa herkes yer değiştirsin; daha az kişide bir oyuncu oturuşunu veya aksesuarını değiştirsin. Gözünü açıp 10 saniye incele ve değişikliği doğru tarif et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 5. kişi bir harf seçsin. Solundaki 3. kişi sana peş peşe 3 soru sorsun; 30 saniye boyunca her cevabında cümledeki her kelime seçilen harfle başlasın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Masadakiler sırayla 1\'er kelime versin. Sen bu kelimeleri geldikçe kullanarak hikayeyi kesmeden devam ettir; 8 kelime sonunda mantıklı bir finalle bitir.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Gözlerini kapat. Hiçbir eşyaya çarpmadan dış kapıya gitmeye çalış; kapıya dokunmak için sadece 1 hakkın var.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Telefon numaranın son 6 hanesiyle üç aşama yap: tersten söyle, artan sıraya diz, sonra orijinal sırayı geri ver.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Gözlerini kapat ve bulunduğun yerden kapıya gidiş yolunu 6 adımda ver; ardından aynı adımları ters sırayla oku.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Kendi adın ve soyadındaki harfleri ayrı alfabetik sırala, ardından iki listeyi birleştirip tek akışta hatasız oku.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': '25 saniye boyunca göz temasını sabit tutup aynı anda 3-3-3 nefes ritmi yap; ritim veya odak bozulursa görev başarısız.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
 
 
   // ==========================================
@@ -96,24 +95,24 @@ final List<Map<String, dynamic>> tasksZihinsel = [
   // ==========================================
 
   // ── KISITLI İFADE — EASY ──
-  {'category': 'Zihinsel', 'content': 'Gruptan birinin seçtiği bir hayvanı sadece 3 kelime kullanarak anlatmaya çalış. Kelimeler sıfat olmalı.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 3. kişinin seçtiği bir hayvanı sadece 3 kelime kullanarak anlatmaya çalış. Kelimeler sıfat olmalı.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': '30 saniye boyunca masadakilere bugünün nasıl geçtiğini anlat, ama her cümlen sadece "3 kelimeden" oluşmak zorunda.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': '"Merhaba, nasılsınız?" cümlesini sadece sesli harfleri kullanarak (E-A-A-I-I-I) kaba bir şekilde söyle.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 4. kişi bir duygu seçsin. Konuşmadan, sadece yüz mimikleriyle 10 saniyede o duyguyu net biçimde göster.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': 'En sevdiğin filmin konusunu sadece 4 kelime kullanarak özetle. Grup tahmin etmeye çalışsın.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan birinin söylediği basit bir atasözünün anlamını tek bir cümleyle ve çok resmi bir dille açıkla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 2. kişinin söylediği basit bir atasözünün anlamını tek bir cümleyle ve çok resmi bir dille açıkla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': 'Çok bilinen bir içecek markasını ismini, logosunu veya sloganını kullanmadan, sadece 3 kelimeyle tarif et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadan birini hedef seç, ona sadece "soru cümleleri" kurarak 30 saniye boyunca laf at veya sohbet etmeye çalış.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri sana bir meslek söylesin; o mesleği sadece çıkardıkları "seslerle" (konuşmadan ve vücut kullanmadan) canlandır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Kendi ismini her hecenin arasına "PA" ekleyerek söyle (Örn: AH-PA-MET-PA).', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri bir eşya seçsin; o eşyayı hiç "E" harfi kullanmadan 20 saniyede tarif etmeye çalış.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 1. kişi sıradan bir nesne söylesin. Onu 20 saniyede satmaya çalış; nesnenin adını hiç söylemek yasak.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Konuşmadan ve ses çıkarmadan, sadece beden diliyle masaya peş peşe 3 mesaj ilet: "bekle", "gel", "yeter".', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 5. kişi bir konu seçsin. O konuyu 20 saniyede anlat; kurduğun her cümle soru olmak zorunda.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Eller yasak. Sadece göz teması ve kaş hareketleriyle sağındaki 3. kişiye "dışarı çıkalım" mesajını 10 saniyede ilet.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
 
   // ── KISITLI İFADE — MEDIUM ──
-  {'category': 'Zihinsel', 'content': 'Bir konuyu veya anını 45 saniye boyunca anlat, ancak konuşmanda kesinlikle "A" harfi geçen bir kelime kullanma.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri meşhur bir ünlüyü seçsin; sen sadece 5 adet sıfat kullanarak bu ünlüyü gruba buldurmaya çalış.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan birine dön ve tamamen yabancı, uydurma bir dilde (anlamsız seslerle) çok sinirli bir şekilde 20 saniye dert anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 4. kişi bir meslek söylesin. Konuşmadan sadece jest ve mimikle 20 saniyede canlandır; masa doğru tahmin ederse geçer.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 1. kişi bir film türü söylesin (korku, romantik, aksiyon). Konuşmadan sadece beden diliyle 20 saniyede o türden kısa bir sahne kur.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 5. kişiye dön ve tamamen yabancı, uydurma bir dilde (anlamsız seslerle) çok sinirli bir şekilde 20 saniye dert anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': 'Bir teknoloji devini (Apple, Google vb.) sadece sattıkları ilk ürünü veya başarısız oldukları bir projeyi 5 kelimeyle anlatarak buldur.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': 'Sadece sesli harfleri kullanarak bir hayvanın adını ve çıkardığı sesi taklit et. Grup anlarsa puan alırsın.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri sana 3 soru sorsun. Üçüne de cevap ver, ancak cevapların sadece ve sadece soru cümlesi olmak zorunda.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 2. kişi sana 3 soru sorsun. Üçüne de cevap ver, ancak cevapların sadece ve sadece soru cümlesi olmak zorunda.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': 'Bir araba markasının tarihini veya ona dair bir klişeyi, markanın ismini ve ülkesini hiç anmadan 2 cümleyle anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': 'Kuracağın her cümlenin sonuna anlamsız bir kelime (Örn: "Pırasa") ekleyerek 30 saniye boyunca ciddi bir anını anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': 'Masadaki herkesin adını hecelerine böl ve tamamen tersten oku (Örn: MEH-MET -> MET-MEH).', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
@@ -121,55 +120,72 @@ final List<Map<String, dynamic>> tasksZihinsel = [
 
   // ── KISITLI İFADE — HARD ──
   {'category': 'Zihinsel', 'content': '45 saniye boyunca konuşarak bir konuyu anlat, ancak kelimelerinin içinde "E" ve "İ" sesli harfleri kesinlikle bulunmasın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri "Özgürlük, Zaman, Aşk" gibi soyut bir kavram seçsin. Sen bunu sadece 5 kelime kullanarak tanımla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Masadakiler sırayla 1\'er kelime versin. Sen bu kelimelerle istediğin tarzda kısa bir şarkı oluşturup söyle; verilen tüm kelimeleri kullanmak zorundasın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': 'Tam 1 dakika boyunca hiç susmadan konuş, ancak kurduğun her cümle tam olarak "4 kelimeden" oluşmak zorunda.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': 'Tarihi bir olayı (Örn: İstanbul\'un Fethi), olayın içindeki hiçbir özel ismi, mekanı veya tarihi kullanmadan dolaylı yoldan anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': 'Masadakilere bir masalı (Örn: Kırmızı Başlıklı Kız) sadece fiiller (yürüdü, gördü, yedi) kullanarak özetle. İsim kullanmak yasak.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri sana karmaşık bir meslek (Örn: Nörolog) söylesin. Bunu sanki 5 yaşındaki bir çocuğa anlatıyormuş gibi 3 basit cümleyle açıkla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Konuşurken dilini damağına yapıştırarak (asla ayırmadan) gruptan birinden 20 saniye boyunca özür dilemeye çalış.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri sana bir kelime versin. O kelimenin harfleriyle başlayan kelimeler kurarak (Akrostiş gibi) anlamlı bir cümle oluştur.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 1. kişi sana karmaşık bir meslek (Örn: Nörolog) söylesin. Bunu sanki 5 yaşındaki bir çocuğa anlatıyormuş gibi 3 basit cümleyle açıkla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Konuşurken dilini damağına yapıştırarak (asla ayırmadan) solundaki 4. kişiden 20 saniye boyunca özür dilemeye çalış.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 2. kişi sana bir kelime versin. O kelimenin harfleriyle başlayan kelimeler kurarak (Akrostiş gibi) anlamlı bir cümle oluştur.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
   {'category': 'Zihinsel', 'content': 'Karşındaki kişinin kıyafetini veya tarzını eleştir, ama bunu yaparken sadece "mutfak eşyalarının" isimlerini metafor olarak kullan.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Bir fıkrayı veya komik bir anıyı, hiçbir duygusal mimik yapmadan ve tamamen robotik (Siri/Google Asistan) bir ses tonuyla anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Konuşmadan etrafındaki en az 3 nesneyi enstrüman gibi kullanarak 15 saniyelik bir parça çal; bitince parçaya tek kelimelik bir isim ver.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
 
 
   // ==========================================
-  // 4. GRUP ZİHİN SENKRONU (ÇAĞRIŞIM & ORTAK AKIL)
+  // 4. YARATICI MUHAKEME
+  // (Hikaye · Bağlantı · Perspektif · Karar · İcat)
+  // Not: 5 tip × 2 görev × 3 zorluk = 30 (slot limiti; 3'er = 45)
   // ==========================================
 
-  // ── GRUP ZİHİN SENKRONU — EASY ──
-  {'category': 'Zihinsel', 'content': 'Grup kendi arasında gizli bir "nesne" belirlesin. Sana sırayla sadece 1\'er kelimelik toplam 4 ipucu versinler. Nesneyi bil.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptaki herkes sırayla bir kelime söyleyerek anlamlı bir hikaye başlatsın. Kopmadan toplam 10 kelimeye ulaşırsanız başarırsınız.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Arkadaşların ortak bir "hayvan" seçsin. Her biri sadece bir sıfat söyleyerek sana 3 ipucu versin. Hayvanı bul.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptaki herkes aynı anda içinden 3\'e kadar saysın ve elleriyle taş-kağıt-makas yapsın. Grupta en az iki kişi aynı hareketi yaparsa görevi geçersin.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadaki herkesin toplam ayakkabı sayısını (veya ayak sayısını) hızlıca hesapla ve bağır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Bir kelime söyle; gruptaki sıradaki kişi senin kelimenin son harfiyle yeni kelime üretsin. (Tura kopmadan 5 kişi dönsün).', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Arkadaşların bir "meyve" seçsin. Sadece "renk" ve "şekil" belirten 2 kelimelik ipucu versinler. Meyveyi tahmin et.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptaki herkesin ismini, alfabe sırasına göre baştan sona hızlıca (10 saniyede) say.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Grup sana bir renk söylesin, sen ve seçtiğin bir arkadaşın 3\'e kadar sayıp aynı anda o renkte bir eşya söyleyin. Pişti olursanız kazanırsınız.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Sırayla masadaki herkes 1\'den başlayarak saysın ama içinde 3 geçen veya 3\'ün katı olan sayılarda "BOM" desin. Yanlış yapan ceza alır.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  // ── YARATICI MUHAKEME — EASY ──
+  // Hikaye
+  {'category': 'Zihinsel', 'content': 'Solundaki 3. kişi bir nesne söylesin. 20 saniyede o nesnenin başrolde olduğu 3 cümlelik bir hikaye uydur.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 5. kişi bir isim söylesin. O karakterin başına gelen absürt ama kısa bir olayı 15 saniyede anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  // Bağlantı
+  {'category': 'Zihinsel', 'content': 'Solundaki 1. kişi iki alakasız kelime söylesin. 15 saniyede aralarında mantıklı bir köprü kur.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 4. kişi bir marka ve bir duygu söylesin. 15 saniyede ikisini tek cümlede zekice bağla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  // Perspektif
+  {'category': 'Zihinsel', 'content': 'Az önce masada konuşulan bir konuyu 15 saniyede tamamen karşı taraftan savun.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 2. kişinin kıyafetini, abartılı bir moda eleştirmeni gibi 15 saniyede yorumla.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  // Karar
+  {'category': 'Zihinsel', 'content': 'Masadakilerden sadece 2\'sini bir asansöre alacaksın; 10 saniyede seç ve tek cümleyle gerekçele.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Telefonundaki 3 uygulamadan birini sonsuza silmek zorundasın; 10 saniyede seç ve savun.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  // İcat
+  {'category': 'Zihinsel', 'content': '15 saniyede işe yaramaz ama ikna edici bir uygulama fikri anlat.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 3. kişi sıradan bir nesne söylesin; 15 saniyede ona yepyeni bir kullanım alanı uydur.', 'difficulty': 'easy', 'type': 'action', 'tags': ['mind', 'family']},
 
-  // ── GRUP ZİHİN SENKRONU — MEDIUM ──
-  {'category': 'Zihinsel', 'content': 'Grup bir "ünlü" belirlesin. Toplam 6 ipucu hakkını herkes paylaşsın ve sırayla sadece 1 kelimelik karakteristik özellik söylesin. Kim olduğunu bul.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Arkadaşların ortak bir "şehir" seçsin. Sadece o şehri çağrıştıran tek kelimelik 4 ipucu ile şehri tahmin et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Grup bir "film" belirlesin. Herkes filmle ilgili sadece 1 kelime (oyuncu, mekan, eşya) söylesin. Filmi bil.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadaki herkesin yaşlarını zihninden hızlıca topla ve tahmini bir rakam söyle. ±3 yaş yanılma payın var.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Grup kendi arasında bir duygu (Kıskançlık, Sevinç) seçsin. Sadece çıkardıkları anlamsız bir sesle sana bu duyguyu hissettirsinler.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Arkadaşların bir "yemek" seçsin. Sadece içindeki 3 malzemeyi tek kelimeyle söylesinler. Yemeği doğru tahmin et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Sen bir kelime söyle, yanındaki ona çağrışım yapan başka kelime söylesin. 10 saniye içinde ilk kelimeden tamamen alakasız bir yere gelin.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadaki herkes gözlerini kapatsın. Sen 1\'den başlayarak say, herkes sırayla devam etsin. İki kişi aynı anda sayı söylerse başa dönün (Hedef: Kişi sayısı x 2).', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Seçtiğin bir oyuncuyla sırt sırta verin. Grup bir eşya söylesin, 3 saniye içinde ikiniz de o eşyanın ilk aklınıza gelen rengini bağırın. Aynı çıkarsa kazanırsınız.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Grup sana peş peşe 3 basit matematik işlemi (5+8, 12/4 vb.) sorsun. Sen işlemleri hesaplamak yerine anında yanlış ama mantıklı cevaplar salla.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  // ── YARATICI MUHAKEME — MEDIUM ──
+  // Hikaye
+  {'category': 'Zihinsel', 'content': 'Solundaki 5. kişi 2 kelime versin. 30 saniyede ikisini de kullanan, sonunda şaşırtıcı bir hikaye bitir.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 1. kişi bir mekan söylesin. Orada geçen 4 cümlelik gerilim hikayesi kur; son cümle şaşırtıcı olsun.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  // Bağlantı
+  {'category': 'Zihinsel', 'content': 'Solundaki 4. ve sağındaki 2. kişiler birer kelime söylesin. 20 saniyede üçüncü bir kavram bulup üçlüyü tek teoride birleştir.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 5. kişi üç nesne söylesin. 25 saniyede üçünü aynı hayali ürünün parçası gibi bağla.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  // Perspektif
+  {'category': 'Zihinsel', 'content': 'Solundaki 3. kişi bir şikayet söylesin. Sen 25 saniyede o şikayeti yapanın patronu gibi cevap ver.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Bugünü, 20 yıl sonraki halinin gözünden 30 saniyede anlat.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  // Karar
+  {'category': 'Zihinsel', 'content': 'Masadakilerden 3\'ünü ıssız adaya götüreceksin; 20 saniyede seç, her birine 1 kelimelik rol ver.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Son 24 saatindeki 3 işten birini hiç yapmamış olacaksın; 15 saniyede hangisini feda ettiğini söyle ve nedenini savun.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  // İcat
+  {'category': 'Zihinsel', 'content': '25 saniyede absürt bir şehir yasası uydur ve neden gerekli olduğunu savun.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 1. kişi bir problem söylesin; 20 saniyede saçma ama detaylı bir çözüm ürünü icat et.', 'difficulty': 'medium', 'type': 'action', 'tags': ['mind', 'family']},
 
-  // ── GRUP ZİHİN SENKRONU — HARD ──
-  {'category': 'Zihinsel', 'content': 'Grup "soyut bir kavram" (Zaman, Adalet) belirlesin. Herkes sadece 1 kelime söyleyerek ipucu versin. Kavramı bil.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Arkadaşların "tarihi bir olay" seçsin. Toplam 4 ipucu hakkınız var; herkes sadece tek bir eşya veya mekan ismi söylesin. Olayı tahmin et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Grup karmaşık bir "bilimsel/teknik terim" seçsin. Sadece 3 ipucu hakkın var ve ipuçları alakasız sıfatlar olmak zorunda. Terimi bul.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadaki herkesin doğduğu ayı rakam olarak zihninde topla ve anında bağır (Örn: Mart=3, Ekim=10).', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan 3 kişi aynı anda, 3 farklı kelimeyi sana doğru bağırsın. O kaosta söylenen 3 kelimeyi de doğru ayırt et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Masadan 2 kişi seç. İkisine de aynı anda farklı bir soru sor. İkisi de aynı anda cevap versin, sen iki cevabı da hatasız tekrar et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptaki herkesin ismindeki toplam hece sayısını zihninden topla ve tek seferde doğru rakamı söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Grup sessizce anlaşıp sana hep bir ağızdan bir melodi mırıldansın (farklı notalardan). Hangi şarkıyı söylediklerini o gürültüde çöz.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Sen bir kelime (Örn: Bardak) söyle, grup hep bir ağızdan o kelimenin zıt anlamlısını veya en yakın çağrışımını aynı anda 3 saniyede bağırmaya çalışsın.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
-  {'category': 'Zihinsel', 'content': 'Gruptan biri sana 5 kelimelik bir liste okusun, ancak aralara 3 tane de "sayı" sıkıştırsın. Sen sadece kelimeleri cımbızlayarak tekrar et.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  // ── YARATICI MUHAKEME — HARD ──
+  // Hikaye
+  {'category': 'Zihinsel', 'content': 'Masadakilerden 3 kişi 1\'er kelime versin. 45 saniyede üç kelimeyi de kullanan, başı-ortası-sonu net bir hikaye anlat.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 4. kişi bir suçlama uydursun. Sen 40 saniyede o suçlamayı açıklayan ama seni masum gösteren bir hikaye kur.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  // Bağlantı
+  {'category': 'Zihinsel', 'content': 'Masadan 3 kişi 1\'er kelime versin. 30 saniyede A→B→C zinciri kur; her adımı gerekçelendir.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Solundaki 5. kişi iki zıt kavram söylesin. 30 saniyede ikisinin aslında aynı şey olduğunu savunan bir argüman kur.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  // Perspektif
+  {'category': 'Zihinsel', 'content': 'Masadaki bir durumu (yoksa uydur) kaybeden tarafın avukatı gibi 40 saniyede savun.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Kendini en çok eleştirdiğin özelliğini, bir hayranının gözünden 30 saniyede öv.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  // Karar
+  {'category': 'Zihinsel', 'content': 'Masadaki herkese 1\'den 10\'a güven skoru ver; 30 saniyede bitir, en düşük ve en yüksek için gerekçe söyle.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Sağındaki 3. kişi sana iki kötü seçenekli bir ikilem sunsun; 20 saniyede seçimini savunan konuşma yap.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  // İcat
+  {'category': 'Zihinsel', 'content': '30 saniyede yepyeni bir spor uydur; ismini söyle ve 3 kuralını açıkla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
+  {'category': 'Zihinsel', 'content': 'Masadakiler için 40 saniyede yeni bir parti geleneği icat et; kuralları 3 maddeyle açıkla.', 'difficulty': 'hard', 'type': 'action', 'tags': ['mind', 'family']},
 
 ];
